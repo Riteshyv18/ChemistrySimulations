@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Gamepad2, Play, Target, ShieldCheck, Flame, Layers, Sparkles, Star, ClipboardList } from "lucide-react";
+import { Gamepad2, Play, Target, Sparkles, Star, ClipboardList } from "lucide-react";
 import { PageShell } from "@/components/ui/PageShell";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -13,67 +13,6 @@ interface PageProps {
     topic: string;
   }>;
 }
-
-const TOPIC_CHALLENGE_DESCRIPTIONS: Record<
-  string,
-  {
-    easy: { title: string; subtitle: string; desc: string };
-    medium: { title: string; subtitle: string; desc: string };
-    hard: { title: string; subtitle: string; desc: string };
-  }
-> = {
-  "vsepr-molecular-shapes": {
-    easy: {
-      title: "Shape Identifier & Bond Angles",
-      subtitle: "CH₄ (109.5°), NH₃ (107°), H₂O (104.5°), BF₃ (120°)",
-      desc: "Rotate 3D models and enter precise bond angles to understand electron domain repulsion.",
-    },
-    medium: {
-      title: "Lone Pair Balancer",
-      subtitle: "5-Coordinate TBP: Seesaw, T-Shaped & Linear",
-      desc: "Distribute lone pairs across equatorial vs axial positions to minimize 90° repulsion.",
-    },
-    hard: {
-      title: "Steric Number Mastery",
-      subtitle: "XeF₄, ClF₃, SF₄, I₃⁻ & Interhalogens",
-      desc: "Predict 3D geometries and lone pair deviations in advanced noble gas compounds.",
-    },
-  },
-  "hybridization-orbital-overlap": {
-    easy: {
-      title: "Basic Hybridization",
-      subtitle: "sp (180°), sp² (120°), sp³ (109.5°)",
-      desc: "Explore directional 3D hybrid orbital lobes and spatial orientations.",
-    },
-    medium: {
-      title: "Orbital Workshop",
-      subtitle: "Interactive 3D Orbital Mixer",
-      desc: "Combine spherical s and directional p orbitals step-by-step to synthesize hybrid orbitals.",
-    },
-    hard: {
-      title: "Hybridization Match Puzzle",
-      subtitle: "Molecules & Overlap Matching",
-      desc: "Solve 3D match puzzles linking molecular geometry, hybridization, and steric numbers.",
-    },
-  },
-  "molecular-orbital-theory": {
-    easy: {
-      title: "MOT Orbital Builder",
-      subtitle: "1s & 2s In-Phase vs Out-of-Phase",
-      desc: "Synthesize bonding σ and antibonding σ* molecular orbital clouds in 3D.",
-    },
-    medium: {
-      title: "Diatomic Filling & Energy Diagram",
-      subtitle: "B₂, C₂, N₂, O₂, F₂ Electron Filling",
-      desc: "Fill molecular orbitals in order of increasing energy according to Hund's and Aufbau rules.",
-    },
-    hard: {
-      title: "MOT Mastery",
-      subtitle: "Bond Order, Bond Length & Magnetism",
-      desc: "Calculate bond orders and deduce paramagnetism vs diamagnetism from MO configurations.",
-    },
-  },
-};
 
 export default async function TopicPage({ params }: PageProps) {
   const { module: moduleParam, topic: topicParam } = await params;
@@ -94,24 +33,6 @@ export default async function TopicPage({ params }: PageProps) {
 
   const { module: mod, topic } = result;
   const base = `/challenge/${mod.slug}/${topic.slug}`;
-
-  const details = TOPIC_CHALLENGE_DESCRIPTIONS[topic.slug] || {
-    easy: {
-      title: "Easy Challenge",
-      subtitle: "Foundational 3D Simulation",
-      desc: "Core concepts and basic interactive 3D mechanics.",
-    },
-    medium: {
-      title: "Medium Challenge",
-      subtitle: "Intermediate 3D Interaction",
-      desc: "Multi-step orbital placement and angle manipulation.",
-    },
-    hard: {
-      title: "Hard Challenge",
-      subtitle: "Advanced Mastery Simulation",
-      desc: "Complex scenarios and exam-level challenge problems.",
-    },
-  };
 
   return (
     <PageShell accent="emerald">
@@ -173,54 +94,6 @@ export default async function TopicPage({ params }: PageProps) {
             <Play className="w-4 h-4 fill-current" />
             <span>Play Hard Challenge</span>
           </Link>
-        </div>
-      </div>
-
-      {/* 3 Difficulty Level Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 mb-10">
-        {/* Easy */}
-        <div className="glass-card glass-card-glow-green rounded-2xl p-6 border border-emerald-500/20 flex flex-col justify-between shadow-lg">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-black uppercase tracking-wider">
-                Level 1 — Easy
-              </span>
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
-            </div>
-            <h3 className="text-lg font-bold text-white mb-1">{details.easy.title}</h3>
-            <p className="text-xs text-emerald-400/90 font-medium mb-3">{details.easy.subtitle}</p>
-            <p className="text-slate-400 text-xs leading-relaxed">{details.easy.desc}</p>
-          </div>
-        </div>
-
-        {/* Medium */}
-        <div className="glass-card glass-card-glow-cyan rounded-2xl p-6 border border-cyan-500/20 flex flex-col justify-between shadow-lg">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-black uppercase tracking-wider">
-                Level 2 — Medium
-              </span>
-              <Layers className="w-5 h-5 text-cyan-400" />
-            </div>
-            <h3 className="text-lg font-bold text-white mb-1">{details.medium.title}</h3>
-            <p className="text-xs text-cyan-400/90 font-medium mb-3">{details.medium.subtitle}</p>
-            <p className="text-slate-400 text-xs leading-relaxed">{details.medium.desc}</p>
-          </div>
-        </div>
-
-        {/* Hard */}
-        <div className="glass-card glass-card-glow-purple rounded-2xl p-6 border border-purple-500/20 flex flex-col justify-between shadow-lg">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30 text-xs font-black uppercase tracking-wider">
-                Level 3 — Hard
-              </span>
-              <Flame className="w-5 h-5 text-purple-400" />
-            </div>
-            <h3 className="text-lg font-bold text-white mb-1">{details.hard.title}</h3>
-            <p className="text-xs text-purple-400/90 font-medium mb-3">{details.hard.subtitle}</p>
-            <p className="text-slate-400 text-xs leading-relaxed">{details.hard.desc}</p>
-          </div>
         </div>
       </div>
 

@@ -297,31 +297,14 @@ export default function MotHardGamePage({ difficulty = 'hard' }: { difficulty?: 
       {/* ── SCREEN 1: INTRO MISSION TARGET OVERLAY VIEW (BLURRED BACKGROUND) ───── */}
       {!gameStarted && (
         <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-6 bg-white/40 backdrop-blur-md overflow-y-auto">
-          {/* Top Breadcrumb Header Bar */}
-          <div className="w-full flex items-center justify-between text-xs text-[#64748B] z-10 shrink-0">
-            <div className="flex items-center gap-2 font-medium drop-shadow-sm">
-              <button
-                onClick={() => router.back()}
-                className="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-sm cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4 text-[#2563EB]" />
-              </button>
-              <span>Chemistry</span>
-              <span>›</span>
-              <span>Chemical Bonding</span>
-              <span>›</span>
-              <span>Molecular Orbital Theory (MOT)</span>
-              <span>›</span>
-              <span className="text-[#2563EB] font-semibold">Challenge (hard)</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700 border border-amber-300 uppercase tracking-wider shadow-sm">
-                HARD
-              </span>
-              <div className="flex items-center gap-1.5 text-[#2563EB] font-mono text-[11px] bg-white border border-[#2563EB]/30 px-3 py-1 rounded-full shadow-sm">
-                <span>⭐ {score} XP</span>
-              </div>
-            </div>
+          {/* Top Header Bar */}
+          <div className="w-full flex items-center justify-between z-10 shrink-0">
+            <button
+              onClick={() => router.back()}
+              className="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-sm cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4 text-[#2563EB]" />
+            </button>
           </div>
 
           {/* Central Target Text & Start Mission Button */}

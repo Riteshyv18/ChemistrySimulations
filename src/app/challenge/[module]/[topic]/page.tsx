@@ -150,25 +150,28 @@ export default async function TopicPage({ params }: PageProps) {
           Apply your knowledge in an interactive real-time 3D simulation. Select a difficulty level below to begin.
         </p>
 
-        {/* Quick Launch Pills (Exact Topcoaching Styling) */}
-        <div className="flex items-center gap-3 justify-center flex-wrap mb-4">
+        {/* Launch Challenge Buttons (As shown in image 2) */}
+        <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 justify-center w-full max-w-3xl mt-2 mb-2">
           <Link
             href={`${base}/easy`}
-            className="px-5 py-2.5 rounded-full border border-emerald-500 text-emerald-400 text-xs sm:text-sm font-bold bg-emerald-500/10 hover:bg-emerald-500/25 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all hover:scale-105"
           >
-            Launch Easy
+            <Play className="w-4 h-4 fill-current" />
+            <span>Play Easy Challenge</span>
           </Link>
           <Link
             href={`${base}/medium`}
-            className="px-5 py-2.5 rounded-full border border-orange-500/50 text-orange-400/90 text-xs sm:text-sm font-bold bg-orange-500/10 hover:bg-orange-500/25 transition-all shadow-[0_0_15px_rgba(249,115,22,0.3)] hover:scale-105"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all hover:scale-105"
           >
-            Launch Medium
+            <Play className="w-4 h-4 fill-current" />
+            <span>Play Medium Challenge</span>
           </Link>
           <Link
             href={`${base}/hard`}
-            className="px-5 py-2.5 rounded-full border border-red-500/50 text-red-400/90 text-xs sm:text-sm font-bold bg-red-500/10 hover:bg-red-500/25 transition-all shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:scale-105"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-600 hover:brightness-110 text-white font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all hover:scale-105"
           >
-            Launch Hard
+            <Play className="w-4 h-4 fill-current" />
+            <span>Play Hard Challenge</span>
           </Link>
         </div>
       </div>
@@ -186,15 +189,8 @@ export default async function TopicPage({ params }: PageProps) {
             </div>
             <h3 className="text-lg font-bold text-white mb-1">{details.easy.title}</h3>
             <p className="text-xs text-emerald-400/90 font-medium mb-3">{details.easy.subtitle}</p>
-            <p className="text-slate-400 text-xs leading-relaxed mb-6">{details.easy.desc}</p>
+            <p className="text-slate-400 text-xs leading-relaxed">{details.easy.desc}</p>
           </div>
-          <Link
-            href={`${base}/easy`}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 text-slate-950 font-black text-xs shadow-lg transition-all"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>Play Easy Challenge</span>
-          </Link>
         </div>
 
         {/* Medium */}
@@ -208,15 +204,8 @@ export default async function TopicPage({ params }: PageProps) {
             </div>
             <h3 className="text-lg font-bold text-white mb-1">{details.medium.title}</h3>
             <p className="text-xs text-cyan-400/90 font-medium mb-3">{details.medium.subtitle}</p>
-            <p className="text-slate-400 text-xs leading-relaxed mb-6">{details.medium.desc}</p>
+            <p className="text-slate-400 text-xs leading-relaxed">{details.medium.desc}</p>
           </div>
-          <Link
-            href={`${base}/medium`}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:brightness-110 text-slate-950 font-black text-xs shadow-lg transition-all"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>Play Medium Challenge</span>
-          </Link>
         </div>
 
         {/* Hard */}
@@ -230,15 +219,8 @@ export default async function TopicPage({ params }: PageProps) {
             </div>
             <h3 className="text-lg font-bold text-white mb-1">{details.hard.title}</h3>
             <p className="text-xs text-purple-400/90 font-medium mb-3">{details.hard.subtitle}</p>
-            <p className="text-slate-400 text-xs leading-relaxed mb-6">{details.hard.desc}</p>
+            <p className="text-slate-400 text-xs leading-relaxed">{details.hard.desc}</p>
           </div>
-          <Link
-            href={`${base}/hard`}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 hover:brightness-110 text-white font-black text-xs shadow-lg transition-all"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>Play Hard Challenge</span>
-          </Link>
         </div>
       </div>
 

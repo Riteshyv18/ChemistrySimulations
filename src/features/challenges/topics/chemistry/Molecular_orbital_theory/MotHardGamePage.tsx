@@ -18,7 +18,9 @@ import {
   Trophy,
   Sparkles,
   ArrowRight,
-  Target
+  Target,
+  Eye,
+  Maximize2
 } from 'lucide-react';
 
 import { MOT_HARD_STEPS, KEY_CONCEPTS_DATA } from './helpers';
@@ -102,6 +104,15 @@ export default function MotHardGamePage({ difficulty = 'hard' }: { difficulty?: 
 
   // Key Concepts Modal State
   const [showConceptsModal, setShowConceptsModal] = useState(false);
+  const [showHud, setShowHud] = useState(true);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
 
   // ── STEP 1 STATE: Bond Order Calculations & Electron Inputs ──────────────────
   const [calcInputs, setCalcInputs] = useState<{
@@ -339,23 +350,43 @@ export default function MotHardGamePage({ difficulty = 'hard' }: { difficulty?: 
 
         {/* ── 1. TOP FLOATING NAVIGATION BAR ─────────────────────────────────── */}
         <div className="w-full flex items-center justify-between z-20 shrink-0 mb-2">
-          {/* Top Left: Back Button & Reset */}
+          {/* Top Left: Back Button & Scene Tools */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => router.back()}
-              className="h-9 px-3 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md cursor-pointer"
+              className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
               title="Back to Topics"
             >
-              <ChevronLeft className="w-4 h-4 text-[#2563EB]" />
+              <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
               <span className="hidden sm:inline">Back</span>
             </button>
 
             <button
+              onClick={() => setShowHud(!showHud)}
+              className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${
+                showHud
+                  ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
+                  : 'bg-white border-slate-200 text-[#64748B]'
+              }`}
+              title="Toggle HUD / Overlay"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+
+            <button
               onClick={handleResetAll}
-              className="w-9 h-9 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md cursor-pointer"
+              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
               title="Reset Challenge"
             >
-              <RotateCcw className="w-4 h-4 text-[#64748B]" />
+              <RotateCcw className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={toggleFullscreen}
+              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+              title="Toggle Fullscreen"
+            >
+              <Maximize2 className="w-4 h-4" />
             </button>
           </div>
 

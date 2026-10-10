@@ -10,7 +10,7 @@ import { useDrag } from '@use-gesture/react';
 import {
   Gamepad2, Trophy, BookOpen, Lock, Star, Target, CheckCircle2,
   ChevronRight, ChevronLeft, ArrowRight, RotateCcw, ZoomIn, Maximize2, X,
-  Send, Move, Lightbulb, Package
+  Send, Move, Lightbulb, Package, Eye
 } from 'lucide-react';
 import { getAtomMaterial } from './materials';
 import { getTetrahedralVertices, getTrigonalPlanarVertices } from './helpers';
@@ -1786,6 +1786,22 @@ export default function VseprGamePage({
   // Intro Target Overlay State
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [showExplanationModal, setShowExplanationModal] = useState<boolean>(false);
+  const [showLabels, setShowLabels] = useState<boolean>(true);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+
+  const handleResetChallenge = () => {
+    resetInputs();
+    setCurrentQIndex(0);
+    setGameStatus('playing');
+    setScores({ 1: 0, 2: 0, 3: 0 });
+  };
 
   return (
     <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-3.5 sm:p-4 gap-2.5">
@@ -1831,14 +1847,45 @@ export default function VseprGamePage({
 
       {/* ── TOP TOOLBAR HEADER ────────────────────────────────────────── */}
       <div className="w-full flex items-center justify-between z-20 shrink-0 gap-2">
-        {/* Back Button */}
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-[#1E293B] hover:bg-slate-50 font-bold text-xs shadow-sm transition-all cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4 text-[#64748B]" />
-          <span>Back</span>
-        </button>
+        {/* Top Left: Back Button & Scene Tools */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => router.back()}
+            className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="Back to Topics"
+          >
+            <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
+            <span className="hidden sm:inline">Back</span>
+          </button>
+
+          <button
+            onClick={() => setShowLabels(!showLabels)}
+            className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${
+              showLabels
+                ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
+                : 'bg-white border-slate-200 text-[#64748B]'
+            }`}
+            title="Toggle Labels / Overlay"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={handleResetChallenge}
+            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="Reset Challenge"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={toggleFullscreen}
+            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="Toggle Fullscreen"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
+        </div>
 
 
 

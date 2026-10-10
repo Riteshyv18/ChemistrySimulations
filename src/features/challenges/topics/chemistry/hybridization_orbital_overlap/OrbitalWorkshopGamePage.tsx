@@ -24,7 +24,9 @@ import {
   Award,
   ChevronLeft,
   BookOpen,
-  Target
+  Target,
+  Eye,
+  Maximize2
 } from 'lucide-react';
 
 // ── 3D Atom & Orbital Renderers for Level 1 & Level 2 ──────────────────────────
@@ -846,6 +848,15 @@ export default function OrbitalWorkshopGamePage({
     setErrorMessage(null);
   };
 
+  const [showHud, setShowHud] = useState(true);
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+
   // HTML5 Drag & Drop handlers
   const handleDragStart = (e: React.DragEvent, itemType: string) => {
     e.dataTransfer.setData('text/plain', itemType);
@@ -919,14 +930,45 @@ export default function OrbitalWorkshopGamePage({
 
       {/* ── TOP TOOLBAR HEADER ────────────────────────────────────────── */}
       <div className="w-full flex items-center justify-between z-20 shrink-0 gap-2">
-        {/* Back Button */}
-        <Link
-          href="/chemistry/chemical-bonding-molecular-structure/hybridization-orbital-overlap"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-[#1E293B] hover:bg-slate-50 font-bold text-xs shadow-sm transition-all"
-        >
-          <ChevronLeft className="w-4 h-4 text-[#64748B]" />
-          <span>Back</span>
-        </Link>
+        {/* Top Left: Back Button & Scene Tools */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => router.back()}
+            className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="Back to Topics"
+          >
+            <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
+            <span className="hidden sm:inline">Back</span>
+          </button>
+
+          <button
+            onClick={() => setShowHud(!showHud)}
+            className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${
+              showHud
+                ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
+                : 'bg-white border-slate-200 text-[#64748B]'
+            }`}
+            title="Toggle HUD / Overlay"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={handleReset}
+            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="Reset Challenge"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={toggleFullscreen}
+            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="Toggle Fullscreen"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
+        </div>
 
         {/* Step Indicator & Level Switcher */}
         <div className="flex items-center gap-2">

@@ -516,7 +516,7 @@ export default function MotEasyGamePage({ difficulty = 'easy' }: { difficulty?: 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => router.back()}
-                className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md"
+                className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
                 title="Back to Topics"
               >
                 <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
@@ -525,7 +525,7 @@ export default function MotEasyGamePage({ difficulty = 'easy' }: { difficulty?: 
 
               <button
                 onClick={() => setShowHud(!showHud)}
-                className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md ${showHud
+                className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${showHud
                     ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
                     : 'bg-white border-slate-200 text-[#64748B]'
                   }`}
@@ -536,7 +536,7 @@ export default function MotEasyGamePage({ difficulty = 'easy' }: { difficulty?: 
 
               <button
                 onClick={handleReset}
-                className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md"
+                className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
                 title="Reset Challenge"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -544,7 +544,7 @@ export default function MotEasyGamePage({ difficulty = 'easy' }: { difficulty?: 
 
               <button
                 onClick={toggleFullscreen}
-                className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md"
+                className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
                 title="Toggle Fullscreen"
               >
                 <Maximize2 className="w-4 h-4" />

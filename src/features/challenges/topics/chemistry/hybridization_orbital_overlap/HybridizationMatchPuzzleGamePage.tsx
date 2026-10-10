@@ -25,7 +25,9 @@ import {
   BookOpen,
   Target,
   Info,
-  ChevronRight
+  ChevronRight,
+  Eye,
+  Maximize2
 } from 'lucide-react';
 import { getQuaternionFromDirection } from './helpers';
 
@@ -510,6 +512,25 @@ export default function HybridizationMatchPuzzleGamePage({
 
   // Modal State
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [showHud, setShowHud] = useState<boolean>(true);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+
+  const handleReset = () => {
+    setMatchedMolecules({});
+    setClueAnswers({});
+    setBoxesUnlocked(false);
+    setActiveStep(1);
+    setStep1Collapsed(false);
+    setShowSuccessModal(false);
+    setFeedback(null);
+  };
 
   // Ref for lower section
   const mainGameplayRef = useRef<HTMLDivElement>(null);
@@ -759,20 +780,51 @@ export default function HybridizationMatchPuzzleGamePage({
 
       {/* ── TOP TOOLBAR HEADER ────────────────────────────────────────── */}
       <div className="w-full flex items-center justify-between z-20 shrink-0 gap-2">
-        {/* Back Button */}
-        <button
-          onClick={() => {
-            if (window.history.length > 1) {
-              router.back();
-            } else {
-              router.push("/");
-            }
-          }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-[#1E293B] hover:bg-slate-50 font-bold text-xs shadow-sm transition-all cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4 text-[#64748B]" />
-          <span>Back</span>
-        </button>
+        {/* Top Left: Back Button & Scene Tools */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              if (window.history.length > 1) {
+                router.back();
+              } else {
+                router.push("/");
+              }
+            }}
+            className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="Back to Topics"
+          >
+            <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
+            <span className="hidden sm:inline">Back</span>
+          </button>
+
+          <button
+            onClick={() => setShowHud(!showHud)}
+            className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${
+              showHud
+                ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
+                : 'bg-white border-slate-200 text-[#64748B]'
+            }`}
+            title="Toggle HUD / Overlay"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={handleReset}
+            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="Reset Challenge"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={toggleFullscreen}
+            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+            title="Toggle Fullscreen"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
+        </div>
 
         {/* Step Indicator & Progress Pills */}
         <div className="flex items-center gap-2">

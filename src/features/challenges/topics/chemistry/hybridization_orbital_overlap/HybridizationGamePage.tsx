@@ -19,7 +19,9 @@ import {
   Atom,
   ChevronLeft,
   BookOpen,
-  Target
+  Target,
+  Eye,
+  Maximize2
 } from 'lucide-react';
 import {
   ORBITAL_COLORS,
@@ -440,6 +442,15 @@ export default function HybridizationGamePage({
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [score, setScore] = useState(0);
+  const [showHud, setShowHud] = useState(true);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
 
   // Available Orbitals Counts (s=1, px=1, py=1, pz=1, d=2)
   const availableCounts = useMemo(() => {
@@ -600,17 +611,45 @@ export default function HybridizationGamePage({
           <div className="flex items-center gap-2">
             <button
               onClick={() => router.back()}
-              className="h-9 px-3 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md cursor-pointer"
+              className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
               title="Back to Topics"
             >
-              <ChevronLeft className="w-4 h-4 text-[#2563EB]" />
+              <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
               <span className="hidden sm:inline">Back</span>
+            </button>
+
+            <button
+              onClick={() => setShowHud(!showHud)}
+              className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${
+                showHud
+                  ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
+                  : 'bg-white border-slate-200 text-[#64748B]'
+              }`}
+              title="Toggle HUD / Overlay"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={handleReset}
+              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+              title="Reset Workshop"
+            >
+              <RotateCcw className="w-4 h-4 text-[#64748B]" />
+            </button>
+
+            <button
+              onClick={toggleFullscreen}
+              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+              title="Toggle Fullscreen"
+            >
+              <Maximize2 className="w-4 h-4 text-[#64748B]" />
             </button>
 
             <button
               onClick={handleRevertStep}
               disabled={selectedOrbitals.length === 0}
-              className={`h-9 px-3 rounded-xl border font-bold text-xs transition-all flex items-center gap-1 shadow-md ${
+              className={`h-10 px-3 rounded-xl border font-bold text-xs transition-all flex items-center gap-1 shadow-md backdrop-blur-md ${
                 selectedOrbitals.length > 0
                   ? 'bg-amber-50 hover:bg-amber-100 border-amber-200 text-amber-800 cursor-pointer'
                   : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-50'
@@ -619,14 +658,6 @@ export default function HybridizationGamePage({
             >
               <Undo2 className="w-4 h-4" />
               <span className="hidden sm:inline">Revert</span>
-            </button>
-
-            <button
-              onClick={handleReset}
-              className="w-9 h-9 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md cursor-pointer"
-              title="Reset Workshop"
-            >
-              <RotateCcw className="w-4 h-4 text-[#64748B]" />
             </button>
           </div>
 

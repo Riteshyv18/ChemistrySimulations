@@ -244,26 +244,6 @@ export default function MotMediumGamePage({ difficulty = 'medium' }: { difficult
           </button>
 
           <button
-            onClick={() => setShowHud(!showHud)}
-            className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${
-              showHud
-                ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
-                : 'bg-white border-slate-200 text-[#64748B]'
-            }`}
-            title="Toggle HUD / Overlay"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={handleReset}
-            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
-            title="Reset Challenge"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-
-          <button
             onClick={toggleFullscreen}
             className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
             title="Toggle Fullscreen"

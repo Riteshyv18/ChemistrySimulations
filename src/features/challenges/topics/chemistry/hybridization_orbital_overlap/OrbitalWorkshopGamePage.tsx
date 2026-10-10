@@ -930,7 +930,7 @@ export default function OrbitalWorkshopGamePage({
 
       {/* ── TOP TOOLBAR HEADER ────────────────────────────────────────── */}
       <div className="w-full flex items-center justify-between z-20 shrink-0 gap-2">
-        {/* Top Left: Back Button & Scene Tools */}
+        {/* Top Left: Back Button & Fullscreen */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.back()}
@@ -939,26 +939,6 @@ export default function OrbitalWorkshopGamePage({
           >
             <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
             <span className="hidden sm:inline">Back</span>
-          </button>
-
-          <button
-            onClick={() => setShowHud(!showHud)}
-            className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${
-              showHud
-                ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
-                : 'bg-white border-slate-200 text-[#64748B]'
-            }`}
-            title="Toggle HUD / Overlay"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={handleReset}
-            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
-            title="Reset Challenge"
-          >
-            <RotateCcw className="w-4 h-4" />
           </button>
 
           <button
@@ -1039,23 +1019,6 @@ export default function OrbitalWorkshopGamePage({
             <BookOpen className="w-4 h-4 text-purple-600" />
             <span>Explanation</span>
           </button>
-
-          <button
-            onClick={handleRevertStep}
-            title="Undo Step"
-            className="p-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 shadow-sm transition-all flex items-center gap-1 font-bold text-xs"
-          >
-            <Undo2 className="w-4 h-4 text-slate-500" />
-            <span className="hidden sm:inline">Undo</span>
-          </button>
-
-          <button
-            onClick={handleReset}
-            title="Reset Workshop"
-            className="p-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 shadow-sm transition-all"
-          >
-            <RotateCcw className="w-4 h-4 text-slate-500" />
-          </button>
         </div>
       </div>
 
@@ -1066,7 +1029,7 @@ export default function OrbitalWorkshopGamePage({
         className="flex-1 w-full relative bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-inner z-10 min-h-[350px]"
       >
         <div className="w-full h-full">
-          <Canvas camera={{ position: [0, 2.2, 11.5], fov: 45 }} style={{ width: '100%', height: '100%' }}>
+          <Canvas camera={{ position: [0, 1.8, 13.5], fov: 45 }} style={{ width: '100%', height: '100%' }}>
             <ambientLight intensity={0.9} />
             <directionalLight position={[5, 10, 7]} intensity={1.3} />
             <pointLight position={[-5, -5, -5]} intensity={0.5} color="#a855f7" />
@@ -1195,9 +1158,9 @@ export default function OrbitalWorkshopGamePage({
       </main>
 
       {/* ── BOTTOM DOCK LINE & ITEM PALETTE ───────────────────────────── */}
-      <footer className="w-full bg-white border border-slate-200 rounded-2xl p-3 shadow-lg flex flex-wrap items-center justify-between gap-3 backdrop-blur-xl shrink-0 z-20">
+      <footer className="w-full bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 shadow-lg flex flex-wrap items-center justify-center gap-3 sm:gap-4 backdrop-blur-xl shrink-0 z-20">
         {/* Target Instruction Pill */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-[#2563EB] font-extrabold text-xs shadow-sm">
             <Target className="w-4 h-4 text-[#2563EB]" />
             <span>
@@ -1238,7 +1201,7 @@ export default function OrbitalWorkshopGamePage({
         </div>
 
         {/* Drag & Drop Palette */}
-        <div className="flex items-center gap-2 overflow-x-auto py-0.5 max-w-full">
+        <div className="flex items-center justify-center gap-2 overflow-x-auto py-0.5 max-w-full">
           {level === 1 ? (
             <>
               {/* Level 1: Hydrogen Atom */}

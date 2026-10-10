@@ -287,7 +287,7 @@ export default function MotEasyGamePage({ difficulty = 'easy' }: { difficulty?: 
         }}
         className="absolute inset-0 z-0 bg-[#F8FAFC]"
       >
-        <Canvas camera={{ position: [0, 4.8, 9.2], fov: 38 }}>
+        <Canvas camera={{ position: [0, 1.95, 11.6], fov: 38 }}>
           <ambientLight intensity={1.1} />
           <directionalLight position={[5, 10, 5]} intensity={1.5} />
           <pointLight position={[-5, -4, -5]} intensity={0.5} />
@@ -458,10 +458,10 @@ export default function MotEasyGamePage({ difficulty = 'easy' }: { difficulty?: 
             enableZoom={true}
             enablePan={false}
             minDistance={5.0}
-            maxDistance={12.0}
+            maxDistance={15.0}
             maxPolarAngle={Math.PI / 2 - 0.05}
             minPolarAngle={0.1}
-            target={[0, -0.2, 0]}
+            target={[0, -0.3, 0]}
           />
         </Canvas>
       </div>
@@ -521,25 +521,6 @@ export default function MotEasyGamePage({ difficulty = 'easy' }: { difficulty?: 
               >
                 <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
                 <span className="hidden sm:inline">Back</span>
-              </button>
-
-              <button
-                onClick={() => setShowHud(!showHud)}
-                className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${showHud
-                    ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
-                    : 'bg-white border-slate-200 text-[#64748B]'
-                  }`}
-                title="Toggle HUD / Overlay"
-              >
-                <Eye className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={handleReset}
-                className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
-                title="Reset Challenge"
-              >
-                <RotateCcw className="w-4 h-4" />
               </button>
 
               <button

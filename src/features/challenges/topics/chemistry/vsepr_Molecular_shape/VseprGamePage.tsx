@@ -1847,7 +1847,7 @@ export default function VseprGamePage({
 
       {/* ── TOP TOOLBAR HEADER ────────────────────────────────────────── */}
       <div className="w-full flex items-center justify-between z-20 shrink-0 gap-2">
-        {/* Top Left: Back Button & Scene Tools */}
+        {/* Top Left: Back Button & Fullscreen */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.back()}
@@ -1856,26 +1856,6 @@ export default function VseprGamePage({
           >
             <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
             <span className="hidden sm:inline">Back</span>
-          </button>
-
-          <button
-            onClick={() => setShowLabels(!showLabels)}
-            className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all shadow-md backdrop-blur-md cursor-pointer ${
-              showLabels
-                ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#2563EB]'
-                : 'bg-white border-slate-200 text-[#64748B]'
-            }`}
-            title="Toggle Labels / Overlay"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={handleResetChallenge}
-            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
-            title="Reset Challenge"
-          >
-            <RotateCcw className="w-4 h-4" />
           </button>
 
           <button

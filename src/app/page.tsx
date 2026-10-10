@@ -1,266 +1,140 @@
 import React from "react";
 import Link from "next/link";
-import {
-  Atom,
-  FlaskConical,
-  Sparkles,
-  Play,
-  Layers,
-  ChevronRight,
-  ShieldCheck,
-  Flame,
-  Binary,
-  Compass,
-} from "lucide-react";
+import { Sparkles, ArrowRight, BookOpen, Layers, Atom, Gamepad2 } from "lucide-react";
+import { PageShell } from "@/components/ui/PageShell";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+import { getModules } from "@/lib/content";
 
-interface ChallengeCardInfo {
-  id: string;
-  module: string;
-  topicSlug: string;
-  topicNumber: number;
-  title: string;
-  concept: string;
-  description: string;
-  badgeColor: string;
-  levels: {
-    difficulty: "easy" | "medium" | "hard";
-    label: string;
-    sublabel: string;
-    color: string;
-  }[];
-}
-
-const CHEMISTRY_CHALLENGES: ChallengeCardInfo[] = [
+const THEMES = [
   {
-    id: "vsepr",
-    module: "chemical-bonding-molecular-structure",
-    topicSlug: "vsepr-molecular-shapes",
-    topicNumber: 1,
-    title: "VSEPR Theory & Molecular Shapes",
-    concept: "Electron Domain Repulsion & Lone Pair Geometry Distortion",
-    description:
-      "Rotate, measure, and assemble real 3D molecules. Experience how unshared valence electron pairs compress bond angles across linear, trigonal planar, tetrahedral, and expanded octets.",
-    badgeColor: "from-cyan-500 to-blue-600",
-    levels: [
-      {
-        difficulty: "easy",
-        label: "Easy — Shape Identifier",
-        sublabel: "CH₄ (109.5°), NH₃ (107°), H₂O (104.5°), BF₃ (120°)",
-        color: "border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20",
-      },
-      {
-        difficulty: "medium",
-        label: "Medium — Lone Pair Balancer",
-        sublabel: "5-Coordinate TBP: Seesaw, T-Shaped, Linear Equatorial Placement",
-        color: "border-cyan-500/30 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20",
-      },
-      {
-        difficulty: "hard",
-        label: "Hard — Steric Number Mastery",
-        sublabel: "XeF₄, ClF₃, SF₄, I₃⁻: Non-ideal repulsion & complex geometry",
-        color: "border-purple-500/30 text-purple-400 bg-purple-500/10 hover:bg-purple-500/20",
-      },
-    ],
+    glow: "glass-card-glow-green",
+    border: "border-emerald-500/20",
+    iconBorder: "bg-emerald-500/10 border-emerald-500/30 shadow-[0_0_25px_rgba(16,185,129,0.35)]",
+    tag: "border-emerald-500/30 text-emerald-300",
+    titleHover: "group-hover:text-emerald-300",
+    progressText: "text-emerald-400",
+    progressBg: "bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_12px_rgba(16,185,129,0.8)]",
+    btn: "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 hover:bg-emerald-400 hover:text-slate-950",
   },
   {
-    id: "hybridization",
-    module: "chemical-bonding-molecular-structure",
-    topicSlug: "hybridization-orbital-overlap",
-    topicNumber: 2,
-    title: "Hybridization & Orbital Overlap",
-    concept: "Atomic Orbital Mixing, LCAO & Directional Covalent Bonding",
-    description:
-      "Step inside the atomic cloud to mix s, p, and d orbitals into directional hybrid lobes. Visualize coaxial sigma (σ) and lateral pi (π) bonds in real-time 3D.",
-    badgeColor: "from-purple-500 to-pink-600",
-    levels: [
-      {
-        difficulty: "easy",
-        label: "Easy — Basic Hybridization",
-        sublabel: "sp (180°), sp² (120°), sp³ (109.5°) 3D Orbital Lobes",
-        color: "border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20",
-      },
-      {
-        difficulty: "medium",
-        label: "Medium — Orbital Workshop",
-        sublabel: "Step-by-step interactive mixing of s, px, py, and pz orbitals",
-        color: "border-cyan-500/30 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20",
-      },
-      {
-        difficulty: "hard",
-        label: "Hard — Match Puzzle Challenge",
-        sublabel: "Match molecules to steric numbers, hybrid orbitals & bond angles",
-        color: "border-purple-500/30 text-purple-400 bg-purple-500/10 hover:bg-purple-500/20",
-      },
-    ],
+    glow: "glass-card-glow-cyan",
+    border: "border-cyan-500/20",
+    iconBorder: "bg-cyan-500/10 border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.35)]",
+    tag: "border-cyan-500/30 text-cyan-300",
+    titleHover: "group-hover:text-cyan-300",
+    progressText: "text-cyan-400",
+    progressBg: "bg-gradient-to-r from-cyan-500 to-blue-500 shadow-[0_0_12px_rgba(6,182,212,0.8)]",
+    btn: "bg-cyan-500/10 border-cyan-500/40 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950",
   },
   {
-    id: "mot",
-    module: "chemical-bonding-molecular-structure",
-    topicSlug: "molecular-orbital-theory",
-    topicNumber: 3,
-    title: "Molecular Orbital Theory (MOT)",
-    concept: "Linear Combination of Atomic Orbitals & Electronic Hierarchy",
-    description:
-      "Construct molecular orbital energy level diagrams for homonuclear and heteronuclear diatomics. Determine bond order, bond length stability, and magnetic characteristics.",
-    badgeColor: "from-amber-500 to-orange-600",
-    levels: [
-      {
-        difficulty: "easy",
-        label: "Easy — MOT Orbital Builder",
-        sublabel: "1s & 2s In-Phase (Bonding σ) vs Out-of-Phase (Antibonding σ*)",
-        color: "border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20",
-      },
-      {
-        difficulty: "medium",
-        label: "Medium — Diatomic Filling & Energy",
-        sublabel: "B₂, C₂, N₂, O₂, F₂ Electron Filling following Aufbau & Hund's Rules",
-        color: "border-cyan-500/30 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20",
-      },
-      {
-        difficulty: "hard",
-        label: "Hard — MOT Mastery",
-        sublabel: "Calculate Bond Order, predict bond length and deduce Paramagnetism",
-        color: "border-purple-500/30 text-purple-400 bg-purple-500/10 hover:bg-purple-500/20",
-      },
-    ],
+    glow: "glass-card-glow-purple",
+    border: "border-purple-500/20",
+    iconBorder: "bg-purple-500/10 border-purple-500/30 shadow-[0_0_25px_rgba(168,85,247,0.35)]",
+    tag: "border-fuchsia-500/30 text-fuchsia-300",
+    titleHover: "group-hover:text-fuchsia-300",
+    progressText: "text-fuchsia-400",
+    progressBg: "bg-gradient-to-r from-purple-500 to-fuchsia-500 shadow-[0_0_12px_rgba(217,70,239,0.8)]",
+    btn: "bg-fuchsia-500/10 border-fuchsia-500/40 text-fuchsia-400 hover:bg-fuchsia-400 hover:text-slate-950",
   },
 ];
 
-export default function ChemistryHomePage() {
+export default function ModulesPage() {
+  const modules = getModules();
+
   return (
-    <div className="min-h-screen bg-[#040712] text-slate-100 flex flex-col justify-between">
-      {/* Top Header Bar */}
-      <header className="border-b border-white/10 bg-[#070c1a]/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.5)]">
-              <Atom className="w-6 h-6 text-slate-950 stroke-[2.5]" />
-            </div>
-            <div>
-              <h1 className="text-lg font-black text-white tracking-wide flex items-center gap-2">
-                <span>Chemistry Simulations</span>
-                <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] animate-pulse" />
-              </h1>
-              <p className="text-xs text-slate-400">Interactive 3D STEM Challenges</p>
-            </div>
+    <PageShell accent="emerald">
+      <PageHeader
+        accent="emerald"
+        badge="Chemistry Modules"
+        badgeIcon={Sparkles}
+        title="Chemistry modules"
+        description="Select a specialization to explore 3D simulations, formula visualizations, and adaptive challenges."
+        actions={
+          <div className="glass-panel px-4 py-2 rounded-xl border border-white/10 text-xs font-semibold text-slate-300">
+            <span className="text-emerald-400">Catalog progress: </span>
+            <span className="text-white font-bold">100%</span>
           </div>
+        }
+      />
 
-          <div className="hidden sm:flex items-center gap-6 text-xs text-slate-300 font-medium">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>3 Core Topics</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-cyan-400" />
-              <span>9 Interactive 3D Simulations</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-purple-400" />
-              <span>Real-Time WebGL</span>
-            </div>
-          </div>
-        </div>
-      </header>
+      <section className="mb-8 sm:mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          {modules.map((mod, index) => {
+            const theme = THEMES[index % THEMES.length];
+            const isM1 = mod.moduleId === "M1";
+            const progressPct = isM1 ? 100 : 40;
+            const targetUrl = `/challenge/${mod.slug}`;
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex-1 w-full">
-        {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.25)] mb-5">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span>Interactive 3D Chemistry Workbench</span>
-          </div>
+            return (
+              <Link
+                key={mod.moduleId}
+                href={targetUrl}
+                className={`block glass-card ${theme.glow} rounded-2xl sm:rounded-3xl p-5 sm:p-6 border ${theme.border} relative overflow-hidden flex flex-col justify-between group min-h-[260px] sm:min-h-[290px] shadow-xl`}
+              >
+                {/* Background Molecule Wireframe Accent */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none p-4 flex items-center justify-center">
+                  <svg
+                    className="w-full h-full text-emerald-400"
+                    viewBox="0 0 200 200"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                  >
+                    <circle cx="100" cy="100" r="40" strokeDasharray="3 3" />
+                    <line x1="40" y1="100" x2="160" y2="100" />
+                    <line x1="100" y1="40" x2="100" y2="160" />
+                    <circle cx="100" cy="100" r="16" fill="currentColor" fillOpacity="0.2" />
+                    <circle cx="40" cy="100" r="10" fill="currentColor" fillOpacity="0.2" />
+                    <circle cx="160" cy="100" r="10" fill="currentColor" fillOpacity="0.2" />
+                  </svg>
+                </div>
 
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
-            Master Chemistry Through{" "}
-            <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-purple-400 bg-clip-text text-transparent">
-              3D Spatial Simulation
-            </span>
-          </h2>
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span
+                      className={`text-[10px] sm:text-xs font-mono font-bold tracking-wider px-2.5 py-1 rounded-full border ${theme.tag} bg-slate-950/40`}
+                    >
+                      {mod.moduleId}
+                    </span>
+                    <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                      <Gamepad2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>{mod.topics.length} Topics</span>
+                    </div>
+                  </div>
 
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-            Select any topic below and choose between Easy, Medium, or Hard interactive challenges.
-            Manipulate electron clouds, test bond angles, and construct molecular orbitals in real time.
-          </p>
-        </div>
+                  <h3
+                    className={`text-xl sm:text-2xl font-bold text-white mb-2 transition-colors ${theme.titleHover}`}
+                  >
+                    {mod.moduleName}
+                  </h3>
 
-        {/* Challenge Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {CHEMISTRY_CHALLENGES.map((item) => (
-            <div
-              key={item.id}
-              className="glass-card rounded-3xl p-6 sm:p-7 border border-white/10 flex flex-col justify-between hover:border-cyan-500/40 transition-all duration-300 group shadow-xl"
-            >
-              {/* Card Top */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 border border-cyan-800/50 px-2.5 py-1 rounded-lg">
-                    Topic 0{item.topicNumber}
-                  </span>
-                  <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300">
-                    <FlaskConical className="w-4 h-4 text-cyan-400" />
+                  <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-6">
+                    {isM1
+                      ? "Interactive 3D VSEPR shapes, orbital hybridization workshops, and molecular orbital energy diagrams."
+                      : "Fundamental atomic structure, quantum numbers, and subatomic orbital configurations."}
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-2 text-xs font-bold">
+                    <span className="text-slate-500">Module Progress</span>
+                    <span className={theme.progressText}>{progressPct}%</span>
+                  </div>
+                  <ProgressBar value={progressPct} accentClass={theme.progressBg} size="sm" />
+
+                  <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/10 text-xs font-semibold text-slate-300">
+                    <span className="text-slate-400 group-hover:text-white transition-colors">
+                      View Topics & 3D Challenges
+                    </span>
+                    <ArrowRight className="w-4 h-4 text-emerald-400 transform group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
-
-                <h3 className="text-xl font-black text-white tracking-tight mb-2 group-hover:text-cyan-300 transition-colors">
-                  {item.title}
-                </h3>
-
-                <p className="text-xs font-semibold text-cyan-400/90 mb-3">
-                  {item.concept}
-                </p>
-
-                <p className="text-xs text-slate-400 leading-relaxed mb-6">
-                  {item.description}
-                </p>
-              </div>
-
-              {/* Challenge Difficulties (3 Interactive Levels) */}
-              <div className="space-y-2.5 pt-4 border-t border-white/10">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                  <span>Select Challenge Level:</span>
-                </div>
-
-                {item.levels.map((lvl) => {
-                  const challengeUrl = `/challenge/${item.module}/${item.topicSlug}/${lvl.difficulty}`;
-                  return (
-                    <Link
-                      key={lvl.difficulty}
-                      href={challengeUrl}
-                      className={`block p-3 rounded-xl border transition-all duration-200 group/lvl ${lvl.color}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="font-bold text-xs flex items-center gap-2">
-                          <Play className="w-3 h-3 fill-current opacity-80 group-hover/lvl:opacity-100" />
-                          <span>{lvl.label}</span>
-                        </div>
-                        <ChevronRight className="w-3.5 h-3.5 opacity-60 group-hover/lvl:opacity-100 group-hover/lvl:translate-x-1 transition-transform" />
-                      </div>
-                      <div className="text-[10px] text-slate-400 mt-1 pl-5">
-                        {lvl.sublabel}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+              </Link>
+            );
+          })}
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#070c1a]/50 py-6 px-6 mt-16 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>Chemistry 3D Simulation Challenges — Pure Interactive WebGL Engine</p>
-          <div className="flex items-center gap-4 text-slate-400">
-            <span>VSEPR Theory</span>
-            <span>•</span>
-            <span>Hybridization</span>
-            <span>•</span>
-            <span>Molecular Orbital Theory</span>
-          </div>
-        </div>
-      </footer>
-    </div>
+      </section>
+    </PageShell>
   );
 }

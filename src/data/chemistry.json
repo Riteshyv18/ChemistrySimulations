@@ -1,0 +1,2549 @@
+{
+  "subject": "chemistry",
+  "modules": [
+    {
+      "moduleId": "M1",
+      "moduleName": "Chemical Bonding & Molecular Structure",
+      "topics": [
+        {
+          "topicId": "1",
+          "topicName": "VSEPR Theory & Molecular Shapes",
+          "coreConcept": "Electron domain repulsion and lone pair geometry distortion",
+          "keyFormulas": [
+            {
+              "formula": "Steric Number = (Bonded Atoms) + (Lone Pairs on Central Atom)",
+              "label": "Steric Number"
+            },
+            {
+              "formula": "Repulsion Order: LP-LP > LP-BP > BP-BP",
+              "label": "Repulsion Hierarchy"
+            },
+            {
+              "formula": "θ(CH4)=109.5° > θ(NH3)=107° > θ(H2O)=104.5°",
+              "label": "Bond Angle Distortion"
+            }
+          ],
+          "theory": {
+            "basics": "Valence Shell Electron Pair Repulsion (VSEPR) theory is a model used in chemistry to predict the three-dimensional geometry of individual molecules based upon the extent of electron-pair electrostatic repulsion.\n\nThe premise is simple: electron pairs in the valence shell of a central atom repel each other because they carry identical negative charges. Therefore, they adopt an orientation in 3D space that minimizes mutual repulsion, thereby maximizing the distance between them.\n\n<FormulaCallout title=\"Steric Number Formula\" formula=\"SN = Bonded Atoms + Lone Pairs\" SN=\"Steric Number\" BondedAtoms=\"Number of surrounding attached atoms\" LonePairs=\"Number of non-bonding pairs on central atom\" />\n\nWhen determining molecular shapes, we distinguish between **Electron Domain Geometry** (the spatial arrangement of all electron domains including lone pairs) and **Molecular Geometry** (the observable spatial arrangement of the atomic nuclei only).\n\n<KeyInsight title=\"The Lone Pair Compression Effect\">\nLone pairs are localized on the central atom alone and are not shared between two nuclei. Consequently, their electron cloud is fatter, spread out closer to the central nucleus, and exerts stronger repulsive forces on neighboring bonding pairs. This accounts for the progressive reduction of bond angles in isoelectronic tetrahedral species: CH₄ (109.5°, 0 LP) → NH₃ (107°, 1 LP) → H₂O (104.5°, 2 LP).\n</KeyInsight>\n\n## VSEPR Classifications Summary\n\n1. **AX₂ (SN = 2, 0 LP):** Linear (180°), e.g., BeCl₂, CO₂.\n2. **AX₃ (SN = 3, 0 LP):** Trigonal Planar (120°), e.g., BF₃, SO₃.\n3. **AX₂E (SN = 3, 1 LP):** Bent / V-shaped (~118°), e.g., SO₂, O₃.\n4. **AX₄ (SN = 4, 0 LP):** Tetrahedral (109.5°), e.g., CH₄, CCl₄, NH₄⁺.\n5. **AX₃E (SN = 4, 1 LP):** Trigonal Pyramidal (~107°), e.g., NH₃, PCl₃.\n6. **AX₂E₂ (SN = 4, 2 LP):** Bent / Angular (~104.5°), e.g., H₂O, OF₂.\n7. **AX₅ (SN = 5, 0 LP):** Trigonal Bipyramidal (120° equatorial, 90° axial), e.g., PCl₅.\n8. **AX₄E (SN = 5, 1 LP):** Seesaw, e.g., SF₄.\n9. **AX₃E₂ (SN = 5, 2 LP):** T-Shaped, e.g., ClF₃.\n10. **AX₂E₃ (SN = 5, 3 LP):** Linear (180°), e.g., XeF₂, I₃⁻.\n11. **AX₆ (SN = 6, 0 LP):** Octahedral (90°), e.g., SF₆.\n12. **AX₅E (SN = 6, 1 LP):** Square Pyramidal, e.g., BrF₅.\n13. **AX₄E₂ (SN = 6, 2 LP):** Square Planar, e.g., XeF₄.",
+            "fullConcept": "## Advanced VSEPR & Bent's Rule\n\nWhile classical VSEPR accounts for steric numbers and general repulsion hierarchies, modern structural inorganic chemistry refines these observations with **Bent's Rule** and electronegativity variations.\n\n### Bent's Rule Statement\n*Central atomic s-character concentrates in orbitals directed toward electropositive substituents, while p-character concentrates in orbitals directed toward electronegative substituents.*\n\nBecause s-orbitals are spherical and held closer to the nucleus, s-rich hybrid orbitals have higher electron density near the nucleus and exert greater angular repulsion. Lone pairs prefer hybrid orbitals with high s-character.\n\n<FormulaCallout title=\"Equatorial Preference in TBP\" formula=\"LP position = Equatorial\" Reason=\"Minimizes 90° repulsions (2 instead of 3)\" />\n\nIn a Trigonal Bipyramidal (TBP) geometry (sp³d hybridization):\n- **Equatorial positions** have 120° bond angles and more s-character (sp² component).\n- **Axial positions** have 90° interactions and more p-d character (pd component).\n- Consequently, bulky lone pairs and less electronegative ligands always occupy equatorial sites, while highly electronegative ligands (like Fluorine in PCl₃F₂) occupy axial sites."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Shape Identifier",
+              "description": "Rotate 3D models of CH₄, NH₃, H₂O, and BF₃ to match each molecule to its correct geometry and bond angle."
+            },
+            "medium": {
+              "title": "Lone Pair Balancer",
+              "description": "Place lone pairs and bonded atoms onto a 5-coordinate central atom to find the lowest energy Seesaw or T-shaped configuration."
+            },
+            "advanced": {
+              "title": "Steric Number Mastery",
+              "description": "Predict the molecular geometries and bond angles of complex noble gas halides and interhalogen ions (XeF₄, ClF₃, I₃⁻, SF₄)."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the bond angle in a perfectly tetrahedral methane (CH4) molecule?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "90°"
+                  },
+                  {
+                    "id": "B",
+                    "label": "109.5°"
+                  },
+                  {
+                    "id": "C",
+                    "label": "120°"
+                  },
+                  {
+                    "id": "D",
+                    "label": "180°"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "In methane (CH4), the carbon atom is surrounded by 4 equivalent bonding pairs with 0 lone pairs. Maximum separation in 3D space yields an ideal tetrahedral angle of 109.5°."
+              },
+              {
+                "type": "single-correct",
+                "question": "Which of the following molecules has a Bent (V-shaped) molecular geometry?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "CO2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "BF3"
+                  },
+                  {
+                    "id": "C",
+                    "label": "H2O"
+                  },
+                  {
+                    "id": "D",
+                    "label": "CH4"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "H2O has 2 bonding pairs and 2 lone pairs on the central oxygen atom (AX2E2). The strong repulsion from the 2 lone pairs compresses the geometry into a bent shape with a ~104.5° angle."
+              },
+              {
+                "type": "single-correct",
+                "question": "What is the molecular geometry of BF3 (Boron Trifluoride)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Trigonal Pyramidal"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Trigonal Planar"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Tetrahedral"
+                  },
+                  {
+                    "id": "D",
+                    "label": "T-Shaped"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Boron in BF3 forms 3 single bonds with 0 lone pairs (AX3). The 3 electron pairs maximize their distance in a flat 2D plane with 120° bond angles."
+              },
+              {
+                "type": "single-correct",
+                "question": "According to VSEPR theory, which electron pair repulsion is the strongest?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Bond Pair - Bond Pair"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Lone Pair - Bond Pair"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Lone Pair - Lone Pair"
+                  },
+                  {
+                    "id": "D",
+                    "label": "All are equal"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Lone pairs are held by only one atomic nucleus and have broader electron clouds, making Lone Pair - Lone Pair (LP-LP) repulsion the strongest, followed by LP-BP, and lastly BP-BP."
+              },
+              {
+                "type": "single-correct",
+                "question": "The VSEPR notation for Ammonia (NH3) is:",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "AX3"
+                  },
+                  {
+                    "id": "B",
+                    "label": "AX3E"
+                  },
+                  {
+                    "id": "C",
+                    "label": "AX2E2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "AX4"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "NH3 has 3 single bonds (X3) and 1 lone pair (E) on the central Nitrogen atom, giving the formula AX3E."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following molecules have a Steric Number equal to 4?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "CH4"
+                  },
+                  {
+                    "id": "B",
+                    "label": "NH3"
+                  },
+                  {
+                    "id": "C",
+                    "label": "H2O"
+                  },
+                  {
+                    "id": "D",
+                    "label": "BF3"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "CH4 (4 bonds + 0 LP = 4), NH3 (3 bonds + 1 LP = 4), and H2O (2 bonds + 2 LP = 4) all have a steric number of 4 with tetrahedral electron geometry. BF3 has SN = 3."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following statements about lone pairs in VSEPR theory are correct?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "They occupy more angular space than bonding pairs"
+                  },
+                  {
+                    "id": "B",
+                    "label": "They cause bond angles between adjacent atoms to decrease"
+                  },
+                  {
+                    "id": "C",
+                    "label": "They are shared equally between two nuclei"
+                  },
+                  {
+                    "id": "D",
+                    "label": "In Trigonal Bipyramidal geometry, they occupy equatorial sites"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "D"
+                ],
+                "explanation": "Lone pairs are attracted to only one nucleus, spreading out wider and compressing adjacent bond angles. In TBP systems, they choose equatorial positions to experience only two 90° repulsions."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following species have linear molecular geometry?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "CO2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "BeCl2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "XeF2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "SO2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "CO2 (AX2, 180°), BeCl2 (AX2, 180°), and XeF2 (AX2E3 with 3 equatorial lone pairs, 180°) are all linear. SO2 (AX2E) is bent."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which molecules have non-zero net dipole moments (are polar)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "H2O"
+                  },
+                  {
+                    "id": "B",
+                    "label": "NH3"
+                  },
+                  {
+                    "id": "C",
+                    "label": "CH4"
+                  },
+                  {
+                    "id": "D",
+                    "label": "BF3"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B"
+                ],
+                "explanation": "H2O (bent) and NH3 (trigonal pyramidal) are asymmetrical and have net dipole moments. CH4 (tetrahedral) and BF3 (trigonal planar) are perfectly symmetrical and non-polar."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which pairs share the exact same electron pair geometry?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "CH4 and NH3"
+                  },
+                  {
+                    "id": "B",
+                    "label": "H2O and CH4"
+                  },
+                  {
+                    "id": "C",
+                    "label": "CO2 and BeCl2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "BF3 and NH3"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "CH4, NH3, and H2O all have tetrahedral electron pair geometry (SN = 4). CO2 and BeCl2 both have linear electron pair geometry (SN = 2). BF3 is trigonal planar (SN = 3) while NH3 is tetrahedral (SN = 4)."
+              },
+              {
+                "type": "input-value",
+                "question": "How many lone pairs are present on the central Oxygen atom in a water (H2O) molecule?",
+                "correctValue": 2,
+                "explanation": "Oxygen has 6 valence electrons: 2 are shared in O-H single bonds, leaving 4 unshared valence electrons arranged as 2 lone pairs."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the Steric Number of the central Phosphorus atom in PCl5?",
+                "correctValue": 5,
+                "explanation": "Phosphorus in PCl5 forms 5 single bonds with Chlorine atoms and has 0 lone pairs. SN = 5 + 0 = 5."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the ideal bond angle (in degrees) in Boron Trifluoride (BF3)?",
+                "correctValue": 120,
+                "explanation": "BF3 is trigonal planar with three equal 120° F-B-F bond angles."
+              },
+              {
+                "type": "input-value",
+                "question": "How many bonded atoms are attached to the central atom in a molecule with AX3E2 notation?",
+                "correctValue": 3,
+                "explanation": "In AXnEm notation, n represents the number of bonded atoms (X), which is 3."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the total number of electron pairs (bonding + lone pairs) around the central Xenon atom in XeF4?",
+                "correctValue": 6,
+                "explanation": "Xenon has 8 valence electrons. In XeF4, it forms 4 single bonds and retains 2 lone pairs. Total electron domains = 4 + 2 = 6 (Octahedral electron geometry, Square Planar molecular shape)."
+              }
+            ],
+            "medium": [
+              {
+                "type": "single-correct",
+                "question": "What is the molecular geometry of SF4 (Sulfur Tetrafluoride)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Tetrahedral"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Square Planar"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Seesaw"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Trigonal Pyramidal"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "SF4 has 4 bonding pairs and 1 lone pair on sulfur (AX4E, SN = 5). The lone pair occupies an equatorial site in the trigonal bipyramid, producing a Seesaw shape."
+              },
+              {
+                "type": "single-correct",
+                "question": "Which of the following has a square planar molecular shape?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "CH4"
+                  },
+                  {
+                    "id": "B",
+                    "label": "SF4"
+                  },
+                  {
+                    "id": "C",
+                    "label": "XeF4"
+                  },
+                  {
+                    "id": "D",
+                    "label": "CCl4"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "XeF4 has 4 bonding pairs and 2 lone pairs (AX4E2, SN = 6). The two lone pairs occupy opposite axial positions (180° apart), resulting in a square planar shape."
+              },
+              {
+                "type": "single-correct",
+                "question": "In ClF3 (Chlorine Trifluoride), what is the molecular geometry?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Trigonal Planar"
+                  },
+                  {
+                    "id": "B",
+                    "label": "T-Shaped"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Trigonal Pyramidal"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Seesaw"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "ClF3 has 3 bonding pairs and 2 lone pairs (AX3E2, SN = 5). Both lone pairs occupy equatorial positions, leaving a T-shaped atomic skeleton."
+              },
+              {
+                "type": "single-correct",
+                "question": "The F-S-F axial-equatorial bond angle in SF4 is compressed from 90° to approximately:",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "87°"
+                  },
+                  {
+                    "id": "B",
+                    "label": "102°"
+                  },
+                  {
+                    "id": "C",
+                    "label": "120°"
+                  },
+                  {
+                    "id": "D",
+                    "label": "60°"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "Due to repulsion from the equatorial lone pair, the axial F-S bonds bend away, compressing the 90° axial-equatorial angles down to ~87°."
+              },
+              {
+                "type": "single-correct",
+                "question": "Which of the following species is non-polar despite containing polar bonds?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "XeF4"
+                  },
+                  {
+                    "id": "B",
+                    "label": "SF4"
+                  },
+                  {
+                    "id": "C",
+                    "label": "NH3"
+                  },
+                  {
+                    "id": "D",
+                    "label": "SO2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "XeF4 has a square planar geometry where the four polar Xe-F bond dipoles cancel each other out by symmetry (net dipole moment = 0)."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following molecules/ions have a linear geometry?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "I3⁻ (Triiodide ion)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "XeF2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "NO2⁻"
+                  },
+                  {
+                    "id": "D",
+                    "label": "BeH2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "D"
+                ],
+                "explanation": "I3⁻ and XeF2 are AX2E3 with 3 equatorial lone pairs (linear, 180°). BeH2 is AX2 (linear). NO2⁻ is AX2E (bent)."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "In the Trigonal Bipyramidal PCl5 molecule:",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Axial P-Cl bonds are longer than equatorial P-Cl bonds"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Equatorial P-Cl bonds experience less repulsion than axial bonds"
+                  },
+                  {
+                    "id": "C",
+                    "label": "All 5 P-Cl bond lengths are exactly identical"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Axial bond angle is 180° and equatorial bond angle is 120°"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "D"
+                ],
+                "explanation": "Axial chlorine atoms experience three 90° repulsions from equatorial pairs, making the axial bonds weaker and longer (214 pm vs 202 pm). Equatorial bonds experience only two 90° repulsions."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which species have sp³d hybridization on the central atom?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "PCl5"
+                  },
+                  {
+                    "id": "B",
+                    "label": "SF4"
+                  },
+                  {
+                    "id": "C",
+                    "label": "ClF3"
+                  },
+                  {
+                    "id": "D",
+                    "label": "SF6"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "PCl5 (SN=5), SF4 (SN=5), and ClF3 (SN=5) all utilize sp³d hybridization. SF6 has SN=6 and utilizes sp³d²."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following have a bond angle less than 109.5°?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "NH3 (107°)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "H2O (104.5°)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "H2S (92°)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "BF3 (120°)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "NH3, H2O, and H2S all have lone pairs on the central atom compressing their bond angles below the ideal tetrahedral 109.5°. BF3 is 120°."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "According to Bent's rule and VSEPR:",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "More electronegative substituents prefer orbitals with less s-character"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Lone pairs prefer hybrid orbitals with more s-character"
+                  },
+                  {
+                    "id": "C",
+                    "label": "In PCl3F2, Fluorine atoms occupy the axial positions"
+                  },
+                  {
+                    "id": "D",
+                    "label": "In PCl3F2, Fluorine atoms occupy equatorial positions"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "Fluorine is more electronegative than Chlorine, so by Bent's rule it occupies the axial positions in PCl3F2 which have more p-character (pd hybrid) and less s-character."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the number of 90° bond angles in an ideal octahedral SF6 molecule?",
+                "correctValue": 12,
+                "explanation": "In an octahedral SF6 molecule, each of the 4 equatorial bonds forms two 90° angles with the two axial bonds (8 angles), and the 4 equatorial bonds form 4 adjacent 90° angles with each other. Total = 8 + 4 = 12."
+              },
+              {
+                "type": "input-value",
+                "question": "How many lone pairs are on the central Iodine atom in the Triiodide ion (I3⁻)?",
+                "correctValue": 3,
+                "explanation": "Central Iodine has 7 valence electrons + 1 negative charge = 8. It forms 2 single bonds with surrounding I atoms (using 2 electrons), leaving 6 unshared electrons = 3 lone pairs in equatorial positions."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the number of lone pairs on the central Bromine atom in BrF5?",
+                "correctValue": 1,
+                "explanation": "Bromine has 7 valence electrons. 5 are shared in Br-F single bonds, leaving 2 non-bonding valence electrons (1 lone pair, AX5E, Square Pyramidal)."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the equatorial F-P-F bond angle (in degrees) in PCl5?",
+                "correctValue": 120,
+                "explanation": "The three equatorial chlorine atoms in PCl5 lie in a flat plane with 120° bond angles between them."
+              },
+              {
+                "type": "input-value",
+                "question": "In a seesaw SF4 molecule, how many fluorine atoms occupy the axial positions?",
+                "correctValue": 2,
+                "explanation": "In SF4 (AX4E), 1 lone pair and 2 fluorine atoms occupy equatorial positions, while the remaining 2 fluorine atoms occupy the axial positions."
+              }
+            ],
+            "advanced": [
+              {
+                "type": "single-correct",
+                "question": "Which of the following molecules has a distorted octahedral geometry with a stereochemically active lone pair?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "SF6"
+                  },
+                  {
+                    "id": "B",
+                    "label": "XeF6"
+                  },
+                  {
+                    "id": "C",
+                    "label": "XeF4"
+                  },
+                  {
+                    "id": "D",
+                    "label": "IF7"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "XeF6 has 6 bonding pairs and 1 lone pair (SN = 7, AX6E). In the gas phase, the lone pair protrudes through a triangular face, resulting in a fluxional distorted octahedral geometry."
+              },
+              {
+                "type": "single-correct",
+                "question": "The compound IF7 (Iodine Heptafluoride) adopts which molecular geometry?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Pentagonal Bipyramidal"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Octahedral"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Capped Octahedral"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Square Antiprismatic"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "IF7 has 7 bonding pairs and 0 lone pairs (SN = 7, sp³d³). Its geometry is Pentagonal Bipyramidal with 72° equatorial and 90° axial bond angles."
+              },
+              {
+                "type": "single-correct",
+                "question": "Why is the bond angle in H2S (92°) significantly smaller than in H2O (104.5°)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Sulfur uses pure p-orbitals for bonding with little hybridization (Drago's rule)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Sulfur is more electronegative than Oxygen"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Sulfur has 3 lone pairs"
+                  },
+                  {
+                    "id": "D",
+                    "label": "H2S is ionic"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "According to Drago's Rule, when central atoms of period 3 or below are bonded to less electronegative atoms (like H), hybridization does not occur significantly. Bonding occurs through nearly pure p-orbitals (~90°)."
+              },
+              {
+                "type": "single-correct",
+                "question": "In the molecule IOF5, what is the hybridization and molecular geometry around Iodine?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "sp3d2, Octahedral"
+                  },
+                  {
+                    "id": "B",
+                    "label": "sp3d3, Pentagonal Bipyramidal"
+                  },
+                  {
+                    "id": "C",
+                    "label": "sp3d, Trigonal Bipyramidal"
+                  },
+                  {
+                    "id": "D",
+                    "label": "sp3, Tetrahedral"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "Iodine in IOF5 forms 1 double bond to Oxygen (1 sigma + 1 pi) and 5 single bonds to Fluorines with 0 lone pairs. SN = 6 (sp³d²), giving an octahedral (or slightly distorted octahedral) shape."
+              },
+              {
+                "type": "single-correct",
+                "question": "What is the structure of the dimer Al2Cl6 in vapor phase?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Two edge-sharing tetrahedral units"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Two planar units"
+                  },
+                  {
+                    "id": "C",
+                    "label": "A linear chain"
+                  },
+                  {
+                    "id": "D",
+                    "label": "An octahedral complex"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "In Al2Cl6, each Aluminum completes its octet by accepting a coordinate bond from a bridging Chlorine atom, resulting in two edge-sharing tetrahedra with sp³ hybridization."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following species are isostructural (have the exact same molecular geometry)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "XeF2 and I3⁻"
+                  },
+                  {
+                    "id": "B",
+                    "label": "NH4⁺ and CH4"
+                  },
+                  {
+                    "id": "C",
+                    "label": "CO3²⁻ and NO3⁻"
+                  },
+                  {
+                    "id": "D",
+                    "label": "SO4²⁻ and SF4"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "XeF2 & I3⁻ are linear (AX2E3). NH4⁺ & CH4 are tetrahedral (AX4). CO3²⁻ & NO3⁻ are trigonal planar (AX3). SO4²⁻ is tetrahedral while SF4 is seesaw."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following have dipole moments equal to zero?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "trans-1,2-dichloroethene"
+                  },
+                  {
+                    "id": "B",
+                    "label": "PCl3F2 (Fluorines in axial positions)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "XeF4"
+                  },
+                  {
+                    "id": "D",
+                    "label": "SF4"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "trans-1,2-dichloroethene, axial-PCl3F2, and square planar XeF4 all possess inversion symmetry where opposing bond dipoles cancel out completely. SF4 is seesaw and polar."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "For the Berry Pseudorotation mechanism in TBP molecules like Fe(CO)5 or PF5:",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Two axial and two equatorial ligands exchange positions simultaneously"
+                  },
+                  {
+                    "id": "B",
+                    "label": "The transition state has a square pyramidal geometry"
+                  },
+                  {
+                    "id": "C",
+                    "label": "It explains why all 5 fluorines in PF5 appear equivalent in 19F-NMR at room temperature"
+                  },
+                  {
+                    "id": "D",
+                    "label": "It requires complete bond dissociation"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "Berry pseudorotation is an intramolecular non-dissociative pathway where two axial and two equatorial ligands swap via a square pyramidal transition state, making all F atoms in PF5 NMR-equivalent on the NMR timescale."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "According to VSEPR and Molecular Orbital theory, which molecules have odd electrons (free radicals)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "NO2 (Nitrogen dioxide)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "ClO2 (Chlorine dioxide)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "NO (Nitric oxide)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "N2O (Nitrous oxide)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "NO2 (5+12=17 valence e⁻), ClO2 (7+12=19 valence e⁻), and NO (5+6=11 valence e⁻) are paramagnetic odd-electron radicals. N2O (16 valence e⁻) has all paired electrons."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which statements are correct regarding the bond angles in OF2 vs OCl2 vs H2O?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Bond angle: OCl2 (110.9°) > H2O (104.5°) > OF2 (103.2°)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "In OF2, highly electronegative F pulls bonding electrons away from Oxygen, reducing BP-BP repulsion"
+                  },
+                  {
+                    "id": "C",
+                    "label": "In OCl2, bulky Cl atoms experience strong steric and LP-LP repulsion widening the angle"
+                  },
+                  {
+                    "id": "D",
+                    "label": "OF2 has a larger bond angle than H2O"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "Because F is more electronegative than O, bonding pairs in OF2 are shifted toward F, reducing repulsion near Oxygen and shrinking the angle to 103.2°. In OCl2, big chlorine atoms clash sterically and expand the angle to ~110.9°."
+              },
+              {
+                "type": "input-value",
+                "question": "In Iodine Heptafluoride (IF7), what is the equatorial F-I-F bond angle in degrees?",
+                "correctValue": 72,
+                "explanation": "The 5 equatorial fluorine atoms in the pentagonal plane divide 360° into 5 equal segments: 360° / 5 = 72°."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the formal charge on the central Xenon atom in the Xenate ion [XeO6]⁴⁻ (assume single bonds to all Oxygens)?",
+                "correctValue": 2,
+                "explanation": "Formal charge = Valence electrons (8) - Nonbonding electrons (0) - 1/2(Bonding electrons, 12) = 8 - 6 = +2."
+              },
+              {
+                "type": "input-value",
+                "question": "How many total valence electrons are involved in the skeleton of the hydronium ion (H3O⁺)?",
+                "correctValue": 8,
+                "explanation": "H3O⁺ has 3(1) + 6 - 1 = 8 valence electrons (forming 3 single bonds and 1 lone pair, tetrahedral electron geometry, trigonal pyramidal shape)."
+              },
+              {
+                "type": "input-value",
+                "question": "In the molecule SF6, how many total 180° (trans) F-S-F bond angle pairs exist?",
+                "correctValue": 3,
+                "explanation": "In an octahedral SF6 molecule, there are 3 mutually perpendicular collinear axes (x, y, z), each containing one 180° trans F-S-F pair. Total = 3."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the oxidation state of Sulfur in Sulfur Tetrafluoride (SF4)?",
+                "correctValue": 4,
+                "explanation": "Each Fluorine is -1. S + 4(-1) = 0 => S = +4."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "2",
+          "topicName": "Hybridization & Orbital Overlap",
+          "keyFormulas": [
+            {
+              "formula": "% s-character = (Number of s orbitals / Total hybrid orbitals) × 100",
+              "label": "s-Character %"
+            },
+            {
+              "formula": "Electronegativity & Bond Strength ∝ s-character (sp > sp² > sp³)",
+              "label": "s-Character Effect"
+            },
+            {
+              "formula": "Single Bond = 1σ | Double Bond = 1σ + 1π | Triple Bond = 1σ + 2π",
+              "label": "Covalent Overlap Rules"
+            }
+          ],
+          "theory": {
+            "basics": "## Easy Tier: Atomic Orbitals — s, p, and d Shapes\n\nBefore learning about chemical bonding and hybridization, it is essential to understand **atomic orbitals**. An orbital is a 3D region around the atomic nucleus where there is a high probability of finding an electron.\n\nThink of an orbital as an **electron cloud** rather than a fixed track or rigid container. Electrons do not travel in simple circular orbits; instead, they occupy these 3D probability regions.\n\nThe three key types of atomic orbitals are **s, p, and d orbitals**.\n\n### 1. The s Orbital — Spherical Shape\n- **Shape:** Spherical cloud (looks like a ball evenly centered around the nucleus).\n- **Directionality:** Non-directional — electron density is spread out equally in all 3D directions with 0 angular nodes.\n- **Capacity:** Each s subshell contains **only 1 orbital**, which holds a maximum of **2 electrons** (↑↓).\n- **1s, 2s, and 3s:** The principal quantum number indicates energy level and size. $1s$ is the smallest, $2s$ is larger, and $3s$ is even larger, but all share the same spherical shape.\n- **Remember:** **s = Spherical & Single (1 orbital → 2 electrons)**.\n\n### 2. The p Orbital — Dumbbell Shape\n- **Shape:** Two-lobed **dumbbell shape** (like two balloons joined at the nucleus with a central nodal plane).\n- **Three p Orbitals:** A p subshell contains **3 degenerate orbitals** pointing along the 3 perpendicular spatial axes ($x, y, z$):\n  - **pₓ:** Aligned along the X-axis.\n  - **pᵧ:** Aligned along the Y-axis.\n  - **p𝓏:** Aligned along the Z-axis.\n- **Capacity:** Each p orbital holds 2 electrons $\\\\implies 3 \\times 2 =$ **maximum 6 electrons** per p subshell.\n- **Remember:** **p = Perpendicular dumbbells (3 orbitals → 6 electrons)**.\n\n### 3. The d Orbital — Four-Leaf Clover & Torus Shapes\n- **Shape:** More complex geometry; 4 of the orbitals have a **four-leaf clover** appearance (4 lobes) and 1 has a unique **dumbbell with a doughnut ring (torus)**.\n- **Five d Orbitals:** A d subshell contains **5 degenerate orbitals**:\n  - **dₓᵧ, dₓ𝓏, dᵧ𝓏:** Four lobes lying between the coordinate axes.\n  - **dₓ²₋ᵧ²:** Four lobes directed straight along the X and Y axes.\n  - **d𝓏²:** Two lobes along the Z-axis surrounded by a doughnut ring (torus) in the XY plane.\n- **Capacity:** 5 d orbitals $\\times 2$ electrons = **maximum 10 electrons** per d subshell.\n- **Remember:** **d = Double-dumbbell / 4-leaf clover (5 orbitals → 10 electrons)**.\n\n### 4. Comparing s, p, and d Orbitals\n- **s Orbital:** Spherical | 1 orbital | Max 2 electrons | Non-directional.\n- **p Orbital:** Dumbbell (two lobes) | 3 orbitals ($p_x, p_y, p_z$) | Max 6 electrons | Mutually perpendicular along axes.\n- **d Orbital:** Four-lobed & Torus | 5 orbitals ($d_{xy}, d_{xz}, d_{yz}, d_{x^2-y^2}, d_{z^2}$) | Max 10 electrons | Multi-directional in 3D space.\n\n### 5. Orbitals are Probability Clouds, Not Physical Boxes\n- An orbital is **not a solid container**—the boundary represents where an electron is $\\\\ge 90\\\\%$ likely to be found.\n- Understanding these pure 3D cloud shapes (s, p, d) is the vital foundation before exploring how orbitals overlap (sigma $\\\\sigma$ / pi $\\\\pi$) and mix to form hybrid orbitals ($sp, sp^2, sp^3$).\n\n### 6. Quick Memory Pattern\n- **🟢 s → 1 orbital → 2 electrons**\n- **🔵 p → 3 orbitals → 6 electrons**\n- **🟣 d → 5 orbitals → 10 electrons**\n\n---\n\n## Medium Tier: Hybridization — Understanding s, sp, sp², sp³, sp³d, and sp³d²\n\nNow that we understand **s, p, and d atomic orbitals**, the next step is to understand **hybridization**.\n\nThe easiest way to picture hybridization is to imagine that atomic orbitals on the same central atom **mix together** to create a brand new set of equivalent orbitals that are optimally shaped and oriented in 3D space for forming strong chemical bonds.\n\n> **Hybridization = The mixing of atomic orbitals (s, p, d) on a central atom to form new hybrid orbitals with specific shapes and 3D directional vectors.**\n\n### 1. Why Does Hybridization Happen?\n- **Energy Equalization:** Pure unmixed s, p, and d orbitals have different shapes and energy levels. Mixing them creates equalized, degenerate hybrid orbitals.\n- **Minimal Electron Repulsion:** Pure p orbitals are fixed at 90°. Hybrid orbitals spread out in 3D space (180°, 120°, 109.5°) to maximize distance and minimize mutual electron repulsion.\n- **Stronger Covalent Overlap:** Hybrid orbitals possess an asymmetrical shape (one large directional front lobe and a tiny tail), concentrating electron density forward for much stronger coaxial sigma (σ) bonds.\n\n### 2. s State — Pure Single Orbital Reference\n- **Composition:** $1s$ orbital (no mixing with p or d orbitals).\n- **Geometry:** Non-directional spherical cloud with 100% s-character.\n- **Result:** $1s \\to$ **1 spherical orbital (holds max 2 electrons)**.\n\n### 3. sp Hybridization — Linear (180°)\n- **Orbitals Mixed:** $1s + 1p \\\\implies$ **2 equivalent sp hybrid orbitals**.\n- **Arrangement:** **Linear (180°)** pointing in opposite directions along a straight line.\n- **s-Character:** 50% s, 50% p character.\n- **Remaining:** 2 unhybridized p orbitals ($p_y, p_z$) remain perpendicular to form up to 2 pi (π) bonds.\n- **Rule:** **sp → 2 hybrid orbitals → Linear → 180°**.\n\n### 4. sp² Hybridization — Trigonal Planar (120°)\n- **Orbitals Mixed:** $1s + 2p \\\\implies$ **3 equivalent sp² hybrid orbitals**.\n- **Arrangement:** **Trigonal Planar (120°)** lying flat in the same 2D plane.\n- **s-Character:** 33.3% s, 66.7% p character.\n- **Remaining:** 1 unhybridized p orbital ($p_z$) perpendicular to the plane for 1 pi (π) bond.\n- **Rule:** **sp² → 3 hybrid orbitals → Trigonal Planar → 120°**.\n\n### 5. sp³ Hybridization — Tetrahedral (109.5°)\n- **Orbitals Mixed:** $1s + 3p \\\\implies$ **4 equivalent sp³ hybrid orbitals**.\n- **Arrangement:** **Tetrahedral (109.5°)** spreading symmetrically into full 3D space.\n- **s-Character:** 25% s, 75% p character.\n- **Remaining:** 0 unhybridized p orbitals (all 4 valence pairs form σ bonds or lone pairs).\n- **Rule:** **sp³ → 4 hybrid orbitals → Tetrahedral → 109.5°**.\n\n### 6. sp³d Hybridization — Trigonal Bipyramidal (90°, 120°)\n- **Orbitals Mixed:** $1s + 3p + 1d \\\\implies$ **5 equivalent sp³d hybrid orbitals**.\n- **Arrangement:** **Trigonal Bipyramidal (TBP)**:\n  - 3 equatorial hybrid orbitals spreading around the middle in a flat 120° plane ($sp^2$ component).\n  - 2 axial hybrid orbitals pointing vertically up and down at 90° / 180° ($pd$ component).\n- **Rule:** **sp³d → 5 hybrid orbitals → Trigonal Bipyramidal → 120° equatorial / 90° axial**.\n\n### 7. sp³d² Hybridization — Octahedral (90°)\n- **Orbitals Mixed:** $1s + 3p + 2d \\\\implies$ **6 equivalent sp³d² hybrid orbitals**.\n- **Arrangement:** **Octahedral (90°)** pointing along Cartesian coordinate axes ($x, y, z$).\n- **Rule:** **sp³d² → 6 hybrid orbitals → Octahedral → 90°**.\n\n### 8. Complete Hybridization Comparison Table\n- **s:** 1 orbital mixed → 1 spherical cloud (non-directional).\n- **sp:** 2 orbitals ($1s + 1p$) → 2 hybrid orbitals → Linear (180°).\n- **sp²:** 3 orbitals ($1s + 2p$) → 3 hybrid orbitals → Trigonal Planar (120°).\n- **sp³:** 4 orbitals ($1s + 3p$) → 4 hybrid orbitals → Tetrahedral (109.5°).\n- **sp³d:** 5 orbitals ($1s + 3p + 1d$) → 5 hybrid orbitals → Trigonal Bipyramidal (120° equatorial, 90° axial).\n- **sp³d²:** 6 orbitals ($1s + 3p + 2d$) → 6 hybrid orbitals → Octahedral (90°).\n\n### 9. Step-by-Step 3D Visualization Workflow\n- **Step 1 — Choose the base orbitals:** Select atomic orbitals ($s, p, d$) on the central atom.\n- **Step 2 — Mix them mathematically:** Combine orbital wavefunctions to equalize energy and shape.\n- **Step 3 — New hybrid orbitals appear:** Produce equivalent directional hybrid lobes with strong forward overlap.\n- **Step 4 — Maximize angular separation in 3D:** Orient lobes as far apart as possible to minimize electron repulsion.\n\n### 10. Quick Memory Box\n- **s → 1 orbital (Sphere)**\n- **sp → 2 orbitals → Linear (180°)**\n- **sp² → 3 orbitals → Trigonal Planar (120°)**\n- **sp³ → 4 orbitals → Tetrahedral (109.5°)**\n- **sp³d → 5 orbitals → Trigonal Bipyramidal (120° / 90°)**\n- **sp³d² → 6 orbitals → Octahedral (90°)**\n\n---\n\n## Advanced Tier: Understanding Hybridization Through Real Molecules\n\nNow that we know **s, p, sp, sp², sp³, and sp³d hybridizations**, let's apply them to understand real chemical molecules. The most intuitive way to analyze molecular structures is to identify the **central atom**, determine the orbitals participating in hybridization, and visualize how the resulting hybrid lobes orient in 3D space to form bonds.\n\n### 1. BeCl₂ — sp Linear Molecule (180°)\n- **Central Atom:** Beryllium (Be) is surrounded by 2 chlorine atoms in a straight line (Cl—Be—Cl).\n- **Hybridization:** Be mixes $1s + 1p \\\\implies$ **2 equivalent sp hybrid orbitals** (50% s-character).\n- **3D Arrangement:** The 2 sp hybrid lobes point in **opposite directions at 180°**.\n- **Bonding:** Each sp lobe forms a coaxial **σ bond** with a chlorine orbital, leaving 2 unhybridized perpendicular p orbitals vacant.\n- **Geometry & Angle:** **Linear, 180°** with zero net dipole moment.\n- **Rule:** **BeCl₂ → sp → 2 hybrid orbitals → Linear → 180°**.\n\n### 2. BF₃ — sp² Trigonal Planar Molecule (120°)\n- **Central Atom:** Boron (B) is surrounded by 3 fluorine atoms in a flat plane.\n- **Hybridization:** B mixes $1s + 2p \\\\implies$ **3 equivalent sp² hybrid orbitals** (33.3% s-character).\n- **3D Arrangement:** The 3 sp² hybrid lobes spread out symmetrically in the same 2D plane separated by **120°**.\n- **Bonding:** Each sp² orbital forms a strong **σ bond** with a fluorine 2p orbital, leaving 1 unhybridized 2p𝓏 orbital vacant above/below the plane (Lewis acid site).\n- **Geometry & Angle:** **Trigonal Planar, 120°**.\n- **Rule:** **BF₃ → sp² → 3 hybrid orbitals → Trigonal Planar → 120°**.\n\n### 3. CH₄ — sp³ Tetrahedral Molecule (109.5°)\n- **Central Atom:** Carbon (C) is surrounded by 4 hydrogen atoms in 3D space.\n- **Hybridization:** C mixes $1s + 3p \\\\implies$ **4 equivalent sp³ hybrid orbitals** (25% s-character).\n- **3D Arrangement:** The 4 sp³ hybrid lobes spread away from carbon toward the 4 vertices of a regular 3D tetrahedron.\n- **Bonding:** Each sp³ hybrid lobe overlaps coaxially with a Hydrogen 1s orbital to form 4 identical **C–H σ bonds**.\n- **Geometry & Angle:** **Tetrahedral, 109.5°**.\n- **Rule:** **CH₄ → sp³ → 4 hybrid orbitals → Tetrahedral → 109.5°**.\n\n### 4. PCl₅ — sp³d Trigonal Bipyramidal Molecule (120° / 90°)\n- **Central Atom:** Phosphorus (P) is bonded to 5 chlorine atoms.\n- **Hybridization:** P mixes $1s + 3p + 1d \\\\implies$ **5 equivalent sp³d hybrid orbitals** (20% s-character).\n- **3D Arrangement:** **Trigonal Bipyramidal (TBP)** framework:\n  - **3 Equatorial Sites:** Spread in a flat middle plane at **120°** ($sp^2$ component).\n  - **2 Axial Sites:** Point vertically up and down at **90°** to equatorial and **180°** to each other ($pd$ component).\n- **Bonding:** Axial P–Cl bonds experience greater 90° repulsions, making them longer and weaker than equatorial bonds.\n- **Geometry & Angle:** **Trigonal Bipyramidal, 120° equatorial / 90° axial**.\n- **Rule:** **PCl₅ → sp³d → 5 hybrid orbitals → Trigonal Bipyramidal**.\n\n### 5. SF₄ — sp³d Seesaw Molecule (4 Bonds + 1 Lone Pair)\n- **Central Atom:** Sulfur (S) has 6 valence electrons; it forms 4 single S–F bonds and retains **1 non-bonding lone pair**.\n- **Electron Domains:** 4 bonding pairs + 1 lone pair = **Steric Number 5** $\\\\implies$ **sp³d hybridization**.\n- **Lone Pair Positioning:** The lone pair preferentially occupies an **equatorial position** in the TBP framework to minimize 90° LP-BP repulsions (experiencing two 90° interactions instead of three).\n- **Molecular Shape vs Electron Geometry:** While the electron-domain arrangement is Trigonal Bipyramidal, the observable atomic geometry is a **Seesaw shape** (compressed axial angles ~87°).\n- **Rule:** **SF₄ → sp³d → 5 domains (4 bonds + 1 lone pair) → Seesaw shape**.\n\n### 6. Master Molecule Comparison Matrix\n- **BeCl₂:** Be | 1s + 1p | **sp** | 2 domains | Linear electron geometry | **Linear molecular shape** (180°).\n- **BF₃:** B | 1s + 2p | **sp²** | 3 domains | Trigonal planar electron geometry | **Trigonal planar molecular shape** (120°).\n- **CH₄:** C | 1s + 3p | **sp³** | 4 domains | Tetrahedral electron geometry | **Tetrahedral molecular shape** (109.5°).\n- **PCl₅:** P | 1s + 3p + 1d | **sp³d** | 5 domains (5 bonds) | TBP electron geometry | **Trigonal bipyramidal shape** (120° / 90°).\n- **SF₄:** S | 1s + 3p + 1d | **sp³d** | 5 domains (4 bonds + 1 LP) | TBP electron geometry | **Seesaw shape** (distorted ~87°, ~118°).\n\n### 7. The Electron-Domain Pattern & Lone Pair Effect\n- Count the total electron domains (Bonded Atoms + Lone Pairs on Central Atom):\n  - **2 Domains → sp → Linear (180°)**\n  - **3 Domains → sp² → Trigonal Planar (120°)**\n  - **4 Domains → sp³ → Tetrahedral (109.5°)**\n  - **5 Domains → sp³d → Trigonal Bipyramidal framework (TBP / Seesaw / T-shaped / Linear)**\n- **Key Takeaway:** Hybridization defines the 3D framework of electron domains; lone pair occupancy determines the final observable molecular shape.",
+            "fullConcept": "## Easy Tier: Atomic Orbitals & 3D Wavefunction Probability Clouds\n\nIn quantum mechanics and Valence Bond Theory, atomic orbitals represent three-dimensional solutions to Schrödinger's wave equation $\\\\psi(r, \\theta, \\\\phi)$. An orbital defines the spatial volume in which the electron probability density $|\\\\psi|^2$ exceeds 90%.\n\nUnderstanding atomic orbitals is the essential foundation for covalent bonding, hybridization, and molecular geometry.\n\n### 1. The s Orbital — Spherical Cloud & Radial Distribution\n- **Quantum State:** Defined by azimuthal quantum number $l=0$ and magnetic quantum number $m_l=0$.\n- **3D Geometry:** Non-directional spherical probability distribution centered symmetrically around the nucleus.\n- **Node Characteristics:** Pure s orbitals have 0 angular nodes. Radial nodes occur at $(n - l - 1) = (n - 1)$.\n- **Electron Capacity:** Contains 1 orbital per principal energy level $n$, accommodating a maximum of **2 electrons** with anti-parallel spins (↑↓).\n- **1s, 2s, and 3s:** The principal quantum number indicates energy level and size ($1s < 2s < 3s$), all sharing the same spherical shape.\n- **Key Principle:** **s Orbital = Spherical & Non-directional (1 orbital → max 2 electrons)**.\n\n### 2. The p Orbitals — Dumbbell Lobes & Directional Spatial Symmetry\n- **Quantum State:** Defined by azimuthal quantum number $l=1$ and magnetic quantum numbers $m_l = -1, 0, +1$.\n- **3D Geometry:** Two opposing symmetrical lobes separated by a planar nodal plane passing through the nucleus where $\\\\psi = 0$.\n- **Three Degenerate Orbitals:** Oriented orthogonally along the three Cartesian coordinate axes:\n  - **pₓ Orbital:** Lobes oriented along the X-axis (nodal plane = YZ).\n  - **pᵧ Orbital:** Lobes oriented along the Y-axis (nodal plane = XZ).\n  - **p𝓏 Orbital:** Lobes oriented along the Z-axis (nodal plane = XY).\n- **Electron Capacity:** 3 degenerate orbitals $\\times 2$ electrons = **maximum 6 electrons** per p subshell.\n- **Key Principle:** **p Orbitals = Mutually perpendicular dumbbells (3 orbitals → max 6 electrons)**.\n\n### 3. The d Orbitals — Cloverleaf & Torus Orientations\n- **Quantum State:** Defined by azimuthal quantum number $l=2$ and magnetic quantum numbers $m_l = -2, -1, 0, +1, +2$.\n- **3D Geometry:** 4 orbitals possess four-lobed **cloverleaf geometries** with 2 planar nodal surfaces; 1 orbital possesses a unique **axial dumbbell surrounded by a toroidal electron ring**.\n- **Five Degenerate Orbitals:**\n  - **dₓᵧ, dₓ𝓏, dᵧ𝓏:** Four lobes lying between the coordinate axes.\n  - **dₓ²₋ᵧ²:** Four lobes directed straight along the X and Y axes.\n  - **d𝓏²:** Two lobes along the Z-axis surrounded by a doughnut ring (torus) in the XY plane.\n- **Electron Capacity:** 5 degenerate orbitals $\\times 2$ electrons = **maximum 10 electrons** per d subshell.\n- **Key Principle:** **d Orbitals = 4 cloverleaf + 1 torus dumbbell (5 orbitals → max 10 electrons)**.\n\n### 4. Wavefunctions (ψ), Boundary Surfaces & Radial Probability\n- The physical boundary of an orbital represents an isodensity surface enclosing $\\\\ge 90\\\\%$ of total electron probability.\n- Pure s, p, and d orbitals form the pure baseline basis set before linear combination (LCAO) into hybrid orbitals ($sp, sp^2, sp^3, sp^3d, sp^3d^2$).\n\n### 5. Summary Matrix of Pure Atomic Orbitals\n- **🟢 s Orbital:** $l=0$ | 1 spatial orientation | 0 angular nodes | Max 2 electrons | Spherical symmetry.\n- **🔵 p Orbitals:** $l=1$ | 3 spatial orientations ($p_x, p_y, p_z$) | 1 angular nodal plane | Max 6 electrons | Axial symmetry.\n- **🟣 d Orbitals:** $l=2$ | 5 spatial orientations ($d_{xy}, d_{xz}, d_{yz}, d_{x^2-y^2}, d_{z^2}$) | 2 nodal surfaces | Max 10 electrons | Complex cloverleaf / torus.\n\n---\n\n## Medium Tier: Linear Combination of Atomic Orbitals (LCAO) & Hybridization Frameworks\n\nHybridization is the mathematical superposition (mixing) of non-equivalent atomic wavefunctions on the same atom to create an orthogonal set of equivalent hybrid wavefunctions:\n\n$$\\\\psi_{\\text{hybrid}} = c_1 \\\\psi_s + c_2 \\\\psi_{p_x} + c_3 \\\\psi_{p_y} + c_4 \\\\psi_{p_z} + c_5 \\\\psi_d$$\n\nHybrid orbitals exhibit enhanced directional overlap along bonding axes, maximizing bond strength while minimizing inter-electronic electrostatic repulsion.\n\n### 1. Energetics & Driving Force of Hybridization\n- **Isovalent Hybridization:** Atomic orbital mixing requires initial promotion energy, which is vastly offset by the formation of stronger, shorter directional covalent $\\\\sigma$ bonds.\n- **VSEPR Geometric Optimization:** Hybrid orbitals spread symmetrically in 3D space to maximize inter-orbital angles and minimize valence electron repulsion.\n- **Directional Overlap Advantage:** Each hybrid lobe features a concentrated front lobe with high amplitude $\\\\psi$, yielding far greater overlap integrals than pure s or p orbitals.\n\n### 2. s State — Pure Single Orbital Reference\n- **Orbital Composition:** Pure $1s$ wavefunction without mixing (100% s-character).\n- **3D Geometry:** Non-directional spherical probability distribution.\n- **Properties:** High nuclear attraction, spherical node-free density, maximum 2 electrons.\n\n### 3. sp Hybridization — Linear Framework (180°)\n- **Wavefunctions Mixed:** $1s + 1p_x \\\\implies$ **2 equivalent sp hybrid orbitals** ($\\\\psi_1 = \\frac{1}{\\\\sqrt{2}}(s + p_x)$, $\\\\psi_2 = \\frac{1}{\\\\sqrt{2}}(s - p_x)$).\n- **Geometric Configuration:** **Linear (180°)** oriented along the internuclear axis.\n- **s-Character & Overlap:** 50% s, 50% p character (highest electronegativity and shortest bond length among sp-hybrids).\n- **Remaining Orbitals:** 2 unhybridized orthogonal p-orbitals ($p_y, p_z$) available to form 2 lateral $\\\\pi$ bonds.\n- **Rule:** **sp → 2 hybrid orbitals → Linear → 180°**.\n\n### 4. sp² Hybridization — Trigonal Planar Framework (120°)\n- **Wavefunctions Mixed:** $1s + 1p_x + 1p_y \\\\implies$ **3 equivalent sp² hybrid orbitals**.\n- **Geometric Configuration:** **Trigonal Planar (120°)** lying coplanar in the XY plane.\n- **s-Character & Overlap:** 33.3% s, 66.7% p character.\n- **Remaining Orbitals:** 1 unhybridized perpendicular p-orbital ($p_z$) available for 1 lateral $\\\\pi$ bond.\n- **Rule:** **sp² → 3 hybrid orbitals → Trigonal Planar → 120°**.\n\n### 5. sp³ Hybridization — Tetrahedral Framework (109.5°)\n- **Wavefunctions Mixed:** $1s + 1p_x + 1p_y + 1p_z \\\\implies$ **4 equivalent sp³ hybrid orbitals**.\n- **Geometric Configuration:** **Tetrahedral (109.5°)** extending to the vertices of a regular tetrahedron in 3D space.\n- **s-Character & Overlap:** 25% s, 75% p character.\n- **Remaining Orbitals:** 0 unhybridized p-orbitals (all 4 valence electron pairs form $\\\\sigma$ bonds or occupy lone pairs).\n- **Rule:** **sp³ → 4 hybrid orbitals → Tetrahedral → 109.5°**.\n\n### 6. sp³d Hybridization — Trigonal Bipyramidal Framework (120° / 90°)\n- **Wavefunctions Mixed:** $1s + 3p + 1d_{z^2} \\\\implies$ **5 equivalent sp³d hybrid orbitals**.\n- **Geometric Configuration:** **Trigonal Bipyramidal (TBP)** with two distinct non-equivalent sets:\n  - **3 Equatorial Lobes:** Formed by $s + p_x + p_y$ mixing, separated by **120°** in the horizontal plane.\n  - **2 Axial Lobes:** Formed by $p_z + d_{z^2}$ mixing, oriented vertically at **90°** to the equatorial plane and **180°** to each other.\n- **Rule:** **sp³d → 5 hybrid orbitals → Trigonal Bipyramidal → 120° equatorial / 90° axial**.\n\n### 7. sp³d² Hybridization — Octahedral Framework (90°)\n- **Wavefunctions Mixed:** $1s + 3p + 2d$ ($d_{x^2-y^2}, d_{z^2}$) $\\implies$ **6 equivalent sp³d² hybrid orbitals**.\n- **Geometric Configuration:** **Octahedral (90°)** directed along the Cartesian coordinate axes ($x, y, z$).\n- **s-Character & Symmetry:** 16.7% s-character, highly symmetrical with 12 identical 90° angles and 3 collinear 180° axes.\n- **Rule:** **sp³d² → 6 hybrid orbitals → Octahedral → 90°**.\n\n### 8. Electronegativity, Bond Energy & % s-Character Correlation\n- **Electronegativity Order:** $\\text{sp (50\\\\% s)} > \\text{sp}^2 \\text{ (33.3\\\\% s)} > \\text{sp}^3 \\text{ (25\\\\% s)}$.\n- **Bond Length & Strength:** Higher % s-character brings electron density closer to the nucleus $\\\\implies$ shorter bond length and higher bond dissociation energy.\n\n---\n\n## Advanced Tier: 3D Molecular Geometries & Steric Number Frameworks\n\nApplying hybridization and Valence Shell Electron Pair Repulsion (VSEPR) theory allows precise prediction of 3D molecular geometries, bond angles, and lone-pair stereochemical activity based on the **Steric Number** ($SN = \\text{Bonded Atoms} + \\text{Lone Pairs}$):\n\n### 1. BeCl₂ — sp Linear Molecule (180° Coaxial Overlap)\n- **Central Atom:** Beryllium ($1s^2 2s^2 \\to 1s^2 2s^1 2p_x^1$) with Steric Number 2 (2 $\\\\sigma$ bonds, 0 lone pairs).\n- **Hybridization:** $1s + 1p \\\\implies$ **2 equivalent sp hybrid orbitals** oriented at **180°**.\n- **Bonding Overlap:** Head-on coaxial overlap of $\\text{Be}(sp)$ with $\\text{Cl}(3p_z)$ forms 2 strong $\\\\sigma$ bonds. 2 perpendicular $2p_y, 2p_z$ orbitals remain empty.\n- **Symmetry & Dipole:** Collinear structure gives **Linear geometry (180°)** with exactly cancelling bond moments ($\\\\mu = 0$).\n- **Rule:** **BeCl₂ → sp → 2 domains → Linear shape (180°)**.\n\n### 2. BF₃ — sp² Trigonal Planar Molecule (120° Planar Overlap)\n- **Central Atom:** Boron ($1s^2 2s^2 2p^1 \\to 1s^2 2s^1 2p_x^1 2p_y^1$) with Steric Number 3 (3 $\\\\sigma$ bonds, 0 lone pairs).\n- **Hybridization:** $1s + 2p \\\\implies$ **3 equivalent sp² hybrid orbitals** oriented at **120°** in the XY plane.\n- **Bonding Overlap:** 3 coplanar $\\\\sigma$ bonds formed via $\\text{B}(sp^2) - \\text{F}(2p)$ coaxial overlap. 1 unhybridized $2p_z$ orbital remains vacant perpendicular to the plane (Lewis acid center).\n- **Symmetry & Dipole:** Planar symmetry yields **Trigonal Planar geometry (120°)** and non-polar nature ($\\\\mu = 0$).\n- **Rule:** **BF₃ → sp² → 3 domains → Trigonal Planar shape (120°)**.\n\n### 3. CH₄ — sp³ Tetrahedral Molecule (109.5° Spatial Overlap)\n- **Central Atom:** Carbon ($1s^2 2s^2 2p^2 \\to 1s^2 2s^1 2p_x^1 2p_y^1 2p_z^1$) with Steric Number 4 (4 $\\\\sigma$ bonds, 0 lone pairs).\n- **Hybridization:** $1s + 3p \\\\implies$ **4 equivalent sp³ hybrid orbitals** pointing toward tetrahedral vertices at **109.5°**.\n- **Bonding Overlap:** 4 identical $\\\\sigma$ bonds formed via $\\text{C}(sp^3) - \\text{H}(1s)$ coaxial overlap with zero unhybridized valence orbitals.\n- **Symmetry & Dipole:** Highly symmetrical regular **Tetrahedral geometry (109.5°)** with zero net dipole moment ($\\\\mu = 0$).\n- **Rule:** **CH₄ → sp³ → 4 domains → Tetrahedral shape (109.5°)**.\n\n### 4. PCl₅ — sp³d Trigonal Bipyramidal Molecule (Equatorial vs Axial Dynamics)\n- **Central Atom:** Phosphorus ($[\\text{Ne}] 3s^2 3p^3 3d^0 \\to 3s^1 3p_x^1 3p_y^1 3p_z^1 3d_{z^2}^1$) with Steric Number 5 (5 $\\\\sigma$ bonds, 0 lone pairs).\n- **Hybridization:** $1s + 3p + 1d \\\\implies$ **5 sp³d hybrid orbitals** in a **Trigonal Bipyramidal (TBP)** framework:\n  - **3 Equatorial Bonds:** Separated by **120°** in the horizontal plane (shorter, stronger $sp^2$ character).\n  - **2 Axial Bonds:** Oriented vertically at **90°** to equatorial bonds (longer, weaker $pd$ character due to three 90° repulsions).\n- **Symmetry & Dipole:** Complete symmetry gives **Trigonal Bipyramidal shape (120° / 90°)** with $\\\\mu = 0$.\n- **Rule:** **PCl₅ → sp³d → 5 bonding domains → Trigonal Bipyramidal shape (120° eq / 90° ax)**.\n\n### 5. SF₄ — sp³d Seesaw Molecule (VSEPR & Bent's Rule with Equatorial Lone Pair)\n- **Central Atom:** Sulfur ($[\\text{Ne}] 3s^2 3p^4 3d^0$) with Steric Number 5 (4 $\\\\sigma$ bonds + 1 non-bonding lone pair).\n- **Hybridization:** $1s + 3p + 1d \\\\implies$ **sp³d hybridization** within a TBP electron-pair framework.\n- **Equatorial Lone Pair Preference:** By Bent's Rule and VSEPR theory, the lone pair occupies an **equatorial position** (experiencing only two 90° LP-BP repulsions instead of three if placed axially).\n- **Observable Shape & Angles:** The electron geometry is TBP, but the observable atomic geometry is a **Seesaw shape** with compressed bond angles ($\\\\angle \\text{F}_{\\text{ax}}\\text{-S-F}_{\\text{ax}} \\\\approx 173^\\\\circ$, $\\\\angle \\text{F}_{\\text{eq}}\\text{-S-F}_{\\text{eq}} \\\\approx 102^\\\\circ$).\n- **Rule:** **SF₄ → sp³d → 5 domains (4 bonds + 1 lone pair) → Seesaw shape**.\n\n### 6. Bent's Rule & Stereochemical Lone-Pair Distortions\n- More electronegative substituents prefer hybrid orbitals having **less s-character** (axial positions in $sp^3d$).\n- Lone pairs and electropositive substituents concentrate into hybrid orbitals having **more s-character** (equatorial positions in $sp^3d$).\n\n### 7. Master Steric Number & Valence Bond Classification Matrix\n- **SN = 2 (0 LP):** sp $\\\\implies$ Linear ($180^\\\\circ$) [e.g., $\\text{BeCl}_2$, $\\text{CO}_2$]\n- **SN = 3 (0 LP):** sp² $\\\\implies$ Trigonal Planar ($120^\\\\circ$) [e.g., $\\text{BF}_3$, $\\text{SO}_3$]\n- **SN = 4 (0 LP):** sp³ $\\\\implies$ Tetrahedral ($109.5^\\\\circ$) [e.g., $\\text{CH}_4$, $\\text{CCl}_4$]\n- **SN = 5 (0 LP):** sp³d $\\\\implies$ Trigonal Bipyramidal ($120^\\\\circ / 90^\\\\circ$) [e.g., $\\text{PCl}_5$]\n- **SN = 5 (1 LP):** sp³d $\\\\implies$ Seesaw shape ($\\\\sim 173^\\\\circ / 102^\\\\circ$) [e.g., $\\text{SF}_4$]"
+          },
+          "challenges": {
+            "easy": {
+              "title": "Orbital Lab: Mix & Create",
+              "description": "Combine s, p, and d atomic orbitals step by step in 3D to construct sp, sp², sp³, sp³d, and sp³d² hybrid states."
+            },
+            "medium": {
+              "title": "Orbital Workshop: Connect & Bond",
+              "description": "Drag atoms and orbitals, align them and form sigma (σ) and pi (π) bonds for H₂ and C₂H₄."
+            },
+            "advanced": {
+              "title": "Steric Overlap Analyzer",
+              "description": "Determine the hybridization of carbon atoms in cumulenes, allenes, and benzyne rings."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the hybridization of carbon in ethylene (C2H4)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "sp"
+                  },
+                  {
+                    "id": "B",
+                    "label": "sp2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "sp3"
+                  },
+                  {
+                    "id": "D",
+                    "label": "sp3d"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Each carbon in C2H4 forms 3 sigma bonds (two C-H and one C-C) and 1 pi bond, corresponding to sp² hybridization."
+              },
+              {
+                "type": "single-correct",
+                "question": "What is the hybridization of the central carbon atom in methane (CH4)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "sp"
+                  },
+                  {
+                    "id": "B",
+                    "label": "sp2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "sp3"
+                  },
+                  {
+                    "id": "D",
+                    "label": "sp3d"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Carbon in CH4 forms 4 equivalent single sigma bonds using 4 sp3 hybrid orbitals oriented at 109.5°."
+              },
+              {
+                "type": "single-correct",
+                "question": "Which type of atomic orbital overlap leads to the formation of a pi (π) bond?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Head-on overlap of s-orbitals"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Head-on overlap of p-orbitals"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Lateral (sideways) overlap of parallel p-orbitals"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Overlap of an s-orbital with a p-orbital"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Pi (π) bonds are formed by lateral or sideways overlap of unhybridized parallel p-orbitals perpendicular to the internuclear axis."
+              },
+              {
+                "type": "single-correct",
+                "question": "What is the percentage of s-character in an sp hybrid orbital?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "25%"
+                  },
+                  {
+                    "id": "B",
+                    "label": "33.3%"
+                  },
+                  {
+                    "id": "C",
+                    "label": "50%"
+                  },
+                  {
+                    "id": "D",
+                    "label": "75%"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "An sp hybrid orbital is formed by mixing one s orbital and one p orbital, giving 50% s-character and 50% p-character."
+              },
+              {
+                "type": "single-correct",
+                "question": "How many sigma (σ) and pi (π) bonds are present in a single molecule of HCN (Hydrogen Cyanide, H-C≡N)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "2 σ and 2 π"
+                  },
+                  {
+                    "id": "B",
+                    "label": "3 σ and 1 π"
+                  },
+                  {
+                    "id": "C",
+                    "label": "1 σ and 3 π"
+                  },
+                  {
+                    "id": "D",
+                    "label": "4 σ and 0 π"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "The H-C bond is 1 single σ bond, and the C≡N triple bond consists of 1 σ bond and 2 π bonds. Total = 2 σ and 2 π bonds."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following molecules possess sp-hybridized central atoms?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Acetylene (C2H2)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Carbon Dioxide (CO2)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Beryllium Chloride (BeCl2)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Methane (CH4)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "C2H2, CO2, and BeCl2 all have steric number 2 and linear geometry, using sp hybridization. CH4 uses sp³."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following molecules or ions contain sp3 hybridized central atoms?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "CH4 (Methane)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "NH3 (Ammonia)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "H2O (Water)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "BF3 (Boron Trifluoride)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "CH4 (4 σ bonds), NH3 (3 σ bonds + 1 LP), and H2O (2 σ bonds + 2 LP) all have steric number 4 and use sp3 hybridization on the central atom. BF3 has steric number 3 and uses sp2."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following statements regarding sigma (σ) bonds are correct?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "They are formed by end-to-end (axial) overlap of atomic orbitals"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Free rotation about a single sigma bond is generally permitted"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Electron density is symmetrically distributed along the internuclear axis"
+                  },
+                  {
+                    "id": "D",
+                    "label": "They are weaker than pi bonds formed between the same pair of atoms"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "Sigma bonds result from coaxial head-on overlap, allowing free rotation and concentrating electron density along the internuclear axis. They are stronger than pi bonds due to greater extent of overlap."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following carbon-containing species have sp2 hybridized carbon atoms?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Ethene (C2H4)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Benzene (C6H6)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Carbonate ion (CO3²⁻)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Diamond"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "Ethene, Benzene, and Carbonate ion all feature trigonal planar sp2 hybridized carbons. Diamond consists exclusively of sp3 hybridized carbon atoms."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following hybridizations involve the use of d-orbitals?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "sp3d"
+                  },
+                  {
+                    "id": "B",
+                    "label": "sp3d2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "sp2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "dsp2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "D"
+                ],
+                "explanation": "sp3d (trigonal bipyramidal), sp3d2 (octahedral), and dsp2 (square planar) all incorporate d-orbitals into hybridization. sp2 involves only s and p orbitals."
+              },
+              {
+                "type": "input-value",
+                "question": "How many total pi (π) bonds are present in a molecule of Acetylene (H-C≡C-H)?",
+                "correctValue": 2,
+                "explanation": "A carbon-carbon triple bond consists of 1 sigma bond and 2 mutually perpendicular pi bonds."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the total number of sigma (σ) bonds in a molecule of Methane (CH4)?",
+                "correctValue": 4,
+                "explanation": "Methane contains 4 single C-H covalent bonds, each of which is a sigma bond."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the percentage of p-character in an sp3 hybrid orbital?",
+                "correctValue": 75,
+                "explanation": "sp3 hybrid orbitals consist of 1 s orbital and 3 p orbitals out of 4 total orbitals, giving (3/4)*100 = 75% p-character."
+              },
+              {
+                "type": "input-value",
+                "question": "How many unhybridized p-orbitals remain on each carbon atom in ethylene (C2H4)?",
+                "correctValue": 1,
+                "explanation": "Each carbon in C2H4 undergoes sp2 hybridization using 1 s and 2 p orbitals, leaving 1 unhybridized p-orbital on each carbon to form the C=C pi bond."
+              },
+              {
+                "type": "input-value",
+                "question": "How many total hybrid orbitals are formed when one s orbital and two p orbitals undergo sp² hybridization?",
+                "correctValue": 3,
+                "explanation": "The number of hybrid orbitals produced always equals the number of pure atomic orbitals mixed. 1 s + 2 p = 3 sp² hybrid orbitals."
+              }
+            ],
+            "medium": [
+              {
+                "type": "single-correct",
+                "question": "What is the hybridization of the central carbon in allene (H2C=C=CH2)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "sp3"
+                  },
+                  {
+                    "id": "B",
+                    "label": "sp2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "sp"
+                  },
+                  {
+                    "id": "D",
+                    "label": "dsp2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "The central carbon in allene forms two double bonds (2 sigma bonds + 2 pi bonds, SN = 2), so it is sp hybridized."
+              },
+              {
+                "type": "single-correct",
+                "question": "Which d-orbital is involved in sp3d hybridization of a central atom in a Trigonal Bipyramidal geometry (such as PCl5)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "dx2-y2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "dz2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "dxy"
+                  },
+                  {
+                    "id": "D",
+                    "label": "dyz"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "In trigonal bipyramidal sp3d hybridization, the axial bonds utilize the dz2 orbital along with pz, while sp2 hybridization forms the equatorial bonds."
+              },
+              {
+                "type": "single-correct",
+                "question": "Which d-orbitals are involved in sp3d2 hybridization in an Octahedral geometry (such as SF6)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "dxy and dyz"
+                  },
+                  {
+                    "id": "B",
+                    "label": "dxz and dyz"
+                  },
+                  {
+                    "id": "C",
+                    "label": "dz2 and dx2-y2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "dxy and dx2-y2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Octahedral sp3d2 hybridization uses the eg d-orbitals, namely dz2 and dx2-y2, which point directly along the Cartesian axes where the ligands approach."
+              },
+              {
+                "type": "single-correct",
+                "question": "What is the hybridization state of Nitrogen in the Ammonium ion (NH4+) and Nitrate ion (NO3-) respectively?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "sp3 and sp2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "sp2 and sp3"
+                  },
+                  {
+                    "id": "C",
+                    "label": "sp3 and sp3"
+                  },
+                  {
+                    "id": "D",
+                    "label": "sp2 and sp2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "NH4+ has steric number 4 (4 single bonds, 0 LP) -> sp3. NO3- has steric number 3 (3 sigma bonds, 0 LP) -> sp2."
+              },
+              {
+                "type": "single-correct",
+                "question": "In which of the following molecules are all bond lengths NOT identical due to differing orbital character?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "CH4"
+                  },
+                  {
+                    "id": "B",
+                    "label": "BF3"
+                  },
+                  {
+                    "id": "C",
+                    "label": "PCl5"
+                  },
+                  {
+                    "id": "D",
+                    "label": "SF6"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "In PCl5 (sp3d hybridization, trigonal bipyramidal), axial P-Cl bonds (pd component, 3 axial 90° repulsions) are longer (214 pm) than equatorial P-Cl bonds (sp2 component, 202 pm)."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which factors increase the strength of a covalent bond?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Greater extent of orbital overlap"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Higher s-character in the hybrid orbital"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Smaller atomic radii of bonded atoms"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Longer bond length"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "Greater overlap, smaller atomic radius (shorter bond), and higher s-character (closer to nucleus) result in stronger covalent bonds."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following species have an sp2 hybridized central atom?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "BF3 (Boron trifluoride)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "SO2 (Sulfur dioxide)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "NO3⁻ (Nitrate ion)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "SO3 (Sulfur trioxide)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "explanation": "BF3 (3 bonds, 0 LP), SO2 (2 bonds, 1 LP), NO3⁻ (3 bonds, 0 LP), and SO3 (3 bonds, 0 LP) all have a steric number of 3 and utilize sp2 hybridization."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following molecules contain both sp2 and sp3 hybridized carbon atoms?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Propene (CH3-CH=CH2)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Acetaldehyde (CH3-CHO)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Propanone (CH3-CO-CH3)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Toluene (C6H5-CH3)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "explanation": "All these molecules possess methyl (-CH3) carbons which are sp3 hybridized, alongside carbonyl or alkene/aromatic carbons which are sp2 hybridized."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following statements about hybridization are correct?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Hybrid orbitals form stronger sigma bonds than unhybridized atomic orbitals due to greater directional character"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Only atomic orbitals of similar energy belonging to the same atom undergo hybridization"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Pure unhybridized p-orbitals are responsible for forming pi bonds"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Hybrid orbitals can form both sigma and pi bonds with equal probability"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "Hybrid orbitals form only sigma (σ) bonds or hold lone pairs due to directional head-on alignment. Pi bonds are formed strictly by unhybridized parallel p or d orbitals."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following ions or molecules have sp3d2 hybridization on the central atom?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "SF6"
+                  },
+                  {
+                    "id": "B",
+                    "label": "[FeF6]³⁻"
+                  },
+                  {
+                    "id": "C",
+                    "label": "XeF4"
+                  },
+                  {
+                    "id": "D",
+                    "label": "PCl5"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "SF6 (6 bonds), [FeF6]³⁻ (outer orbital octahedral complex), and XeF4 (4 bonds + 2 LP, SN=6) all use sp3d2 hybridization. PCl5 uses sp3d (SN=5)."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the percentage of s-character in an sp² hybrid orbital?",
+                "correctValue": 33.3,
+                "explanation": "sp² is made of 1 s and 2 p orbitals (1/3 = 33.33% s-character)."
+              },
+              {
+                "type": "input-value",
+                "question": "How many total pi (π) bonds are present in one molecule of Propyne (CH3-C≡CH)?",
+                "correctValue": 2,
+                "explanation": "Propyne contains one carbon-carbon triple bond (1 sigma + 2 pi bonds) and single C-H/C-C bonds. Total pi bonds = 2."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the number of sp3 hybridized carbon atoms in a molecule of Cyclohexane (C6H12)?",
+                "correctValue": 6,
+                "explanation": "In cyclohexane, all 6 ring carbon atoms form 4 single sigma bonds (2 C-C and 2 C-H) and are thus sp3 hybridized."
+              },
+              {
+                "type": "input-value",
+                "question": "How many total sigma (σ) bonds are present in Propene (CH3-CH=CH2)?",
+                "correctValue": 8,
+                "explanation": "C-H bonds = 3 + 1 + 2 = 6 σ bonds. C-C single bond = 1 σ bond. C=C double bond = 1 σ bond + 1 π bond. Total σ bonds = 6 + 1 + 1 = 8."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the steric number of Sulfur in SF4 (Sulfur Tetrafluoride), which determines its hybridization?",
+                "correctValue": 5,
+                "explanation": "Sulfur has 6 valence electrons; in SF4 it forms 4 single bonds and retains 1 lone pair. Steric number = 4 bonds + 1 LP = 5 (sp3d hybridization, Seesaw shape)."
+              }
+            ],
+            "advanced": [
+              {
+                "type": "single-correct",
+                "question": "In the allene molecule (H2C=C=CH2), the planes containing the two terminal CH2 groups are:",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Coplanar"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Perpendicular (at 90° to each other)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "At 120°"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Freely rotating"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "The central sp carbon uses py for one pi bond and pz for the other. Consequently, the two terminal CH2 groups lie in mutually perpendicular planes."
+              },
+              {
+                "type": "single-correct",
+                "question": "What is the hybridization state of the central carbon in Carbon Suboxide (C3O2, O=C=C=C=O)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "sp3"
+                  },
+                  {
+                    "id": "B",
+                    "label": "sp2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "sp"
+                  },
+                  {
+                    "id": "D",
+                    "label": "dsp2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Carbon suboxide is a linear molecule (O=C=C=C=O). All three carbon atoms form two double bonds each (steric number = 2), making all carbon atoms sp hybridized."
+              },
+              {
+                "type": "single-correct",
+                "question": "In Benzyne (C6H4), what is the nature of the orbital overlap that forms the extra 'triple bond' in the ring?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Sideways overlap of unhybridized p-orbitals perpendicular to the ring"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Lateral overlap of two sp2 hybrid orbitals lying in the plane of the aromatic ring"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Head-on overlap of sp3 orbitals"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Overlap of d-orbitals with p-orbitals"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "In benzyne, the aromatic pi system remains intact using pz orbitals perpendicular to the ring. The third bond is formed by lateral overlap of two sp2 hybrid orbitals in the plane of the ring, making it weak and highly reactive."
+              },
+              {
+                "type": "single-correct",
+                "question": "Which of the following cumulenes exhibits geometrical (cis-trans) isomerism?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Allene (H2C=C=CH2)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Hexa-2,3,4-triene (CH3-CH=C=C=CH-CH3)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Penta-2,3-diene (CH3-CH=C=CH-CH3)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Buta-1,2-diene (CH3-CH=C=CH2)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Cumulenes with an odd number of double bonds (3 double bonds, like Hexa-2,3,4-triene) have terminal groups lying in the SAME plane, enabling cis-trans (geometrical) isomerism. Cumulenes with an even number of double bonds have terminal groups in perpendicular planes."
+              },
+              {
+                "type": "single-correct",
+                "question": "What is the hybridization state of Xenon in XeF6 (Xenon Hexafluoride) in the gas phase?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "sp3d2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "sp3d3"
+                  },
+                  {
+                    "id": "C",
+                    "label": "d2sp3"
+                  },
+                  {
+                    "id": "D",
+                    "label": "sp3d"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "XeF6 has 6 bonding pairs and 1 lone pair (steric number = 7). It utilizes sp3d3 hybridization, giving a distorted octahedral geometry with a capping lone pair."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following species have dsp² hybridization with a square planar geometry?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "[Ni(CN)4]²⁻"
+                  },
+                  {
+                    "id": "B",
+                    "label": "[PtCl4]²⁻"
+                  },
+                  {
+                    "id": "C",
+                    "label": "[NiCl4]²⁻"
+                  },
+                  {
+                    "id": "D",
+                    "label": "XeF4"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B"
+                ],
+                "explanation": "[Ni(CN)4]²⁻ and [PtCl4]²⁻ are d⁸ complexes with strong field ligands using dsp² hybridization (square planar). [NiCl4]²⁻ is sp³ tetrahedral. XeF4 is sp³d²."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following species feature sp3d3 hybridization?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "IF7 (Iodine heptafluoride)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "XeF6 (Xenon hexafluoride)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "[XeF5]⁻ (Pentafluoroxenate ion)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "SF6 (Sulfur hexafluoride)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "IF7 (7 bonds, 0 LP), XeF6 (6 bonds, 1 LP), and [XeF5]⁻ (5 bonds, 2 LP) all have steric number 7 and feature sp3d3 hybridization. SF6 has steric number 6 (sp3d2)."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which carbon atoms in Pent-1-en-4-yne (H2C=CH-CH2-C≡CH) possess sp hybridization?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Carbon-1"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Carbon-4"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Carbon-5"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Carbon-3"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B",
+                  "C"
+                ],
+                "explanation": "C4 and C5 form the alkyne triple bond (-C≡CH) and are both sp hybridized. C1 and C2 form the double bond (sp2), and C3 is -CH2- (sp3)."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following statements regarding nodal planes in bonding are correct?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "A sigma (σ) bond formed by two s-orbitals has zero nodal planes containing the internuclear axis"
+                  },
+                  {
+                    "id": "B",
+                    "label": "A pi (π) bond formed by two 2px orbitals has exactly one nodal plane coinciding with the internuclear plane"
+                  },
+                  {
+                    "id": "C",
+                    "label": "A d-d delta (δ) bond has two mutually perpendicular nodal planes passing through the internuclear axis"
+                  },
+                  {
+                    "id": "D",
+                    "label": "All sigma bonds contain at least one nodal plane between the two nuclei"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "s-s sigma bonds have spherical symmetry along the axis (0 nodal planes). Pi bonds have 1 nodal plane containing the nuclei. Delta (δ) bonds have 2 nodal planes. Bonding sigma orbitals have maximum electron density between nuclei (no nodal plane between nuclei)."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following molecules/ions contain at least one carbon atom with sp hybridization?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Carbon monoxide (CO)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Carbon suboxide (C3O2)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Cyanide ion (CN⁻)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Calcium carbide anion (C2²⁻)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C",
+                  "D"
+                ],
+                "explanation": "CO (:C≡O:), C3O2 (O=C=C=C=O), CN⁻ (:C≡N:⁻), and C2²⁻ (:C≡C:²⁻) all feature carbon atoms with steric number 2 and sp hybridization."
+              },
+              {
+                "type": "input-value",
+                "question": "How many sigma (σ) bonds are present in one molecule of Benzene (C6H6)?",
+                "correctValue": 12,
+                "explanation": "Benzene has 6 C-C sigma bonds and 6 C-H sigma bonds. Total = 6 + 6 = 12 sigma bonds (along with 3 delocalized pi bonds)."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the total number of pi (π) bonds present in a molecule of Carbon Suboxide (C3O2, O=C=C=C=O)?",
+                "correctValue": 4,
+                "explanation": "C3O2 has four double bonds in series (O=C=C=C=O), where each double bond contains 1 sigma and 1 pi bond. Total pi bonds = 4."
+              },
+              {
+                "type": "input-value",
+                "question": "How many total valence electrons are involved in the pi (π) system of Pyridine (C5H5N)?",
+                "correctValue": 6,
+                "explanation": "Pyridine is an aromatic 6-π electron system (5 p-orbitals from 5 carbons + 1 p-orbital from nitrogen, with nitrogen's lone pair occupying an sp2 hybrid orbital in the ring plane)."
+              },
+              {
+                "type": "input-value",
+                "question": "How many unhybridized p-orbitals are involved in the delocalized pi network of Naphthalene (C10H8)?",
+                "correctValue": 10,
+                "explanation": "Naphthalene contains 10 sp2 hybridized carbon atoms arranged in two fused aromatic rings. Each carbon contributes 1 unhybridized p-orbital to the delocalized pi system (10 π electrons)."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the total number of sigma (σ) bonds in one molecule of Allene (H2C=C=CH2)?",
+                "correctValue": 6,
+                "explanation": "Allene has 4 C-H single sigma bonds and 2 C-C sigma bonds (from the two double bonds). Total sigma bonds = 4 + 2 = 6."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "3",
+          "topicName": "Molecular Orbital Theory (MOT)",
+          "coreConcept": "Linear Combination of Atomic Orbitals (LCAO) and bond order",
+          "theory": {
+            "basics": "Molecular Orbital Theory (MOT) describes chemical bonding through the combination of atomic wavefunctions to form molecular orbitals (MOs) delocalized over the entire molecule.\n\nWhen two atomic orbitals combine:\n1. **Bonding MO (σ, π):** Lower energy, constructive interference, stabilizes molecule.\n2. **Antibonding MO (σ*, π*):** Higher energy, destructive interference with a nodal plane between nuclei.\n\n<FormulaCallout title=\"Bond Order Formula\" formula=\"Bond Order = ½ (Nb - Na)\" Nb=\"Electrons in bonding MOs\" Na=\"Electrons in antibonding MOs\" />",
+            "fullConcept": "## Paramagnetism of Oxygen (O2)\n\nValence Bond Theory incorrectly predicts O₂ to be diamagnetic (all paired electrons). MOT accurately explains the **paramagnetism of O₂** by demonstrating two unpaired electrons in the degenerate π*2px and π*2py antibonding orbitals according to Hund's rule."
+          },
+          "challenges": {
+            "easy": {
+              "title": "MO Energy Diagram",
+              "description": "Fill electrons into σ1s, σ*1s, σ2s, σ*2s to calculate the bond order of H₂, He₂, and Li₂."
+            },
+            "medium": {
+              "title": "Magnetic Detector",
+              "description": "Determine whether O₂, N₂, B₂, and C₂ are paramagnetic or diamagnetic based on orbital occupancies."
+            },
+            "advanced": {
+              "title": "Heteronuclear Orbitals",
+              "description": "Construct MO diagrams for heteronuclear diatomics (CO, NO, NO⁺, CN⁻) and predict bond orders."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the bond order of a Diatomic Nitrogen molecule (N2)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "1"
+                  },
+                  {
+                    "id": "B",
+                    "label": "2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "3"
+                  },
+                  {
+                    "id": "D",
+                    "label": "0"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "N2 has 10 valence electrons: 8 bonding and 2 antibonding. Bond order = (8 - 2)/2 = 3 (triple bond)."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following homonuclear diatomics are paramagnetic?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "O2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "B2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "N2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "C2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B"
+                ],
+                "explanation": "O2 has 2 unpaired electrons in π*2p. B2 has 2 unpaired electrons in π2p. N2 and C2 have all paired electrons."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the bond order of He2 (Dihelium)?",
+                "correctValue": 0,
+                "explanation": "He2 has 2 bonding and 2 antibonding electrons. Bond Order = (2 - 2)/2 = 0, meaning He2 does not exist stably."
+              }
+            ],
+            "medium": [
+              {
+                "type": "single-correct",
+                "question": "Which species has the highest bond order among O2, O2⁺, O2⁻, and O2²⁻?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "O2⁺ (2.5)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "O2 (2.0)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "O2⁻ (1.5)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "O2²⁻ (1.0)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "Removing an electron from an antibonding orbital in O2 gives O2⁺ with Bond Order = (10 - 5)/2 = 2.5."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "In which species does s-p mixing alter the orbital energy ordering (π2px = π2py < σ2pz)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "B2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "C2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "N2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "O2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "For homonuclear diatomic molecules of elements with Z ≤ 7 (up to N2), s-p mixing raises σ2pz above π2px/π2py. For O2 and F2 (Z ≥ 8), σ2pz is lower in energy."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the number of unpaired electrons in an Oxygen molecule (O2)?",
+                "correctValue": 2,
+                "explanation": "O2 has two degenerate π*2p antibonding orbitals, each singly occupied by 1 electron according to Hund's rule."
+              }
+            ],
+            "advanced": [
+              {
+                "type": "single-correct",
+                "question": "What is the bond order of the Nitrosonium ion (NO⁺)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "2.5"
+                  },
+                  {
+                    "id": "B",
+                    "label": "3.0"
+                  },
+                  {
+                    "id": "C",
+                    "label": "2.0"
+                  },
+                  {
+                    "id": "D",
+                    "label": "1.5"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "NO⁺ has 5 + 6 - 1 = 10 valence electrons (isoelectronic with N2). Bond order = (8 - 2)/2 = 3.0."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following statements about Carbon Monoxide (CO) in MOT are true?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Bond order is 3"
+                  },
+                  {
+                    "id": "B",
+                    "label": "The HOMO is a non-bonding/slightly antibonding orbital concentrated on Carbon"
+                  },
+                  {
+                    "id": "C",
+                    "label": "CO acts as a good sigma donor via the Carbon atom lone pair"
+                  },
+                  {
+                    "id": "D",
+                    "label": "CO is paramagnetic"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "CO has 10 valence electrons (BO = 3), is diamagnetic, and its HOMO is polarized toward Carbon, enabling it to act as an effective σ-donor ligand in metal carbonyls."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the bond order of Peroxide ion (O2²⁻)?",
+                "correctValue": 1,
+                "explanation": "O2²⁻ has 18 total electrons (10 bonding, 8 antibonding). Bond order = (10 - 8)/2 = 1.0."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "moduleId": "M2",
+      "moduleName": "Atomic Structure & Quantum Mechanics",
+      "topics": [
+        {
+          "topicId": "4",
+          "topicName": "Bohr Model & Hydrogen Spectrum",
+          "coreConcept": "Quantized electronic transitions and spectral series",
+          "keyFormulas": [
+            {
+              "formula": "1/λ = R_H * Z² * (1/n1² - 1/n2²)",
+              "label": "Rydberg Formula"
+            },
+            {
+              "formula": "E_n = -13.6 * (Z²/n²) eV",
+              "label": "Bohr Energy Level"
+            },
+            {
+              "formula": "r_n = 0.529 * (n²/Z) Å",
+              "label": "Bohr Radius"
+            }
+          ],
+          "theory": {
+            "basics": "Niels Bohr postulated that electrons orbit the nucleus only in certain stable, non-radiating circular orbits with quantized angular momentum L = n(h/2π).\n\nWhen an electron transitions from a higher orbit (n2) to a lower orbit (n1), it emits a single photon with energy equal to the difference: ΔE = hν = hc/λ.",
+            "fullConcept": "## Spectral Series of Hydrogen\n- **Lyman Series (n1 = 1):** Ultraviolet (UV) region.\n- **Balmer Series (n1 = 2):** Visible light region (H-alpha, H-beta lines).\n- **Paschen Series (n1 = 3):** Near-Infrared (IR).\n- **Brackett Series (n1 = 4):** Infrared (IR).\n- **Pfund Series (n1 = 5):** Far-Infrared."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Photon Tuner",
+              "description": "Select n1 and n2 transitions to match wavelengths of emitted colors in the visible Balmer series."
+            },
+            "medium": {
+              "title": "Rydberg Calculator",
+              "description": "Calculate shortest and longest limiting wavelengths for the Lyman and Balmer series."
+            },
+            "advanced": {
+              "title": "Hydrogen-like Ions",
+              "description": "Calculate ionization energies and orbital radii for He⁺, Li²⁺, and Be³⁺."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which spectral series of hydrogen lies in the visible region of the electromagnetic spectrum?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Lyman"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Balmer"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Paschen"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Brackett"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Transitions ending at n=2 (Balmer series) emit photons in the visible spectrum (400 nm - 700 nm)."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "According to the Bohr model for a hydrogen atom:",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Angular momentum is quantized as mvr = nh/2pi"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Radius is proportional to n²"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Energy is inversely proportional to n²"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Velocity is directly proportional to n"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "In the Bohr model, L = nh/2π, r ∝ n²/Z, E ∝ -Z²/n², and velocity v ∝ Z/n."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the ground state energy of a Hydrogen atom in electron-volts (eV)?",
+                "correctValue": -13.6,
+                "explanation": "E1 = -13.6 * (1²/1²) = -13.6 eV."
+              }
+            ],
+            "medium": [
+              {
+                "type": "single-correct",
+                "question": "What is the ionization energy of a He⁺ ion in its ground state (n=1)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "13.6 eV"
+                  },
+                  {
+                    "id": "B",
+                    "label": "27.2 eV"
+                  },
+                  {
+                    "id": "C",
+                    "label": "54.4 eV"
+                  },
+                  {
+                    "id": "D",
+                    "label": "122.4 eV"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "For He⁺ (Z=2), E1 = -13.6 * (2²/1²) = -54.4 eV. Ionization requires +54.4 eV."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which transitions in a Hydrogen atom produce a photon in the Ultraviolet region?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "n=2 to n=1"
+                  },
+                  {
+                    "id": "B",
+                    "label": "n=3 to n=1"
+                  },
+                  {
+                    "id": "C",
+                    "label": "n=3 to n=2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "n=4 to n=1"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "D"
+                ],
+                "explanation": "All transitions ending at n=1 belong to the Lyman series and lie in the Ultraviolet region."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the ratio of the radius of the 2nd Bohr orbit (n=2) to the 1st Bohr orbit (n=1) for Hydrogen?",
+                "correctValue": 4,
+                "explanation": "Radius r ∝ n². r2 / r1 = (2²)/(1²) = 4."
+              }
+            ],
+            "advanced": [
+              {
+                "type": "single-correct",
+                "question": "If an electron in Hydrogen drops from n=4 to ground state n=1, what is the maximum number of spectral lines emitted?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "3"
+                  },
+                  {
+                    "id": "B",
+                    "label": "4"
+                  },
+                  {
+                    "id": "C",
+                    "label": "6"
+                  },
+                  {
+                    "id": "D",
+                    "label": "10"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Number of spectral lines = Δn(Δn + 1)/2 = (4 - 1)(4 - 1 + 1)/2 = 3(4)/2 = 6 lines."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following are limitations of the Bohr Model?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "It fails to explain the spectra of multi-electron atoms"
+                  },
+                  {
+                    "id": "B",
+                    "label": "It violates Heisenberg's Uncertainty Principle by assuming precise orbits"
+                  },
+                  {
+                    "id": "C",
+                    "label": "It cannot explain the Zeeman effect (splitting in magnetic fields)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "It does not predict the ground state energy of Hydrogen correctly"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "Bohr's model accurately predicts Hydrogen's 1-electron energy, but fails for multi-electron atoms, violates the uncertainty principle, and cannot account for fine structure, Zeeman, or Stark effects."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the radius of the first orbit of Li²⁺ in Angstroms (approx, 0.529/3)?",
+                "correctValue": 0.176,
+                "explanation": "r = 0.529 * (n²/Z) = 0.529 * (1/3) ≈ 0.176 Å."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "5",
+          "topicName": "Quantum Numbers & Electronic Configuration",
+          "coreConcept": "Principal, Azimuthal, Magnetic, and Spin Quantum Numbers",
+          "theory": {
+            "basics": "Every electron in an atom is described by four quantum numbers:\n1. **Principal Quantum Number (n = 1, 2, 3...):** Determines size and energy level of shell.\n2. **Azimuthal / Angular Momentum (l = 0 to n-1):** Determines orbital subshell shape (0=s, 1=p, 2=d, 3=f).\n3. **Magnetic Quantum Number (m_l = -l to +l):** Determines spatial orientation.\n4. **Spin Quantum Number (m_s = +½, -½):** Determines intrinsic spin direction.\n\n### Rules for Electron Filling:\n- **Aufbau Principle:** Electrons fill lowest available energy subshells first (1s < 2s < 2p < 3s < 3p < 4s < 3d).\n- **Pauli Exclusion Principle:** No two electrons in the same atom can have the identical set of all four quantum numbers.\n- **Hund's Rule of Maximum Multiplicity:** Electrons occupy degenerate orbitals singly with parallel spins before pairing up.",
+            "fullConcept": "## Anomalous Electronic Configurations (Cr and Cu)\n\nChromium (Z=24) and Copper (Z=29) exhibit exceptional configurations due to the enhanced stability of half-filled and fully-filled d-subshells:\n- **Chromium (Cr):** [Ar] 4s¹ 3d⁵ (instead of 4s² 3d⁴) due to 5 parallel spins maximizing exchange energy.\n- **Copper (Cu):** [Ar] 4s¹ 3d¹⁰ (instead of 4s² 3d⁹) due to complete spherical symmetry and high exchange energy."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Orbital Sorter",
+              "description": "Drag electrons into 1s, 2s, 2p orbital boxes following Aufbau and Hund's rules for Carbon, Nitrogen, and Oxygen."
+            },
+            "medium": {
+              "title": "Quantum Rule Checker",
+              "description": "Identify which quantum number sets are physically valid and which violate Pauli or Azimuthal constraints."
+            },
+            "advanced": {
+              "title": "Exchange Energy Maximizer",
+              "description": "Calculate the total exchange energy pairs K for d⁴, d⁵, d⁹, and d¹⁰ configurations."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the maximum number of electrons that can be accommodated in a subshell with l = 2 (d-subshell)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "6"
+                  },
+                  {
+                    "id": "C",
+                    "label": "10"
+                  },
+                  {
+                    "id": "D",
+                    "label": "14"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "A subshell with l = 2 has (2l + 1) = 5 orbitals. Each orbital holds 2 electrons, so 5 * 2 = 10 electrons."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which of the following quantum number combinations are allowed for an electron in an atom?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "n=3, l=2, ml=-1, ms=+1/2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "n=2, l=2, ml=0, ms=-1/2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "n=4, l=0, ml=0, ms=+1/2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "n=3, l=1, ml=+2, ms=-1/2"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "C"
+                ],
+                "explanation": "B is invalid because l cannot equal n (l max is n-1 = 1). D is invalid because ml cannot exceed l (ml max is +1 for l=1)."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the total number of orbitals in the n = 3 principal shell (n²)?",
+                "correctValue": 9,
+                "explanation": "Total orbitals in shell n is n² = 3² = 9 (one 3s, three 3p, five 3d)."
+              }
+            ],
+            "medium": [
+              {
+                "type": "single-correct",
+                "question": "What is the correct ground-state electronic configuration of Chromium (Z = 24)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "[Ar] 4s2 3d4"
+                  },
+                  {
+                    "id": "B",
+                    "label": "[Ar] 4s1 3d5"
+                  },
+                  {
+                    "id": "C",
+                    "label": "[Ar] 3d6"
+                  },
+                  {
+                    "id": "D",
+                    "label": "[Ar] 4s2 3d6"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Cr promotes one 4s electron to 3d to achieve a half-filled 3d⁵ configuration with higher stability and exchange energy."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which principles are violated if an atom has the electron configuration: 1s² 2s² 2px² 2py¹ 2pz⁰?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Hund's Rule of Maximum Multiplicity"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Aufbau Principle"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Pauli Exclusion Principle"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Heisenberg Principle"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "Electrons in degenerate 2p orbitals should occupy 2px, 2py, 2pz singly with parallel spins before pairing up in 2px. This violates Hund's rule."
+              },
+              {
+                "type": "input-value",
+                "question": "How many unpaired electrons are present in a ground-state Ferric ion (Fe³⁺, Z=26)?",
+                "correctValue": 5,
+                "explanation": "Fe is [Ar] 4s² 3d⁶. Fe³⁺ loses two 4s electrons and one 3d electron, leaving [Ar] 3d⁵ with 5 unpaired electrons."
+              }
+            ],
+            "advanced": [
+              {
+                "type": "single-correct",
+                "question": "How many total nodes (radial + angular) does a 4d orbital possess?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "1"
+                  },
+                  {
+                    "id": "B",
+                    "label": "2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "3"
+                  },
+                  {
+                    "id": "D",
+                    "label": "4"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Total nodes = n - 1 = 4 - 1 = 3 (Angular nodes = l = 2, Radial nodes = n - l - 1 = 4 - 2 - 1 = 1)."
+              },
+              {
+                "type": "multiple-correct",
+                "question": "Which statements are correct regarding orbital angular momentum (L = sqrt(l(l+1)) * h/2pi)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "An s-electron has zero orbital angular momentum"
+                  },
+                  {
+                    "id": "B",
+                    "label": "A p-electron has angular momentum sqrt(2) * h/2pi"
+                  },
+                  {
+                    "id": "C",
+                    "label": "A d-electron has angular momentum sqrt(6) * h/2pi"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Orbital angular momentum depends on the principal quantum number n"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A",
+                  "B",
+                  "C"
+                ],
+                "explanation": "Orbital angular momentum L = √(l(l+1)) * ℏ. For s (l=0, L=0), p (l=1, L=√2 ℏ), d (l=2, L=√6 ℏ). It depends only on l, not on n."
+              },
+              {
+                "type": "input-value",
+                "question": "What is the number of radial nodes in a 3p atomic orbital (n - l - 1)?",
+                "correctValue": 1,
+                "explanation": "Radial nodes = n - l - 1 = 3 - 1 - 1 = 1."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

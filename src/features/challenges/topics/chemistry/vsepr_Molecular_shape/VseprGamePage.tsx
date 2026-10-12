@@ -371,6 +371,7 @@ function Level1UI({
   gameStarted = true,
   hideHtml = false
 }: Level1UIProps) {
+  const router = useRouter();
   const [centralPlaced, setCentralPlaced] = useState(false);
   const [placedAtoms, setPlacedAtoms] = useState<THREE.Vector3[]>([]);
   const [placedBonds, setPlacedBonds] = useState<{ index: number; type: string }[]>([]);
@@ -383,12 +384,31 @@ function Level1UI({
   const [selectedCForBond, setSelectedCForBond] = useState(false);
   const [selectedHIndexForBond, setSelectedHIndexForBond] = useState<number | null>(null);
   const [selectedHForAngle, setSelectedHForAngle] = useState<number[]>([]);
+  const [alignedAtomIndices, setAlignedAtomIndices] = useState<number[]>([]);
+  const [completedAngleArcs, setCompletedAngleArcs] = useState<{ v1Index: number; v2Index: number; angle: number }[]>([]);
+  const [localAngleFeedback, setLocalAngleFeedback] = useState<{ isCorrect: boolean; message: string } | null>(null);
 
   const formula = question.formula;
   const centralElement = getCentralAtom(formula);
   const outerElement = getOuterAtom(formula);
   const outerCount = getOuterAtomCount(formula);
   const idealVertices = useMemo(() => getTargetGeometry(formula), [formula]);
+
+  // Distorted initial positions for Hydrogen atoms around Carbon (noticeably distorted/random, NOT 109.5°)
+  const distortedVertices = useMemo(() => {
+    const rawOffsets = [
+      new THREE.Vector3(0.6, 2.1, 0.7),
+      new THREE.Vector3(2.0, 0.9, -0.7),
+      new THREE.Vector3(-2.1, -0.6, 0.8),
+      new THREE.Vector3(-0.4, -2.1, -0.7),
+    ];
+    return idealVertices.map((_, i) =>
+      (rawOffsets[i % rawOffsets.length] || new THREE.Vector3(1, 1, 1))
+        .clone()
+        .normalize()
+        .multiplyScalar(2.3)
+    );
+  }, [idealVertices]);
 
   const resetBuild = () => {
     setCentralPlaced(false);
@@ -399,6 +419,9 @@ function Level1UI({
     setSelectedCForBond(false);
     setSelectedHIndexForBond(null);
     setSelectedHForAngle([]);
+    setAlignedAtomIndices([]);
+    setCompletedAngleArcs([]);
+    setLocalAngleFeedback(null);
     setInputAngle("");
     setActiveDragItem(null);
   };
@@ -412,24 +435,28 @@ function Level1UI({
   };
 
   const handleTapH = (idx: number) => {
-    const isBonded = placedBonds.some(b => b.index === idx);
+    // If still in bonding phase (not all bonds connected yet)
+    if (placedBonds.length < outerCount) {
+      const isBonded = placedBonds.some(b => b.index === idx);
 
-    // If this H atom is not bonded yet, select/unselect it for forming a bond with Carbon
-    if (!isBonded) {
-      setSelectedHIndexForBond(prev => (prev === idx ? null : idx));
-      setSelectedHForAngle(prev => prev.filter(i => i !== idx));
-      return;
+      // If this H atom is not bonded yet, select/unselect it for forming a bond with Carbon
+      if (!isBonded) {
+        setSelectedHIndexForBond(prev => (prev === idx ? null : idx));
+        setSelectedHForAngle([]);
+        return;
+      }
+
+      // If Carbon is explicitly selected, allow selecting this bonded H to modify bond type
+      if (selectedCForBond) {
+        setSelectedHIndexForBond(prev => (prev === idx ? null : idx));
+        setSelectedHForAngle([]);
+        return;
+      }
     }
 
-    // If Carbon is explicitly selected, allow selecting this bonded H to modify bond type
-    if (selectedCForBond) {
-      setSelectedHIndexForBond(prev => (prev === idx ? null : idx));
-      setSelectedHForAngle(prev => prev.filter(i => i !== idx));
-      return;
-    }
-
-    // Otherwise, this is a bonded H atom tapped to measure bond angle:
+    // Angle phase (all bonds created): Select any 2 H atoms to measure & align angle
     setSelectedHIndexForBond(null);
+    setSelectedCForBond(false);
     setSelectedHForAngle(prev => {
       let next: number[];
       if (prev.includes(idx)) {
@@ -452,6 +479,109 @@ function Level1UI({
       }
       return next;
     });
+  };
+
+  // Smoothly glide selected H atoms to their ideal tetrahedral positions
+  const animateAtomsToIdeal = (indices: number[]) => {
+    const startPositions = placedAtoms.map(p => p.clone());
+    const targetPositions = idealVertices.map(v => v.clone());
+    const startTime = performance.now();
+    const duration = 450;
+
+    const animate = (time: number) => {
+      const elapsed = time - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3); // Cubic ease out
+
+      setPlacedAtoms(prev => {
+        const next = [...prev];
+        indices.forEach(idx => {
+          if (next[idx] && targetPositions[idx]) {
+            next[idx] = startPositions[idx].clone().lerp(targetPositions[idx], ease);
+          }
+        });
+        return next;
+      });
+
+      if (t < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  };
+
+  const handleCheckAndAlign = () => {
+    if (selectedHForAngle.length < 2) {
+      setLocalAngleFeedback({
+        isCorrect: false,
+        message: "Select any 2 H atoms in 3D first!"
+      });
+      return;
+    }
+
+    const val = parseFloat(inputAngle);
+    if (isNaN(val)) {
+      setLocalAngleFeedback({
+        isCorrect: false,
+        message: "Enter the bond angle in degrees!"
+      });
+      return;
+    }
+
+    const isMatch = Math.abs(val - targetAngle) < 0.2;
+    if (!isMatch) {
+      setLocalAngleFeedback({
+        isCorrect: false,
+        message: `Incorrect angle (${val}°). Set to ${targetAngle}°!`
+      });
+      setTimeout(() => {
+        setLocalAngleFeedback(null);
+      }, 2500);
+      return;
+    }
+
+    // Angle is 109.5° (correct!)
+    const [a, b] = selectedHForAngle;
+    if (a !== undefined && b !== undefined) {
+      animateAtomsToIdeal([a, b]);
+      // Store this angle so set angles are always shown and never removed!
+      setCompletedAngleArcs(prev => {
+        const exists = prev.some(arc =>
+          (arc.v1Index === a && arc.v2Index === b) || (arc.v1Index === b && arc.v2Index === a)
+        );
+        if (!exists) {
+          return [...prev, { v1Index: a, v2Index: b, angle: targetAngle }];
+        }
+        return prev;
+      });
+    }
+
+    const updatedAligned = Array.from(new Set([...alignedAtomIndices, a, b]));
+    setAlignedAtomIndices(updatedAligned);
+
+    const isAllComplete = updatedAligned.length >= outerCount;
+
+    if (isAllComplete) {
+      setLocalAngleFeedback({
+        isCorrect: true,
+        message: `All bond angles aligned to ${targetAngle}°! Target Completed!`
+      });
+      setInputAngle(targetAngle.toString());
+      handleSubmit();
+    } else {
+      setLocalAngleFeedback({
+        isCorrect: true,
+        message: `✓ 2 H atoms placed at ${targetAngle}°! Select remaining H atoms.`
+      });
+      setTimeout(() => {
+        setSelectedHForAngle([]);
+        setSelectedBond1(-1);
+        setSelectedBond2(-1);
+        setInputAngle("");
+        setLocalAngleFeedback(null);
+      }, 1200);
+    }
   };
 
   const createBond = (type: string) => {
@@ -493,8 +623,8 @@ function Level1UI({
         setCentralPlaced(true);
       }
       setPlacedAtoms(prev => {
-        if (prev.length < idealVertices.length) {
-          return [...prev, idealVertices[prev.length]];
+        if (prev.length < distortedVertices.length) {
+          return [...prev, distortedVertices[prev.length]];
         }
         return prev;
       });
@@ -536,12 +666,8 @@ function Level1UI({
   const targetAngle = getTargetAngle(formula);
   const parsedAngle = parseFloat(inputAngle);
   const hasTypedAngle = inputAngle.trim() !== "" && !isNaN(parsedAngle);
-  const isCorrectAngle = feedback
-    ? feedback.isCorrect
-    : (hasTypedAngle && Math.abs(parsedAngle - targetAngle) < 0.05);
-  const isWrongAngle = feedback
-    ? !feedback.isCorrect
-    : (hasTypedAngle && !isCorrectAngle);
+  const isCorrectAngle = feedback?.isCorrect || localAngleFeedback?.isCorrect || (hasTypedAngle && Math.abs(parsedAngle - targetAngle) < 0.2);
+  const isWrongAngle = (localAngleFeedback && !localAngleFeedback.isCorrect) || (hasTypedAngle && !isCorrectAngle);
 
   return (
     <div className="flex flex-col gap-1.5 sm:gap-3 w-full h-full flex-1 min-h-0 text-sm">
@@ -638,10 +764,30 @@ function Level1UI({
                 );
               })}
 
-              {/* Angle Arc 3D (Does NOT show 109.5 automatically - shows ? until typed) */}
+              {/* Permanent Completed Angle Arcs (Always shown, never removed!) */}
+              {completedAngleArcs.map((arc, i) => (
+                arc.v1Index < placedAtoms.length &&
+                arc.v2Index < placedAtoms.length && (
+                  <AngleArc3D
+                    key={`completed-arc-${arc.v1Index}-${arc.v2Index}-${i}`}
+                    v1={placedAtoms[arc.v1Index]}
+                    v2={placedAtoms[arc.v2Index]}
+                    label={`${arc.angle}°`}
+                    isCorrect={true}
+                    isWrong={false}
+                    hideHtml={hideHtml}
+                  />
+                )
+              ))}
+
+              {/* Angle Arc 3D for currently selected pair (if not already completed) */}
               {selectedBond1 >= 0 &&
                 selectedBond2 >= 0 &&
                 selectedBond1 !== selectedBond2 &&
+                !completedAngleArcs.some(arc =>
+                  (arc.v1Index === selectedBond1 && arc.v2Index === selectedBond2) ||
+                  (arc.v1Index === selectedBond2 && arc.v2Index === selectedBond1)
+                ) &&
                 selectedBond1 < placedAtoms.length &&
                 selectedBond2 < placedAtoms.length && (
                   <AngleArc3D
@@ -658,141 +804,167 @@ function Level1UI({
         </div>
 
         {/* ── RIGHT SIDE PANEL (BONDS & ANGLE CONTROLS INSIDE MIDDLE SCREEN) ─── */}
-        <div className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-44 sm:w-52 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-2.5 sm:p-3.5 shadow-xl flex flex-col gap-2.5 max-h-[calc(100%-2rem)] overflow-y-auto">
-          {/* Bonds Section */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] sm:text-xs font-black text-slate-800 tracking-wider uppercase font-mono">Bonds</span>
-              <span className="text-[10px] font-bold text-slate-500 font-mono">{placedBonds.length} / {outerCount}</span>
+        <div className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-44 sm:w-52 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col gap-2">
+          {alignedAtomIndices.length >= outerCount ? (
+            /* Compact Target Completed View (fits comfortably on screen, no scroll) */
+            <div className="space-y-2 animate-in zoom-in-95 duration-200 text-center">
+              <div className="w-full py-2 px-2.5 bg-emerald-600 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-sm flex items-center justify-center gap-1.5 animate-pulse">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>Target Completed!</span>
+              </div>
+              <div className="text-[10px] sm:text-[11px] text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 rounded-lg p-2 text-center leading-tight">
+                All bond angles aligned to 109.5°! Tetrahedral shape complete!
+              </div>
+              <div className="flex flex-col gap-1.5 pt-0.5">
+                <button
+                  onClick={() => router.back()}
+                  className="w-full py-1.5 px-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <span>Back to Topics</span>
+                </button>
+                <button
+                  onClick={resetBuild}
+                  className="w-full py-1.5 px-3 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Replay Challenge</span>
+                </button>
+              </div>
             </div>
-
-            {/* Helper status */}
-            {selectedCForBond && selectedHIndexForBond !== null ? (
-              <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg border border-blue-200 text-center">
-                C + H Selected (Choose Bond)
-              </div>
-            ) : selectedCForBond ? (
-              <div className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 text-center">
-                C Selected → Tap an H atom
-              </div>
-            ) : selectedHIndexForBond !== null ? (
-              <div className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 text-center">
-                H Selected → Tap C atom
-              </div>
-            ) : placedBonds.length < outerCount ? (
-              <div className="text-[9px] text-slate-500 text-center">
-                Tap C & H in 3D, then tap bond:
-              </div>
-            ) : (
-              <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 text-center">
-                ✓ All Bonds Connected
-              </div>
-            )}
-
-            {/* Bond Buttons */}
-            <div className="flex flex-col gap-1.5">
-              <button
-                onClick={() => createBond('single')}
-                disabled={!centralPlaced || placedAtoms.length === 0}
-                className="w-full py-1.5 px-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 active:bg-blue-200 border border-blue-200 text-blue-700 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer disabled:opacity-40"
-              >
-                <div className="w-3.5 h-1 bg-blue-600 rounded-full" />
-                <span>Single Bond</span>
-              </button>
-              <button
-                onClick={() => createBond('double')}
-                disabled={!centralPlaced || placedAtoms.length === 0}
-                className="w-full py-1.5 px-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 active:bg-purple-200 border border-purple-200 text-purple-700 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer disabled:opacity-40"
-              >
-                <div className="flex flex-col gap-0.5">
-                  <div className="w-3.5 h-0.5 bg-purple-600 rounded-full" />
-                  <div className="w-3.5 h-0.5 bg-purple-600 rounded-full" />
-                </div>
-                <span>Double Bond</span>
-              </button>
-            </div>
-          </div>
-
-          <hr className="border-slate-200" />
-
-          {/* Angle Section */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] sm:text-xs font-black text-slate-800 tracking-wider uppercase font-mono">Bond Angle</span>
-              {selectedHForAngle.length === 2 && (
-                <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">2 H Blue</span>
-              )}
-            </div>
-
-            {/* When fewer than 2 H are selected: prompt user to tap 2 H in 3D */}
-            {selectedHForAngle.length < 2 ? (
-              <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-2.5 text-center">
-                <div className="text-[10px] text-slate-500 font-semibold leading-tight">
-                  Tap any 2 H atoms in 3D (marked in blue) to measure angle
-                </div>
-              </div>
-            ) : (
-              /* When 2 H atoms are selected: Input box appears with live green/red validation */
-              <div className="space-y-1.5 animate-in fade-in duration-200">
+          ) : (
+            <>
+              {/* Bonds Section */}
+              <div className="space-y-1 sm:space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 inline-block"></span>
-                    2 H Selected (Blue)
+                  <span className="text-[10px] sm:text-[11px] font-black text-slate-800 tracking-wider uppercase font-mono">Create Bonds</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 font-mono">{placedBonds.length} / {outerCount}</span>
+                </div>
+
+                {/* Helper status */}
+                {selectedCForBond && selectedHIndexForBond !== null ? (
+                  <div className="text-[9px] sm:text-[10px] font-bold text-blue-700 bg-blue-50/90 py-1 px-1.5 rounded-lg border border-blue-200 text-center">
+                    C + H Selected (Choose Bond)
+                  </div>
+                ) : selectedCForBond ? (
+                  <div className="text-[9px] sm:text-[10px] font-bold text-amber-700 bg-amber-50/90 py-1 px-1.5 rounded-lg border border-amber-200 text-center">
+                    C Selected → Tap an H
+                  </div>
+                ) : selectedHIndexForBond !== null ? (
+                  <div className="text-[9px] sm:text-[10px] font-bold text-amber-700 bg-amber-50/90 py-1 px-1.5 rounded-lg border border-amber-200 text-center">
+                    H Selected → Tap C
+                  </div>
+                ) : placedBonds.length < outerCount ? (
+                  <div className="text-[9px] text-slate-500 text-center py-0.5 font-medium">
+                    Tap C & H in 3D:
+                  </div>
+                ) : (
+                  <div className="text-[9px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-50/90 py-1 px-1.5 rounded-lg border border-emerald-200 text-center">
+                    ✓ All Bonds Connected
+                  </div>
+                )}
+
+                {/* Bond Buttons */}
+                <div className="flex flex-col gap-1 sm:gap-1.5">
+                  <button
+                    onClick={() => createBond('single')}
+                    disabled={!centralPlaced || placedAtoms.length === 0}
+                    className="w-full py-1.5 px-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 active:bg-blue-200 border-2 border-blue-200 hover:border-blue-300 text-blue-700 font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer disabled:opacity-40"
+                  >
+                    <div className="w-3 h-1 bg-blue-600 rounded-full" />
+                    <span>Single Bond</span>
+                  </button>
+                  <button
+                    onClick={() => createBond('double')}
+                    disabled={!centralPlaced || placedAtoms.length === 0}
+                    className="w-full py-1.5 px-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 active:bg-purple-200 border-2 border-purple-200 hover:border-purple-300 text-purple-700 font-black text-[11px] sm:text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer disabled:opacity-40"
+                  >
+                    <div className="flex flex-col gap-0.5">
+                      <div className="w-3 h-0.5 bg-purple-600 rounded-full" />
+                      <div className="w-3 h-0.5 bg-purple-600 rounded-full" />
+                    </div>
+                    <span>Double Bond</span>
+                  </button>
+                </div>
+              </div>
+
+              <hr className="border-slate-200 my-0.5" />
+
+              {/* Angle Section */}
+              <div className="space-y-1 sm:space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] sm:text-[11px] font-black text-slate-800 tracking-wider uppercase font-mono">Set Bond Angle</span>
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded border bg-blue-50 text-blue-700 border-blue-200">
+                    {alignedAtomIndices.length} / {outerCount} Aligned
                   </span>
                 </div>
 
-                {/* Angle Input Box (Turns green when correct 109.5, red otherwise) */}
-                <input
-                  type="number"
-                  step="0.5"
-                  placeholder="Enter Angle (°)"
-                  value={inputAngle}
-                  onChange={(e) => setInputAngle(e.target.value)}
-                  disabled={feedback?.isCorrect}
-                  className={`w-full px-3 py-1.5 rounded-xl border text-xs font-mono font-black text-center focus:outline-none transition-all shadow-inner ${isCorrectAngle
-                    ? 'border-2 border-emerald-500 bg-emerald-50 text-emerald-800 ring-2 ring-emerald-300'
-                    : isWrongAngle
-                      ? 'border-2 border-rose-400 bg-rose-50 text-rose-800 ring-1 ring-rose-300'
-                      : 'border-slate-300 bg-white text-[#1E293B] focus:border-blue-500'
-                    }`}
-                  autoFocus
-                />
-
-                {/* Live validation feedback message */}
-                {isCorrectAngle && (
-                  <div className="text-[10px] font-bold text-emerald-700 bg-emerald-100/90 p-1.5 rounded-lg border border-emerald-300 text-center flex items-center justify-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Correct Angle (109.5°)!</span>
-                  </div>
-                )}
-
-                {isWrongAngle && (
-                  <div className="text-[10px] font-bold text-rose-600 bg-rose-50 p-1 rounded-lg border border-rose-200 text-center">
-                    Incorrect angle. Try again!
-                  </div>
-                )}
-
-                {/* Check Angle Button */}
-                {feedback?.isCorrect ? (
-                  <div className="w-full py-1.5 px-2 bg-[#22C55E] text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-1 animate-pulse">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Target Completed</span>
+                {placedBonds.length < outerCount ? (
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-2 text-center shadow-xs">
+                    <div className="text-[9px] sm:text-[10px] text-slate-500 font-bold leading-tight">
+                      Connect all {outerCount} bonds first
+                    </div>
                   </div>
                 ) : (
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!hasTypedAngle || placedBonds.length < outerCount}
-                    className={`w-full py-1.5 px-2 font-extrabold text-[11px] uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer ${isCorrectAngle
-                      ? 'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-emerald-500/20'
-                      : 'bg-[#2563EB] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white disabled:opacity-40'
-                      }`}
-                  >
-                    Check Angle
-                  </button>
+                  <>
+                    {selectedHForAngle.length < 2 ? (
+                      <div className="bg-blue-50/60 border border-blue-200 rounded-xl py-2 px-2 text-center shadow-xs">
+                        <div className="text-[9px] sm:text-[10px] text-blue-900 font-bold leading-tight">
+                          {alignedAtomIndices.length === 0
+                            ? "Tap any 2 H in 3D (marked in blue) to set angle"
+                            : `Tap next H in 3D (${alignedAtomIndices.length}/${outerCount} done)`
+                          }
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-1 sm:space-y-1.5 animate-in fade-in duration-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded-lg border border-blue-200 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600 inline-block animate-pulse"></span>
+                            2 H Selected in 3D (Blue)
+                          </span>
+                        </div>
+
+                        <input
+                          type="number"
+                          step="0.5"
+                          placeholder="Enter Angle (°)"
+                          value={inputAngle}
+                          onChange={(e) => setInputAngle(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleCheckAndAlign();
+                          }}
+                          className={`w-full px-2 py-1 sm:py-1.5 rounded-xl border text-xs sm:text-sm font-mono font-black text-center focus:outline-none transition-all shadow-inner ${isCorrectAngle
+                            ? 'border-2 border-emerald-500 bg-emerald-50 text-emerald-800'
+                            : isWrongAngle
+                              ? 'border-2 border-rose-400 bg-rose-50 text-rose-800'
+                              : 'border-slate-300 bg-white text-[#1E293B] focus:border-blue-500'
+                            }`}
+                          autoFocus
+                        />
+
+                        {localAngleFeedback && !localAngleFeedback.isCorrect && (
+                          <div className="text-[9px] font-bold text-rose-600 bg-rose-50 py-0.5 px-1 rounded-lg border border-rose-200 text-center">
+                            {localAngleFeedback.message}
+                          </div>
+                        )}
+
+                        <button
+                          onClick={handleCheckAndAlign}
+                          disabled={!hasTypedAngle || placedBonds.length < outerCount}
+                          className={`w-full py-1.5 px-2.5 font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer ${isCorrectAngle
+                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                            : 'bg-[#2563EB] hover:bg-[#1d4ed8] text-white disabled:opacity-40'
+                            }`}
+                        >
+                          Set Angle
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
 
         {/* ── BOTTOM DOCK: DIRECTLY BELOW THE 3D MOLECULE ───────────────────── */}
@@ -820,9 +992,9 @@ function Level1UI({
               onClick={() => {
                 if (!centralPlaced) {
                   setCentralPlaced(true);
-                  setPlacedAtoms([idealVertices[0]]);
-                } else if (placedAtoms.length < idealVertices.length) {
-                  setPlacedAtoms(prev => [...prev, idealVertices[prev.length]]);
+                  setPlacedAtoms([distortedVertices[0]]);
+                } else if (placedAtoms.length < distortedVertices.length) {
+                  setPlacedAtoms(prev => [...prev, distortedVertices[prev.length]]);
                 }
               }}
               className="w-13 h-13 sm:w-16 sm:h-16 rounded-full flex items-center justify-center font-black text-xl sm:text-2xl text-slate-800 shadow-lg cursor-pointer transform hover:scale-105 active:scale-95 transition-all border-2 border-slate-300"
@@ -1904,13 +2076,13 @@ export default function VseprGamePage({
 
   const checkLevel1 = () => {
     const q = getActiveQuestion() as Level1Question;
-    const val = parseFloat(inputAngle);
+    const val = parseFloat(inputAngle || (q ? q.targetAngle.toString() : "109.5"));
     if (isNaN(val)) {
       alert("Please enter a valid number for the bond angle.");
       return;
     }
 
-    const isCorrect = Math.abs(val - q.targetAngle) < 0.01;
+    const isCorrect = Math.abs(val - q.targetAngle) < 0.2;
 
     if (isCorrect) {
       setScores(s => ({ ...s, 1: s[1] + 1 }));
@@ -1919,10 +2091,6 @@ export default function VseprGamePage({
         message: "Target Completed!",
         explanation: q.explanation
       });
-      // Directly show target is completed (brief 700ms to view green arc, then show completion screen)
-      setTimeout(() => {
-        handleNextQuestion();
-      }, 700);
     } else {
       setFeedback({
         isCorrect: false,
@@ -2054,7 +2222,7 @@ export default function VseprGamePage({
       `}</style>
       {/* ── INTRO MISSION TARGET & INSTRUCTIONS OVERLAY VIEW (COVERS FULL PAGE CONTAINER WITH BLUR) ───── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-6 bg-white/40 backdrop-blur-md overflow-y-auto">
+        <div className="absolute inset-0 z-30 flex flex-col justify-between p-1 sm:px-3 sm:py-1.5 md:p-6 bg-white/40 backdrop-blur-md overflow-y-auto">
           {/* Top Header Bar */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
@@ -2065,7 +2233,7 @@ export default function VseprGamePage({
                   router.back();
                 }
               }}
-              className="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-sm cursor-pointer"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-sm cursor-pointer"
               title="Back"
             >
               <ChevronLeft className="w-4 h-4 text-[#2563EB]" />
@@ -2102,26 +2270,26 @@ export default function VseprGamePage({
             </div>
           )}
 
-          {/* STEP 2: INSTRUCTIONS TO PLAY (3-POINT INSTRUCTIONS WITH BACK AND PLAY BUTTONS) */}
+          {/* STEP 2: INSTRUCTIONS TO PLAY (3-POINT INSTRUCTIONS WITH BACK AND PLAY BUTTONS - COMPACT FOR MOBILE LANDSCAPE) */}
           {introStep === 'instructions' && (
-            <div className="max-w-3xl mx-auto my-auto text-center space-y-2.5 sm:space-y-4 z-10 px-2 sm:px-4 py-2 w-full animate-in fade-in duration-200">
-              <div className="text-black text-xl sm:text-2xl font-black tracking-wide">
+            <div className="max-w-2xl mx-auto my-auto text-center space-y-1 sm:space-y-2 z-10 px-2 sm:px-4 py-0.5 w-full animate-in fade-in duration-200">
+              <div className="text-black text-base sm:text-lg md:text-xl font-black tracking-wide">
                 Instructions
               </div>
 
               {/* 3 Instruction Points (With illustrative image previews for each step) */}
-              <div className="space-y-2 sm:space-y-2.5 text-left max-w-2xl mx-auto w-full">
+              <div className="space-y-1 sm:space-y-1.5 text-left max-w-xl mx-auto w-full">
                 {/* Point 1 */}
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200/90 flex items-center justify-between gap-2.5 sm:gap-3 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2 sm:gap-2.5 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0 shadow-sm">
                       1
                     </div>
-                    <p className="font-extrabold text-xs sm:text-sm text-[#1E293B] leading-snug">
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
                       Tap the atoms (at the bottom) to create molecule
                     </p>
                   </div>
-                  <div className="w-20 sm:w-28 md:w-32 h-11 sm:h-13 md:h-14 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                  <div className="w-14 sm:w-20 md:w-24 h-7 sm:h-8 md:h-9 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
                     <img
                       src="/images/vsepr/step1_tap_atoms.svg"
                       alt="Step 1: Tap atoms preview"
@@ -2131,16 +2299,16 @@ export default function VseprGamePage({
                 </div>
 
                 {/* Point 2 */}
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200/90 flex items-center justify-between gap-2.5 sm:gap-3 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2 sm:gap-2.5 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0 shadow-sm">
                       2
                     </div>
-                    <p className="font-extrabold text-xs sm:text-sm text-[#1E293B] leading-snug">
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
                       Tap two atoms and click bond type to create bonds.
                     </p>
                   </div>
-                  <div className="w-20 sm:w-28 md:w-32 h-11 sm:h-13 md:h-14 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                  <div className="w-14 sm:w-20 md:w-24 h-7 sm:h-8 md:h-9 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
                     <img
                       src="/images/vsepr/step2_create_bonds.svg"
                       alt="Step 2: Create bonds preview"
@@ -2150,16 +2318,16 @@ export default function VseprGamePage({
                 </div>
 
                 {/* Point 3 */}
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200/90 flex items-center justify-between gap-2.5 sm:gap-3 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2 sm:gap-2.5 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0 shadow-sm">
                       3
                     </div>
-                    <p className="font-extrabold text-xs sm:text-sm text-[#1E293B] leading-snug">
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
                       Tap on two bonds and enter the angle to align
                     </p>
                   </div>
-                  <div className="w-20 sm:w-28 md:w-32 h-11 sm:h-13 md:h-14 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                  <div className="w-14 sm:w-20 md:w-24 h-7 sm:h-8 md:h-9 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
                     <img
                       src="/images/vsepr/step3_set_angle.svg"
                       alt="Step 3: Set angle preview"
@@ -2170,30 +2338,32 @@ export default function VseprGamePage({
               </div>
 
               {/* Action Buttons: Back and Play */}
-              <div className="pt-2 sm:pt-4 flex items-center justify-center gap-3">
+              <div className="pt-1 sm:pt-1.5 flex items-center justify-center gap-3">
                 <button
                   onClick={() => setIntroStep('mission')}
-                  className="px-6 sm:px-8 py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1.5 cursor-pointer transition-all"
+                  className="px-5 sm:px-7 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
                 >
-                  <ChevronLeft className="w-4 h-4 text-slate-400" />
+                  <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
                   <span>BACK</span>
                 </button>
 
                 <button
                   onClick={() => setGameStarted(true)}
-                  className="px-8 sm:px-10 py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-2 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                  className="px-7 sm:px-9 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-2 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
                 >
-                  <Play className="w-4 h-4 fill-white" />
+                  <Play className="w-3.5 h-3.5 fill-white" />
                   <span>PLAY</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* Bottom Footer Note */}
-          <div className="w-full text-center text-[10px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0">
-            {introStep === 'mission' ? 'Click NEXT to view challenge instructions' : 'Click PLAY to enter the 3D workshop'}
-          </div>
+          {/* Bottom Footer Note (Only on mission step to preserve space) */}
+          {introStep === 'mission' && (
+            <div className="w-full text-center text-[10px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0">
+              Click NEXT to view challenge instructions
+            </div>
+          )}
         </div>
       )}
 
@@ -2292,35 +2462,37 @@ export default function VseprGamePage({
         )}
       </div>
 
-      {/* ── THEORY / EXPLANATION VIEW (FULL SCREEN SPREAD ACROSS WHOLE SCREEN) ── */}
+      {/* ── THEORY / EXPLANATION MODAL (ENCLOSED BOX WITH BACKDROP AND PROPER MARGINS/PADDING) ── */}
       {showExplanationModal && (
-        <div className="fixed inset-0 z-[999999] bg-white flex flex-col w-full h-full text-[#1E293B] overflow-hidden animate-in fade-in duration-200 select-text">
-          {/* Top Sticky Header Bar */}
-          <div className="flex items-center justify-between px-4 sm:px-8 py-3.5 border-b border-slate-200 bg-white/95 backdrop-blur-md shrink-0 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shadow-sm">
-                <BookOpen className="w-5 h-5" />
+        <div className="fixed inset-0 z-[999999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200 select-text">
+          {/* Modal Container Box */}
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-4xl max-h-[94vh] sm:max-h-[90vh] flex flex-col overflow-hidden text-[#1E293B] animate-in zoom-in-95 duration-200">
+            {/* Modal Header Bar */}
+            <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-slate-200 bg-white shrink-0 shadow-sm">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shadow-sm shrink-0">
+                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base md:text-lg font-black text-[#1E293B] tracking-tight">
+                    VSEPR Theory & Molecular Geometry Guide
+                  </h2>
+                  <p className="text-[11px] sm:text-xs text-[#64748B] font-medium hidden sm:block">
+                    Valence Shell Electron Pair Repulsion: Principles, Geometries, Angles & Repulsions
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-base sm:text-lg font-black text-[#1E293B] tracking-tight">
-                  VSEPR Theory & Molecular Geometry Guide
-                </h2>
-                <p className="text-xs text-[#64748B] font-medium hidden sm:block">
-                  Valence Shell Electron Pair Repulsion: Principles, Geometries, Angles & Repulsions
-                </p>
-              </div>
+              <button
+                onClick={() => setShowExplanationModal(false)}
+                className="p-1.5 sm:p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#475569] hover:text-[#0F172A] transition-all cursor-pointer shadow-sm"
+                title="Close Explanation"
+              >
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
             </div>
-            <button
-              onClick={() => setShowExplanationModal(false)}
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#475569] hover:text-[#0F172A] transition-all cursor-pointer shadow-sm"
-              title="Close Explanation"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
 
-          {/* Full Screen Theory Content Body (Spread across the whole screen) */}
-          <div className="flex-1 overflow-y-auto px-4 sm:px-8 md:px-12 py-5 sm:py-7 space-y-6 w-full text-slate-800">
+            {/* Scrollable Content Body */}
+            <div className="flex-1 overflow-y-auto px-3.5 sm:px-6 md:px-8 py-3.5 sm:py-5 space-y-4 sm:space-y-6 w-full text-slate-800">
             {/* Section 1: Core Principle */}
             <div className="space-y-2 border-b border-slate-200 pb-5">
               <div className="flex items-center gap-2">
@@ -2560,14 +2732,15 @@ export default function VseprGamePage({
             </div>
           </div>
 
-          {/* Bottom Fixed Action Bar */}
-          <div className="px-4 sm:px-8 py-3 border-t border-slate-200 bg-white/95 backdrop-blur-md shrink-0 flex justify-center">
-            <button
-              onClick={() => setShowExplanationModal(false)}
-              className="w-full max-w-lg bg-[#2563EB] hover:bg-[#1d4ed8] text-white py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all shadow-md cursor-pointer hover:shadow-lg"
-            >
-              Got It! Back to Workshop
-            </button>
+            {/* Modal Bottom Fixed Action Bar */}
+            <div className="px-3.5 sm:px-6 py-2 sm:py-2.5 border-t border-slate-200 bg-slate-50/90 shrink-0 flex justify-center">
+              <button
+                onClick={() => setShowExplanationModal(false)}
+                className="w-full max-w-md bg-[#2563EB] hover:bg-[#1d4ed8] text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all shadow-md cursor-pointer hover:shadow-lg active:scale-[0.99]"
+              >
+                Got It! Back to Workshop
+              </button>
+            </div>
           </div>
         </div>
       )}

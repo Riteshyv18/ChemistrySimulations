@@ -177,7 +177,7 @@ export function ChallengeDispatcher({
 
   return (
     <CanvasErrorBoundary>
-      <div className="w-full h-screen overflow-hidden bg-[#070D1E] select-none">
+      <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none">
         {content}
       </div>
     </CanvasErrorBoundary>

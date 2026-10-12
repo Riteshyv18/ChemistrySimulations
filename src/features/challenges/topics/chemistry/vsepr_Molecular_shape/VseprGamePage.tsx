@@ -10,7 +10,7 @@ import { useDrag } from '@use-gesture/react';
 import {
   Gamepad2, Trophy, BookOpen, Lock, Star, Target, CheckCircle2,
   ChevronRight, ChevronLeft, ArrowRight, RotateCcw, ZoomIn, Maximize2, X,
-  Send, Move, Lightbulb, Package, Eye
+  Send, Move, Lightbulb, Package, Eye, Play
 } from 'lucide-react';
 import { getAtomMaterial } from './materials';
 import { getTetrahedralVertices, getTrigonalPlanarVertices } from './helpers';
@@ -22,7 +22,8 @@ const Atom3D = ({
   scale = 1,
   showLabel = true,
   labelOverride,
-  gameStarted = true
+  gameStarted = true,
+  hideHtml = false
 }: {
   position: THREE.Vector3;
   element: string;
@@ -31,6 +32,7 @@ const Atom3D = ({
   labelColor?: string;
   labelOverride?: string;
   gameStarted?: boolean;
+  hideHtml?: boolean;
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const elemLower = element.toLowerCase();
@@ -40,8 +42,8 @@ const Atom3D = ({
   return (
     <group position={position} scale={scale}>
       <Sphere ref={meshRef} args={[0.9, 32, 32]} material={getAtomMaterial(element)} />
-      {showLabel && gameStarted && (
-        <Html center distanceFactor={10} style={{ pointerEvents: 'none' }}>
+      {showLabel && gameStarted && !hideHtml && (
+        <Html center distanceFactor={10} zIndexRange={[50, 0]} style={{ pointerEvents: 'none' }}>
           <div className={`font-black select-none pointer-events-none drop-shadow-md ${isHydrogen
             ? 'text-slate-950 text-xs font-black'
             : 'text-white text-base font-black tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]'
@@ -59,13 +61,15 @@ const AngleArc3D = ({
   v2,
   label,
   isCorrect = false,
-  isWrong = false
+  isWrong = false,
+  hideHtml = false
 }: {
   v1: THREE.Vector3;
   v2: THREE.Vector3;
   label?: string;
   isCorrect?: boolean;
   isWrong?: boolean;
+  hideHtml?: boolean;
 }) => {
   const n1 = useMemo(() => v1.clone().normalize(), [v1]);
   const n2 = useMemo(() => v2.clone().normalize(), [v2]);
@@ -109,11 +113,13 @@ const AngleArc3D = ({
     <group>
       <primitive object={new THREE.Line(lineGeometry, new THREE.LineBasicMaterial({ color: lineColor, linewidth: 3 }))} />
 
-      <Html position={midPoint} center distanceFactor={10} style={{ pointerEvents: 'none' }}>
-        <div className={badgeStyle}>
-          {label || '109.5°'}
-        </div>
-      </Html>
+      {!hideHtml && (
+        <Html position={midPoint} center distanceFactor={10} zIndexRange={[50, 0]} style={{ pointerEvents: 'none' }}>
+          <div className={badgeStyle}>
+            {label || '109.5°'}
+          </div>
+        </Html>
+      )}
     </group>
   );
 };
@@ -294,6 +300,7 @@ interface Level1UIProps {
   feedback: { isCorrect: boolean; message: string; explanation: string } | null;
   handleNextQuestion: () => void;
   gameStarted?: boolean;
+  hideHtml?: boolean;
 }
 
 function Level1UI({
@@ -303,7 +310,8 @@ function Level1UI({
   handleSubmit,
   feedback,
   handleNextQuestion,
-  gameStarted = true
+  gameStarted = true,
+  hideHtml = false
 }: Level1UIProps) {
   const [centralPlaced, setCentralPlaced] = useState(false);
   const [placedAtoms, setPlacedAtoms] = useState<THREE.Vector3[]>([]);
@@ -395,27 +403,26 @@ function Level1UI({
     : (hasInputAngle && !isCorrectAngle);
 
   return (
-    <div className="flex flex-col gap-3 w-full h-full flex-1 min-h-0 text-sm">
+    <div className="flex flex-col gap-1.5 sm:gap-3 w-full h-full flex-1 min-h-0 text-sm">
       {/* ── MAIN 3D CANVAS AREA (SINGLE CANVAS WORKSHOP) ───────────────────── */}
       <div
-        className="flex-1 w-full relative rounded-2xl overflow-hidden border border-slate-200 bg-gradient-to-b from-slate-50 to-white shadow-inner flex flex-col justify-between min-h-[360px]"
+        className="flex-1 w-full relative rounded-2xl overflow-hidden border border-slate-200 bg-gradient-to-b from-slate-50 to-white shadow-inner flex flex-col justify-between min-h-0"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
         {/* Floating Top Info Bar inside canvas */}
-        <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none gap-2">
-          <div className="bg-white/95 backdrop-blur-md border border-slate-200 px-3.5 py-1.5 rounded-xl shadow-sm flex items-center gap-3 pointer-events-auto shrink-0">
-            <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-wide">Target:</span>
-            <span className="text-xs font-extrabold text-[#1E293B]">{question.formula} ({question.molecule})</span>
-            <span className="text-[11px] font-semibold text-slate-500 hidden sm:inline">Shape: <strong className="text-slate-800">{question.targetShape || 'Tetrahedral'}</strong></span>
-            <span className="text-[11px] font-semibold text-slate-500 hidden md:inline">Ideal Angle: <strong className="text-blue-600">{targetAngle}°</strong></span>
+        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 z-10 flex items-center justify-between pointer-events-none gap-2">
+          <div className="vsepr-top-bar bg-white/95 backdrop-blur-md border border-slate-200 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl shadow-sm flex items-center gap-2 sm:gap-3 pointer-events-auto shrink-0">
+            <span className="text-[11px] sm:text-xs font-mono font-bold text-blue-600 uppercase tracking-wide">Target:</span>
+            <span className="text-[11px] sm:text-xs font-extrabold text-[#1E293B]">{question.formula} ({question.molecule})</span>
+            <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 hidden sm:inline">Shape: <strong className="text-slate-800">{question.targetShape || 'Tetrahedral'}</strong></span>
           </div>
 
           {/* Reset Control Floating Top Right */}
           <div className="flex items-center gap-2 pointer-events-auto">
             <button
               onClick={resetBuild}
-              className="px-3 py-1.5 bg-white/95 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
+              className="vsepr-top-bar px-2.5 sm:px-3 py-1 sm:py-1.5 bg-white/95 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
             >
               <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
               <span>Reset</span>
@@ -464,7 +471,7 @@ function Level1UI({
             <group position={[0, 0.8, 0]}>
               {/* Central Atom */}
               {centralPlaced && (
-                <Atom3D position={new THREE.Vector3(0, 0, 0)} element={centralElement} scale={0.95} labelOverride={centralElement[0].toUpperCase()} gameStarted={gameStarted} />
+                <Atom3D position={new THREE.Vector3(0, 0, 0)} element={centralElement} scale={0.95} labelOverride={centralElement[0].toUpperCase()} gameStarted={gameStarted} hideHtml={hideHtml} />
               )}
 
               {/* Outer Atoms & Bonds */}
@@ -473,7 +480,7 @@ function Level1UI({
                 const atomLabel = `${outerElement[0].toUpperCase()}${idx + 1}`;
                 return (
                   <React.Fragment key={idx}>
-                    <Atom3D position={pos} element={outerElement} scale={0.68} labelOverride={atomLabel} gameStarted={gameStarted} />
+                    <Atom3D position={pos} element={outerElement} scale={0.68} labelOverride={atomLabel} gameStarted={gameStarted} hideHtml={hideHtml} />
                     {bond && (
                       <Bond3D
                         start={new THREE.Vector3(0, 0, 0)}
@@ -498,6 +505,7 @@ function Level1UI({
                     label={inputAngle ? `${inputAngle}°` : `${targetAngle}°`}
                     isCorrect={isCorrectAngle}
                     isWrong={isWrongAngle}
+                    hideHtml={hideHtml}
                   />
                 )}
             </group>
@@ -505,9 +513,9 @@ function Level1UI({
         </div>
 
         {/* ── FLOATING BOTTOM INSTRUCTION DOCK / TOOLBAR ───────────────────── */}
-        <div className="absolute bottom-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 p-2.5 bg-white/95 backdrop-blur-md border border-slate-200 rounded-2xl shadow-lg">
+        <div className="vsepr-bottom-dock absolute bottom-1.5 sm:bottom-3 left-1.5 sm:left-3 right-1.5 sm:right-3 z-20 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 p-1.5 sm:p-2.5 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl sm:rounded-2xl shadow-lg">
           {/* Atom & Bond Tools Tray */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Central Atom Tool */}
             {!centralPlaced ? (
               <button
@@ -515,14 +523,14 @@ function Level1UI({
                 onDragStart={(e) => handleDragStart(e, 'central')}
                 onDragEnd={handleDragEnd}
                 onClick={() => placeItem('central')}
-                className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-800 font-extrabold text-xs flex items-center gap-1.5 cursor-grab active:cursor-grabbing transition-all shadow-sm"
+                className="vsepr-dock-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-800 font-extrabold text-xs flex items-center gap-1.5 cursor-grab active:cursor-grabbing transition-all shadow-sm"
               >
-                <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black">{centralElement[0].toUpperCase()}</span>
+                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black">{centralElement[0].toUpperCase()}</span>
                 <span>+ Central Atom</span>
               </button>
             ) : (
-              <div className="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs flex items-center gap-1.5 opacity-60 cursor-not-allowed">
-                <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-black">✓</span>
+              <div className="vsepr-dock-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs flex items-center gap-1.5 opacity-60 cursor-not-allowed">
+                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-black">✓</span>
                 <span>Central Placed</span>
               </div>
             )}
@@ -534,14 +542,14 @@ function Level1UI({
                 onDragStart={(e) => handleDragStart(e, 'outer')}
                 onDragEnd={handleDragEnd}
                 onClick={() => placeItem('outer')}
-                className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 font-extrabold text-xs flex items-center gap-1.5 cursor-grab active:cursor-grabbing transition-all shadow-sm"
+                className="vsepr-dock-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 font-extrabold text-xs flex items-center gap-1.5 cursor-grab active:cursor-grabbing transition-all shadow-sm"
               >
-                <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">{outerElement[0].toUpperCase()}</span>
+                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">{outerElement[0].toUpperCase()}</span>
                 <span>+ Outer Atom ({availableAtoms})</span>
               </button>
             ) : (
-              <div className="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs flex items-center gap-1.5 opacity-60 cursor-not-allowed">
-                <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-black">✓</span>
+              <div className="vsepr-dock-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs flex items-center gap-1.5 opacity-60 cursor-not-allowed">
+                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-black">✓</span>
                 <span>Atoms Placed</span>
               </div>
             )}
@@ -553,7 +561,7 @@ function Level1UI({
                 onDragStart={(e) => handleDragStart(e, 'bond-single')}
                 onDragEnd={handleDragEnd}
                 onClick={() => placeItem('bond-single')}
-                className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1 cursor-grab"
+                className="vsepr-dock-btn px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1 cursor-grab"
               >
                 <div className="w-3.5 h-1 bg-blue-500 rounded-full" />
                 <span>Single Bond</span>
@@ -563,7 +571,7 @@ function Level1UI({
                 onDragStart={(e) => handleDragStart(e, 'bond-double')}
                 onDragEnd={handleDragEnd}
                 onClick={() => placeItem('bond-double')}
-                className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1 cursor-grab"
+                className="vsepr-dock-btn px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1 cursor-grab"
               >
                 <div className="flex flex-col gap-0.5">
                   <div className="w-3.5 h-0.5 bg-purple-500 rounded-full" />
@@ -575,9 +583,9 @@ function Level1UI({
           </div>
 
           {/* Angle Selection & Verification Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Bond Pair Selectors */}
-            <div className="hidden md:flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded-xl">
+            <div className="hidden md:flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 sm:py-1 rounded-xl">
               <span className="text-[11px] font-bold text-slate-500">Pair:</span>
               <select
                 value={selectedBond1}
@@ -612,26 +620,25 @@ function Level1UI({
               placeholder="Angle (°)"
               value={inputAngle}
               onChange={(e) => setInputAngle(e.target.value)}
-              disabled={feedback !== null || !isBuildComplete}
-              className="w-24 px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-mono font-bold text-center text-[#1E293B] bg-white focus:outline-none focus:border-blue-500 shadow-inner"
+              disabled={feedback?.isCorrect || !isBuildComplete}
+              className={`vsepr-dock-input w-20 sm:w-24 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border text-xs font-mono font-bold text-center text-[#1E293B] bg-white focus:outline-none shadow-inner transition-colors ${
+                feedback && !feedback.isCorrect ? 'border-rose-400 bg-rose-50/60 ring-1 ring-rose-400' : 'border-slate-300 focus:border-blue-500'
+              }`}
             />
 
-            {/* Submit / Next Button */}
-            {!feedback ? (
+            {/* Submit / Target Completed Button (Continue button removed, directly shows Target Completed) */}
+            {feedback?.isCorrect ? (
+              <div className="vsepr-dock-btn px-3 sm:px-4 py-1 sm:py-1.5 bg-[#22C55E] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-1.5 animate-pulse">
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>Target Completed</span>
+              </div>
+            ) : (
               <button
                 onClick={handleSubmit}
                 disabled={!isBuildComplete}
-                className="px-4 py-1.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all disabled:opacity-40 cursor-pointer"
+                className="vsepr-dock-btn px-3 sm:px-4 py-1 sm:py-1.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all disabled:opacity-40 cursor-pointer"
               >
                 Check Angle
-              </button>
-            ) : (
-              <button
-                onClick={handleNextQuestion}
-                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-1 cursor-pointer"
-              >
-                <span>Continue</span>
-                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
@@ -1717,13 +1724,25 @@ export default function VseprGamePage({
 
     if (isCorrect) {
       setScores(s => ({ ...s, 1: s[1] + 1 }));
+      setFeedback({
+        isCorrect: true,
+        message: "Target Completed!",
+        explanation: q.explanation
+      });
+      // Directly show target is completed (brief 700ms to view green arc, then show completion screen)
+      setTimeout(() => {
+        handleNextQuestion();
+      }, 700);
+    } else {
+      setFeedback({
+        isCorrect: false,
+        message: `Incorrect angle. Try again!`,
+        explanation: q.explanation
+      });
+      setTimeout(() => {
+        setFeedback(null);
+      }, 2000);
     }
-
-    setFeedback({
-      isCorrect,
-      message: isCorrect ? "Correct!" : `Incorrect. The correct angle is ${q.targetAngle}°.`,
-      explanation: q.explanation
-    });
   };
 
   const handleSubmit = () => {
@@ -1767,7 +1786,7 @@ export default function VseprGamePage({
   const renderLevel1UI = () => {
     const q = getActiveQuestion() as Level1Question | null;
     if (!q) return null;
-    return <Level1UI question={q} inputAngle={inputAngle} setInputAngle={setInputAngle} handleSubmit={handleSubmit} feedback={feedback} handleNextQuestion={handleNextQuestion} gameStarted={gameStarted} />;
+    return <Level1UI question={q} inputAngle={inputAngle} setInputAngle={setInputAngle} handleSubmit={handleSubmit} feedback={feedback} handleNextQuestion={handleNextQuestion} gameStarted={gameStarted} hideHtml={showExplanationModal} />;
   };
 
   const renderLevel2UI = () => {
@@ -1785,6 +1804,7 @@ export default function VseprGamePage({
 
   // Intro Target Overlay State
   const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [introStep, setIntroStep] = useState<'mission' | 'instructions'>('mission');
   const [showExplanationModal, setShowExplanationModal] = useState<boolean>(false);
   const [showLabels, setShowLabels] = useState<boolean>(true);
 
@@ -1800,82 +1820,247 @@ export default function VseprGamePage({
     resetInputs();
     setCurrentQIndex(0);
     setGameStatus('playing');
+    setIntroStep('mission');
     setScores({ 1: 0, 2: 0, 3: 0 });
   };
 
   return (
-    <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-3.5 sm:p-4 gap-2.5">
-      {/* ── INTRO MISSION TARGET OVERLAY VIEW (COVERS FULL PAGE CONTAINER WITH BLUR) ───── */}
+    <div className="vsepr-page-container w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xl flex flex-col p-1.5 sm:p-4 gap-1 sm:gap-2.5">
+      <style>{`
+        @media (max-height: 450px) {
+          .vsepr-page-container {
+            padding: 4px 8px !important;
+            gap: 3px !important;
+          }
+          .vsepr-header-btn {
+            height: 28px !important;
+            min-height: 28px !important;
+            padding-top: 2px !important;
+            padding-bottom: 2px !important;
+            font-size: 11px !important;
+          }
+          .vsepr-top-bar {
+            top: 4px !important;
+            padding: 2px 8px !important;
+            font-size: 11px !important;
+          }
+          .vsepr-bottom-dock {
+            bottom: 4px !important;
+            left: 4px !important;
+            right: 4px !important;
+            padding: 3px 8px !important;
+            gap: 4px !important;
+          }
+          .vsepr-dock-btn {
+            padding: 2px 7px !important;
+            font-size: 10px !important;
+          }
+          .vsepr-dock-input {
+            height: 26px !important;
+            padding: 1px 6px !important;
+            font-size: 11px !important;
+          }
+        }
+      `}</style>
+      {/* ── INTRO MISSION TARGET & INSTRUCTIONS OVERLAY VIEW (COVERS FULL PAGE CONTAINER WITH BLUR) ───── */}
       {!gameStarted && (
         <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-6 bg-white/40 backdrop-blur-md overflow-y-auto">
           {/* Top Header Bar */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
-              onClick={() => router.back()}
+              onClick={() => {
+                if (introStep === 'instructions') {
+                  setIntroStep('mission');
+                } else {
+                  router.back();
+                }
+              }}
               className="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-sm cursor-pointer"
+              title="Back"
             >
               <ChevronLeft className="w-4 h-4 text-[#2563EB]" />
             </button>
           </div>
 
-          {/* Central Target Text & Start Mission Button */}
-          <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-5 z-10 px-2 sm:px-4 py-2">
-            <div className="text-[#2563EB] text-[10px] sm:text-sm font-mono font-bold tracking-[0.25em] uppercase">
-              VSEPR THEORY & MOLECULAR GEOMETRIES
-            </div>
+          {/* STEP 1: MISSION TARGET OVERVIEW (WITH PREVIEW SCREENSHOT & NEXT BUTTON) */}
+          {introStep === 'mission' && (
+            <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-4 z-10 px-2 sm:px-4 py-2 w-full">
+              <div className="text-[#2563EB] text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
+                VSEPR THEORY & MOLECULAR GEOMETRIES
+              </div>
 
-            <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
-              <span className="text-[#2563EB]">TARGET:</span> {currentLevel === 1 ? 'Predict Bond Angles & Build 3D Geometries' : currentLevel === 2 ? 'Fill Target Holes & Predict Lone Pair Repulsions' : 'Order Molecules by Decreasing Bond Angle'}
-            </h1>
+              <h1 className="text-lg sm:text-2xl md:text-4xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+                <span className="text-[#2563EB]">MISSION:</span> {currentLevel === 1 ? 'Predict bond angles and build 3D tetrahedral geometry' : currentLevel === 2 ? 'Fill Target Holes & Predict Lone Pair Repulsions' : 'Order Molecules by Decreasing Bond Angle'}
+              </h1>
 
-            <div className="pt-1 sm:pt-4">
-              <button
-                onClick={() => setGameStarted(true)}
-                className="px-6 py-2 sm:px-8 sm:py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider rounded-full shadow-lg border border-blue-400 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                START MISSION
-              </button>
+              {/* Challenge Preview Screenshot (Only for Easy Challenge) */}
+              {currentLevel === 1 && (
+                <div className="flex justify-center my-2 sm:my-3">
+                  <div className="relative rounded-2xl p-1 bg-slate-900/95 shadow-2xl border-2 border-slate-700/70 max-w-[260px] sm:max-w-[340px] md:max-w-[380px] [@media(max-height:450px)]:max-w-[190px] [@media(max-height:450px)]:my-1 overflow-hidden transition-transform transform hover:scale-[1.02]">
+                    <img
+                      src="/images/vsepr_easy_preview.png"
+                      alt="Easy Challenge 3D Workshop Preview"
+                      className="rounded-xl w-full h-auto object-cover border border-slate-700 shadow-inner"
+                    />
+                    <div className="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-md px-2 py-0.5 rounded-lg border border-slate-700 text-[9px] sm:text-[10px] font-mono font-bold text-blue-300 shadow">
+                      CH₄ (Methane)
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Next Button */}
+              <div className="pt-1 sm:pt-3">
+                <button
+                  onClick={() => {
+                    if (currentLevel === 1) {
+                      setIntroStep('instructions');
+                    } else {
+                      setGameStarted(true);
+                    }
+                  }}
+                  className="px-8 sm:px-10 py-2.5 sm:py-3 bg-gradient-to-r from-teal-800 to-cyan-900 hover:from-teal-700 hover:to-cyan-800 text-teal-200 hover:text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider rounded-full shadow-lg border border-teal-400/50 flex items-center gap-2 mx-auto cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                >
+                  <span>NEXT</span>
+                  <ChevronRight className="w-4 h-4 text-teal-300" />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* STEP 2: INSTRUCTIONS TO PLAY (3-POINT INSTRUCTIONS WITH BACK AND PLAY BUTTONS) */}
+          {introStep === 'instructions' && (
+            <div className="max-w-3xl mx-auto my-auto text-center space-y-2.5 sm:space-y-4 z-10 px-2 sm:px-4 py-2 w-full animate-in fade-in duration-200">
+              <div className="text-teal-600 text-[11px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
+                INSTRUCTIONS TO PLAY
+              </div>
+
+              {/* 3 Instruction Points */}
+              <div className="space-y-2 sm:space-y-3 text-left max-w-2xl mx-auto w-full">
+                {/* Point 1 */}
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 sm:p-3.5 shadow-lg border border-slate-200/90 flex items-start sm:items-center gap-3 transition-all">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs sm:text-sm shrink-0 shadow-md">
+                    1
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-extrabold text-xs sm:text-sm text-[#1E293B] font-mono">
+                        Build Central & Outer Atoms
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px]">
+                        Bottom Palette
+                      </span>
+                    </div>
+                    <p className="text-slate-500 text-xs mt-0.5 leading-snug">
+                      Click or drag the central Carbon (C) atom onto the pedestal, followed by 4 outer Hydrogen (H) atoms.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Point 2 */}
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 sm:p-3.5 shadow-lg border border-slate-200/90 flex items-start sm:items-center gap-3 transition-all">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs sm:text-sm shrink-0 shadow-md">
+                    2
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-extrabold text-xs sm:text-sm text-[#1E293B] font-mono">
+                        Connect Chemical Bonds
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px]">
+                        Single Bond
+                      </span>
+                    </div>
+                    <p className="text-slate-500 text-xs mt-0.5 leading-snug">
+                      Select the single bond tool to attach and bridge each outer Hydrogen atom to the central Carbon core.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Point 3 */}
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 sm:p-3.5 shadow-lg border border-slate-200/90 flex items-start sm:items-center gap-3 transition-all">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs sm:text-sm shrink-0 shadow-md">
+                    3
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-extrabold text-xs sm:text-sm text-[#1E293B] font-mono">
+                        Calculate & Check Angle
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px]">
+                        Target: 109.5°
+                      </span>
+                    </div>
+                    <p className="text-slate-500 text-xs mt-0.5 leading-snug">
+                      Select any pair of bonded atoms, enter the ideal bond angle (109.5°), and click Check Angle to complete!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons: Back and Play */}
+              <div className="pt-2 sm:pt-4 flex items-center justify-center gap-3">
+                <button
+                  onClick={() => setIntroStep('mission')}
+                  className="px-6 sm:px-8 py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1.5 cursor-pointer transition-all"
+                >
+                  <ChevronLeft className="w-4 h-4 text-slate-400" />
+                  <span>BACK</span>
+                </button>
+
+                <button
+                  onClick={() => setGameStarted(true)}
+                  className="px-8 sm:px-10 py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-2 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                >
+                  <Play className="w-4 h-4 fill-white" />
+                  <span>PLAY</span>
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Bottom Footer Note */}
           <div className="w-full text-center text-[10px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0">
-            Click Start Mission to launch the single canvas VSEPR workshop
+            {introStep === 'mission' ? 'Click NEXT to view challenge instructions' : 'Click PLAY to enter the 3D workshop'}
           </div>
         </div>
       )}
 
       {/* ── TOP TOOLBAR HEADER ────────────────────────────────────────── */}
       <div className="w-full flex items-center justify-between z-20 shrink-0 gap-2">
-        {/* Top Left: Back Button & Fullscreen */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => router.back()}
-            className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
-            title="Back to Topics"
-          >
-            <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
-            <span className="hidden sm:inline">Back</span>
-          </button>
+        {/* Top Left: Back Button & Fullscreen (Removed completely for Topic 1 Easy Challenge) */}
+        {currentLevel !== 1 ? (
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <button
+              onClick={() => router.back()}
+              className="vsepr-header-btn h-8 sm:h-10 px-2.5 sm:px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
+              title="Back to Topics"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#2563EB]" />
+              <span className="hidden sm:inline">Back</span>
+            </button>
 
-          <button
-            onClick={toggleFullscreen}
-            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
-            title="Toggle Fullscreen"
-          >
-            <Maximize2 className="w-4 h-4" />
-          </button>
-        </div>
+            <button
+              onClick={toggleFullscreen}
+              className="vsepr-header-btn w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
+              title="Toggle Fullscreen"
+            >
+              <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </button>
+          </div>
+        ) : (
+          <div />
+        )}
 
-
+        {/* Top Center removed completely per user request */}
 
         {/* Action Controls Top Right */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowExplanationModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-bold text-xs shadow-sm transition-all cursor-pointer"
+            className="vsepr-header-btn flex items-center gap-1.5 h-8 sm:h-10 px-2.5 sm:px-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-bold text-xs shadow-sm transition-all cursor-pointer"
           >
-            <BookOpen className="w-4 h-4 text-purple-600" />
+            <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600" />
             <span>Explanation</span>
           </button>
         </div>
@@ -1888,38 +2073,47 @@ export default function VseprGamePage({
         {gameStatus === 'playing' && currentLevel === 3 && renderLevel3UI()}
 
         {gameStatus === 'level-complete' && (
-          <div className="flex flex-col items-center justify-center h-full text-center max-w-lg mx-auto py-12 animate-in zoom-in-95 duration-500">
-            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4 shadow-xl border-4 bg-emerald-50 text-emerald-600 border-emerald-200">
-              <Trophy className="w-10 h-10" />
+          <div className="flex flex-col items-center justify-center h-full text-center max-w-lg mx-auto py-6 sm:py-12 animate-in zoom-in-95 duration-500">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mb-3 sm:mb-4 shadow-xl border-4 bg-emerald-50 text-emerald-600 border-emerald-200">
+              <Trophy className="w-8 h-8 sm:w-10 sm:h-10" />
             </div>
-            <h2 className="text-2xl font-extrabold text-[#1E293B] mb-1">
-              🎉 Easy Level Complete!
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#1E293B] mb-1">
+              🎉 Target Completed!
             </h2>
-            <p className="text-slate-500 mb-6 text-sm">
-              You have successfully predicted the bond angles and built the 3D geometries!
+            <p className="text-slate-500 mb-5 sm:mb-6 text-xs sm:text-sm">
+              Easy Level Complete! You have successfully predicted the bond angle and built the 3D geometry!
             </p>
 
-            <button
-              onClick={handleNextLevel}
-              className="px-8 py-3 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#2563EB] hover:bg-[#1d4ed8] text-white shadow-lg flex items-center gap-2 cursor-pointer transition-all transform hover:scale-105"
-            >
-              Proceed to Medium Level
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {/* Back to Topic / Replay - Next level / Medium challenge button removed per user request */}
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={() => router.back()}
+                className="px-6 py-2.5 sm:px-8 sm:py-3 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#2563EB] hover:bg-[#1d4ed8] text-white shadow-lg flex items-center gap-2 cursor-pointer transition-all transform hover:scale-105"
+              >
+                Back to Topics
+              </button>
+              <button
+                onClick={handleResetChallenge}
+                className="px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-extrabold text-xs uppercase tracking-wider bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-md flex items-center gap-1.5 cursor-pointer transition-all"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                Replay Challenge
+              </button>
+            </div>
           </div>
         )}
 
         {gameStatus === 'game-complete' && (
-          <div className="flex flex-col items-center justify-center h-full text-center max-w-lg mx-auto py-12 animate-in zoom-in-95 duration-500">
-            <div className="w-20 h-20 rounded-full bg-amber-50 text-amber-600 border-4 border-amber-200 flex items-center justify-center mb-4 shadow-xl">
-              <Trophy className="w-10 h-10" />
+          <div className="flex flex-col items-center justify-center h-full text-center max-w-lg mx-auto py-6 sm:py-12 animate-in zoom-in-95 duration-500">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-amber-50 text-amber-600 border-4 border-amber-200 flex items-center justify-center mb-3 sm:mb-4 shadow-xl">
+              <Trophy className="w-8 h-8 sm:w-10 sm:h-10" />
             </div>
-            <h2 className="text-3xl font-extrabold text-[#1E293B] mb-2">Master Chemist!</h2>
-            <p className="text-slate-500 mb-6 text-sm">You have successfully completed all VSEPR Theory levels!</p>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1E293B] mb-2">Master Chemist!</h2>
+            <p className="text-slate-500 mb-4 sm:mb-6 text-xs sm:text-sm">You have successfully completed all VSEPR Theory levels!</p>
 
             <button
               onClick={() => router.back()}
-              className="px-8 py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-full font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
+              className="px-6 py-2.5 sm:px-8 sm:py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-full font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer"
             >
               Back to Topic
             </button>
@@ -1927,52 +2121,279 @@ export default function VseprGamePage({
         )}
       </div>
 
-      {/* ── THEORY / EXPLANATION MODAL ─────────────────────────────────────── */}
+      {/* ── THEORY / EXPLANATION VIEW (FULL SCREEN SPREAD ACROSS WHOLE SCREEN) ── */}
       {showExplanationModal && (
-        <div className="fixed inset-0 z-[9999] bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-center animate-in fade-in zoom-in-95 my-auto text-[#1E293B]">
+        <div className="fixed inset-0 z-[999999] bg-white flex flex-col w-full h-full text-[#1E293B] overflow-hidden animate-in fade-in duration-200 select-text">
+          {/* Top Sticky Header Bar */}
+          <div className="flex items-center justify-between px-4 sm:px-8 py-3.5 border-b border-slate-200 bg-white/95 backdrop-blur-md shrink-0 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shadow-sm">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-lg font-black text-[#1E293B] tracking-tight">
+                  VSEPR Theory & Molecular Geometry Guide
+                </h2>
+                <p className="text-xs text-[#64748B] font-medium hidden sm:block">
+                  Valence Shell Electron Pair Repulsion: Principles, Geometries, Angles & Repulsions
+                </p>
+              </div>
+            </div>
             <button
               onClick={() => setShowExplanationModal(false)}
-              className="absolute top-4 right-4 p-1 rounded-full bg-slate-100 text-[#64748B] hover:text-[#1E293B] cursor-pointer"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#475569] hover:text-[#0F172A] transition-all cursor-pointer shadow-sm"
+              title="Close Explanation"
             >
               <X className="w-5 h-5" />
             </button>
+          </div>
 
-            <div className="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 mx-auto mb-3 shadow-sm">
-              <BookOpen className="w-7 h-7" />
-            </div>
-
-            <h2 className="text-xl font-extrabold text-[#1E293B] tracking-tight mb-1">
-              VSEPR Theory Explanation
-            </h2>
-            <p className="text-xs text-[#64748B] font-medium mb-4">
-              Valence Shell Electron Pair Repulsion Theory & Geometries
-            </p>
-
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left space-y-3 mb-5 text-xs text-slate-700">
-              <div>
-                <h4 className="font-extrabold text-blue-700 mb-1">1. Bond Angle Rules</h4>
-                <p className="leading-relaxed">Electron pairs in the valence shell repel each other and take positions as far apart as possible to minimize repulsion.</p>
+          {/* Full Screen Theory Content Body (Spread across the whole screen) */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-8 md:px-12 py-5 sm:py-7 space-y-6 w-full text-slate-800">
+            {/* Section 1: Core Principle */}
+            <div className="space-y-2 border-b border-slate-200 pb-5">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center">1</span>
+                <h3 className="text-sm sm:text-base font-extrabold text-blue-900 tracking-tight">
+                  Core Principle of VSEPR Theory
+                </h3>
               </div>
-              <div>
-                <h4 className="font-extrabold text-purple-700 mb-1">2. Lone Pair Repulsion</h4>
-                <p className="leading-relaxed">Lone pairs exert greater repulsion than bonding pairs: <br /><strong>Lone Pair - Lone Pair &gt; Lone Pair - Bond Pair &gt; Bond Pair - Bond Pair</strong>.</p>
-              </div>
-              <div>
-                <h4 className="font-extrabold text-emerald-700 mb-1">3. Common Geometries</h4>
-                <ul className="list-disc pl-4 space-y-0.5 font-mono text-[11px]">
-                  <li>AX₂ (Linear): 180°</li>
-                  <li>AX₃ (Trigonal Planar): 120°</li>
-                  <li>AX₄ (Tetrahedral): 109.5° (e.g. CH₄)</li>
-                  <li>AX₃E (Trigonal Pyramidal): 107° (e.g. NH₃)</li>
-                  <li>AX₂E₂ (Bent): 104.5° (e.g. H₂O)</li>
-                </ul>
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-8">
+                <strong>VSEPR</strong> stands for <strong>Valence Shell Electron Pair Repulsion</strong>. It is a fundamental model used in chemistry to predict the three-dimensional geometry of individual molecules based upon the extent of electron-pair electrostatic repulsion.
+              </p>
+              <div className="pl-8 pt-1 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-3">
+                  <h5 className="font-bold text-blue-800 mb-1">Electrostatic Minimization</h5>
+                  <p className="text-slate-600 leading-normal">
+                    Electrons have negative charges and naturally repel each other. They position themselves in space as far apart as possible to minimize potential energy and achieve the most stable geometric arrangement.
+                  </p>
+                </div>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <h5 className="font-bold text-slate-800 mb-1">Electron Pairs Form Domains</h5>
+                  <p className="text-slate-600 leading-normal">
+                    Single bonds, double bonds, triple bonds, and unshared non-bonding lone pairs each count as a single <strong>electron domain</strong> around the central atom when determining the basic geometry.
+                  </p>
+                </div>
               </div>
             </div>
 
+            {/* Section 2: Repulsion Hierarchy */}
+            <div className="space-y-2 border-b border-slate-200 pb-5">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-purple-600 text-white font-extrabold text-xs flex items-center justify-center">2</span>
+                <h3 className="text-sm sm:text-base font-extrabold text-purple-900 tracking-tight">
+                  The Electron Repulsion Magnitude Hierarchy
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-8">
+                Not all electron pairs repel with equal force. Non-bonding lone pairs take up significantly more space than bonding pairs because they are attracted to only <strong>one</strong> atomic nucleus (the central atom), whereas bonding pairs are held tightly between <strong>two</strong> positive nuclei.
+              </p>
+              <div className="pl-8 pt-2">
+                <div className="bg-purple-50/80 border border-purple-200 rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+                  <div>
+                    <span className="text-[11px] font-bold text-purple-600 uppercase tracking-wider block">Repulsion Strength Order</span>
+                    <span className="text-xs sm:text-sm font-black text-purple-950">
+                      Lone Pair – Lone Pair &gt; Lone Pair – Bond Pair &gt; Bond Pair – Bond Pair
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-purple-700 font-semibold bg-white/80 px-3 py-1.5 rounded-lg border border-purple-200 shrink-0">
+                    LP–LP &gt; LP–BP &gt; BP–BP
+                  </div>
+                </div>
+
+                {/* Example Comparison Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 text-xs">
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+                    <span className="font-extrabold text-[#1E293B] block text-sm">CH₄ (Methane)</span>
+                    <span className="text-slate-500 text-[11px] block mt-0.5">4 Bond Pairs, 0 Lone Pairs</span>
+                    <div className="mt-2 text-blue-600 font-mono font-black text-base">109.5°</div>
+                    <span className="text-[11px] text-slate-500">Ideal Tetrahedral</span>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+                    <span className="font-extrabold text-[#1E293B] block text-sm">NH₃ (Ammonia)</span>
+                    <span className="text-slate-500 text-[11px] block mt-0.5">3 Bond Pairs, 1 Lone Pair</span>
+                    <div className="mt-2 text-purple-600 font-mono font-black text-base">107.0°</div>
+                    <span className="text-[11px] text-slate-500">Compressed by ~2.5°</span>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+                    <span className="font-extrabold text-[#1E293B] block text-sm">H₂O (Water)</span>
+                    <span className="text-slate-500 text-[11px] block mt-0.5">2 Bond Pairs, 2 Lone Pairs</span>
+                    <div className="mt-2 text-rose-600 font-mono font-black text-base">104.5°</div>
+                    <span className="text-[11px] text-slate-500">Compressed by ~5.0°</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3: Steric Number & Formula Notation */}
+            <div className="space-y-2 border-b border-slate-200 pb-5">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center">3</span>
+                <h3 className="text-sm sm:text-base font-extrabold text-emerald-900 tracking-tight">
+                  Steric Number (SN) & Formula Notation (AXₘEₙ)
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-8">
+                In VSEPR notation: <strong>A</strong> represents the central atom, <strong>X</strong> represents bonded atoms (ligands), and <strong>E</strong> represents non-bonding lone pairs on the central atom.
+              </p>
+              <div className="pl-8 pt-1 text-xs text-slate-700 space-y-1">
+                <p>• <strong>Steric Number (SN) = m + n</strong> (Total electron domains around the central atom).</p>
+                <p>• <strong>Electron Geometry</strong>: Spatial arrangement of ALL electron domains (both bonded atoms and lone pairs).</p>
+                <p>• <strong>Molecular Geometry</strong>: Actual observable spatial arrangement of ATOMS only (ignoring lone pairs in the final shape description).</p>
+              </div>
+            </div>
+
+            {/* Section 4: Full Geometries Table */}
+            <div className="space-y-3 border-b border-slate-200 pb-5">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-amber-600 text-white font-extrabold text-xs flex items-center justify-center">4</span>
+                <h3 className="text-sm sm:text-base font-extrabold text-amber-900 tracking-tight">
+                  Comprehensive Molecular Geometries & Ideal Angles Reference
+                </h3>
+              </div>
+              <div className="pl-8 overflow-x-auto">
+                <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                  <thead className="bg-slate-100 font-bold text-slate-700 border-b border-slate-200">
+                    <tr>
+                      <th className="p-2.5">Steric No.</th>
+                      <th className="p-2.5">Formula</th>
+                      <th className="p-2.5">Bond Pairs</th>
+                      <th className="p-2.5">Lone Pairs</th>
+                      <th className="p-2.5">Molecular Geometry</th>
+                      <th className="p-2.5">Ideal Bond Angle</th>
+                      <th className="p-2.5">Real Examples</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white">
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">2</td>
+                      <td className="p-2.5 font-mono font-bold">AX₂</td>
+                      <td className="p-2.5">2</td>
+                      <td className="p-2.5">0</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Linear</td>
+                      <td className="p-2.5 font-mono font-bold text-blue-600">180°</td>
+                      <td className="p-2.5 font-mono text-slate-600">CO₂, BeCl₂, HCN</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">3</td>
+                      <td className="p-2.5 font-mono font-bold">AX₃</td>
+                      <td className="p-2.5">3</td>
+                      <td className="p-2.5">0</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Trigonal Planar</td>
+                      <td className="p-2.5 font-mono font-bold text-blue-600">120°</td>
+                      <td className="p-2.5 font-mono text-slate-600">BF₃, SO₃, AlCl₃</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">3</td>
+                      <td className="p-2.5 font-mono font-bold">AX₂E</td>
+                      <td className="p-2.5">2</td>
+                      <td className="p-2.5">1</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Bent / Angular</td>
+                      <td className="p-2.5 font-mono font-bold text-purple-600">&lt; 120° (~119°)</td>
+                      <td className="p-2.5 font-mono text-slate-600">SO₂, O₃, NO₂⁻</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">4</td>
+                      <td className="p-2.5 font-mono font-bold">AX₄</td>
+                      <td className="p-2.5">4</td>
+                      <td className="p-2.5">0</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Tetrahedral</td>
+                      <td className="p-2.5 font-mono font-bold text-blue-600">109.5°</td>
+                      <td className="p-2.5 font-mono text-slate-600">CH₄, CCl₄, SiH₄, NH₄⁺</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">4</td>
+                      <td className="p-2.5 font-mono font-bold">AX₃E</td>
+                      <td className="p-2.5">3</td>
+                      <td className="p-2.5">1</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Trigonal Pyramidal</td>
+                      <td className="p-2.5 font-mono font-bold text-purple-600">107.0°</td>
+                      <td className="p-2.5 font-mono text-slate-600">NH₃, PCl₃, H₃O⁺</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">4</td>
+                      <td className="p-2.5 font-mono font-bold">AX₂E₂</td>
+                      <td className="p-2.5">2</td>
+                      <td className="p-2.5">2</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Bent / V-Shaped</td>
+                      <td className="p-2.5 font-mono font-bold text-rose-600">104.5°</td>
+                      <td className="p-2.5 font-mono text-slate-600">H₂O, OF₂, SCl₂</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">5</td>
+                      <td className="p-2.5 font-mono font-bold">AX₅</td>
+                      <td className="p-2.5">5</td>
+                      <td className="p-2.5">0</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Trigonal Bipyramidal</td>
+                      <td className="p-2.5 font-mono font-bold text-blue-600">90° & 120°</td>
+                      <td className="p-2.5 font-mono text-slate-600">PCl₅, PF₅</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">5</td>
+                      <td className="p-2.5 font-mono font-bold">AX₄E</td>
+                      <td className="p-2.5">4</td>
+                      <td className="p-2.5">1</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Seesaw</td>
+                      <td className="p-2.5 font-mono font-bold text-purple-600">&lt; 90° & &lt; 120°</td>
+                      <td className="p-2.5 font-mono text-slate-600">SF₄, TeCl₄</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">6</td>
+                      <td className="p-2.5 font-mono font-bold">AX₆</td>
+                      <td className="p-2.5">6</td>
+                      <td className="p-2.5">0</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Octahedral</td>
+                      <td className="p-2.5 font-mono font-bold text-blue-600">90°</td>
+                      <td className="p-2.5 font-mono text-slate-600">SF₆, [PCl₆]⁻</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-2.5 font-bold text-blue-600">6</td>
+                      <td className="p-2.5 font-mono font-bold">AX₄E₂</td>
+                      <td className="p-2.5">4</td>
+                      <td className="p-2.5">2</td>
+                      <td className="p-2.5 font-extrabold text-slate-800">Square Planar</td>
+                      <td className="p-2.5 font-mono font-bold text-purple-600">90°</td>
+                      <td className="p-2.5 font-mono text-slate-600">XeF₄, [ICl₄]⁻</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Section 5: Step-by-Step Guide for the Easy Challenge */}
+            <div className="space-y-2 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-extrabold text-xs flex items-center justify-center">5</span>
+                <h3 className="text-sm sm:text-base font-extrabold text-indigo-900 tracking-tight">
+                  How to Complete the Easy Challenge Workshop
+                </h3>
+              </div>
+              <div className="pl-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs pt-1">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <span className="font-extrabold text-blue-600 block mb-1">Step 1: Place Central</span>
+                  <p className="text-slate-600">Click or drag the central atom (e.g. Carbon <strong>C</strong>) onto the 3D pedestal.</p>
+                </div>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <span className="font-extrabold text-emerald-600 block mb-1">Step 2: Add Outer Atoms</span>
+                  <p className="text-slate-600">Add all outer atoms (e.g. 4 Hydrogen <strong>H</strong> atoms) around the central core.</p>
+                </div>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <span className="font-extrabold text-purple-600 block mb-1">Step 3: Connect Bonds</span>
+                  <p className="text-slate-600">Click single or double bonds to bridge each outer atom to the central atom.</p>
+                </div>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <span className="font-extrabold text-amber-600 block mb-1">Step 4: Check Bond Angle</span>
+                  <p className="text-slate-600">Select any atom pair, enter the ideal bond angle (e.g. 109.5° for CH₄), and click Check Angle!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Fixed Action Bar */}
+          <div className="px-4 sm:px-8 py-3 border-t border-slate-200 bg-white/95 backdrop-blur-md shrink-0 flex justify-center">
             <button
               onClick={() => setShowExplanationModal(false)}
-              className="w-full bg-[#2563EB] hover:bg-[#1d4ed8] text-white py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+              className="w-full max-w-lg bg-[#2563EB] hover:bg-[#1d4ed8] text-white py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all shadow-md cursor-pointer hover:shadow-lg"
             >
               Got It! Back to Workshop
             </button>

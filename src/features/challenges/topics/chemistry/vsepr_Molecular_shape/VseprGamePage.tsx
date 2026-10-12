@@ -23,7 +23,10 @@ const Atom3D = ({
   showLabel = true,
   labelOverride,
   gameStarted = true,
-  hideHtml = false
+  hideHtml = false,
+  isSelected = false,
+  isAngleSelected = false,
+  onClick,
 }: {
   position: THREE.Vector3;
   element: string;
@@ -33,21 +36,76 @@ const Atom3D = ({
   labelOverride?: string;
   gameStarted?: boolean;
   hideHtml?: boolean;
+  isSelected?: boolean;
+  isAngleSelected?: boolean;
+  onClick?: () => void;
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const elemLower = element.toLowerCase();
   const isHydrogen = elemLower === 'hydrogen' || elemLower === 'h';
   const textContent = labelOverride || (elemLower === 'carbon' ? 'C' : elemLower === 'oxygen' ? 'O' : element.substring(0, 1).toUpperCase());
 
+  const baseMaterial = useMemo(() => getAtomMaterial(element), [element]);
+  const angleSelectedMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: 0x2563eb,
+        roughness: 0.25,
+        metalness: 0.2,
+        emissive: 0x1d4ed8,
+        emissiveIntensity: 0.45,
+      }),
+    []
+  );
+  const bondSelectedMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: 0x0284c7,
+        roughness: 0.25,
+        metalness: 0.2,
+        emissive: 0x0284c7,
+        emissiveIntensity: 0.45,
+      }),
+    []
+  );
+
+  const activeMaterial = isAngleSelected ? angleSelectedMaterial : isSelected ? bondSelectedMaterial : baseMaterial;
+
   return (
     <group position={position} scale={scale}>
-      <Sphere ref={meshRef} args={[0.9, 32, 32]} material={getAtomMaterial(element)} />
+      <Sphere
+        ref={meshRef}
+        args={[0.9, 32, 32]}
+        material={activeMaterial}
+        onClick={(e) => {
+          if (onClick) {
+            e.stopPropagation();
+            onClick();
+          }
+        }}
+        onPointerOver={(e) => {
+          if (onClick) {
+            e.stopPropagation();
+            document.body.style.cursor = 'pointer';
+          }
+        }}
+        onPointerOut={(e) => {
+          if (onClick) {
+            e.stopPropagation();
+            document.body.style.cursor = 'auto';
+          }
+        }}
+      />
       {showLabel && gameStarted && !hideHtml && (
         <Html center distanceFactor={10} zIndexRange={[50, 0]} style={{ pointerEvents: 'none' }}>
-          <div className={`font-black select-none pointer-events-none drop-shadow-md ${isHydrogen
-            ? 'text-slate-950 text-xs font-black'
-            : 'text-white text-base font-black tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]'
-            }`}>
+          <div
+            className={`font-black select-none pointer-events-none drop-shadow-md ${isAngleSelected || isSelected
+              ? 'text-white text-xs font-black'
+              : isHydrogen
+                ? 'text-slate-950 text-xs font-black'
+                : 'text-white text-base font-black tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]'
+              }`}
+          >
             {textContent}
           </div>
         </Html>
@@ -116,7 +174,7 @@ const AngleArc3D = ({
       {!hideHtml && (
         <Html position={midPoint} center distanceFactor={10} zIndexRange={[50, 0]} style={{ pointerEvents: 'none' }}>
           <div className={badgeStyle}>
-            {label || '109.5°'}
+            {label ? label : '?'}
           </div>
         </Html>
       )}
@@ -321,6 +379,11 @@ function Level1UI({
   const [selectedBond1, setSelectedBond1] = useState<number>(-1);
   const [selectedBond2, setSelectedBond2] = useState<number>(-1);
 
+  // Atom selection states for bonding & angle measurement
+  const [selectedCForBond, setSelectedCForBond] = useState(false);
+  const [selectedHIndexForBond, setSelectedHIndexForBond] = useState<number | null>(null);
+  const [selectedHForAngle, setSelectedHForAngle] = useState<number[]>([]);
+
   const formula = question.formula;
   const centralElement = getCentralAtom(formula);
   const outerElement = getOuterAtom(formula);
@@ -333,8 +396,93 @@ function Level1UI({
     setPlacedBonds([]);
     setSelectedBond1(-1);
     setSelectedBond2(-1);
+    setSelectedCForBond(false);
+    setSelectedHIndexForBond(null);
+    setSelectedHForAngle([]);
     setInputAngle("");
     setActiveDragItem(null);
+  };
+
+  const handleTapC = () => {
+    if (!centralPlaced) {
+      setCentralPlaced(true);
+      return;
+    }
+    setSelectedCForBond(prev => !prev);
+  };
+
+  const handleTapH = (idx: number) => {
+    const isBonded = placedBonds.some(b => b.index === idx);
+
+    // If this H atom is not bonded yet, select/unselect it for forming a bond with Carbon
+    if (!isBonded) {
+      setSelectedHIndexForBond(prev => (prev === idx ? null : idx));
+      setSelectedHForAngle(prev => prev.filter(i => i !== idx));
+      return;
+    }
+
+    // If Carbon is explicitly selected, allow selecting this bonded H to modify bond type
+    if (selectedCForBond) {
+      setSelectedHIndexForBond(prev => (prev === idx ? null : idx));
+      setSelectedHForAngle(prev => prev.filter(i => i !== idx));
+      return;
+    }
+
+    // Otherwise, this is a bonded H atom tapped to measure bond angle:
+    setSelectedHIndexForBond(null);
+    setSelectedHForAngle(prev => {
+      let next: number[];
+      if (prev.includes(idx)) {
+        next = prev.filter(i => i !== idx);
+      } else if (prev.length < 2) {
+        next = [...prev, idx];
+      } else {
+        next = [prev[1], idx];
+      }
+
+      if (next.length === 2) {
+        setSelectedBond1(next[0]);
+        setSelectedBond2(next[1]);
+      } else if (next.length === 1) {
+        setSelectedBond1(next[0]);
+        setSelectedBond2(-1);
+      } else {
+        setSelectedBond1(-1);
+        setSelectedBond2(-1);
+      }
+      return next;
+    });
+  };
+
+  const createBond = (type: string) => {
+    if (!centralPlaced) {
+      setCentralPlaced(true);
+    }
+    if (placedAtoms.length === 0) {
+      alert("Place Hydrogen atoms first!");
+      return;
+    }
+
+    if (selectedHIndexForBond !== null) {
+      setPlacedBonds(prev => {
+        const filtered = prev.filter(b => b.index !== selectedHIndexForBond);
+        return [...filtered, { index: selectedHIndexForBond, type }];
+      });
+    } else {
+      const nextUnbondedIdx = placedAtoms.findIndex((_, idx) => !placedBonds.some(b => b.index === idx));
+      if (nextUnbondedIdx !== -1) {
+        setPlacedBonds(prev => [...prev, { index: nextUnbondedIdx, type }]);
+      } else if (placedBonds.length < placedAtoms.length) {
+        setPlacedBonds(prev => [...prev, { index: prev.length, type }]);
+      }
+    }
+
+    // After making a bond: remove blue color from all H atoms and unselect Carbon
+    setSelectedHIndexForBond(null);
+    setSelectedCForBond(false);
+    setSelectedHForAngle([]);
+    setSelectedBond1(-1);
+    setSelectedBond2(-1);
   };
 
   const placeItem = (itemType: string) => {
@@ -342,8 +490,7 @@ function Level1UI({
       setCentralPlaced(true);
     } else if (itemType === 'outer') {
       if (!centralPlaced) {
-        alert("Place the central atom first!");
-        return;
+        setCentralPlaced(true);
       }
       setPlacedAtoms(prev => {
         if (prev.length < idealVertices.length) {
@@ -353,13 +500,7 @@ function Level1UI({
       });
     } else if (itemType.startsWith('bond-')) {
       const type = itemType.split('-')[1] || 'single';
-      if (!centralPlaced || placedAtoms.length === 0) {
-        alert("Place atoms before adding bonds!");
-        return;
-      }
-      if (placedBonds.length < placedAtoms.length) {
-        setPlacedBonds(prev => [...prev, { index: prev.length, type }]);
-      }
+      createBond(type);
     }
   };
 
@@ -394,13 +535,13 @@ function Level1UI({
 
   const targetAngle = getTargetAngle(formula);
   const parsedAngle = parseFloat(inputAngle);
-  const hasInputAngle = !isNaN(parsedAngle) && inputAngle.trim() !== "";
+  const hasTypedAngle = inputAngle.trim() !== "" && !isNaN(parsedAngle);
   const isCorrectAngle = feedback
     ? feedback.isCorrect
-    : (hasInputAngle && Math.abs(parsedAngle - targetAngle) < 0.01);
+    : (hasTypedAngle && Math.abs(parsedAngle - targetAngle) < 0.05);
   const isWrongAngle = feedback
     ? !feedback.isCorrect
-    : (hasInputAngle && !isCorrectAngle);
+    : (hasTypedAngle && !isCorrectAngle);
 
   return (
     <div className="flex flex-col gap-1.5 sm:gap-3 w-full h-full flex-1 min-h-0 text-sm">
@@ -410,24 +551,15 @@ function Level1UI({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
-        {/* Floating Top Info Bar inside canvas */}
-        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 z-10 flex items-center justify-between pointer-events-none gap-2">
-          <div className="vsepr-top-bar bg-white/95 backdrop-blur-md border border-slate-200 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl shadow-sm flex items-center gap-2 sm:gap-3 pointer-events-auto shrink-0">
-            <span className="text-[11px] sm:text-xs font-mono font-bold text-blue-600 uppercase tracking-wide">Target:</span>
-            <span className="text-[11px] sm:text-xs font-extrabold text-[#1E293B]">{question.formula} ({question.molecule})</span>
-            <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 hidden sm:inline">Shape: <strong className="text-slate-800">{question.targetShape || 'Tetrahedral'}</strong></span>
-          </div>
-
-          {/* Reset Control Floating Top Right */}
-          <div className="flex items-center gap-2 pointer-events-auto">
-            <button
-              onClick={resetBuild}
-              className="vsepr-top-bar px-2.5 sm:px-3 py-1 sm:py-1.5 bg-white/95 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
-            >
-              <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-              <span>Reset</span>
-            </button>
-          </div>
+        {/* Floating Top Info Bar inside canvas (Target completely removed, only Reset preserved) */}
+        <div className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 flex items-center gap-2 pointer-events-auto">
+          <button
+            onClick={resetBuild}
+            className="vsepr-top-bar px-2.5 sm:px-3 py-1 sm:py-1.5 bg-white/95 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+            <span>Reset</span>
+          </button>
         </div>
 
         {/* Drag Drop Overlay */}
@@ -448,39 +580,52 @@ function Level1UI({
           </div>
         )}
 
-        {/* 3D Canvas */}
-        <div className="w-full h-full flex-1 relative">
-          <Canvas camera={{ position: [0, 0, 10.5], fov: 45 }} className="w-full h-full">
+        {/* 3D Canvas (Bounded directly above the C & H dock and left of the right panel, shifted upward) */}
+        <div className="absolute top-1 sm:top-2 bottom-24 sm:bottom-28 left-2 sm:left-4 right-48 sm:right-56 overflow-hidden">
+          <Canvas camera={{ position: [0, 0, 7.4], fov: 45 }} className="w-full h-full">
             <ambientLight intensity={1.1} />
             <directionalLight position={[10, 10, 10]} intensity={1.4} />
             <directionalLight position={[-10, -10, -10]} intensity={0.5} />
             <pointLight position={[0, 0, 4]} intensity={0.6} color="#3b82f6" />
-            <OrbitControls makeDefault enableZoom={true} target={[0, -0.3, 0]} />
+            <OrbitControls makeDefault enableZoom={true} target={[0, 0, 0]} />
 
-            {/* Round Pedestal 3D Base (Positioned lower to leave spacious clearance) */}
-            <group position={[0, -2.1, 0]}>
-              <Cylinder args={[2.5, 2.8, 0.35, 64]}>
-                <meshStandardMaterial color="#e2e8f0" roughness={0.3} metalness={0.1} />
-              </Cylinder>
-              <Cylinder args={[2.3, 2.5, 0.08, 64]} position={[0, 0.18, 0]}>
-                <meshStandardMaterial color="#cbd5e1" roughness={0.2} metalness={0.2} />
-              </Cylinder>
-            </group>
+            {/* Pedestal Plate completely removed */}
 
-            {/* Floating 3D Molecule Group (Elevated with clear air gap above pedestal) */}
-            <group position={[0, 0.8, 0]}>
+            {/* Floating 3D Molecule Group centered directly above the C and H atoms */}
+            <group position={[0, 0, 0]}>
               {/* Central Atom */}
               {centralPlaced && (
-                <Atom3D position={new THREE.Vector3(0, 0, 0)} element={centralElement} scale={0.95} labelOverride={centralElement[0].toUpperCase()} gameStarted={gameStarted} hideHtml={hideHtml} />
+                <Atom3D
+                  position={new THREE.Vector3(0, 0, 0)}
+                  element={centralElement}
+                  scale={1.05}
+                  labelOverride="C"
+                  gameStarted={gameStarted}
+                  hideHtml={hideHtml}
+                  isSelected={selectedCForBond}
+                  onClick={handleTapC}
+                />
               )}
 
               {/* Outer Atoms & Bonds */}
               {placedAtoms.map((pos, idx) => {
                 const bond = placedBonds.find((b) => b.index === idx);
-                const atomLabel = `${outerElement[0].toUpperCase()}${idx + 1}`;
+                const isAngleMarked = selectedHForAngle.includes(idx);
+                const isBondMarked = selectedHIndexForBond === idx;
+
                 return (
                   <React.Fragment key={idx}>
-                    <Atom3D position={pos} element={outerElement} scale={0.68} labelOverride={atomLabel} gameStarted={gameStarted} hideHtml={hideHtml} />
+                    <Atom3D
+                      position={pos}
+                      element={outerElement}
+                      scale={0.75}
+                      labelOverride="H"
+                      gameStarted={gameStarted}
+                      hideHtml={hideHtml}
+                      isAngleSelected={isAngleMarked}
+                      isSelected={isBondMarked}
+                      onClick={() => handleTapH(idx)}
+                    />
                     {bond && (
                       <Bond3D
                         start={new THREE.Vector3(0, 0, 0)}
@@ -493,7 +638,7 @@ function Level1UI({
                 );
               })}
 
-              {/* Angle Arc 3D */}
+              {/* Angle Arc 3D (Does NOT show 109.5 automatically - shows ? until typed) */}
               {selectedBond1 >= 0 &&
                 selectedBond2 >= 0 &&
                 selectedBond1 !== selectedBond2 &&
@@ -502,7 +647,7 @@ function Level1UI({
                   <AngleArc3D
                     v1={placedAtoms[selectedBond1]}
                     v2={placedAtoms[selectedBond2]}
-                    label={inputAngle ? `${inputAngle}°` : `${targetAngle}°`}
+                    label={hasTypedAngle ? `${inputAngle}°` : '?'}
                     isCorrect={isCorrectAngle}
                     isWrong={isWrongAngle}
                     hideHtml={hideHtml}
@@ -512,135 +657,180 @@ function Level1UI({
           </Canvas>
         </div>
 
-        {/* ── FLOATING BOTTOM INSTRUCTION DOCK / TOOLBAR ───────────────────── */}
-        <div className="vsepr-bottom-dock absolute bottom-1.5 sm:bottom-3 left-1.5 sm:left-3 right-1.5 sm:right-3 z-20 flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 p-1.5 sm:p-2.5 bg-white/95 backdrop-blur-md border border-slate-200 rounded-xl sm:rounded-2xl shadow-lg">
-          {/* Atom & Bond Tools Tray */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Central Atom Tool */}
-            {!centralPlaced ? (
-              <button
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'central')}
-                onDragEnd={handleDragEnd}
-                onClick={() => placeItem('central')}
-                className="vsepr-dock-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-800 font-extrabold text-xs flex items-center gap-1.5 cursor-grab active:cursor-grabbing transition-all shadow-sm"
-              >
-                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black">{centralElement[0].toUpperCase()}</span>
-                <span>+ Central Atom</span>
-              </button>
+        {/* ── RIGHT SIDE PANEL (BONDS & ANGLE CONTROLS INSIDE MIDDLE SCREEN) ─── */}
+        <div className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-44 sm:w-52 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-2.5 sm:p-3.5 shadow-xl flex flex-col gap-2.5 max-h-[calc(100%-2rem)] overflow-y-auto">
+          {/* Bonds Section */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] sm:text-xs font-black text-slate-800 tracking-wider uppercase font-mono">Bonds</span>
+              <span className="text-[10px] font-bold text-slate-500 font-mono">{placedBonds.length} / {outerCount}</span>
+            </div>
+
+            {/* Helper status */}
+            {selectedCForBond && selectedHIndexForBond !== null ? (
+              <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg border border-blue-200 text-center">
+                C + H Selected (Choose Bond)
+              </div>
+            ) : selectedCForBond ? (
+              <div className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 text-center">
+                C Selected → Tap an H atom
+              </div>
+            ) : selectedHIndexForBond !== null ? (
+              <div className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 text-center">
+                H Selected → Tap C atom
+              </div>
+            ) : placedBonds.length < outerCount ? (
+              <div className="text-[9px] text-slate-500 text-center">
+                Tap C & H in 3D, then tap bond:
+              </div>
             ) : (
-              <div className="vsepr-dock-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs flex items-center gap-1.5 opacity-60 cursor-not-allowed">
-                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-black">✓</span>
-                <span>Central Placed</span>
+              <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 text-center">
+                ✓ All Bonds Connected
               </div>
             )}
 
-            {/* Outer Atom Tool */}
-            {availableAtoms > 0 ? (
+            {/* Bond Buttons */}
+            <div className="flex flex-col gap-1.5">
               <button
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'outer')}
-                onDragEnd={handleDragEnd}
-                onClick={() => placeItem('outer')}
-                className="vsepr-dock-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 font-extrabold text-xs flex items-center gap-1.5 cursor-grab active:cursor-grabbing transition-all shadow-sm"
+                onClick={() => createBond('single')}
+                disabled={!centralPlaced || placedAtoms.length === 0}
+                className="w-full py-1.5 px-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 active:bg-blue-200 border border-blue-200 text-blue-700 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer disabled:opacity-40"
               >
-                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">{outerElement[0].toUpperCase()}</span>
-                <span>+ Outer Atom ({availableAtoms})</span>
-              </button>
-            ) : (
-              <div className="vsepr-dock-btn px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs flex items-center gap-1.5 opacity-60 cursor-not-allowed">
-                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-black">✓</span>
-                <span>Atoms Placed</span>
-              </div>
-            )}
-
-            {/* Bond Tools */}
-            <div className="hidden sm:flex items-center gap-1.5 border-l border-slate-200 pl-2">
-              <button
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'bond-single')}
-                onDragEnd={handleDragEnd}
-                onClick={() => placeItem('bond-single')}
-                className="vsepr-dock-btn px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1 cursor-grab"
-              >
-                <div className="w-3.5 h-1 bg-blue-500 rounded-full" />
+                <div className="w-3.5 h-1 bg-blue-600 rounded-full" />
                 <span>Single Bond</span>
               </button>
               <button
-                draggable
-                onDragStart={(e) => handleDragStart(e, 'bond-double')}
-                onDragEnd={handleDragEnd}
-                onClick={() => placeItem('bond-double')}
-                className="vsepr-dock-btn px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1 cursor-grab"
+                onClick={() => createBond('double')}
+                disabled={!centralPlaced || placedAtoms.length === 0}
+                className="w-full py-1.5 px-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 active:bg-purple-200 border border-purple-200 text-purple-700 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer disabled:opacity-40"
               >
                 <div className="flex flex-col gap-0.5">
-                  <div className="w-3.5 h-0.5 bg-purple-500 rounded-full" />
-                  <div className="w-3.5 h-0.5 bg-purple-500 rounded-full" />
+                  <div className="w-3.5 h-0.5 bg-purple-600 rounded-full" />
+                  <div className="w-3.5 h-0.5 bg-purple-600 rounded-full" />
                 </div>
                 <span>Double Bond</span>
               </button>
             </div>
           </div>
 
-          {/* Angle Selection & Verification Controls */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Bond Pair Selectors */}
-            <div className="hidden md:flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 sm:py-1 rounded-xl">
-              <span className="text-[11px] font-bold text-slate-500">Pair:</span>
-              <select
-                value={selectedBond1}
-                onChange={(e) => setSelectedBond1(Number(e.target.value))}
-                className="bg-white border border-slate-200 rounded-lg px-1.5 py-0.5 text-xs font-bold text-[#1E293B] focus:outline-none"
-              >
-                <option value="-1">Atom A</option>
-                {placedAtoms.map((_, idx) => (
-                  <option key={idx} value={idx}>
-                    {outerElement[0].toUpperCase()}{idx + 1}
-                  </option>
-                ))}
-              </select>
-              <span className="text-slate-300">-</span>
-              <select
-                value={selectedBond2}
-                onChange={(e) => setSelectedBond2(Number(e.target.value))}
-                className="bg-white border border-slate-200 rounded-lg px-1.5 py-0.5 text-xs font-bold text-[#1E293B] focus:outline-none"
-              >
-                <option value="-1">Atom B</option>
-                {placedAtoms.map((_, idx) => (
-                  <option key={idx} value={idx}>
-                    {outerElement[0].toUpperCase()}{idx + 1}
-                  </option>
-                ))}
-              </select>
+          <hr className="border-slate-200" />
+
+          {/* Angle Section */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] sm:text-xs font-black text-slate-800 tracking-wider uppercase font-mono">Bond Angle</span>
+              {selectedHForAngle.length === 2 && (
+                <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">2 H Blue</span>
+              )}
             </div>
 
-            {/* Input Angle */}
-            <input
-              type="number"
-              placeholder="Angle (°)"
-              value={inputAngle}
-              onChange={(e) => setInputAngle(e.target.value)}
-              disabled={feedback?.isCorrect || !isBuildComplete}
-              className={`vsepr-dock-input w-20 sm:w-24 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border text-xs font-mono font-bold text-center text-[#1E293B] bg-white focus:outline-none shadow-inner transition-colors ${
-                feedback && !feedback.isCorrect ? 'border-rose-400 bg-rose-50/60 ring-1 ring-rose-400' : 'border-slate-300 focus:border-blue-500'
-              }`}
-            />
-
-            {/* Submit / Target Completed Button (Continue button removed, directly shows Target Completed) */}
-            {feedback?.isCorrect ? (
-              <div className="vsepr-dock-btn px-3 sm:px-4 py-1 sm:py-1.5 bg-[#22C55E] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-1.5 animate-pulse">
-                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span>Target Completed</span>
+            {/* When fewer than 2 H are selected: prompt user to tap 2 H in 3D */}
+            {selectedHForAngle.length < 2 ? (
+              <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-2.5 text-center">
+                <div className="text-[10px] text-slate-500 font-semibold leading-tight">
+                  Tap any 2 H atoms in 3D (marked in blue) to measure angle
+                </div>
               </div>
             ) : (
-              <button
-                onClick={handleSubmit}
-                disabled={!isBuildComplete}
-                className="vsepr-dock-btn px-3 sm:px-4 py-1 sm:py-1.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all disabled:opacity-40 cursor-pointer"
-              >
-                Check Angle
-              </button>
+              /* When 2 H atoms are selected: Input box appears with live green/red validation */
+              <div className="space-y-1.5 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 inline-block"></span>
+                    2 H Selected (Blue)
+                  </span>
+                </div>
+
+                {/* Angle Input Box (Turns green when correct 109.5, red otherwise) */}
+                <input
+                  type="number"
+                  step="0.5"
+                  placeholder="Enter Angle (°)"
+                  value={inputAngle}
+                  onChange={(e) => setInputAngle(e.target.value)}
+                  disabled={feedback?.isCorrect}
+                  className={`w-full px-3 py-1.5 rounded-xl border text-xs font-mono font-black text-center focus:outline-none transition-all shadow-inner ${isCorrectAngle
+                    ? 'border-2 border-emerald-500 bg-emerald-50 text-emerald-800 ring-2 ring-emerald-300'
+                    : isWrongAngle
+                      ? 'border-2 border-rose-400 bg-rose-50 text-rose-800 ring-1 ring-rose-300'
+                      : 'border-slate-300 bg-white text-[#1E293B] focus:border-blue-500'
+                    }`}
+                  autoFocus
+                />
+
+                {/* Live validation feedback message */}
+                {isCorrectAngle && (
+                  <div className="text-[10px] font-bold text-emerald-700 bg-emerald-100/90 p-1.5 rounded-lg border border-emerald-300 text-center flex items-center justify-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Correct Angle (109.5°)!</span>
+                  </div>
+                )}
+
+                {isWrongAngle && (
+                  <div className="text-[10px] font-bold text-rose-600 bg-rose-50 p-1 rounded-lg border border-rose-200 text-center">
+                    Incorrect angle. Try again!
+                  </div>
+                )}
+
+                {/* Check Angle Button */}
+                {feedback?.isCorrect ? (
+                  <div className="w-full py-1.5 px-2 bg-[#22C55E] text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-1 animate-pulse">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Target Completed</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={!hasTypedAngle || placedBonds.length < outerCount}
+                    className={`w-full py-1.5 px-2 font-extrabold text-[11px] uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer ${isCorrectAngle
+                      ? 'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-emerald-500/20'
+                      : 'bg-[#2563EB] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white disabled:opacity-40'
+                      }`}
+                  >
+                    Check Angle
+                  </button>
+                )}
+              </div>
             )}
+          </div>
+        </div>
+
+        {/* ── BOTTOM DOCK: DIRECTLY BELOW THE 3D MOLECULE ───────────────────── */}
+        <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-4 right-48 sm:right-56 flex justify-center pointer-events-none z-20">
+          <div className="pointer-events-auto flex items-center gap-5 sm:gap-7 px-5 sm:px-7 py-2 sm:py-2.5 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-3xl shadow-xl">
+            {/* Carbon Atom (Big atom, exact 3D color #2b2b2b) */}
+            <button
+              onClick={() => {
+                if (!centralPlaced) {
+                  setCentralPlaced(true);
+                } else {
+                  setSelectedCForBond(prev => !prev);
+                }
+              }}
+              className={`w-13 h-13 sm:w-16 sm:h-16 rounded-full flex items-center justify-center font-black text-xl sm:text-2xl text-white shadow-lg cursor-pointer transform hover:scale-105 active:scale-95 transition-all border-2 ${selectedCForBond ? 'border-sky-400 ring-4 ring-sky-300' : 'border-slate-700'
+                }`}
+              style={{ backgroundColor: '#2b2b2b' }}
+              title="Carbon (C)"
+            >
+              <span>C</span>
+            </button>
+
+            {/* Hydrogen Atom (Big atom, exact 3D color #f5f5f5) */}
+            <button
+              onClick={() => {
+                if (!centralPlaced) {
+                  setCentralPlaced(true);
+                  setPlacedAtoms([idealVertices[0]]);
+                } else if (placedAtoms.length < idealVertices.length) {
+                  setPlacedAtoms(prev => [...prev, idealVertices[prev.length]]);
+                }
+              }}
+              className="w-13 h-13 sm:w-16 sm:h-16 rounded-full flex items-center justify-center font-black text-xl sm:text-2xl text-slate-800 shadow-lg cursor-pointer transform hover:scale-105 active:scale-95 transition-all border-2 border-slate-300"
+              style={{ backgroundColor: '#f5f5f5' }}
+              title="Hydrogen (H)"
+            >
+              <span>H</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1421,12 +1611,12 @@ function Level3UI({
                       onDrop={(e) => handleDropOnSlot(e, idx)}
                       onClick={() => handleSlotClick(idx)}
                       className={`w-full h-28 sm:h-36 md:h-40 rounded-2xl transition-all duration-300 flex flex-col items-center justify-between p-1.5 sm:p-2.5 relative vsepr-slot-card ${!formula
-                          ? 'border-2 border-dashed border-blue-300/80 bg-white/95 backdrop-blur-md hover:border-blue-500 hover:bg-blue-50/40 shadow-sm cursor-pointer'
-                          : submitted
-                            ? isSlotCorrect
-                              ? 'border-2 border-emerald-500 bg-emerald-50/95 shadow-md shadow-emerald-500/10'
-                              : 'border-2 border-red-500 bg-red-50/95 shadow-md shadow-red-500/10'
-                            : `${mol?.cardBg} ${mol?.borderColor} ${mol?.glowColor} border-2 shadow-md cursor-pointer hover:scale-[1.02]`
+                        ? 'border-2 border-dashed border-blue-300/80 bg-white/95 backdrop-blur-md hover:border-blue-500 hover:bg-blue-50/40 shadow-sm cursor-pointer'
+                        : submitted
+                          ? isSlotCorrect
+                            ? 'border-2 border-emerald-500 bg-emerald-50/95 shadow-md shadow-emerald-500/10'
+                            : 'border-2 border-red-500 bg-red-50/95 shadow-md shadow-red-500/10'
+                          : `${mol?.cardBg} ${mol?.borderColor} ${mol?.glowColor} border-2 shadow-md cursor-pointer hover:scale-[1.02]`
                         }`}
                     >
                       {!formula ? (
@@ -1505,8 +1695,8 @@ function Level3UI({
                     onDragStart={(e) => isAvailable && handleDragStart(e, f)}
                     onClick={() => isAvailable && handleCardClick(f)}
                     className={`rounded-2xl p-1.5 sm:p-3 transition-all duration-300 border-2 flex flex-col items-center justify-between h-24 sm:h-32 md:h-36 relative vsepr-drag-card ${isAvailable && !submitted
-                        ? `${mol.cardBg} ${mol.borderColor} ${mol.glowColor} cursor-grab active:cursor-grabbing hover:scale-[1.03] shadow-md`
-                        : 'bg-slate-100/60 border-slate-200 opacity-35 cursor-not-allowed grayscale'
+                      ? `${mol.cardBg} ${mol.borderColor} ${mol.glowColor} cursor-grab active:cursor-grabbing hover:scale-[1.03] shadow-md`
+                      : 'bg-slate-100/60 border-slate-200 opacity-35 cursor-not-allowed grayscale'
                       }`}
                   >
                     <div className="w-full flex items-center justify-between px-0.5">
@@ -1597,8 +1787,8 @@ function Level3UI({
                 <button
                   onClick={isCorrect ? handleNextQuestion : resetAll}
                   className={`px-6 py-2.5 rounded-xl text-white font-extrabold text-xs uppercase tracking-wider shadow-md transition-all flex items-center gap-2 cursor-pointer ${isCorrect
-                      ? 'bg-emerald-600 hover:bg-emerald-700'
-                      : 'bg-blue-600 hover:bg-blue-700'
+                    ? 'bg-emerald-600 hover:bg-emerald-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
                     }`}
                 >
                   <span>{isCorrect ? "Finish Challenge" : "Reset & Retry"}</span>
@@ -1810,9 +2000,9 @@ export default function VseprGamePage({
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
+      document.documentElement.requestFullscreen().catch(() => { });
     } else {
-      document.exitFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => { });
     }
   };
 
@@ -1882,7 +2072,7 @@ export default function VseprGamePage({
             </button>
           </div>
 
-          {/* STEP 1: MISSION TARGET OVERVIEW (WITH PREVIEW SCREENSHOT & NEXT BUTTON) */}
+          {/* STEP 1: MISSION TARGET OVERVIEW (WITH PREVIEW SCREENSHOT REMOVED & NEXT BUTTON) */}
           {introStep === 'mission' && (
             <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-4 z-10 px-2 sm:px-4 py-2 w-full">
               <div className="text-[#2563EB] text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
@@ -1890,27 +2080,11 @@ export default function VseprGamePage({
               </div>
 
               <h1 className="text-lg sm:text-2xl md:text-4xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
-                <span className="text-[#2563EB]">MISSION:</span> {currentLevel === 1 ? 'Predict bond angles and build 3D tetrahedral geometry' : currentLevel === 2 ? 'Fill Target Holes & Predict Lone Pair Repulsions' : 'Order Molecules by Decreasing Bond Angle'}
+                <span className="text-[#2563EB]">MISSION:</span> {currentLevel === 1 ? 'Create Methane molecule Structure' : currentLevel === 2 ? 'Fill Target Holes & Predict Lone Pair Repulsions' : 'Order Molecules by Decreasing Bond Angle'}
               </h1>
 
-              {/* Challenge Preview Screenshot (Only for Easy Challenge) */}
-              {currentLevel === 1 && (
-                <div className="flex justify-center my-2 sm:my-3">
-                  <div className="relative rounded-2xl p-1 bg-slate-900/95 shadow-2xl border-2 border-slate-700/70 max-w-[260px] sm:max-w-[340px] md:max-w-[380px] [@media(max-height:450px)]:max-w-[190px] [@media(max-height:450px)]:my-1 overflow-hidden transition-transform transform hover:scale-[1.02]">
-                    <img
-                      src="/images/vsepr_easy_preview.png"
-                      alt="Easy Challenge 3D Workshop Preview"
-                      className="rounded-xl w-full h-auto object-cover border border-slate-700 shadow-inner"
-                    />
-                    <div className="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-md px-2 py-0.5 rounded-lg border border-slate-700 text-[9px] sm:text-[10px] font-mono font-bold text-blue-300 shadow">
-                      CH₄ (Methane)
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Next Button */}
-              <div className="pt-1 sm:pt-3">
+              <div className="pt-2 sm:pt-4">
                 <button
                   onClick={() => {
                     if (currentLevel === 1) {
@@ -1931,69 +2105,66 @@ export default function VseprGamePage({
           {/* STEP 2: INSTRUCTIONS TO PLAY (3-POINT INSTRUCTIONS WITH BACK AND PLAY BUTTONS) */}
           {introStep === 'instructions' && (
             <div className="max-w-3xl mx-auto my-auto text-center space-y-2.5 sm:space-y-4 z-10 px-2 sm:px-4 py-2 w-full animate-in fade-in duration-200">
-              <div className="text-teal-600 text-[11px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
-                INSTRUCTIONS TO PLAY
+              <div className="text-black text-xl sm:text-2xl font-black tracking-wide">
+                Instructions
               </div>
 
-              {/* 3 Instruction Points */}
-              <div className="space-y-2 sm:space-y-3 text-left max-w-2xl mx-auto w-full">
+              {/* 3 Instruction Points (With illustrative image previews for each step) */}
+              <div className="space-y-2 sm:space-y-2.5 text-left max-w-2xl mx-auto w-full">
                 {/* Point 1 */}
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 sm:p-3.5 shadow-lg border border-slate-200/90 flex items-start sm:items-center gap-3 transition-all">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs sm:text-sm shrink-0 shadow-md">
-                    1
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-extrabold text-xs sm:text-sm text-[#1E293B] font-mono">
-                        Build Central & Outer Atoms
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px]">
-                        Bottom Palette
-                      </span>
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200/90 flex items-center justify-between gap-2.5 sm:gap-3 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      1
                     </div>
-                    <p className="text-slate-500 text-xs mt-0.5 leading-snug">
-                      Click or drag the central Carbon (C) atom onto the pedestal, followed by 4 outer Hydrogen (H) atoms.
+                    <p className="font-extrabold text-xs sm:text-sm text-[#1E293B] leading-snug">
+                      Tap the atoms (at the bottom) to create molecule
                     </p>
+                  </div>
+                  <div className="w-20 sm:w-28 md:w-32 h-11 sm:h-13 md:h-14 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                    <img
+                      src="/images/vsepr/step1_tap_atoms.svg"
+                      alt="Step 1: Tap atoms preview"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                 </div>
 
                 {/* Point 2 */}
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 sm:p-3.5 shadow-lg border border-slate-200/90 flex items-start sm:items-center gap-3 transition-all">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs sm:text-sm shrink-0 shadow-md">
-                    2
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-extrabold text-xs sm:text-sm text-[#1E293B] font-mono">
-                        Connect Chemical Bonds
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px]">
-                        Single Bond
-                      </span>
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200/90 flex items-center justify-between gap-2.5 sm:gap-3 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      2
                     </div>
-                    <p className="text-slate-500 text-xs mt-0.5 leading-snug">
-                      Select the single bond tool to attach and bridge each outer Hydrogen atom to the central Carbon core.
+                    <p className="font-extrabold text-xs sm:text-sm text-[#1E293B] leading-snug">
+                      Tap two atoms and click bond type to create bonds.
                     </p>
+                  </div>
+                  <div className="w-20 sm:w-28 md:w-32 h-11 sm:h-13 md:h-14 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                    <img
+                      src="/images/vsepr/step2_create_bonds.svg"
+                      alt="Step 2: Create bonds preview"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                 </div>
 
                 {/* Point 3 */}
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 sm:p-3.5 shadow-lg border border-slate-200/90 flex items-start sm:items-center gap-3 transition-all">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs sm:text-sm shrink-0 shadow-md">
-                    3
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-extrabold text-xs sm:text-sm text-[#1E293B] font-mono">
-                        Calculate & Check Angle
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px]">
-                        Target: 109.5°
-                      </span>
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200/90 flex items-center justify-between gap-2.5 sm:gap-3 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      3
                     </div>
-                    <p className="text-slate-500 text-xs mt-0.5 leading-snug">
-                      Select any pair of bonded atoms, enter the ideal bond angle (109.5°), and click Check Angle to complete!
+                    <p className="font-extrabold text-xs sm:text-sm text-[#1E293B] leading-snug">
+                      Tap on two bonds and enter the angle to align
                     </p>
+                  </div>
+                  <div className="w-20 sm:w-28 md:w-32 h-11 sm:h-13 md:h-14 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                    <img
+                      src="/images/vsepr/step3_set_angle.svg"
+                      alt="Step 3: Set angle preview"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                 </div>
               </div>

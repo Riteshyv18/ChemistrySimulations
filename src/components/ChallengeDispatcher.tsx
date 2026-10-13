@@ -2,6 +2,8 @@
 
 import React, { Component, type ReactNode } from "react";
 import dynamic from "next/dynamic";
+import { ArrowLeft } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -60,7 +62,7 @@ const LoadingFallback = () => (
 );
 
 // Dynamic imports with ssr: false (Ensures WebGL / Three.js never runs on the server)
-const VseprGamePage = dynamic<{ difficulty?: string }>(
+const VseprGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
       "@/features/challenges/topics/chemistry/vsepr_Molecular_shape/VseprGamePage"
@@ -120,14 +122,31 @@ export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
   difficulty?: string;
+  showExitButton?: boolean;
+  onExit?: () => void;
 }
 
 export function ChallengeDispatcher({
   topic,
-  difficulty = "easy",
+  difficulty = "level1",
+  showExitButton = true,
+  onExit,
 }: ChallengeDispatcherProps) {
   const normTopic = topic.toLowerCase().replace(/_/g, "-");
-  const normDifficulty = (difficulty || "easy").toLowerCase();
+  const normDifficulty = (difficulty || "level1").toLowerCase();
+
+  const isLevel2 =
+    normDifficulty === "level2" ||
+    normDifficulty === "level-2" ||
+    normDifficulty === "medium" ||
+    normDifficulty === "2";
+
+  const isLevel3 =
+    normDifficulty === "level3" ||
+    normDifficulty === "level-3" ||
+    normDifficulty === "hard" ||
+    normDifficulty === "advanced" ||
+    normDifficulty === "3";
 
   const isMot =
     normTopic === "3" ||
@@ -153,31 +172,54 @@ export function ChallengeDispatcher({
   let content: ReactNode = null;
 
   if (isMot) {
-    if (normDifficulty === "medium") {
+    if (isLevel2) {
       content = <MotMediumGamePage difficulty={normDifficulty} />;
-    } else if (normDifficulty === "hard" || normDifficulty === "advanced") {
+    } else if (isLevel3) {
       content = <MotHardGamePage difficulty={normDifficulty} />;
     } else {
       content = <MotEasyGamePage difficulty={normDifficulty} />;
     }
   } else if (isHybridization) {
-    if (normDifficulty === "medium") {
+    if (isLevel2) {
       content = <OrbitalWorkshopGamePage difficulty={normDifficulty} />;
-    } else if (normDifficulty === "hard" || normDifficulty === "advanced") {
+    } else if (isLevel3) {
       content = <HybridizationMatchPuzzleGamePage difficulty={normDifficulty} />;
     } else {
       content = <HybridizationGamePage difficulty={normDifficulty} />;
     }
   } else if (isVsepr) {
-    content = <VseprGamePage difficulty={normDifficulty} />;
+    content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else {
     // Default fallback to VSEPR
-    content = <VseprGamePage difficulty={normDifficulty} />;
+    content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
   }
 
   return (
     <CanvasErrorBoundary>
-      <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none">
+      <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
+        {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
+        {showExitButton && !isVsepr && (
+          <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onExit) {
+                  onExit();
+                } else {
+                  exitSimulation();
+                }
+              }}
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/95 hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200/90 hover:border-slate-300 backdrop-blur-md font-mono font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer"
+              title="Exit Simulation (Back to App)"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>EXIT</span>
+            </button>
+          </div>
+        )}
+
         {content}
       </div>
     </CanvasErrorBoundary>

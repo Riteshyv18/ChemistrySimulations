@@ -68,31 +68,31 @@ export default async function TopicPage({ params }: PageProps) {
           3D Simulation Challenge
         </h2>
         <p className="text-slate-300 text-sm sm:text-base max-w-xl mb-6">
-          Apply your knowledge in an interactive real-time 3D simulation. Select a difficulty level below to begin.
+          Apply your knowledge in an interactive real-time 3D simulation. Select a challenge level below to begin.
         </p>
 
-        {/* Launch Challenge Buttons (As shown in image 2) */}
+        {/* Launch Challenge Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4 justify-center w-full max-w-3xl mt-2 mb-2">
           <Link
-            href={`${base}/easy`}
+            href={`${base}/level1`}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all hover:scale-105"
           >
             <Play className="w-4 h-4 fill-current" />
-            <span>Play Easy Challenge</span>
+            <span>Play Level 1 Challenge</span>
           </Link>
           <Link
-            href={`${base}/medium`}
+            href={`${base}/level2`}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all hover:scale-105"
           >
             <Play className="w-4 h-4 fill-current" />
-            <span>Play Medium Challenge</span>
+            <span>Play Level 2 Challenge</span>
           </Link>
           <Link
-            href={`${base}/hard`}
+            href={`${base}/level3`}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-600 hover:brightness-110 text-white font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all hover:scale-105"
           >
             <Play className="w-4 h-4 fill-current" />
-            <span>Play Hard Challenge</span>
+            <span>Play Level 3 Challenge</span>
           </Link>
         </div>
       </div>

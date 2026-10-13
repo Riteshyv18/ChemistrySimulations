@@ -468,7 +468,7 @@ const WorkshopScene = ({
 
 // ── MAIN PAGE COMPONENT ──────────────────────────────────────────────────────
 export default function OrbitalWorkshopGamePage({
-  difficulty = 'medium'
+  difficulty = 'level2'
 }: {
   difficulty?: string;
 }) {

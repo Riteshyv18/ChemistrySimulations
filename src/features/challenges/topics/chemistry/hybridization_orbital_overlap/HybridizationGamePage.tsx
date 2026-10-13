@@ -427,7 +427,7 @@ const MixingZoneScene = ({
 
 // ── Main Page Component ─────────────────────────────────────────────────────
 export default function HybridizationGamePage({
-  difficulty = 'easy'
+  difficulty = 'level1'
 }: {
   difficulty?: string;
 }) {

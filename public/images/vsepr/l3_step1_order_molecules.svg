@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 130" width="100%" height="100%">
+  <defs>
+    <linearGradient id="l3Bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+
+    <filter id="cardShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas Card -->
+  <rect width="240" height="130" rx="14" fill="url(#l3Bg)" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Top 4 Target Drop Slots -->
+  <!-- Slot 1 -->
+  <g transform="translate(18, 14)">
+    <circle cx="21" cy="-3" r="7" fill="#059669"/>
+    <text x="21" y="0" font-family="system-ui, sans-serif" font-size="8" font-weight="900" fill="#ffffff" text-anchor="middle">1</text>
+    <rect width="42" height="38" rx="8" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="3 2" filter="url(#cardShadow)"/>
+    <text x="21" y="22" font-family="system-ui, sans-serif" font-size="7.5" font-weight="800" fill="#64748b" text-anchor="middle">Slot 1</text>
+  </g>
+
+  <!-- Slot 2 -->
+  <g transform="translate(71, 14)">
+    <circle cx="21" cy="-3" r="7" fill="#4f46e5"/>
+    <text x="21" y="0" font-family="system-ui, sans-serif" font-size="8" font-weight="900" fill="#ffffff" text-anchor="middle">2</text>
+    <rect width="42" height="38" rx="8" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="3 2" filter="url(#cardShadow)"/>
+    <text x="21" y="22" font-family="system-ui, sans-serif" font-size="7.5" font-weight="800" fill="#64748b" text-anchor="middle">Slot 2</text>
+  </g>
+
+  <!-- Slot 3 -->
+  <g transform="translate(124, 14)">
+    <circle cx="21" cy="-3" r="7" fill="#2563eb"/>
+    <text x="21" y="0" font-family="system-ui, sans-serif" font-size="8" font-weight="900" fill="#ffffff" text-anchor="middle">3</text>
+    <rect width="42" height="38" rx="8" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="3 2" filter="url(#cardShadow)"/>
+    <text x="21" y="22" font-family="system-ui, sans-serif" font-size="7.5" font-weight="800" fill="#64748b" text-anchor="middle">Slot 3</text>
+  </g>
+
+  <!-- Slot 4 -->
+  <g transform="translate(177, 14)">
+    <circle cx="21" cy="-3" r="7" fill="#e11d48"/>
+    <text x="21" y="0" font-family="system-ui, sans-serif" font-size="8" font-weight="900" fill="#ffffff" text-anchor="middle">4</text>
+    <rect width="42" height="38" rx="8" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="3 2" filter="url(#cardShadow)"/>
+    <text x="21" y="22" font-family="system-ui, sans-serif" font-size="7.5" font-weight="800" fill="#64748b" text-anchor="middle">Slot 4</text>
+  </g>
+
+  <!-- Curved Directional Arrow / Path from bottom to top -->
+  <path d="M 40 76 C 40 60, 40 56, 40 54" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3"/>
+  <polygon points="40,50 37,55 43,55" fill="#0284c7"/>
+
+  <!-- Bottom 4 Molecule Cards -->
+  <!-- Card 1: BF3 -->
+  <g transform="translate(18, 76)" filter="url(#cardShadow)">
+    <rect width="42" height="42" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="4" y="4" width="18" height="10" rx="3" fill="#059669"/>
+    <text x="13" y="11.5" font-family="system-ui, sans-serif" font-size="6.5" font-weight="900" fill="#ffffff" text-anchor="middle">BF₃</text>
+    <circle cx="21" cy="27" r="7" fill="#10b981" fill-opacity="0.2"/>
+    <circle cx="21" cy="27" r="4" fill="#059669"/>
+  </g>
+
+  <!-- Card 2: CH4 -->
+  <g transform="translate(71, 76)" filter="url(#cardShadow)">
+    <rect width="42" height="42" rx="8" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="4" y="4" width="18" height="10" rx="3" fill="#4f46e5"/>
+    <text x="13" y="11.5" font-family="system-ui, sans-serif" font-size="6.5" font-weight="900" fill="#ffffff" text-anchor="middle">CH₄</text>
+    <circle cx="21" cy="27" r="7" fill="#6366f1" fill-opacity="0.2"/>
+    <circle cx="21" cy="27" r="4" fill="#4f46e5"/>
+  </g>
+
+  <!-- Card 3: NH3 -->
+  <g transform="translate(124, 76)" filter="url(#cardShadow)">
+    <rect width="42" height="42" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="4" y="4" width="18" height="10" rx="3" fill="#2563eb"/>
+    <text x="13" y="11.5" font-family="system-ui, sans-serif" font-size="6.5" font-weight="900" fill="#ffffff" text-anchor="middle">NH₃</text>
+    <circle cx="21" cy="27" r="7" fill="#3b82f6" fill-opacity="0.2"/>
+    <circle cx="21" cy="27" r="4" fill="#2563eb"/>
+  </g>
+
+  <!-- Card 4: H2O -->
+  <g transform="translate(177, 76)" filter="url(#cardShadow)">
+    <rect width="42" height="42" rx="8" fill="#fff1f2" stroke="#f43f5e" stroke-width="1.5"/>
+    <rect x="4" y="4" width="18" height="10" rx="3" fill="#e11d48"/>
+    <text x="13" y="11.5" font-family="system-ui, sans-serif" font-size="6.5" font-weight="900" fill="#ffffff" text-anchor="middle">H₂O</text>
+    <circle cx="21" cy="27" r="7" fill="#f43f5e" fill-opacity="0.2"/>
+    <circle cx="21" cy="27" r="4" fill="#e11d48"/>
+  </g>
+</svg>

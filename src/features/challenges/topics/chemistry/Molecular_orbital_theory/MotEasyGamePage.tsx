@@ -193,7 +193,7 @@ const AntibondingMO1s = ({
 };
 
 // ── Main MOT Easy Game Page Component ────────────────────────────────────────
-export default function MotEasyGamePage({ difficulty = 'easy' }: { difficulty?: string }) {
+export default function MotEasyGamePage({ difficulty = 'level1' }: { difficulty?: string }) {
   const router = useRouter();
 
   // Screen View Mode
@@ -540,7 +540,7 @@ export default function MotEasyGamePage({ difficulty = 'easy' }: { difficulty?: 
               </div>
             ) : (
               <div className="bg-white/90 border border-slate-200 px-4 py-1.5 rounded-full backdrop-blur-md shadow-sm text-xs font-extrabold text-[#2563EB] font-mono tracking-wider">
-                Easy Challenge
+                Level 1 Challenge
               </div>
             )}
 

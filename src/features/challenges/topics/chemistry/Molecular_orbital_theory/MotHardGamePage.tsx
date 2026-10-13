@@ -92,7 +92,7 @@ const OxygenMolecule3D = ({
   );
 };
 
-export default function MotHardGamePage({ difficulty = 'hard' }: { difficulty?: string }) {
+export default function MotHardGamePage({ difficulty = 'level3' }: { difficulty?: string }) {
   const router = useRouter();
 
   // Screen View Mode: intro mission target screen vs interactive single canvas mode
@@ -1244,7 +1244,7 @@ export default function MotHardGamePage({ difficulty = 'hard' }: { difficulty?: 
             </div>
 
             <div>
-              <h2 className="text-lg font-black text-[#1E293B]">🎉 MOT Hard Challenge Complete!</h2>
+              <h2 className="text-lg font-black text-[#1E293B]">🎉 MOT Level 3 Challenge Complete!</h2>
               <p className="text-xs text-[#64748B] mt-1">
                 You have mastered the bond order, bond length, and bond strength relationships for O₂, O₂⁺ and O₂⁻!
               </p>

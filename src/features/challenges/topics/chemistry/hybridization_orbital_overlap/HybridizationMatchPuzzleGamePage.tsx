@@ -465,7 +465,7 @@ const OrbitalClueLobe3D = ({ count }: { count: number }) => {
 
 // ── MAIN PAGE COMPONENT ──────────────────────────────────────────────────────
 export default function HybridizationMatchPuzzleGamePage({
-  difficulty = 'hard'
+  difficulty = 'level3'
 }: {
   difficulty?: string;
 }) {

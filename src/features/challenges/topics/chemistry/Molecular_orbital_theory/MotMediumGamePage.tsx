@@ -68,7 +68,7 @@ const getInitialMODiagram = (molecule: 'B2' | 'O2'): MOItem[] => {
   ];
 };
 
-export default function MotMediumGamePage({ difficulty = 'medium' }: { difficulty?: string }) {
+export default function MotMediumGamePage({ difficulty = 'level2' }: { difficulty?: string }) {
   const router = useRouter();
 
   // Screen View Mode: intro mission target screen vs interactive challenge mode
@@ -635,7 +635,7 @@ export default function MotMediumGamePage({ difficulty = 'medium' }: { difficult
                   <BookOpen className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-extrabold text-[#1E293B]">Molecular Orbital Theory — Medium Level Guide</h3>
+                  <h3 className="text-base sm:text-lg font-extrabold text-[#1E293B]">Molecular Orbital Theory — Level 2 Guide</h3>
                   <p className="text-xs text-[#64748B]">Understanding MO diagrams, filling order, and magnetic properties</p>
                 </div>
               </div>

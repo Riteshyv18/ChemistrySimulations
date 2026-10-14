@@ -2537,7 +2537,10 @@ export default function VseprGamePage({
 
       {/* ── THEORY / EXPLANATION MODAL (ENCLOSED BOX WITH BACKDROP AND PROPER MARGINS/PADDING) ── */}
       {showExplanationModal && (
-        <div className="fixed inset-0 z-[999999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200 select-text">
+        <div
+          onClick={(e) => { if (e.target === e.currentTarget) setShowExplanationModal(false); }}
+          className="fixed inset-0 z-[999999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200 select-text"
+        >
           {/* Modal Container Box */}
           <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-4xl max-h-[94vh] sm:max-h-[90vh] flex flex-col overflow-hidden text-[#1E293B] animate-in zoom-in-95 duration-200">
             {/* Modal Header Bar */}
@@ -2565,7 +2568,7 @@ export default function VseprGamePage({
             </div>
 
             {/* Scrollable Content Body */}
-            <div className="flex-1 overflow-y-auto px-3.5 sm:px-6 md:px-8 py-3.5 sm:py-5 space-y-4 sm:space-y-6 w-full text-slate-800">
+            <div className="flex-1 overflow-y-auto px-3.5 sm:px-6 md:px-8 py-3.5 sm:py-5 pb-8 sm:pb-10 space-y-4 sm:space-y-6 w-full text-slate-800">
               {/* Section 1: Core Principle */}
               <div className="space-y-2 border-b border-slate-200 pb-5">
                 <div className="flex items-center gap-2">
@@ -2803,16 +2806,6 @@ export default function VseprGamePage({
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Modal Bottom Fixed Action Bar */}
-            <div className="px-3.5 sm:px-6 py-2 sm:py-2.5 border-t border-slate-200 bg-slate-50/90 shrink-0 flex justify-center">
-              <button
-                onClick={() => setShowExplanationModal(false)}
-                className="w-full max-w-md bg-[#2563EB] hover:bg-[#1d4ed8] text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all shadow-md cursor-pointer hover:shadow-lg active:scale-[0.99]"
-              >
-                Got It! Back to Workshop
-              </button>
             </div>
           </div>
         </div>

@@ -1,35 +1,23 @@
 "use client";
 
-import React, { useState, useRef, useMemo } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, Html, Sparkles, Torus, Cylinder } from '@react-three/drei';
+import React, { useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Sphere, Html, Sparkles, Cylinder } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   Sparkles as SparklesIcon,
   RotateCcw,
-  Undo2,
   CheckCircle2,
-  HelpCircle,
   X,
-  ArrowRight,
-  Layers,
-  Info,
-  Atom,
+  ArrowLeft,
   ChevronRight,
-  Zap,
-  Lock,
-  Flame,
-  Award,
   ChevronLeft,
   BookOpen,
-  Target,
-  Eye,
-  Maximize2
+  Play
 } from 'lucide-react';
+import { exitSimulation } from '@/lib/mobileBridge';
 
-// ── 3D Atom & Orbital Renderers for Level 1 & Level 2 ──────────────────────────
+// ── 3D Atom & Orbital Renderers for Level 2 (C₂H₄ Ethylene) ──────────────────
 
 // Hydrogen Atom (1s)
 const HydrogenAtom3D = ({
@@ -45,13 +33,31 @@ const HydrogenAtom3D = ({
 }) => {
   return (
     <group position={position}>
-      {/* Central Nucleus */}
-      <Sphere args={[0.3, 32, 32]}>
-        <meshStandardMaterial color="#f1f5f9" emissive="#cbd5e1" emissiveIntensity={0.6} roughness={0.2} />
+      {/* Central 3D Hydrogen Nucleus (Big, 3D Shaded Sphere) */}
+      <Sphere args={[0.44, 32, 32]}>
+        <meshStandardMaterial
+          color="#3b82f6"
+          emissive="#1d4ed8"
+          emissiveIntensity={0.25}
+          roughness={0.2}
+          metalness={0.45}
+        />
+      </Sphere>
+      {/* Specular Fresnel highlight shell */}
+      <Sphere args={[0.45, 24, 24]}>
+        <meshStandardMaterial
+          color="#bfdbfe"
+          emissive="#60a5fa"
+          emissiveIntensity={0.12}
+          roughness={0.1}
+          metalness={0.7}
+          transparent
+          opacity={0.35}
+        />
       </Sphere>
       {!hideHtml && (
         <Html center distanceFactor={10} style={{ pointerEvents: 'none' }}>
-          <div className="text-slate-900 font-extrabold text-[11px] select-none bg-white/90 px-1.5 py-0.5 rounded-full shadow-md border border-slate-200">
+          <div className="text-white font-black text-xs select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] font-sans pointer-events-none tracking-wide">
             {label}
           </div>
         </Html>
@@ -60,17 +66,17 @@ const HydrogenAtom3D = ({
       {/* 1s Orbital Cloud */}
       {hasOrbital && (
         <group>
-          <Sphere args={[0.85, 32, 32]}>
+          <Sphere args={[0.95, 32, 32]}>
             <meshStandardMaterial
               color="#a855f7"
               emissive="#7e22ce"
-              emissiveIntensity={0.5}
+              emissiveIntensity={0.45}
               transparent
               opacity={0.5}
               side={THREE.DoubleSide}
             />
           </Sphere>
-          <Sphere args={[0.87, 16, 16]}>
+          <Sphere args={[0.97, 16, 16]}>
             <meshBasicMaterial color="#d8b4fe" wireframe transparent opacity={0.2} />
           </Sphere>
         </group>
@@ -107,13 +113,31 @@ const CarbonAtom3D = ({
 
   return (
     <group position={position}>
-      {/* Central Carbon Nucleus */}
-      <Sphere args={[0.4, 32, 32]}>
-        <meshStandardMaterial color="#334155" emissive="#1e293b" emissiveIntensity={0.8} roughness={0.3} metalness={0.8} />
+      {/* Central 3D Carbon Nucleus (Big, 3D Shaded Sphere) */}
+      <Sphere args={[0.58, 32, 32]}>
+        <meshStandardMaterial
+          color="#6366f1"
+          emissive="#312e81"
+          emissiveIntensity={0.25}
+          roughness={0.2}
+          metalness={0.45}
+        />
+      </Sphere>
+      {/* Specular Fresnel highlight shell */}
+      <Sphere args={[0.59, 24, 24]}>
+        <meshStandardMaterial
+          color="#c7d2fe"
+          emissive="#818cf8"
+          emissiveIntensity={0.12}
+          roughness={0.1}
+          metalness={0.7}
+          transparent
+          opacity={0.35}
+        />
       </Sphere>
       {!hideHtml && (
         <Html center distanceFactor={10} style={{ pointerEvents: 'none' }}>
-          <div className="text-white font-black text-xs select-none bg-slate-900/90 border border-slate-700 px-2 py-0.5 rounded-full shadow-lg">
+          <div className="text-white font-black text-sm select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] font-sans pointer-events-none tracking-wide">
             {label}
           </div>
         </Html>
@@ -121,8 +145,8 @@ const CarbonAtom3D = ({
 
       {/* Head-on sp² Lobe (C-C σ) */}
       {showHeadOn && (
-        <group position={[Math.cos(headOnAngle) * 0.9, Math.sin(headOnAngle) * 0.9, 0]} rotation={[0, 0, headOnAngle - Math.PI / 2]}>
-          <Sphere args={[0.55, 24, 24]} scale={[0.65, 1.2, 0.65]}>
+        <group position={[Math.cos(headOnAngle) * 0.95, Math.sin(headOnAngle) * 0.95, 0]} rotation={[0, 0, headOnAngle - Math.PI / 2]}>
+          <Sphere args={[0.6, 24, 24]} scale={[0.7, 1.25, 0.7]}>
             <meshStandardMaterial color="#06b6d4" emissive="#0891b2" emissiveIntensity={0.8} transparent opacity={0.75} />
           </Sphere>
         </group>
@@ -130,8 +154,8 @@ const CarbonAtom3D = ({
 
       {/* Top C-H sp² Lobe */}
       {showTopCH && (
-        <group position={[Math.cos(topCHAngle) * 0.9, Math.sin(topCHAngle) * 0.9, 0]} rotation={[0, 0, topCHAngle - Math.PI / 2]}>
-          <Sphere args={[0.55, 24, 24]} scale={[0.65, 1.2, 0.65]}>
+        <group position={[Math.cos(topCHAngle) * 0.95, Math.sin(topCHAngle) * 0.95, 0]} rotation={[0, 0, topCHAngle - Math.PI / 2]}>
+          <Sphere args={[0.6, 24, 24]} scale={[0.7, 1.25, 0.7]}>
             <meshStandardMaterial color="#3b82f6" emissive="#1d4ed8" emissiveIntensity={0.8} transparent opacity={0.75} />
           </Sphere>
         </group>
@@ -139,8 +163,8 @@ const CarbonAtom3D = ({
 
       {/* Bottom C-H sp² Lobe */}
       {showBottomCH && (
-        <group position={[Math.cos(bottomCHAngle) * 0.9, Math.sin(bottomCHAngle) * 0.9, 0]} rotation={[0, 0, bottomCHAngle - Math.PI / 2]}>
-          <Sphere args={[0.55, 24, 24]} scale={[0.65, 1.2, 0.65]}>
+        <group position={[Math.cos(bottomCHAngle) * 0.95, Math.sin(bottomCHAngle) * 0.95, 0]} rotation={[0, 0, bottomCHAngle - Math.PI / 2]}>
+          <Sphere args={[0.6, 24, 24]} scale={[0.7, 1.25, 0.7]}>
             <meshStandardMaterial color="#3b82f6" emissive="#1d4ed8" emissiveIntensity={0.8} transparent opacity={0.75} />
           </Sphere>
         </group>
@@ -150,14 +174,14 @@ const CarbonAtom3D = ({
       {hasP && (
         <group>
           {/* Top p lobe */}
-          <group position={[0, 0, 1.0]} scale={[0.55, 0.55, 1.1]}>
-            <Sphere args={[0.6, 24, 24]}>
+          <group position={[0, 0, 1.15]} scale={[0.6, 0.6, 1.25]}>
+            <Sphere args={[0.65, 24, 24]}>
               <meshStandardMaterial color="#ef4444" emissive="#b91c1c" emissiveIntensity={0.7} transparent opacity={0.75} />
             </Sphere>
           </group>
           {/* Bottom p lobe */}
-          <group position={[0, 0, -1.0]} scale={[0.55, 0.55, 1.1]}>
-            <Sphere args={[0.6, 24, 24]}>
+          <group position={[0, 0, -1.15]} scale={[0.6, 0.6, 1.25]}>
+            <Sphere args={[0.65, 24, 24]}>
               <meshStandardMaterial color="#ef4444" emissive="#b91c1c" emissiveIntensity={0.7} transparent opacity={0.75} />
             </Sphere>
           </group>
@@ -168,14 +192,14 @@ const CarbonAtom3D = ({
       {piFormed && (
         <group>
           {/* Top Pi cloud overlap */}
-          <group position={[0, 0, 1.0]}>
-            <Cylinder args={[0.7, 0.7, isLeft ? 1.6 : 1.6, 32]} rotation={[0, 0, Math.PI / 2]}>
+          <group position={[0, 0, 1.15]}>
+            <Cylinder args={[0.75, 0.75, 1.7, 32]} rotation={[0, 0, Math.PI / 2]}>
               <meshStandardMaterial color="#f43f5e" emissive="#be123c" emissiveIntensity={0.9} transparent opacity={0.65} />
             </Cylinder>
           </group>
           {/* Bottom Pi cloud overlap */}
-          <group position={[0, 0, -1.0]}>
-            <Cylinder args={[0.7, 0.7, isLeft ? 1.6 : 1.6, 32]} rotation={[0, 0, Math.PI / 2]}>
+          <group position={[0, 0, -1.15]}>
+            <Cylinder args={[0.75, 0.75, 1.7, 32]} rotation={[0, 0, Math.PI / 2]}>
               <meshStandardMaterial color="#f43f5e" emissive="#be123c" emissiveIntensity={0.9} transparent opacity={0.65} />
             </Cylinder>
           </group>
@@ -187,53 +211,14 @@ const CarbonAtom3D = ({
 
 // ── Overlap Bond Visualization (Sigma & Pi Cloud) ─────────────────────────────
 const BondOverlapVisualizer = ({
-  level,
-  step,
-  isAligned,
-  isBondFormed,
   ccSigmaFormed,
   chSigmaFormed,
   piFormed
 }: {
-  level: number;
-  step: number;
-  isAligned: boolean;
-  isBondFormed: boolean;
   ccSigmaFormed: boolean;
   chSigmaFormed: boolean;
   piFormed: boolean;
 }) => {
-  if (level === 1) {
-    // Level 1: H2 Sigma Bond
-    return (
-      <group>
-        {/* Head-on Sigma Overlap Region */}
-        {isBondFormed && (
-          <group position={[0, 0, 0]}>
-            {/* Central Overlap Lens */}
-            <Sphere args={[0.9, 32, 32]} scale={[1.8, 0.95, 0.95]}>
-              <meshStandardMaterial
-                color="#06b6d4"
-                emissive="#0891b2"
-                emissiveIntensity={1.0}
-                transparent
-                opacity={0.8}
-                side={THREE.DoubleSide}
-              />
-            </Sphere>
-            {/* Sparkles around bond */}
-            <Sparkles count={25} scale={2.5} size={3} speed={0.4} color="#38bdf8" />
-            {/* Internuclear Axis Line */}
-            <Cylinder args={[0.04, 0.04, 3.2, 16]} rotation={[0, 0, Math.PI / 2]}>
-              <meshBasicMaterial color="#38bdf8" transparent opacity={0.6} />
-            </Cylinder>
-          </group>
-        )}
-      </group>
-    );
-  }
-
-  // Level 2: C2H4 Ethene Double Bond (1 Sigma + 1 Pi)
   return (
     <group>
       {/* Central C-C Sigma (σ) Bond Overlap */}
@@ -302,44 +287,28 @@ const BondOverlapVisualizer = ({
   );
 };
 
-// ── 3D Scene Composition for Workshop ──────────────────────────────────────────
+// ── 3D Scene Composition for Workshop (No pedestal / plate) ────────────────────
 const WorkshopScene = ({
-  level,
-  step,
-  placedAtomsCount,
-  addedOrbitalsCount,
-  isAligned,
-  isBondFormed,
-  ccSigmaFormed,
-  chSigmaFormed,
-  piFormed,
   placedCarbons,
   placedHydrogens,
   placedSp2Count,
   placedH1sCount,
   placedPCount,
+  ccSigmaFormed,
+  chSigmaFormed,
+  piFormed,
   hideHtml
 }: {
-  level: number;
-  step: number;
-  placedAtomsCount: number;
-  addedOrbitalsCount: number;
-  isAligned: boolean;
-  isBondFormed: boolean;
-  ccSigmaFormed: boolean;
-  chSigmaFormed: boolean;
-  piFormed: boolean;
   placedCarbons: number;
   placedHydrogens: number;
   placedSp2Count: number;
   placedH1sCount: number;
   placedPCount: number;
+  ccSigmaFormed: boolean;
+  chSigmaFormed: boolean;
+  piFormed: boolean;
   hideHtml: boolean;
 }) => {
-  // Positions for Level 1 (H2)
-  const leftHPos: [number, number, number] = isAligned ? [-1.3, 0, 0] : [-2.5, 0, 0];
-  const rightHPos: [number, number, number] = isAligned ? [1.3, 0, 0] : [2.5, 0, 0];
-
   // Positions for Level 2 (C2H4 Ethene)
   const leftCPos: [number, number, number] = [-1.25, 0, 0];
   const rightCPos: [number, number, number] = [1.25, 0, 0];
@@ -350,510 +319,268 @@ const WorkshopScene = ({
   const h4Pos: [number, number, number] = [2.4, -1.8, 0];
 
   return (
-    <group>
-      {/* Pedestal Base Ring Platform matching Easy challenge */}
-      <group position={[0, -2.85, 0]}>
-        <Cylinder args={[3.8, 4.2, 0.25, 64]}>
-          <meshStandardMaterial color="#F1F5F9" roughness={0.3} metalness={0.1} />
-        </Cylinder>
-        <Torus args={[3.9, 0.04, 16, 64]} rotation={[Math.PI / 2, 0, 0]}>
-          <meshStandardMaterial color="#38A9E8" emissive="#38A9E8" emissiveIntensity={0.6} />
-        </Torus>
-        <Torus args={[3.1, 0.03, 16, 64]} rotation={[Math.PI / 2, 0, 0]}>
-          <meshStandardMaterial color="#a855f7" emissive="#a855f7" emissiveIntensity={0.5} />
-        </Torus>
-      </group>
+    <group position={[0, 0, 0]}>
+      {/* Floating Ambient Sparkles (Clean, no plate) */}
+      <Sparkles count={35} scale={8} size={2.2} speed={0.3} color="#38A9E8" />
 
-      {/* Floating Ambient Sparkles */}
-      <Sparkles count={45} scale={7} size={2.5} speed={0.4} color="#38A9E8" />
-
-      {/* ── LEVEL 1 (H₂) RENDER ────────────────────────────────────────────── */}
-      {level === 1 && (
-        <group>
-          {/* Left H Atom */}
-          {placedAtomsCount >= 1 && (
-            <HydrogenAtom3D
-              position={leftHPos}
-              hasOrbital={addedOrbitalsCount >= 1}
-              label="H (A)"
-              hideHtml={hideHtml}
-            />
-          )}
-
-          {/* Right H Atom */}
-          {placedAtomsCount >= 2 && (
-            <HydrogenAtom3D
-              position={rightHPos}
-              hasOrbital={addedOrbitalsCount >= 2}
-              label="H (B)"
-              hideHtml={hideHtml}
-            />
-          )}
-
-          {/* Overlap & Bond Visualizer */}
-          <BondOverlapVisualizer
-            level={level}
-            step={step}
-            isAligned={isAligned}
-            isBondFormed={isBondFormed}
-            ccSigmaFormed={ccSigmaFormed}
-            chSigmaFormed={chSigmaFormed}
-            piFormed={piFormed}
-          />
-        </group>
+      {/* Left Carbon Atom */}
+      {placedCarbons >= 1 && (
+        <CarbonAtom3D
+          position={leftCPos}
+          isLeft={true}
+          hasP={placedPCount >= 1}
+          showHeadOn={placedSp2Count >= 1}
+          showTopCH={placedSp2Count >= 3}
+          showBottomCH={placedSp2Count >= 4}
+          label="C"
+          hideHtml={hideHtml}
+          piFormed={piFormed}
+        />
       )}
 
-      {/* ── LEVEL 2 (C₂H₄) RENDER ──────────────────────────────────────────── */}
-      {level === 2 && (
-        <group>
-          {/* Left Carbon Atom */}
-          {placedCarbons >= 1 && (
-            <CarbonAtom3D
-              position={leftCPos}
-              isLeft={true}
-              hasP={placedPCount >= 1}
-              showHeadOn={placedSp2Count >= 1}
-              showTopCH={placedSp2Count >= 3}
-              showBottomCH={placedSp2Count >= 4}
-              label="C₁"
-              hideHtml={hideHtml}
-              piFormed={piFormed}
-            />
-          )}
-
-          {/* Right Carbon Atom */}
-          {placedCarbons >= 2 && (
-            <CarbonAtom3D
-              position={rightCPos}
-              isLeft={false}
-              hasP={placedPCount >= 2}
-              showHeadOn={placedSp2Count >= 2}
-              showTopCH={placedSp2Count >= 5}
-              showBottomCH={placedSp2Count >= 6}
-              label="C₂"
-              hideHtml={hideHtml}
-              piFormed={piFormed}
-            />
-          )}
-
-          {/* 4 Hydrogen Atoms for Ethene */}
-          {placedHydrogens >= 1 && (
-            <HydrogenAtom3D position={h1Pos} hasOrbital={placedH1sCount >= 1} label="H₁" hideHtml={hideHtml} />
-          )}
-          {placedHydrogens >= 2 && (
-            <HydrogenAtom3D position={h2Pos} hasOrbital={placedH1sCount >= 2} label="H₂" hideHtml={hideHtml} />
-          )}
-          {placedHydrogens >= 3 && (
-            <HydrogenAtom3D position={h3Pos} hasOrbital={placedH1sCount >= 3} label="H₃" hideHtml={hideHtml} />
-          )}
-          {placedHydrogens >= 4 && (
-            <HydrogenAtom3D position={h4Pos} hasOrbital={placedH1sCount >= 4} label="H₄" hideHtml={hideHtml} />
-          )}
-
-          {/* Overlap & Bond Visualizer */}
-          <BondOverlapVisualizer
-            level={level}
-            step={step}
-            isAligned={isAligned}
-            isBondFormed={isBondFormed}
-            ccSigmaFormed={ccSigmaFormed}
-            chSigmaFormed={chSigmaFormed}
-            piFormed={piFormed}
-          />
-        </group>
+      {/* Right Carbon Atom */}
+      {placedCarbons >= 2 && (
+        <CarbonAtom3D
+          position={rightCPos}
+          isLeft={false}
+          hasP={placedPCount >= 2}
+          showHeadOn={placedSp2Count >= 2}
+          showTopCH={placedSp2Count >= 5}
+          showBottomCH={placedSp2Count >= 6}
+          label="C"
+          hideHtml={hideHtml}
+          piFormed={piFormed}
+        />
       )}
+
+      {/* 4 Hydrogen Atoms for Ethene */}
+      {placedHydrogens >= 1 && (
+        <HydrogenAtom3D position={h1Pos} hasOrbital={placedH1sCount >= 1} label="H" hideHtml={hideHtml} />
+      )}
+      {placedHydrogens >= 2 && (
+        <HydrogenAtom3D position={h2Pos} hasOrbital={placedH1sCount >= 2} label="H" hideHtml={hideHtml} />
+      )}
+      {placedHydrogens >= 3 && (
+        <HydrogenAtom3D position={h3Pos} hasOrbital={placedH1sCount >= 3} label="H" hideHtml={hideHtml} />
+      )}
+      {placedHydrogens >= 4 && (
+        <HydrogenAtom3D position={h4Pos} hasOrbital={placedH1sCount >= 4} label="H" hideHtml={hideHtml} />
+      )}
+
+      {/* Overlap & Bond Visualizer */}
+      <BondOverlapVisualizer
+        ccSigmaFormed={ccSigmaFormed}
+        chSigmaFormed={chSigmaFormed}
+        piFormed={piFormed}
+      />
     </group>
   );
 };
 
-// ── MAIN PAGE COMPONENT ──────────────────────────────────────────────────────
-export default function OrbitalWorkshopGamePage({
-  difficulty = 'level2'
-}: {
+// ── MAIN LEVEL 2 ORBITAL WORKSHOP COMPONENT ──────────────────────────────────
+interface OrbitalWorkshopGamePageProps {
   difficulty?: string;
-}) {
-  const router = useRouter();
+  onExit?: () => void;
+}
 
-  // Intro Target Screen State
+export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGamePageProps) {
+  // Screens navigation
+  const [introStep, setIntroStep] = useState<'mission' | 'instructions'>('mission');
   const [gameStarted, setGameStarted] = useState<boolean>(false);
 
-  // Active Level (1 = Level 1: H2, 2 = Level 2: C2H4)
-  const [level, setLevel] = useState<1 | 2>(1);
-  const [unlockedLevel2, setUnlockedLevel2] = useState<boolean>(false);
-
-  // Step Progress State
+  // Step Progress State (1 = Atoms, 2 = C-C σ, 3 = C-H σ, 4 = C=C π)
   const [step, setStep] = useState<number>(1);
-  const [placedAtomsCount, setPlacedAtomsCount] = useState<number>(0);
-  const [addedOrbitalsCount, setAddedOrbitalsCount] = useState<number>(0);
-  const [isAligned, setIsAligned] = useState<boolean>(false);
-  const [isBondFormed, setIsBondFormed] = useState<boolean>(false);
-  const [ccSigmaFormed, setCcSigmaFormed] = useState<boolean>(false);
-  const [chSigmaFormed, setChSigmaFormed] = useState<boolean>(false);
-  const [piFormed, setPiFormed] = useState<boolean>(false);
-
-  // Level 2 Orbital Tracking States
   const [placedCarbons, setPlacedCarbons] = useState<number>(0);
   const [placedHydrogens, setPlacedHydrogens] = useState<number>(0);
   const [placedSp2Count, setPlacedSp2Count] = useState<number>(0);
   const [placedH1sCount, setPlacedH1sCount] = useState<number>(0);
   const [placedPCount, setPlacedPCount] = useState<number>(0);
 
-  const [hintOpen, setHintOpen] = useState<boolean>(false);
+  const [ccSigmaFormed, setCcSigmaFormed] = useState<boolean>(false);
+  const [chSigmaFormed, setChSigmaFormed] = useState<boolean>(false);
+  const [piFormed, setPiFormed] = useState<boolean>(false);
+  const [isBondFormed, setIsBondFormed] = useState<boolean>(false);
+
   const [showCompletionModal, setShowCompletionModal] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Available Item Limits for Current Level
-  const maxAtoms = level === 1 ? 2 : 6; // L1: 2 H | L2: 2 C + 4 H
-  const maxOrbitals = level === 1 ? 2 : 6; // L1: 2 s | L2: 4 sp2 + 2 p
-
-  // Place Atom Handler (Level 1 General)
-  const handlePlaceAtom = () => {
-    if (placedAtomsCount < maxAtoms) {
-      const nextCount = placedAtomsCount + 1;
-      setPlacedAtomsCount(nextCount);
-      setErrorMessage(null);
-      if (nextCount === maxAtoms && step === 1) {
-        setStep(2);
-      }
-    }
-  };
-
-  // Place Carbon Handler (Level 2)
+  // Place Carbon Handler (C)
   const handlePlaceCarbon = () => {
     if (placedCarbons < 2) {
       const nextC = placedCarbons + 1;
       setPlacedCarbons(nextC);
-      setPlacedAtomsCount(nextC + placedHydrogens);
       setErrorMessage(null);
       if (nextC === 2 && placedHydrogens === 4 && step === 1) {
         setStep(2);
       }
+    } else {
+      setErrorMessage("Both Carbon atoms are already placed.");
+      setTimeout(() => setErrorMessage(null), 3000);
     }
   };
 
-  // Place Hydrogen Handler (Level 2)
+  // Place Hydrogen Handler (H)
   const handlePlaceHydrogen = () => {
-    if (level === 1) {
-      handlePlaceAtom();
-      return;
-    }
     if (placedCarbons < 2) {
       setErrorMessage("Place 2 Carbon atoms first.");
-      setTimeout(() => setErrorMessage(null), 3500);
+      setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
     if (placedHydrogens < 4) {
       const nextH = placedHydrogens + 1;
       setPlacedHydrogens(nextH);
-      setPlacedAtomsCount(placedCarbons + nextH);
       setErrorMessage(null);
       if (placedCarbons === 2 && nextH === 4 && step === 1) {
         setStep(2);
       }
+    } else {
+      setErrorMessage("All 4 Hydrogen atoms are already placed.");
+      setTimeout(() => setErrorMessage(null), 3000);
     }
   };
 
-  // Add s Orbital Handler (Level 1)
-  const handleAddOrbital = () => {
-    if (placedAtomsCount < maxAtoms) {
-      setErrorMessage("Place two Hydrogen atoms in the scene first.");
-      setTimeout(() => setErrorMessage(null), 3500);
-      return;
-    }
-    if (addedOrbitalsCount < maxOrbitals) {
-      const nextCount = addedOrbitalsCount + 1;
-      setAddedOrbitalsCount(nextCount);
-      setErrorMessage(null);
-      if (nextCount === maxOrbitals && step === 2) {
-        setStep(3);
-      }
-    }
-  };
-
-  // Add sp² Orbital Handler (Level 2 - Carbon)
+  // Add sp² Orbital Handler
   const handleAddSp2Orbital = () => {
     if (step < 2) {
       setErrorMessage("Place all Carbon & Hydrogen atoms first.");
-      setTimeout(() => setErrorMessage(null), 3500);
+      setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
     if (step === 2) {
       if (placedSp2Count < 2) {
-        const nextCount = placedSp2Count + 1;
-        setPlacedSp2Count(nextCount);
-        setAddedOrbitalsCount(nextCount);
+        setPlacedSp2Count(prev => prev + 1);
         setErrorMessage(null);
-        if (nextCount === 2) {
-          setIsAligned(true);
-        }
+      } else {
+        setErrorMessage("Both head-on sp² orbitals placed. Click Form C–C σ Bond!");
+        setTimeout(() => setErrorMessage(null), 3000);
       }
     } else if (step === 3) {
       if (placedSp2Count < 6) {
-        const nextCount = placedSp2Count + 1;
-        setPlacedSp2Count(nextCount);
-        setAddedOrbitalsCount(nextCount + placedH1sCount);
+        setPlacedSp2Count(prev => prev + 1);
         setErrorMessage(null);
       } else {
         setErrorMessage("All 6 sp² orbitals have been placed.");
-        setTimeout(() => setErrorMessage(null), 3500);
+        setTimeout(() => setErrorMessage(null), 3000);
       }
+    } else {
+      setErrorMessage("sp² orbitals are already complete.");
+      setTimeout(() => setErrorMessage(null), 3000);
     }
   };
 
-  // Add 1s Orbital Handler (Level 2 - Hydrogen)
+  // Add 1s Orbital Handler (Hydrogen)
   const handleAddH1sOrbital = () => {
     if (step < 3) {
       setErrorMessage("Form the C–C σ bond first.");
-      setTimeout(() => setErrorMessage(null), 3500);
+      setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
     if (step === 3) {
       if (placedH1sCount < 4) {
-        const nextCount = placedH1sCount + 1;
-        setPlacedH1sCount(nextCount);
-        setAddedOrbitalsCount(placedSp2Count + nextCount);
+        setPlacedH1sCount(prev => prev + 1);
         setErrorMessage(null);
       } else {
         setErrorMessage("All 4 Hydrogen 1s orbitals have been placed.");
-        setTimeout(() => setErrorMessage(null), 3500);
+        setTimeout(() => setErrorMessage(null), 3000);
       }
-    } else if (step === 4) {
-      setErrorMessage("Hydrogen 1s orbitals are already used. Use p orbitals for π bond.");
-      setTimeout(() => setErrorMessage(null), 3500);
+    } else {
+      setErrorMessage("Hydrogen 1s orbitals are already placed.");
+      setTimeout(() => setErrorMessage(null), 3000);
     }
   };
 
-  // Add p Orbital Handler (Level 2 - Carbon)
+  // Add p Orbital Handler (Carbon unhybridized)
   const handleAddPOrbital = () => {
     if (step < 4) {
       setErrorMessage("Complete all σ bonds first before adding p orbitals.");
-      setTimeout(() => setErrorMessage(null), 3500);
+      setTimeout(() => setErrorMessage(null), 3000);
       return;
     }
     if (step === 4) {
       if (placedPCount < 2) {
-        const nextCount = placedPCount + 1;
-        setPlacedPCount(nextCount);
-        setAddedOrbitalsCount(placedSp2Count + placedH1sCount + nextCount);
+        setPlacedPCount(prev => prev + 1);
         setErrorMessage(null);
-        if (nextCount === 2) {
-          setIsAligned(true);
-        }
       } else {
-        setErrorMessage("All 2 p orbitals have been placed.");
-        setTimeout(() => setErrorMessage(null), 3500);
-      }
-    }
-  };
-
-  // Align Handler
-  const handleAlign = () => {
-    if (level === 1) {
-      if (addedOrbitalsCount < maxOrbitals) {
-        setErrorMessage("Add 1s orbitals to both Hydrogen atoms before aligning.");
-        setTimeout(() => setErrorMessage(null), 3500);
-        return;
-      }
-      setIsAligned(true);
-      setErrorMessage(null);
-      if (step === 3) setStep(4);
-    } else if (level === 2) {
-      if (step === 2) {
-        if (placedSp2Count < 2) {
-          setErrorMessage("Add 2 sp² orbitals for Carbon atoms before aligning.");
-          setTimeout(() => setErrorMessage(null), 3500);
-          return;
-        }
-        setIsAligned(true);
-        setErrorMessage(null);
-      } else if (step === 3) {
-        if (placedSp2Count < 6 || placedH1sCount < 4) {
-          setErrorMessage("Add remaining 4 sp² orbitals and 4 H 1s orbitals before aligning.");
-          setTimeout(() => setErrorMessage(null), 3500);
-          return;
-        }
-        setIsAligned(true);
-        setErrorMessage(null);
-      } else if (step === 4) {
-        if (placedPCount < 2) {
-          setErrorMessage("Add 2 p orbitals before aligning.");
-          setTimeout(() => setErrorMessage(null), 3500);
-          return;
-        }
-        setIsAligned(true);
-        setErrorMessage(null);
+        setErrorMessage("All 2 p orbitals placed. Click Form π Bond!");
+        setTimeout(() => setErrorMessage(null), 3000);
       }
     }
   };
 
   // Form Bond Handler
   const handleFormBond = () => {
-    if (level === 1) {
-      if (!isAligned) {
-        setErrorMessage("Align the orbitals first before forming the bond.");
-        setTimeout(() => setErrorMessage(null), 3500);
+    if (step === 2) {
+      if (placedSp2Count < 2) {
+        setErrorMessage("Add 2 sp² orbitals for Carbon atoms first.");
+        setTimeout(() => setErrorMessage(null), 3000);
         return;
       }
+      setCcSigmaFormed(true);
+      setStep(3);
+      setErrorMessage(null);
+    } else if (step === 3) {
+      if (placedSp2Count < 6 || placedH1sCount < 4) {
+        setErrorMessage("Add 4 remaining sp² orbitals and 4 H 1s orbitals for C–H bonds first.");
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+      setChSigmaFormed(true);
+      setStep(4);
+      setErrorMessage(null);
+    } else if (step === 4) {
+      if (placedPCount < 2) {
+        setErrorMessage("Add 2 unhybridized p orbitals first.");
+        setTimeout(() => setErrorMessage(null), 3000);
+        return;
+      }
+      setPiFormed(true);
       setIsBondFormed(true);
       setErrorMessage(null);
-      setUnlockedLevel2(true);
-    } else if (level === 2) {
-      if (step === 2) {
-        if (placedSp2Count < 2) {
-          setErrorMessage("Add 2 sp² orbitals for Carbon atoms first.");
-          setTimeout(() => setErrorMessage(null), 3500);
-          return;
-        }
-        setCcSigmaFormed(true);
-        setIsAligned(false);
-        setStep(3);
-        setErrorMessage(null);
-      } else if (step === 3) {
-        if (placedSp2Count < 6 || placedH1sCount < 4) {
-          setErrorMessage("Add 4 remaining sp² orbitals and 4 H 1s orbitals for C–H bonds first.");
-          setTimeout(() => setErrorMessage(null), 3500);
-          return;
-        }
-        setChSigmaFormed(true);
-        setIsAligned(false);
-        setStep(4);
-        setErrorMessage(null);
-      } else if (step === 4) {
-        if (placedPCount < 2) {
-          setErrorMessage("Add 2 unhybridized p orbitals first.");
-          setTimeout(() => setErrorMessage(null), 3500);
-          return;
-        }
-        setPiFormed(true);
-        setIsBondFormed(true);
-        setErrorMessage(null);
-      }
     }
   };
 
-  // Reset Workshop State
-  const handleReset = () => {
-    setStep(1);
-    setPlacedAtomsCount(0);
-    setAddedOrbitalsCount(0);
-    setPlacedCarbons(0);
-    setPlacedHydrogens(0);
-    setPlacedSp2Count(0);
-    setPlacedH1sCount(0);
-    setPlacedPCount(0);
-    setIsAligned(false);
-    setIsBondFormed(false);
-    setCcSigmaFormed(false);
-    setChSigmaFormed(false);
-    setPiFormed(false);
-    setErrorMessage(null);
-  };
-
-  // Revert / Undo One Step Back
+  // Revert / Undo Step Back Handler
   const handleRevertStep = () => {
     setErrorMessage(null);
 
-    // If completion modal / final bond formed is active
-    if (showCompletionModal || isBondFormed) {
-      setShowCompletionModal(false);
+    if (isBondFormed || piFormed) {
+      setPiFormed(false);
       setIsBondFormed(false);
-      if (level === 2) {
-        setPiFormed(false);
-      }
       return;
     }
 
-    if (level === 1) {
-      if (step === 4) {
+    if (step === 4) {
+      if (placedPCount > 0) {
+        setPlacedPCount(prev => prev - 1);
+      } else {
+        setChSigmaFormed(false);
         setStep(3);
-        setIsAligned(false);
-      } else if (step === 3) {
-        if (isAligned) {
-          setIsAligned(false);
-        } else {
-          setStep(2);
-        }
-      } else if (step === 2) {
-        if (addedOrbitalsCount > 0) {
-          setAddedOrbitalsCount(prev => prev - 1);
-        } else {
-          setStep(1);
-        }
-      } else if (step === 1) {
-        if (placedAtomsCount > 0) {
-          setPlacedAtomsCount(prev => prev - 1);
-        }
       }
-    } else {
-      // Level 2 (C2H4)
-      if (step === 4) {
-        if (placedPCount > 0) {
-          setPlacedPCount(prev => prev - 1);
-        } else {
-          setChSigmaFormed(false);
-          setStep(3);
-        }
-      } else if (step === 3) {
-        if (chSigmaFormed) {
-          setChSigmaFormed(false);
-        } else if (placedH1sCount > 0) {
-          setPlacedH1sCount(prev => prev - 1);
-        } else if (placedSp2Count > 2) {
-          setPlacedSp2Count(prev => prev - 1);
-        } else {
-          setCcSigmaFormed(false);
-          setStep(2);
-        }
-      } else if (step === 2) {
-        if (ccSigmaFormed) {
-          setCcSigmaFormed(false);
-        } else if (placedSp2Count > 0) {
-          setPlacedSp2Count(prev => prev - 1);
-        } else {
-          setStep(1);
-        }
-      } else if (step === 1) {
-        if (placedHydrogens > 0) {
-          setPlacedHydrogens(prev => prev - 1);
-          setPlacedAtomsCount(prev => Math.max(0, prev - 1));
-        } else if (placedCarbons > 0) {
-          setPlacedCarbons(prev => prev - 1);
-          setPlacedAtomsCount(prev => Math.max(0, prev - 1));
-        }
+    } else if (step === 3) {
+      if (chSigmaFormed) {
+        setChSigmaFormed(false);
+      } else if (placedH1sCount > 0) {
+        setPlacedH1sCount(prev => prev - 1);
+      } else if (placedSp2Count > 2) {
+        setPlacedSp2Count(prev => prev - 1);
+      } else {
+        setCcSigmaFormed(false);
+        setStep(2);
       }
-    }
-  };
-
-  // Switch Level
-  const handleSwitchLevel = (lvl: 1 | 2) => {
-    if (lvl === 2 && !unlockedLevel2) {
-      setErrorMessage("Complete Level 1 (H₂) first to unlock Level 2 (C₂H₄).");
-      setTimeout(() => setErrorMessage(null), 3500);
-      return;
-    }
-    setLevel(lvl);
-    setStep(1);
-    setPlacedAtomsCount(0);
-    setAddedOrbitalsCount(0);
-    setPlacedCarbons(0);
-    setPlacedHydrogens(0);
-    setPlacedSp2Count(0);
-    setPlacedH1sCount(0);
-    setPlacedPCount(0);
-    setIsAligned(false);
-    setIsBondFormed(false);
-    setCcSigmaFormed(false);
-    setChSigmaFormed(false);
-    setPiFormed(false);
-    setErrorMessage(null);
-  };
-
-  const [showHud, setShowHud] = useState(true);
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen().catch(() => {});
+    } else if (step === 2) {
+      if (ccSigmaFormed) {
+        setCcSigmaFormed(false);
+      } else if (placedSp2Count > 0) {
+        setPlacedSp2Count(prev => prev - 1);
+      } else {
+        setStep(1);
+      }
+    } else if (step === 1) {
+      if (placedHydrogens > 0) {
+        setPlacedHydrogens(prev => prev - 1);
+      } else if (placedCarbons > 0) {
+        setPlacedCarbons(prev => prev - 1);
+      }
     }
   };
 
@@ -875,10 +602,6 @@ export default function OrbitalWorkshopGamePage({
       handleAddH1sOrbital();
     } else if (itemType.includes('p-orbital')) {
       handleAddPOrbital();
-    } else if (itemType.includes('atom')) {
-      handlePlaceAtom();
-    } else if (itemType.includes('orbital')) {
-      handleAddOrbital();
     }
   };
 
@@ -887,623 +610,665 @@ export default function OrbitalWorkshopGamePage({
   };
 
   return (
-    <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-2 sm:p-6 gap-2 sm:gap-4">
-      {/* ── INTRO MISSION TARGET OVERLAY VIEW (COVERS FULL PAGE CONTAINER WITH BLUR) ───── */}
+    <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-1.5 sm:p-2.5 gap-1.5 sm:gap-2">
+      {/* ── INTRO MISSION TARGET & INSTRUCTIONS VIEW OVERLAY (NO SCROLL AT HEIGHT 376) ── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-6 bg-white/40 backdrop-blur-md overflow-y-auto">
-          {/* Top Header Bar */}
+        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-4 bg-white/80 backdrop-blur-md overflow-hidden">
+          {/* Top Header Bar: Exit Button Only */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
-              onClick={() => router.back()}
-              className="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-sm cursor-pointer"
+              type="button"
+              onClick={() => (onExit ? onExit() : exitSimulation())}
+              className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              title="Exit Simulation (Back to App)"
             >
-              <ChevronLeft className="w-4 h-4 text-[#2563EB]" />
+              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>EXIT</span>
             </button>
           </div>
 
-          {/* Central Target Text & Start Mission Button */}
-          <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-5 z-10 px-2 sm:px-4 py-2">
-            <div className="text-[#2563EB] text-[10px] sm:text-sm font-mono font-bold tracking-[0.25em] uppercase">
-              HYBRIDIZATION & ORBITAL OVERLAP
+          {/* STEP 1: MISSION SCREEN (COMPACT, FITS AT HEIGHT 376) */}
+          {introStep === 'mission' && (
+            <div className="max-w-2xl mx-auto my-auto text-center space-y-1.5 sm:space-y-2.5 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200">
+              <div className="text-[#2563EB] text-[9.5px] sm:text-[11px] font-mono font-bold tracking-[0.2em] uppercase">
+                HYBRIDIZATION & ORBITAL OVERLAP
+              </div>
+
+              <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+                <span className="text-[#2563EB]">MISSION:</span> Construct & Overlap Orbitals for C₂H₄ (Ethylene)
+              </h1>
+
+
+              <div className="pt-1.5 sm:pt-2.5">
+                <button
+                  type="button"
+                  onClick={() => setIntroStep('instructions')}
+                  className="px-6 sm:px-8 py-1.5 sm:py-2 bg-gradient-to-r from-teal-800 to-cyan-900 hover:from-teal-700 hover:to-cyan-800 text-teal-200 hover:text-white font-extrabold text-[11px] sm:text-xs uppercase tracking-wider rounded-full shadow-lg border border-teal-400/50 flex items-center gap-1.5 mx-auto cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                >
+                  <span>NEXT</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-teal-300" />
+                </button>
+              </div>
             </div>
+          )}
 
-            <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
-              <span className="text-[#2563EB]">TARGET:</span> Construct & Overlap Orbitals for H₂ (Level 1) & C₂H₄ (Level 2)
-            </h1>
+          {/* STEP 2: INSTRUCTIONS SCREEN (WITH IMAGES, NO SUBTITLE TEXT, FULLY VISIBLE) */}
+          {introStep === 'instructions' && (
+            <div className="max-w-xl mx-auto my-auto text-center space-y-1 sm:space-y-1.5 z-10 px-2 sm:px-4 py-0.5 w-full animate-in fade-in duration-200">
+              <div className="text-[#1E293B] text-sm sm:text-base font-black tracking-wide">
+                Instructions
+              </div>
 
-            <div className="pt-1 sm:pt-4">
-              <button
-                onClick={() => setGameStarted(true)}
-                className="px-6 py-2 sm:px-8 sm:py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider rounded-full shadow-lg border border-blue-400 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                START MISSION
-              </button>
+              {/* 3 Instructions (One line each + SVG Image Hint, No Subtitles) */}
+              <div className="space-y-1 sm:space-y-1.5 text-left max-w-lg mx-auto w-full">
+                {/* 1. Tap H and C to form C2H4 */}
+                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="w-5 h-5 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
+                      1
+                    </div>
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                      Tap the C and H atoms to form the C₂H₄ (Ethylene) molecule.
+                    </p>
+                  </div>
+                  <div className="w-16 sm:w-20 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                    <img
+                      src="/images/hybridization/l2_step1_place_atoms.svg"
+                      alt="Step 1: Place atoms"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Tap required orbitals */}
+                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
+                      2
+                    </div>
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                      Tap the required orbitals (sp², 1s, and p) to attach them to the atoms.
+                    </p>
+                  </div>
+                  <div className="w-16 sm:w-20 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                    <img
+                      src="/images/hybridization/l2_step2_add_orbitals.svg"
+                      alt="Step 2: Add orbitals"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Tap create bond button */}
+                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
+                      3
+                    </div>
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                      After placing orbitals, tap Create Bond button to form the bonds.
+                    </p>
+                  </div>
+                  <div className="w-24 sm:w-28 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center p-0.5">
+                    <img
+                      src="/images/hybridization/l2_step3_form_bonds.png"
+                      alt="Step 3: Form bonds button"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons: Back and Play (Guaranteed visible at height 376) */}
+              <div className="pt-1.5 sm:pt-2 flex items-center justify-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIntroStep('mission')}
+                  className="px-5 sm:px-6 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+                  <span>BACK</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setGameStarted(true)}
+                  className="px-6 sm:px-8 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                >
+                  <Play className="w-3.5 h-3.5 fill-white" />
+                  <span>PLAY</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Bottom Footer Note */}
-          <div className="w-full text-center text-[10px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0">
-            Click Start Mission to launch the single canvas orbital workshop
-          </div>
+          {/* Bottom Footer Note (Only on mission step) */}
+          {introStep === 'mission' && (
+            <div className="w-full text-center text-[9.5px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0">
+              Click NEXT to view challenge instructions
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── TOP TOOLBAR HEADER ────────────────────────────────────────── */}
-      <div className="w-full flex items-center justify-between z-20 shrink-0 gap-2">
-        {/* Top Left: Back Button & Fullscreen */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => router.back()}
-            className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
-            title="Back to Topics"
-          >
-            <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
-            <span className="hidden sm:inline">Back</span>
-          </button>
+      {/* ── TOP TOOLBAR HEADER (ONLY EXIT AND EXPLANATION, NO MIDDLE LONG BUTTON) ── */}
+      <div className="w-full flex items-center justify-between z-20 shrink-0">
+        {/* Top Left: Exit Button Only */}
+        <button
+          type="button"
+          onClick={() => (onExit ? onExit() : exitSimulation())}
+          className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+          title="Exit Simulation (Back to App)"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+          <span>EXIT</span>
+        </button>
 
-          <button
-            onClick={toggleFullscreen}
-            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
-            title="Toggle Fullscreen"
-          >
-            <Maximize2 className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Step Indicator & Level Switcher */}
-        <div className="flex items-center gap-2">
-          {/* Level Switcher */}
-          <div className="bg-white border border-slate-200 p-1 rounded-xl flex items-center gap-1 shadow-sm">
-            <button
-              onClick={() => handleSwitchLevel(1)}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-                level === 1
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-blue-200" />
-              <span>Level 1: H₂</span>
-            </button>
-
-            <button
-              onClick={() => handleSwitchLevel(2)}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-                level === 2
-                  ? 'bg-purple-600 text-white shadow-md'
-                  : unlockedLevel2
-                    ? 'text-slate-600 hover:text-slate-900'
-                    : 'text-slate-400 cursor-not-allowed'
-              }`}
-            >
-              {unlockedLevel2 ? (
-                <span className="w-2 h-2 rounded-full bg-purple-200" />
-              ) : (
-                <Lock className="w-3 h-3 text-slate-400" />
-              )}
-              <span>Level 2: C₂H₄</span>
-            </button>
-          </div>
-
-          {/* Step Pills */}
-          <div className="hidden md:flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-1.5 rounded-xl shadow-sm">
-            <div className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 ${step >= 1 ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-slate-100 text-slate-400'}`}>
-              <span>1. Atoms</span>
-              {step > 1 && <CheckCircle2 className="w-3 h-3 text-emerald-500" />}
-            </div>
-            <ChevronRight className="w-3 h-3 text-slate-300" />
-            <div className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 ${step >= 2 ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-slate-100 text-slate-400'}`}>
-              <span>2. {level === 1 ? 'Orbitals' : 'C–C σ'}</span>
-              {(step > 2 || ccSigmaFormed) && <CheckCircle2 className="w-3 h-3 text-emerald-500" />}
-            </div>
-            <ChevronRight className="w-3 h-3 text-slate-300" />
-            <div className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 ${step >= 3 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}`}>
-              <span>3. {level === 1 ? 'Align' : 'C–H σ'}</span>
-              {(step > 3 || chSigmaFormed) && <CheckCircle2 className="w-3 h-3 text-emerald-500" />}
-            </div>
-            <ChevronRight className="w-3 h-3 text-slate-300" />
-            <div className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 ${step >= 4 || (level === 1 && step === 4) ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-slate-100 text-slate-400'}`}>
-              <span>4. {level === 1 ? 'Bond' : 'π Bond'}</span>
-              {(isBondFormed || piFormed) && <CheckCircle2 className="w-3 h-3 text-emerald-500" />}
-            </div>
-          </div>
-        </div>
-
-        {/* Action Controls Top Right */}
-        <div className="flex items-center gap-2">
-          {/* Explanation Button */}
-          <button
-            onClick={() => setShowCompletionModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-bold text-xs shadow-sm transition-all cursor-pointer"
-          >
-            <BookOpen className="w-4 h-4 text-purple-600" />
-            <span>Explanation</span>
-          </button>
-        </div>
+        {/* Top Right: Explanation Button Only */}
+        <button
+          type="button"
+          onClick={() => setShowCompletionModal(true)}
+          className="h-8 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 flex items-center gap-1.5 text-purple-700 text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95"
+          title="View Theory & Explanation"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-purple-600" />
+          <span>Explanation</span>
+        </button>
       </div>
 
       {/* ── MAIN 3D WORKSHOP CANVAS ────────────────────────────────────── */}
       <main
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        className="flex-1 w-full relative bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-inner z-10 min-h-[350px]"
+        className="flex-1 w-full relative bg-[#F8FAFC] border border-slate-200 rounded-2xl overflow-hidden shadow-inner z-10 min-h-[190px]"
       >
         <div className="w-full h-full">
-          <Canvas camera={{ position: [0, 1.8, 13.5], fov: 45 }} style={{ width: '100%', height: '100%' }}>
-            <ambientLight intensity={0.9} />
-            <directionalLight position={[5, 10, 7]} intensity={1.3} />
-            <pointLight position={[-5, -5, -5]} intensity={0.5} color="#a855f7" />
-            <pointLight position={[0, 4, 0]} intensity={1.0} color="#06b6d4" />
+          <Canvas camera={{ position: [0, 0.1, 9.8], fov: 45 }} style={{ width: '100%', height: '100%' }}>
+            <ambientLight intensity={0.85} />
+            <directionalLight position={[6, 9, 7]} intensity={1.8} />
+            <directionalLight position={[-6, -4, 4]} intensity={0.6} color="#818cf8" />
+            <pointLight position={[0, 2, 5]} intensity={0.9} color="#ffffff" />
 
             <WorkshopScene
-              level={level}
-              step={step}
-              placedAtomsCount={placedAtomsCount}
-              addedOrbitalsCount={addedOrbitalsCount}
-              isAligned={isAligned}
-              isBondFormed={isBondFormed}
-              ccSigmaFormed={ccSigmaFormed}
-              chSigmaFormed={chSigmaFormed}
-              piFormed={piFormed}
               placedCarbons={placedCarbons}
               placedHydrogens={placedHydrogens}
               placedSp2Count={placedSp2Count}
               placedH1sCount={placedH1sCount}
               placedPCount={placedPCount}
+              ccSigmaFormed={ccSigmaFormed}
+              chSigmaFormed={chSigmaFormed}
+              piFormed={piFormed}
               hideHtml={showCompletionModal}
             />
 
-            <OrbitControls enablePan={true} enableZoom={true} minDistance={4} maxDistance={20} />
+            <OrbitControls target={[0, 0, 0]} enablePan={true} enableZoom={true} minDistance={4} maxDistance={20} />
           </Canvas>
         </div>
 
         {/* Error Toast Banner */}
         {errorMessage && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-rose-50 border border-rose-200 text-rose-800 text-xs px-4 py-2 rounded-2xl shadow-lg backdrop-blur-md flex items-center gap-2 animate-shake font-medium">
-            <Info className="w-4 h-4 text-rose-500 shrink-0" />
-            <span>{errorMessage}</span>
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-30 bg-rose-50 border border-rose-200 text-rose-800 text-xs px-3.5 py-1.5 rounded-xl shadow-lg backdrop-blur-md flex items-center gap-1.5 animate-shake font-medium">
+            <span className="font-bold">{errorMessage}</span>
           </div>
         )}
 
-        {/* Floating Top-Right Bond Shapes Reference Guide Card */}
-        {!showCompletionModal && (
-          <div className="absolute top-4 right-4 z-20 bg-white/95 border border-slate-200 rounded-2xl p-3 shadow-xl backdrop-blur-md max-w-[260px] w-full flex flex-col gap-2 animate-in fade-in zoom-in-95 text-[#1E293B]">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-              <div className="flex items-center gap-1.5 text-xs font-extrabold text-[#2563EB] uppercase tracking-wider">
-                <SparklesIcon className="w-3.5 h-3.5 text-[#2563EB]" />
-                <span>Bond Shapes Guide</span>
-              </div>
-              <span className="text-[9px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
-                {level === 1 ? 'σ Only' : '1σ + 1π'}
-              </span>
-            </div>
+        {/* ── VERTICAL STEPS TRACKER (COMPACT WITH GENEROUS BOTTOM MARGIN) ── */}
+        <div className="absolute right-2 sm:right-3 top-2 sm:top-2.5 z-20 bg-white/95 border border-slate-200/90 rounded-xl p-1.5 sm:p-2 shadow-md backdrop-blur-md flex flex-col gap-1 w-32 sm:w-36 md:w-40 select-none animate-in fade-in slide-in-from-right-2 duration-300">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-0.5 px-0.5">
+            <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">
+              Steps
+            </span>
+            <span className="text-[8.5px] font-mono font-bold bg-blue-50 text-blue-700 px-1 py-0.2 rounded border border-blue-200">
+              {step}/4
+            </span>
+          </div>
 
-            {/* Sigma (σ) Shape Diagram */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 flex flex-col gap-1">
-              <div className="text-[10px] font-bold text-blue-900 flex items-center justify-between">
-                <span>σ Bond (Head-on)</span>
-                <span className="text-[8.5px] font-mono text-blue-800 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200">End-to-End</span>
-              </div>
-              <svg viewBox="0 0 210 48" className="w-full h-11 rounded-lg bg-white border border-slate-200">
-                <line x1="12" y1="24" x2="198" y2="24" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
-                <ellipse cx="72" cy="24" rx="34" ry="13" fill="#0891b2" fillOpacity="0.3" stroke="#06b6d4" strokeWidth="1.3" />
-                <ellipse cx="138" cy="24" rx="34" ry="13" fill="#0891b2" fillOpacity="0.3" stroke="#06b6d4" strokeWidth="1.3" />
-                <ellipse cx="105" cy="24" rx="17" ry="13" fill="#38bdf8" fillOpacity="0.8" stroke="#0284c7" strokeWidth="1.6" />
-                <circle cx="48" cy="24" r="3.5" fill="#1e293b" />
-                <circle cx="162" cy="24" r="3.5" fill="#1e293b" />
-                <text x="48" y="41" fontSize="9" fill="#64748b" textAnchor="middle" fontWeight="bold">C/H</text>
-                <text x="162" y="41" fontSize="9" fill="#64748b" textAnchor="middle" fontWeight="bold">C/H</text>
-                <text x="105" y="13" fontSize="8" fill="#0284c7" textAnchor="middle" fontWeight="bold">σ Overlap</text>
-              </svg>
+          {/* Step 1: Atoms */}
+          <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
+            step > 1 ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+            step === 1 ? 'bg-blue-50 text-blue-900 border border-blue-300 shadow-xs ring-1 ring-blue-300/40' :
+            'bg-slate-50 text-slate-400 border border-slate-200'
+          }`}>
+            <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+              step > 1 ? 'bg-emerald-600 text-white' :
+              step === 1 ? 'bg-blue-600 text-white animate-pulse' :
+              'bg-slate-300 text-slate-600'
+            }`}>
+              {step > 1 ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '1'}
             </div>
+            <div className="min-w-0 text-left">
+              <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">1. Atoms</div>
+              <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">2 C & 4 H</div>
+            </div>
+          </div>
 
-            {/* Pi (π) Shape Diagram (Level 2) */}
-            {level === 2 && (
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 flex flex-col gap-1">
-                <div className="text-[10px] font-bold text-rose-900 flex items-center justify-between">
-                  <span>π Bond (Sidewise)</span>
-                  <span className="text-[8.5px] font-mono text-rose-800 bg-rose-100 px-1.5 py-0.5 rounded border border-rose-200">Parallel p</span>
+          {/* Step 2: C-C Sigma */}
+          <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
+            step > 2 || ccSigmaFormed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+            step === 2 ? 'bg-purple-50 text-purple-900 border border-purple-300 shadow-xs ring-1 ring-purple-300/40' :
+            'bg-slate-50 text-slate-400 border border-slate-200'
+          }`}>
+            <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+              step > 2 || ccSigmaFormed ? 'bg-emerald-600 text-white' :
+              step === 2 ? 'bg-purple-600 text-white animate-pulse' :
+              'bg-slate-300 text-slate-600'
+            }`}>
+              {step > 2 || ccSigmaFormed ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '2'}
+            </div>
+            <div className="min-w-0 text-left">
+              <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">2. C–C σ</div>
+              <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">sp²–sp²</div>
+            </div>
+          </div>
+
+          {/* Step 3: C-H Sigma */}
+          <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
+            step > 3 || chSigmaFormed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+            step === 3 ? 'bg-sky-50 text-sky-900 border border-sky-300 shadow-xs ring-1 ring-sky-300/40' :
+            'bg-slate-50 text-slate-400 border border-slate-200'
+          }`}>
+            <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+              step > 3 || chSigmaFormed ? 'bg-emerald-600 text-white' :
+              step === 3 ? 'bg-sky-600 text-white animate-pulse' :
+              'bg-slate-300 text-slate-600'
+            }`}>
+              {step > 3 || chSigmaFormed ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '3'}
+            </div>
+            <div className="min-w-0 text-left">
+              <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">3. C–H σ</div>
+              <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">4× (sp²–1s)</div>
+            </div>
+          </div>
+
+          {/* Step 4: C-C Pi */}
+          <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
+            piFormed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+            step === 4 ? 'bg-rose-50 text-rose-900 border border-rose-300 shadow-xs ring-1 ring-rose-300/40' :
+            'bg-slate-50 text-slate-400 border border-slate-200'
+          }`}>
+            <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+              piFormed ? 'bg-emerald-600 text-white' :
+              step === 4 ? 'bg-rose-600 text-white animate-pulse' :
+              'bg-slate-300 text-slate-600'
+            }`}>
+              {piFormed ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '4'}
+            </div>
+            <div className="min-w-0 text-left">
+              <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">4. C=C π</div>
+              <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">p–p sidewise</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Target Completed Rectangle Box (Centered when completed) */}
+        {isBondFormed && piFormed && (
+          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 animate-in fade-in slide-in-from-bottom-2 duration-300 pointer-events-none">
+            <div className="bg-emerald-600/85 border border-emerald-400/60 backdrop-blur-md text-white px-3.5 py-1.5 rounded-xl shadow-lg flex items-center gap-2 select-none">
+              <div className="w-4 h-4 rounded-md bg-white/20 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-3 h-3 text-white" />
+              </div>
+              <div className="text-left">
+                <div className="text-[10px] font-black uppercase tracking-wider text-emerald-100 leading-tight">
+                  Target Completed (100%)
                 </div>
-                <svg viewBox="0 0 210 56" className="w-full h-12 rounded-lg bg-white border border-slate-200">
-                  <line x1="12" y1="28" x2="198" y2="28" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
-                  <ellipse cx="64" cy="13" rx="8" ry="10" fill="#be123c" fillOpacity="0.3" stroke="#f43f5e" strokeWidth="1.1" />
-                  <ellipse cx="64" cy="43" rx="8" ry="10" fill="#be123c" fillOpacity="0.3" stroke="#f43f5e" strokeWidth="1.1" />
-                  <ellipse cx="146" cy="13" rx="8" ry="10" fill="#be123c" fillOpacity="0.3" stroke="#f43f5e" strokeWidth="1.1" />
-                  <ellipse cx="146" cy="43" rx="8" ry="10" fill="#be123c" fillOpacity="0.3" stroke="#f43f5e" strokeWidth="1.1" />
-                  <path d="M 58 12 Q 105 2 152 12 Q 105 22 58 12 Z" fill="#f43f5e" fillOpacity="0.8" stroke="#e11d48" strokeWidth="1.3" />
-                  <path d="M 58 44 Q 105 34 152 44 Q 105 54 58 44 Z" fill="#f43f5e" fillOpacity="0.8" stroke="#e11d48" strokeWidth="1.3" />
-                  <circle cx="64" cy="28" r="3" fill="#1e293b" />
-                  <circle cx="146" cy="28" r="3" fill="#1e293b" />
-                  <text x="105" y="13" fontSize="8" fill="#be123c" textAnchor="middle" fontWeight="bold">Top π Cloud</text>
-                  <text x="105" y="50" fontSize="8" fill="#be123c" textAnchor="middle" fontWeight="bold">Bottom π Cloud</text>
-                </svg>
+                <div className="text-[9px] font-medium text-white/95 leading-tight">
+                  C₂H₄ Ethylene Molecule Assembled (5σ + 1π Bonds)!
+                </div>
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Floating Success Notification inside Canvas when bond formed */}
-        {gameStarted && isBondFormed && !showCompletionModal && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 bg-emerald-500 text-white p-3.5 rounded-2xl shadow-2xl flex items-center gap-3 animate-in fade-in zoom-in-95 max-w-sm w-full">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0">
-              <Award className="w-6 h-6 animate-pulse" />
             </div>
-            <div className="flex-1">
-              <h4 className="text-xs font-extrabold text-white">
-                {level === 1 ? "σ Bond Created! (H₂)" : "1σ + 1π Bonds Created! (C₂H₄)"}
-              </h4>
-              <p className="text-[10px] text-emerald-100 font-medium">
-                {level === 1 ? "Hydrogen molecule complete!" : "Ethene double bond structure complete!"}
-              </p>
-            </div>
-            {level === 1 ? (
-              <button
-                onClick={() => handleSwitchLevel(2)}
-                className="bg-white text-emerald-800 hover:bg-emerald-50 font-extrabold text-xs px-3 py-2 rounded-xl transition-all shadow-md shrink-0 flex items-center gap-1 cursor-pointer"
-              >
-                <span>Next Level</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowCompletionModal(true)}
-                className="bg-white text-purple-800 hover:bg-purple-50 font-extrabold text-xs px-3 py-2 rounded-xl transition-all shadow-md shrink-0 flex items-center gap-1 cursor-pointer"
-              >
-                <span>View Theory</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            )}
           </div>
         )}
       </main>
 
-      {/* ── BOTTOM DOCK LINE & ITEM PALETTE ───────────────────────────── */}
-      <footer className="w-full bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 shadow-lg flex flex-wrap items-center justify-center gap-3 sm:gap-4 backdrop-blur-xl shrink-0 z-20">
-        {/* Target Instruction Pill */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-[#2563EB] font-extrabold text-xs shadow-sm">
-            <Target className="w-4 h-4 text-[#2563EB]" />
-            <span>
-              TARGET: {level === 1
-                ? (step === 1 ? "Place 2 H Atoms" : step === 2 ? "Add 2 1s Orbitals" : step === 3 ? "Align Orbitals" : "Form σ Bond")
-                : (step === 1 ? "Place 2 C & 4 H Atoms" : step === 2 ? "Add sp² for C–C σ" : step === 3 ? "Add sp² & 1s for C–H σ" : "Add p for π Bond")
-              }
-            </span>
+      {/* ── BOTTOM DOCK (CENTERED ATOMS & ORBITALS, NO "ELEMENTS & ORBITALS" TEXT) ── */}
+      <footer className="w-full bg-white/95 border border-slate-200 rounded-2xl p-1.5 sm:p-2 shadow-md flex items-center justify-center gap-1.5 sm:gap-2.5 backdrop-blur-xl shrink-0 z-20 select-none flex-wrap">
+        {/* Carbon Atom */}
+        <div
+          draggable={step === 1 && placedCarbons < 2}
+          onDragStart={(e) => handleDragStart(e, 'carbon-atom')}
+          onClick={handlePlaceCarbon}
+          className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-xs active:scale-95 ${
+            step === 1 && placedCarbons < 2
+              ? 'bg-slate-800 hover:bg-slate-900 text-white border-slate-700'
+              : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
+          }`}
+          title="Place Carbon Atom (C)"
+        >
+          <div className="w-4 h-4 rounded-full bg-slate-700 text-white font-extrabold text-[9px] flex items-center justify-center shrink-0">
+            C
           </div>
-
-          {/* Action Trigger in Bottom Bar */}
-          {!isAligned && step >= 2 && !isBondFormed && (
-            <button
-              onClick={handleAlign}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl transition-all shadow-md flex items-center gap-1 cursor-pointer"
-            >
-              <span>Align Orbitals</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          )}
-
-          {(isAligned || level === 2) && !isBondFormed && step >= 2 && (
-            <button
-              onClick={handleFormBond}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-1.5 rounded-xl transition-all shadow-md animate-pulse flex items-center gap-1 cursor-pointer"
-            >
-              <span>
-                {level === 1
-                  ? 'Form Bond ✨'
-                  : step === 2
-                    ? 'Form C–C σ Bond ✨'
-                    : step === 3
-                      ? 'Form C–H σ Bonds ✨'
-                      : 'Form π Bond ✨'}
-              </span>
-            </button>
-          )}
+          <span className="text-[11px] font-extrabold whitespace-nowrap">Carbon</span>
         </div>
 
-        {/* Drag & Drop Palette */}
-        <div className="flex items-center justify-center gap-2 overflow-x-auto py-0.5 max-w-full">
-          {level === 1 ? (
-            <>
-              {/* Level 1: Hydrogen Atom */}
-              <div
-                draggable={placedAtomsCount < 2}
-                onDragStart={(e) => handleDragStart(e, 'hydrogen-atom')}
-                onClick={handlePlaceAtom}
-                className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2 shrink-0 shadow-sm ${
-                  placedAtomsCount < 2
-                    ? 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-900'
-                    : 'bg-slate-100 border-slate-200 opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <div className="w-5 h-5 rounded-full bg-[#2563EB] text-white font-extrabold text-[11px] flex items-center justify-center">
-                  H
-                </div>
-                <div className="text-xs font-extrabold text-[#1E293B]">Hydrogen Atom</div>
-                <span className="text-[9.5px] font-mono bg-blue-200 text-blue-900 px-1.5 py-0.5 rounded-md font-bold">
-                  ×{2 - placedAtomsCount}
-                </span>
-              </div>
-
-              {/* Level 1: s Orbital */}
-              <div
-                draggable={addedOrbitalsCount < 2}
-                onDragStart={(e) => handleDragStart(e, 's-orbital')}
-                onClick={handleAddOrbital}
-                className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2 shrink-0 shadow-sm ${
-                  addedOrbitalsCount < 2
-                    ? 'bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-900'
-                    : 'bg-slate-100 border-slate-200 opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <div className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold text-[10px] flex items-center justify-center">
-                  s
-                </div>
-                <div className="text-xs font-extrabold text-[#1E293B]">s Orbital</div>
-                <span className="text-[9.5px] font-mono bg-purple-200 text-purple-900 px-1.5 py-0.5 rounded-md font-bold">
-                  ×{2 - addedOrbitalsCount}
-                </span>
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Level 2: Carbon Atom */}
-              <div
-                draggable={step === 1 && placedCarbons < 2}
-                onDragStart={(e) => handleDragStart(e, 'carbon-atom')}
-                onClick={handlePlaceCarbon}
-                className={`px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2 shrink-0 shadow-sm ${
-                  step === 1 && placedCarbons < 2
-                    ? 'bg-slate-800 hover:bg-slate-900 text-white border-slate-700'
-                    : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <div className="w-5 h-5 rounded-full bg-slate-700 text-white font-extrabold text-[10px] flex items-center justify-center">
-                  C
-                </div>
-                <div className="text-xs font-extrabold">Carbon</div>
-                <span className="text-[9px] font-mono bg-slate-600 text-white px-1.5 py-0.5 rounded-md font-bold">
-                  ×{Math.max(0, 2 - placedCarbons)}
-                </span>
-              </div>
-
-              {/* Level 2: Hydrogen Atom */}
-              <div
-                draggable={step === 1 && placedCarbons === 2 && placedHydrogens < 4}
-                onDragStart={(e) => handleDragStart(e, 'hydrogen-atom')}
-                onClick={handlePlaceHydrogen}
-                className={`px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2 shrink-0 shadow-sm ${
-                  step === 1 && placedCarbons === 2 && placedHydrogens < 4
-                    ? 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-900'
-                    : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <div className="w-5 h-5 rounded-full bg-blue-600 text-white font-extrabold text-[10px] flex items-center justify-center">
-                  H
-                </div>
-                <div className="text-xs font-extrabold">Hydrogen</div>
-                <span className="text-[9px] font-mono bg-blue-200 text-blue-900 px-1.5 py-0.5 rounded-md font-bold">
-                  ×{Math.max(0, 4 - placedHydrogens)}
-                </span>
-              </div>
-
-              {/* Level 2: Carbon sp² Orbital */}
-              <div
-                draggable={(step === 2 && placedSp2Count < 2) || (step === 3 && placedSp2Count < 6)}
-                onDragStart={(e) => handleDragStart(e, 'sp2-orbital')}
-                onClick={handleAddSp2Orbital}
-                className={`px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2 shrink-0 shadow-sm ${
-                  ((step === 2 && placedSp2Count < 2) || (step === 3 && placedSp2Count < 6))
-                    ? 'bg-cyan-50 hover:bg-cyan-100 border-cyan-200 text-cyan-900'
-                    : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <div className="w-5 h-5 rounded-full bg-cyan-600 text-white font-bold text-[9.5px] flex items-center justify-center">
-                  sp²
-                </div>
-                <div className="text-xs font-extrabold">sp² Orbital</div>
-                <span className="text-[9px] font-mono bg-cyan-200 text-cyan-900 px-1.5 py-0.5 rounded-md font-bold">
-                  ×{Math.max(0, 6 - placedSp2Count)}
-                </span>
-              </div>
-
-              {/* Level 2: Hydrogen 1s Orbital */}
-              <div
-                draggable={step === 3 && placedH1sCount < 4}
-                onDragStart={(e) => handleDragStart(e, 'h1s-orbital')}
-                onClick={handleAddH1sOrbital}
-                className={`px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2 shrink-0 shadow-sm ${
-                  step === 3 && placedH1sCount < 4
-                    ? 'bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-900'
-                    : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <div className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold text-[9.5px] flex items-center justify-center">
-                  1s
-                </div>
-                <div className="text-xs font-extrabold">1s Orbital</div>
-                <span className="text-[9px] font-mono bg-purple-200 text-purple-900 px-1.5 py-0.5 rounded-md font-bold">
-                  ×{Math.max(0, 4 - placedH1sCount)}
-                </span>
-              </div>
-
-              {/* Level 2: Carbon p Orbital */}
-              <div
-                draggable={step === 4 && placedPCount < 2}
-                onDragStart={(e) => handleDragStart(e, 'p-orbital')}
-                onClick={handleAddPOrbital}
-                className={`px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2 shrink-0 shadow-sm ${
-                  step === 4 && placedPCount < 2
-                    ? 'bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-900'
-                    : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <div className="w-5 h-5 rounded-full bg-rose-600 text-white font-bold text-[10px] flex items-center justify-center">
-                  p
-                </div>
-                <div className="text-xs font-extrabold">p Orbital</div>
-                <span className="text-[9px] font-mono bg-rose-200 text-rose-900 px-1.5 py-0.5 rounded-md font-bold">
-                  ×{Math.max(0, 2 - placedPCount)}
-                </span>
-              </div>
-            </>
-          )}
+        {/* Hydrogen Atom */}
+        <div
+          draggable={step === 1 && placedCarbons === 2 && placedHydrogens < 4}
+          onDragStart={(e) => handleDragStart(e, 'hydrogen-atom')}
+          onClick={handlePlaceHydrogen}
+          className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-xs active:scale-95 ${
+            step === 1 && placedCarbons === 2 && placedHydrogens < 4
+              ? 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-900'
+              : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
+          }`}
+          title="Place Hydrogen Atom (H)"
+        >
+          <div className="w-4 h-4 rounded-full bg-blue-600 text-white font-extrabold text-[9px] flex items-center justify-center shrink-0">
+            H
+          </div>
+          <span className="text-[11px] font-extrabold text-[#1E293B] whitespace-nowrap">Hydrogen</span>
         </div>
+
+        {/* Carbon sp² Orbital */}
+        <div
+          draggable={(step === 2 && placedSp2Count < 2) || (step === 3 && placedSp2Count < 6)}
+          onDragStart={(e) => handleDragStart(e, 'sp2-orbital')}
+          onClick={handleAddSp2Orbital}
+          className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-xs active:scale-95 ${
+            ((step === 2 && placedSp2Count < 2) || (step === 3 && placedSp2Count < 6))
+              ? 'bg-cyan-50 hover:bg-cyan-100 border-cyan-200 text-cyan-900'
+              : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
+          }`}
+          title="Carbon sp² Hybrid Orbital"
+        >
+          <div className="w-4 h-4 rounded-full bg-cyan-600 text-white font-bold text-[9px] flex items-center justify-center shrink-0">
+            sp²
+          </div>
+          <span className="text-[11px] font-extrabold text-[#1E293B] whitespace-nowrap">sp²</span>
+        </div>
+
+        {/* Hydrogen 1s Orbital */}
+        <div
+          draggable={step === 3 && placedH1sCount < 4}
+          onDragStart={(e) => handleDragStart(e, 'h1s-orbital')}
+          onClick={handleAddH1sOrbital}
+          className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-xs active:scale-95 ${
+            step === 3 && placedH1sCount < 4
+              ? 'bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-900'
+              : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
+          }`}
+          title="Hydrogen 1s Orbital"
+        >
+          <div className="w-4 h-4 rounded-full bg-purple-600 text-white font-bold text-[9px] flex items-center justify-center shrink-0">
+            1s
+          </div>
+          <span className="text-[11px] font-extrabold text-[#1E293B] whitespace-nowrap">1s</span>
+        </div>
+
+        {/* Carbon p Orbital */}
+        <div
+          draggable={step === 4 && placedPCount < 2}
+          onDragStart={(e) => handleDragStart(e, 'p-orbital')}
+          onClick={handleAddPOrbital}
+          className={`px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-xs active:scale-95 ${
+            step === 4 && placedPCount < 2
+              ? 'bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-900'
+              : 'bg-slate-100 border-slate-200 text-slate-400 opacity-50 cursor-not-allowed'
+          }`}
+          title="Carbon unhybridized 2p Orbital"
+        >
+          <div className="w-4 h-4 rounded-full bg-rose-600 text-white font-bold text-[9px] flex items-center justify-center shrink-0">
+            p
+          </div>
+          <span className="text-[11px] font-extrabold text-[#1E293B] whitespace-nowrap">p</span>
+        </div>
+
+        {/* Action Trigger for Bond Creation (Rendered cleanly inline) */}
+        {step === 2 && placedSp2Count >= 2 && !ccSigmaFormed && (
+          <button
+            type="button"
+            onClick={handleFormBond}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] px-3 py-1 rounded-xl transition-all shadow-md animate-pulse flex items-center gap-1 cursor-pointer active:scale-95 shrink-0"
+          >
+            <SparklesIcon className="w-3.5 h-3.5" />
+            <span>Form C–C σ Bond ✨</span>
+          </button>
+        )}
+
+        {step === 3 && placedSp2Count === 6 && placedH1sCount === 4 && !chSigmaFormed && (
+          <button
+            type="button"
+            onClick={handleFormBond}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] px-3 py-1 rounded-xl transition-all shadow-md animate-pulse flex items-center gap-1 cursor-pointer active:scale-95 shrink-0"
+          >
+            <SparklesIcon className="w-3.5 h-3.5" />
+            <span>Form C–H σ Bonds ✨</span>
+          </button>
+        )}
+
+        {step === 4 && placedPCount === 2 && !piFormed && (
+          <button
+            type="button"
+            onClick={handleFormBond}
+            className="bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[11px] px-3 py-1 rounded-xl transition-all shadow-md animate-pulse flex items-center gap-1 cursor-pointer active:scale-95 shrink-0"
+          >
+            <SparklesIcon className="w-3.5 h-3.5" />
+            <span>Form π Bond ✨</span>
+          </button>
+        )}
+
+        {/* Revert One Step */}
+        {(placedCarbons > 0 || placedSp2Count > 0 || isBondFormed) && (
+          <button
+            type="button"
+            onClick={handleRevertStep}
+            className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 transition-all cursor-pointer shadow-xs active:scale-95 shrink-0"
+            title="Revert last action"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
+          </button>
+        )}
       </footer>
 
-      {/* ── COMPLETION & THEORY MODAL DIALOG ───────────────────────────── */}
+      {/* ── THEORY / EXPLANATION MODAL (FULL-SCREEN CARD - NO GOT IT BUTTON) ─── */}
       {showCompletionModal && (
-        <div className="fixed inset-0 z-[9999] bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 my-auto text-[#1E293B]">
-            <button
-              onClick={() => setShowCompletionModal(false)}
-              className="absolute top-4 right-4 p-1 rounded-full bg-slate-100 text-[#64748B] hover:text-[#1E293B]"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 shadow-sm shrink-0">
-                <BookOpen className="w-6 h-6" />
+        <div
+          onClick={(e) => { if (e.target === e.currentTarget) setShowCompletionModal(false); }}
+          className="fixed inset-0 z-[999999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200 select-text"
+        >
+          {/* Modal Container Box */}
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-4xl max-h-[94vh] sm:max-h-[90vh] flex flex-col overflow-hidden text-[#1E293B] animate-in zoom-in-95 duration-200">
+            {/* Modal Header Bar */}
+            <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-slate-200 bg-white shrink-0 shadow-sm">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shadow-sm shrink-0">
+                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base md:text-lg font-black text-[#1E293B] tracking-tight">
+                    C₂H₄ (Ethylene) Orbital Overlap & Double Bond Guide
+                  </h2>
+                  <p className="text-[11px] sm:text-xs text-[#64748B] font-medium hidden sm:block">
+                    sp² Hybridization, Head-on σ Overlap, and Sidewise π Overlap Principles
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-base sm:text-lg font-extrabold text-[#1E293B]">
-                  Level {level} Theory & Key Concepts 📚
-                </h2>
-                <p className="text-xs text-[#64748B] font-medium">
-                  {level === 1 ? 'Hydrogen (H₂) Sigma Bond Principles' : 'Ethene (C₂H₄) σ & π Overlap Principles'}
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowCompletionModal(false)}
+                className="p-1.5 sm:p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#475569] hover:text-[#0F172A] transition-all cursor-pointer shadow-sm"
+                title="Close Explanation"
+              >
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
             </div>
 
-            {/* Theory Content Summary */}
-            <div className="space-y-3 mb-6">
-              {/* Target Info Summary */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#2563EB] uppercase tracking-wider">Target Completed</span>
-                  <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                    {level === 1 ? 'Single σ Bond' : 'Double Bond (1σ + 1π)'}
-                  </span>
+            {/* Scrollable Content Body */}
+            <div className="flex-1 overflow-y-auto px-3.5 sm:px-6 md:px-8 py-3.5 sm:py-5 pb-8 sm:pb-10 space-y-4 sm:space-y-6 w-full text-slate-800">
+              {/* Section 1: Core Principles of Sigma and Pi Overlap */}
+              <div className="space-y-2 border-b border-slate-200 pb-5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center">1</span>
+                  <h3 className="text-sm sm:text-base font-extrabold text-blue-900 tracking-tight">
+                    Core Principles of σ (Sigma) and π (Pi) Overlap
+                  </h3>
                 </div>
-
-                <h3 className="text-sm font-extrabold text-[#1E293B]">
-                  {level === 1 ? 'H₂ (Hydrogen Molecule)' : 'C₂H₄ (Ethene Molecule)'}
-                </h3>
-
-                <div className="grid grid-cols-2 gap-2 text-xs text-[#1E293B] border-t border-slate-200 pt-2 font-mono">
-                  {level === 1 ? (
-                    <>
-                      <div className="bg-white p-2 rounded-xl border border-slate-200">
-                        <span className="text-[#64748B] block text-[10px]">Orbital Overlap:</span>
-                        <span className="text-blue-700 font-bold">1s – 1s</span>
-                      </div>
-                      <div className="bg-white p-2 rounded-xl border border-slate-200">
-                        <span className="text-[#64748B] block text-[10px]">Overlap Type:</span>
-                        <span className="text-purple-700 font-bold">Head-on</span>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="bg-white p-2 rounded-xl border border-slate-200">
-                        <span className="text-[#64748B] block text-[10px]">C–C σ Bond:</span>
-                        <span className="text-blue-700 font-bold">sp² – sp²</span>
-                      </div>
-                      <div className="bg-white p-2 rounded-xl border border-slate-200">
-                        <span className="text-[#64748B] block text-[10px]">C–C π Bond:</span>
-                        <span className="text-rose-700 font-bold">p – p (sidewise)</span>
-                      </div>
-                      <div className="bg-white p-2 rounded-xl border border-slate-200">
-                        <span className="text-[#64748B] block text-[10px]">C–H σ Bonds:</span>
-                        <span className="text-purple-700 font-bold">4 × (sp² – 1s)</span>
-                      </div>
-                      <div className="bg-white p-2 rounded-xl border border-slate-200">
-                        <span className="text-[#64748B] block text-[10px]">Total Bonds:</span>
-                        <span className="text-emerald-700 font-bold">5 σ + 1 π</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Key Concept Theory Explanation */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex flex-col gap-2">
-                <div className="flex items-center gap-1.5 text-purple-700 text-xs font-bold uppercase tracking-wider">
-                  <SparklesIcon className="w-4 h-4" />
-                  <span>Key Concept & Theory</span>
-                </div>
-
-                <h4 className="text-xs sm:text-sm font-bold text-[#1E293B]">
-                  {level === 1 ? 'Sigma (σ) Bond Formation' : 'Sigma (σ) & Pi (π) Bonding Principles'}
-                </h4>
-
-                <p className="text-xs text-[#64748B] leading-relaxed">
-                  {level === 1
-                    ? "A sigma (σ) bond is formed by the direct end-to-end overlap of two atomic orbitals along the internuclear axis. In H₂, two spherical 1s orbitals overlap head-on to form a strong single covalent bond."
-                    : "A carbon-carbon double bond in C₂H₄ consists of one strong σ bond (sp²-sp² head-on overlap) and one π bond (sidewise overlap of parallel unhybridized 2p orbitals above and below the molecular plane)."}
-                </p>
-
-                <div className="space-y-1.5 text-xs font-mono text-[#1E293B] bg-white p-3 rounded-xl border border-slate-200">
-                  <div className="flex items-center gap-2 text-blue-700">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                    <span><strong>σ bond:</strong> Head-on overlap along internuclear axis</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-rose-700">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                    <span><strong>π bond:</strong> Sidewise overlap of parallel p-orbitals</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-emerald-700">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span><strong>C=C Double Bond:</strong> 1 σ bond + 1 π bond</span>
+                <div className="pl-8 space-y-3 text-xs sm:text-sm">
+                  <p className="text-slate-600 leading-relaxed">
+                    According to <strong>Valence Bond (VB) Theory</strong>, a covalent bond forms when two atomic or hybrid orbitals overlap and their shared electron spins pair up. The nature and strength of the bond depends directly on the geometry of spatial overlap:
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="bg-sky-50/70 border border-sky-200 rounded-xl p-3">
+                      <span className="font-extrabold text-sky-900 block mb-1">σ (Sigma) Bond — Head-On Overlap</span>
+                      <p className="text-slate-600 text-xs leading-normal">
+                        Formed by direct end-to-end (axial) overlap along the internuclear axis. The resulting electron charge density is <strong>cylindrically symmetrical</strong> around the bond line. All single bonds are σ bonds, giving maximum orbital overlap and high bond strength (~347 kJ/mol).
+                      </p>
+                    </div>
+                    <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-3">
+                      <span className="font-extrabold text-rose-900 block mb-1">π (Pi) Bond — Sidewise (Lateral) Overlap</span>
+                      <p className="text-slate-600 text-xs leading-normal">
+                        Formed by lateral/sidewise overlap of two parallel, unhybridized 2p orbitals oriented perpendicular to the internuclear axis. The electron cloud is concentrated in two lobes: one <strong>above</strong> and one <strong>below</strong> the nodal molecular plane. π bonds are weaker (~264 kJ/mol) and cannot rotate freely.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Action buttons */}
-            <div className="flex items-center gap-3">
-              {level === 1 ? (
-                <>
-                  <button
-                    onClick={() => {
-                      setShowCompletionModal(false);
-                      handleReset();
-                    }}
-                    className="flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[#1E293B] py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer"
-                  >
-                    Replay Level 1
-                  </button>
+              {/* Section 2: sp² Hybridization in Carbon */}
+              <div className="space-y-2 border-b border-slate-200 pb-5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-purple-600 text-white font-extrabold text-xs flex items-center justify-center">2</span>
+                  <h3 className="text-sm sm:text-base font-extrabold text-purple-900 tracking-tight">
+                    sp² Hybridization of Carbon in Ethylene (C₂H₄)
+                  </h3>
+                </div>
+                <div className="pl-8 space-y-3 text-xs sm:text-sm">
+                  <p className="text-slate-600 leading-relaxed">
+                    Carbon has a ground-state valence configuration of <strong>2s² 2p²</strong>. In ethylene, carbon promotes one 2s electron to the vacant 2p_z orbital, then mixes the <strong>2s</strong> with two 2p orbitals (<strong>2p_x and 2p_y</strong>):
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                      <span className="font-extrabold text-blue-800 block mb-1">3 sp² Hybrid Orbitals</span>
+                      <p className="text-slate-600 leading-normal">
+                        Contain 33.3% s and 66.7% p character. Spread out symmetrically in the XY plane separated by <strong>120° bond angles</strong> (Trigonal Planar).
+                      </p>
+                    </div>
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                      <span className="font-extrabold text-rose-800 block mb-1">1 Unhybridized 2p_z Orbital</span>
+                      <p className="text-slate-600 leading-normal">
+                        Remains pure p character. Points strictly along the Z-axis, perpendicular (90°) to the molecular trigonal plane.
+                      </p>
+                    </div>
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                      <span className="font-extrabold text-emerald-800 block mb-1">Planar Molecular Skeleton</span>
+                      <p className="text-slate-600 leading-normal">
+                        All 6 atoms (2 Carbons and 4 Hydrogens) reside in a single flat plane, minimizing steric repulsion.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                  <button
-                    onClick={() => {
-                      setShowCompletionModal(false);
-                      handleSwitchLevel(2);
-                    }}
-                    className="flex-1 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs py-2.5 rounded-xl transition-all shadow-md text-center flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
-                  >
-                    <span>Continue to Level 2 (C₂H₄)</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      setShowCompletionModal(false);
-                      handleReset();
-                    }}
-                    className="flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[#1E293B] py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer"
-                  >
-                    Replay Level 2
-                  </button>
+              {/* Section 3: Master Bond Accounting Matrix */}
+              <div className="space-y-2 border-b border-slate-200 pb-5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center">3</span>
+                  <h3 className="text-sm sm:text-base font-extrabold text-emerald-900 tracking-tight">
+                    Master Bond Breakdown for Ethylene (C₂H₄)
+                  </h3>
+                </div>
+                <div className="pl-8 overflow-x-auto pt-1">
+                  <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                    <thead className="bg-slate-100/90 text-slate-700 font-bold border-b border-slate-200 text-[11px]">
+                      <tr>
+                        <th className="p-2.5">Bond</th>
+                        <th className="p-2.5">Type</th>
+                        <th className="p-2.5">Overlapping Orbitals</th>
+                        <th className="p-2.5">Overlap Geometry</th>
+                        <th className="p-2.5">Quantity</th>
+                        <th className="p-2.5">Approx. Energy</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                      <tr className="hover:bg-slate-50">
+                        <td className="p-2.5 font-bold font-mono text-cyan-700">C — C</td>
+                        <td className="p-2.5 font-bold text-sky-700">σ (Sigma)</td>
+                        <td className="p-2.5 font-mono">C(sp²) — C(sp²)</td>
+                        <td className="p-2.5 font-bold">Head-on axial</td>
+                        <td className="p-2.5 font-bold font-mono">1</td>
+                        <td className="p-2.5 font-mono text-slate-600">~347 kJ/mol</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50">
+                        <td className="p-2.5 font-bold font-mono text-blue-700">C — H</td>
+                        <td className="p-2.5 font-bold text-sky-700">σ (Sigma)</td>
+                        <td className="p-2.5 font-mono">C(sp²) — H(1s)</td>
+                        <td className="p-2.5 font-bold">Head-on axial</td>
+                        <td className="p-2.5 font-bold font-mono">4</td>
+                        <td className="p-2.5 font-mono text-slate-600">~413 kJ/mol</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50">
+                        <td className="p-2.5 font-bold font-mono text-rose-700">C = C</td>
+                        <td className="p-2.5 font-bold text-rose-700">π (Pi)</td>
+                        <td className="p-2.5 font-mono">C(2p_z) — C(2p_z)</td>
+                        <td className="p-2.5 font-bold">Sidewise lateral</td>
+                        <td className="p-2.5 font-bold font-mono">1</td>
+                        <td className="p-2.5 font-mono text-slate-600">~264 kJ/mol</td>
+                      </tr>
+                      <tr className="bg-slate-50/80 font-bold text-slate-900 border-t border-slate-200">
+                        <td className="p-2.5">Total</td>
+                        <td className="p-2.5 text-[#2563EB]">Double Bond (C=C)</td>
+                        <td className="p-2.5 font-mono">5 σ + 1 π bonds</td>
+                        <td className="p-2.5">Trigonal Planar</td>
+                        <td className="p-2.5 font-mono text-[#2563EB]">6 bonds</td>
+                        <td className="p-2.5 font-mono text-emerald-700">Total ~2380 kJ/mol</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-                  <Link
-                    href="/chemistry/chemical-bonding-molecular-structure/hybridization-orbital-overlap"
-                    className="flex-1 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs py-2.5 rounded-xl transition-all shadow-md text-center flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
-                  >
-                    <span>Continue to Challenge 3 →</span>
-                  </Link>
-                </>
-              )}
+              {/* Section 4: Structural Consequences (Restricted Rotation) */}
+              <div className="space-y-2 border-b border-slate-200 pb-5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-amber-600 text-white font-extrabold text-xs flex items-center justify-center">4</span>
+                  <h3 className="text-sm sm:text-base font-extrabold text-amber-900 tracking-tight">
+                    Physical & Chemical Consequences of the π Bond
+                  </h3>
+                </div>
+                <div className="pl-8 space-y-2 text-xs sm:text-sm text-slate-600">
+                  <p className="leading-relaxed">
+                    The presence of the sidewise π bond has profound consequences on molecular properties:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-slate-700">
+                    <li>
+                      <strong>Restricted Rotation:</strong> Unlike single σ bonds which rotate freely, rotating the C=C bond breaks the parallel alignment of the 2p orbitals, destroying the π bond. This requires ~264 kJ/mol of energy, locking the molecule into rigid cis/trans configurations.
+                    </li>
+                    <li>
+                      <strong>Enhanced Reactivity:</strong> The π electron cloud is exposed above and below the nuclear plane rather than shielded between nuclei, making it readily accessible to electrophilic reagents (e.g. halogen addition, hydrogenation).
+                    </li>
+                    <li>
+                      <strong>Shorter Bond Length:</strong> The C=C double bond length is <strong>1.34 Å</strong>, significantly shorter than the single C—C bond (1.54 Å) due to the combined pulling attraction of the σ and π bonds.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Section 5: Step-by-Step Level 2 Challenge Guide */}
+              <div className="space-y-2 pb-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-extrabold text-xs flex items-center justify-center">5</span>
+                  <h3 className="text-sm sm:text-base font-extrabold text-indigo-900 tracking-tight">
+                    How to Solve the Level 2 Challenge in the Simulation
+                  </h3>
+                </div>
+                <div className="pl-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs pt-1">
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span className="font-extrabold text-blue-600 block mb-1">Step 1: Place Atoms</span>
+                    <p className="text-slate-600">Tap <strong>2 Carbon (C)</strong> atoms and <strong>4 Hydrogen (H)</strong> atoms from the tray to place them in the workspace.</p>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span className="font-extrabold text-purple-600 block mb-1">Step 2: C–C σ Bond</span>
+                    <p className="text-slate-600">Tap 2 <strong>sp² orbitals</strong> for the carbon atoms, then click <strong>Form C–C σ Bond ✨</strong>.</p>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span className="font-extrabold text-cyan-600 block mb-1">Step 3: C–H σ Bonds</span>
+                    <p className="text-slate-600">Tap the remaining 4 <strong>sp² orbitals</strong> and 4 <strong>1s orbitals</strong>, then click <strong>Form C–H σ Bonds ✨</strong>.</p>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span className="font-extrabold text-rose-600 block mb-1">Step 4: C=C π Bond</span>
+                    <p className="text-slate-600">Tap 2 <strong>p orbitals</strong> along the Z-axis, then click <strong>Form π Bond ✨</strong> to finish the molecule!</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

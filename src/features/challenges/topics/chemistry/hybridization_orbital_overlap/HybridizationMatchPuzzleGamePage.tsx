@@ -27,8 +27,11 @@ import {
   Info,
   ChevronRight,
   Eye,
-  Maximize2
+  Maximize2,
+  ArrowLeft,
+  Play
 } from 'lucide-react';
+import { exitSimulation } from '@/lib/mobileBridge';
 import { getQuaternionFromDirection } from './helpers';
 
 // ── 5 Molecules Definition (BeCl2, BF3, CH4, PCl5, SF6) ──────────────────────
@@ -465,14 +468,18 @@ const OrbitalClueLobe3D = ({ count }: { count: number }) => {
 
 // ── MAIN PAGE COMPONENT ──────────────────────────────────────────────────────
 export default function HybridizationMatchPuzzleGamePage({
-  difficulty = 'level3'
+  difficulty = 'level3',
+  onExit
 }: {
   difficulty?: string;
+  onExit?: () => void;
 }) {
   const router = useRouter();
 
   // Intro Target Screen State
   const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [introStep, setIntroStep] = useState<'mission' | 'instructions'>('mission');
+  const [showExplanationModal, setShowExplanationModal] = useState<boolean>(false);
 
   // ── Game State ─────────────────────────────────────────────────────────────
 
@@ -559,7 +566,6 @@ export default function HybridizationMatchPuzzleGamePage({
   useEffect(() => {
     if (matchesCount === 5) {
       setActiveStep(4);
-      setTimeout(() => setShowSuccessModal(true), 600);
     }
   }, [matchesCount]);
 
@@ -726,45 +732,124 @@ export default function HybridizationMatchPuzzleGamePage({
     <div
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-3.5 sm:p-4 gap-2.5"
+      className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-1.5 sm:p-2.5 gap-1.5 sm:gap-2"
     >
-      {/* ── INTRO MISSION TARGET OVERLAY VIEW (COVERS FULL PAGE CONTAINER WITH BLUR) ───── */}
+      {/* ── INTRO MISSION & INSTRUCTIONS VIEW OVERLAY (NO SCROLL AT HEIGHT 376) ── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-6 bg-white/40 backdrop-blur-md overflow-y-auto">
-          {/* Top Header Bar */}
+        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-4 bg-white/80 backdrop-blur-md overflow-hidden">
+          {/* Top Header Bar: Exit Button Only */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
-              onClick={() => router.back()}
-              className="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-sm cursor-pointer"
+              type="button"
+              onClick={() => (onExit ? onExit() : exitSimulation())}
+              className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              title="Exit Simulation (Back to App)"
             >
-              <ChevronLeft className="w-4 h-4 text-[#2563EB]" />
+              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>EXIT</span>
             </button>
           </div>
 
-          {/* Central Target Text & Start Mission Button */}
-          <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-5 z-10 px-2 sm:px-4 py-2">
-            <div className="text-[#2563EB] text-[10px] sm:text-sm font-mono font-bold tracking-[0.25em] uppercase">
-              HYBRIDIZATION & ORBITAL OVERLAP
+          {/* STEP 1: MISSION SCREEN (COMPACT, FITS AT HEIGHT 376) */}
+          {introStep === 'mission' && (
+            <div className="max-w-2xl mx-auto my-auto text-center space-y-2 sm:space-y-3 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200">
+              <div className="text-[#2563EB] text-[9.5px] sm:text-[11px] font-mono font-bold tracking-[0.2em] uppercase">
+                HYBRIDIZATION & ORBITAL OVERLAP
+              </div>
+
+              <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+                <span className="text-[#2563EB]">MISSION:</span> Match Hybridization Boxes & 3D Molecular Geometries
+              </h1>
+
+              <div className="pt-2 sm:pt-3">
+                <button
+                  type="button"
+                  onClick={() => setIntroStep('instructions')}
+                  className="px-6 sm:px-8 py-1.5 sm:py-2 bg-gradient-to-r from-teal-800 to-cyan-900 hover:from-teal-700 hover:to-cyan-800 text-teal-200 hover:text-white font-extrabold text-[11px] sm:text-xs uppercase tracking-wider rounded-full shadow-lg border border-teal-400/50 flex items-center gap-1.5 mx-auto cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                >
+                  <span>NEXT</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-teal-300" />
+                </button>
+              </div>
             </div>
+          )}
 
-            <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
-              <span className="text-[#2563EB]">TARGET:</span> Match Hybridization Boxes & 3D Molecular Geometries
-            </h1>
+          {/* STEP 2: INSTRUCTIONS SCREEN (WITH IMAGES, NO SUBTITLE TEXT, FULLY VISIBLE AT HEIGHT 376) */}
+          {introStep === 'instructions' && (
+            <div className="max-w-xl mx-auto my-auto text-center space-y-1.5 sm:space-y-2 z-10 px-2 sm:px-3 py-0.5 animate-in fade-in duration-200 w-full">
+              <div className="text-[#1E293B] text-sm sm:text-base font-black tracking-wide">
+                Instructions
+              </div>
 
-            <div className="pt-1 sm:pt-4">
-              <button
-                onClick={() => setGameStarted(true)}
-                className="px-6 py-2 sm:px-8 sm:py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider rounded-full shadow-lg border border-blue-400 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                START MISSION
-              </button>
+              <div className="space-y-1.5 text-left max-w-xl mx-auto">
+                {/* 1. Unlock boxes */}
+                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
+                      1
+                    </div>
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                      Select the correct hybridization to unlock the hybridization boxes.
+                    </p>
+                  </div>
+                  <div className="w-16 sm:w-20 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                    <img
+                      src="/images/hybridization/l3_step1_unlock_boxes.svg"
+                      alt="Step 1: Unlock boxes"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Match molecules */}
+                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
+                      2
+                    </div>
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                      Tap or drag each molecule to drop it into its matching hybridization box.
+                    </p>
+                  </div>
+                  <div className="w-16 sm:w-20 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+                    <img
+                      src="/images/hybridization/l3_step2_drop_molecules.svg"
+                      alt="Step 2: Drop molecules"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons: Back and Play (Guaranteed visible at height 376) */}
+              <div className="pt-1.5 sm:pt-2 flex items-center justify-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIntroStep('mission')}
+                  className="px-5 sm:px-6 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+                  <span>BACK</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setGameStarted(true)}
+                  className="px-6 sm:px-8 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                >
+                  <Play className="w-3.5 h-3.5 fill-white" />
+                  <span>PLAY</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Bottom Footer Note */}
-          <div className="w-full text-center text-[10px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0">
-            Click Start Mission to launch the single canvas orbital workshop
-          </div>
+          {/* Bottom Footer Note (Only on mission step) */}
+          {introStep === 'mission' && (
+            <div className="w-full text-center text-[9.5px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0">
+              Click NEXT to view challenge instructions
+            </div>
+          )}
         </div>
       )}
 
@@ -778,480 +863,749 @@ export default function HybridizationMatchPuzzleGamePage({
         </div>
       )}
 
-      {/* ── TOP TOOLBAR HEADER ────────────────────────────────────────── */}
+      {/* ── TOP TOOLBAR HEADER (EXIT, TARGET COMPLETED BADGE, EXPLANATION) ── */}
       <div className="w-full flex items-center justify-between z-20 shrink-0 gap-2">
-        {/* Top Left: Back Button & Scene Tools */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              if (window.history.length > 1) {
-                router.back();
-              } else {
-                router.push("/");
-              }
-            }}
-            className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
-            title="Back to Topics"
-          >
-            <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
-            <span className="hidden sm:inline">Back</span>
-          </button>
+        {/* Top Left: Exit Button Only */}
+        <button
+          type="button"
+          onClick={() => (onExit ? onExit() : exitSimulation())}
+          className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95 shrink-0"
+          title="Exit Simulation (Back to App)"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+          <span>EXIT</span>
+        </button>
 
-          <button
-            onClick={toggleFullscreen}
-            className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
-            title="Toggle Fullscreen"
-          >
-            <Maximize2 className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Step Indicator & Progress Pills */}
-        <div className="flex items-center gap-2">
-          {/* Matches Counter Badge */}
-          <div className="bg-white border border-slate-200 px-3 py-1 rounded-xl flex items-center gap-1.5 shadow-sm text-xs font-bold text-[#1E293B]">
-            <span className="text-slate-500 hidden sm:inline">Matches:</span>
-            <span className="text-blue-600 font-mono font-extrabold">{matchesCount}/5</span>
-          </div>
-
-          {/* Step Pills */}
-          <div className="hidden md:flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-1.5 rounded-xl shadow-sm">
-            <button
-              onClick={() => {
-                setActiveStep(1);
-                setStep1Collapsed(false);
-              }}
-              className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
-                activeStep === 1 ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-slate-100 text-slate-500'
-              }`}
-            >
-              <span>1. Unlock Boxes</span>
-              {boxesUnlocked && <CheckCircle2 className="w-3 h-3 text-emerald-500" />}
-            </button>
-            <ChevronRight className="w-3 h-3 text-slate-300" />
-
-            <button
-              onClick={() => boxesUnlocked && setActiveStep(2)}
-              className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
-                activeStep === 2 ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-slate-100 text-slate-500'
-              }`}
-            >
-              <span>2. Inspect</span>
-              {!boxesUnlocked && <Lock className="w-3 h-3 text-slate-400" />}
-            </button>
-            <ChevronRight className="w-3 h-3 text-slate-300" />
-
-            <button
-              onClick={() => boxesUnlocked && setActiveStep(3)}
-              className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
-                activeStep === 3 ? 'bg-cyan-50 text-cyan-700 border border-cyan-200' : 'bg-slate-100 text-slate-500'
-              }`}
-            >
-              <span>3. Match</span>
-              {!boxesUnlocked && <Lock className="w-3 h-3 text-slate-400" />}
-            </button>
-            <ChevronRight className="w-3 h-3 text-slate-300" />
-
-            <div className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 ${
-              matchesCount === 5 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'
-            }`}>
-              <span>4. Complete</span>
-              {matchesCount === 5 && <CheckCircle2 className="w-3 h-3 text-emerald-500" />}
+        {/* Center: Target Completed Badge (shown with green light color as used in Level 1 & Level 2) */}
+        {matchesCount === 5 ? (
+          <div className="bg-emerald-600/85 border border-emerald-400/60 backdrop-blur-md text-white px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-xl shadow-md flex items-center gap-2 select-none animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-4 h-4 rounded-md bg-white/20 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-3 h-3 text-white" />
+            </div>
+            <div className="text-left">
+              <div className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-emerald-100 leading-tight">
+                Target Completed (100%)
+              </div>
+              <div className="text-[9px] sm:text-[10px] font-medium text-white/95 leading-tight hidden xs:block">
+                All 5 Molecules Successfully Matched to Hybridization Boxes!
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex-1" />
+        )}
 
-        {/* Action Controls Top Right */}
-        <div className="flex items-center gap-2">
-          {/* Explanation Button */}
-          <button
-            onClick={() => setShowSuccessModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-bold text-xs shadow-sm transition-all cursor-pointer"
-          >
-            <BookOpen className="w-4 h-4 text-purple-600" />
-            <span>Explanation</span>
-          </button>
-
-          <button
-            onClick={handleResetGame}
-            title="Reset Challenge"
-            className="p-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 shadow-sm transition-all cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4 text-slate-500" />
-          </button>
-        </div>
+        {/* Top Right: Explanation Button Only */}
+        <button
+          type="button"
+          onClick={() => setShowExplanationModal(true)}
+          className="h-8 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 flex items-center gap-1.5 text-purple-700 text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95 shrink-0"
+          title="View Theory & Explanation"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-purple-600" />
+          <span>Explanation</span>
+        </button>
       </div>
 
-      {/* ── STEP 1 BOX: UNLOCK THE HYBRIDIZATION BOXES ─────────────────────── */}
-      <section className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative shrink-0">
-        {/* Header Row */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-7 h-7 rounded-full font-extrabold text-xs flex items-center justify-center transition-all ${
-              boxesUnlocked
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-300'
-                : 'bg-blue-50 text-blue-700 border border-blue-300'
-            }`}>
-              {boxesUnlocked ? '✓' : '1'}
+      {/* ── MAIN GAMEPLAY AREA ── */}
+      {!boxesUnlocked ? (
+        /* ── PHASE 1: STEP 1 UNLOCK THE HYBRIDIZATION BOXES (5 ORBITAL CARDS GRID) ── */
+        <section className="flex-1 w-full bg-white border border-slate-200 rounded-2xl p-2 sm:p-3 shadow-sm flex flex-col justify-between min-h-0 overflow-hidden">
+          {/* Header Row */}
+          <div className="flex items-center gap-2 mb-1 pb-1 border-b border-slate-100 shrink-0">
+            <div className="w-5 h-5 rounded-full bg-blue-600 text-white font-extrabold text-[10px] flex items-center justify-center shrink-0">
+              1
             </div>
             <div>
-              <h2 className="text-xs sm:text-sm font-extrabold text-[#1E293B] flex items-center gap-2">
-                <span>Unlock the Hybridization Boxes</span>
-                {boxesUnlocked && (
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    ✓ Unlocked (5/5 Clues Solved)
-                  </span>
-                )}
+              <h2 className="text-xs sm:text-sm font-extrabold text-[#1E293B]">
+                Unlock the Hybridization Boxes
               </h2>
-              {!step1Collapsed && (
-                <p className="text-[11px] text-[#64748B] font-medium">Match the number of hybrid orbitals to the correct hybridization.</p>
-              )}
+              <p className="text-[10px] sm:text-[11px] text-[#64748B] font-medium">
+                Match the number of hybrid orbitals to the correct hybridization.
+              </p>
             </div>
           </div>
 
-          {/* Toggle Button when Unlocked */}
-          {boxesUnlocked && (
-            <button
-              onClick={() => setStep1Collapsed((prev) => !prev)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-[#1E293B] transition-all cursor-pointer"
-            >
-              <span>{step1Collapsed ? 'View Clues' : 'Hide Clues'}</span>
-              {step1Collapsed ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
-            </button>
-          )}
-        </div>
+          {/* 5 Orbital Cards Grid */}
+          <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 flex-1 min-h-0 items-stretch py-1">
+            {[2, 3, 4, 5, 6].map((count) => {
+              const assigned = clueAnswers[count];
+              const targets: Record<number, string> = { 2: 'sp', 3: 'sp²', 4: 'sp³', 5: 'sp³d', 6: 'sp³d²' };
+              const isCorrect = assigned === targets[count];
 
-        {/* Expanded Step 1 Content */}
-        {!step1Collapsed && (
-          <div className="mt-3 pt-3 border-t border-slate-100">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-3">
-              {[2, 3, 4, 5, 6].map((count) => {
-                const assigned = clueAnswers[count];
-                const targets: Record<number, string> = { 2: 'sp', 3: 'sp²', 4: 'sp³', 5: 'sp³d', 6: 'sp³d²' };
-                const isCorrect = assigned === targets[count];
+              return (
+                <div
+                  key={count}
+                  className={`bg-slate-50 border rounded-xl p-1.5 sm:p-2 flex flex-col items-center justify-between text-center transition-all ${
+                    isCorrect
+                      ? 'border-emerald-400 bg-emerald-50/60 shadow-xs'
+                      : assigned
+                        ? 'border-blue-300'
+                        : 'border-slate-200 hover:border-blue-300'
+                  }`}
+                >
+                  {/* 3D Mini Canvas Lobe */}
+                  <div className="w-full flex-1 min-h-[70px] rounded-lg bg-white border border-slate-200 overflow-hidden relative shadow-inner pointer-events-none">
+                    <Canvas camera={{ position: [0, 0, 3.2], fov: 45 }}>
+                      <ambientLight intensity={1.1} />
+                      <directionalLight position={[3, 4, 2]} intensity={1.5} />
+                      <OrbitalClueLobe3D count={count} />
+                    </Canvas>
+                  </div>
 
-                return (
-                  <div
-                    key={count}
-                    className={`bg-slate-50 border rounded-2xl p-2.5 flex flex-col items-center justify-between text-center transition-all ${
+                  <span className="text-[10px] sm:text-xs font-extrabold text-[#1E293B] mt-1 shrink-0">
+                    {count} hybrid orbitals
+                  </span>
+
+                  {/* Dropdown Selector */}
+                  <select
+                    disabled={boxesUnlocked}
+                    value={assigned || ''}
+                    onChange={(e) => handleAssignClue(count, e.target.value)}
+                    className={`mt-1 w-full text-[10px] sm:text-xs font-mono font-bold rounded-lg px-1.5 py-1 text-center border focus:outline-none transition-all cursor-pointer ${
                       isCorrect
-                        ? 'border-emerald-300 bg-emerald-50/50'
+                        ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
                         : assigned
-                          ? 'border-blue-300'
-                          : 'border-slate-200 hover:border-blue-300'
+                          ? 'bg-blue-50 border-blue-300 text-blue-900'
+                          : 'bg-white border-slate-200 text-[#1E293B] hover:border-blue-300'
                     }`}
                   >
-                    {/* 3D Mini Canvas Lobe */}
-                    <div className="w-full h-20 rounded-xl bg-white border border-slate-200 overflow-hidden relative shadow-inner pointer-events-none">
-                      <Canvas camera={{ position: [0, 0, 3.2], fov: 45 }}>
-                        <ambientLight intensity={1.0} />
-                        <directionalLight position={[3, 4, 2]} intensity={1.4} />
-                        <OrbitalClueLobe3D count={count} />
-                      </Canvas>
-                    </div>
+                    <option value="">Select...</option>
+                    <option value="sp">sp</option>
+                    <option value="sp²">sp²</option>
+                    <option value="sp³">sp³</option>
+                    <option value="sp³d">sp³d</option>
+                    <option value="sp³d²">sp³d²</option>
+                  </select>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : (
+        /* ── PHASE 2: STEP 2 & 3: MAIN 3-PANEL GAMEPLAY AREA (NO BANNER, 100% HEIGHT) ── */
+        <div
+          ref={mainGameplayRef}
+          className="flex-1 w-full flex flex-col sm:flex-row gap-2 sm:gap-2.5 items-stretch min-h-0 animate-in fade-in duration-300"
+        >
+          {/* ── PANEL 1 (LEFT): (2) MOLECULES (35% Width) ────────────────────── */}
+          <section className="w-full sm:w-[35%] bg-white border border-slate-200 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between shadow-sm min-h-0 flex-1">
+            <div className="flex flex-col flex-1 min-h-0 justify-between">
+              <div className="flex items-center gap-1.5 mb-1 pb-1 border-b border-slate-100 shrink-0">
+                <div className="w-4 h-4 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-extrabold text-[10px] flex items-center justify-center shrink-0">
+                  2
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xs font-extrabold text-[#1E293B] leading-tight">Molecules</h3>
+                  <p className="text-[9.5px] text-[#64748B] font-medium truncate">Select a molecule to view 3D structure and drop into box.</p>
+                </div>
+              </div>
 
-                    <span className="text-xs font-extrabold text-[#1E293B] mt-2">{count} hybrid orbitals</span>
+              {/* 5 Molecule Cards Grid */}
+              <div className="grid grid-cols-2 gap-1 p-0.5 flex-1 min-h-0 auto-rows-fr">
+                {MOLECULES.map((mol) => {
+                  const isMatched = !!matchedMolecules[mol.id];
+                  const isSelected = activeMoleculeId === mol.id;
+                  const cardStyle = MOLECULE_CARD_STYLES[mol.id] || MOLECULE_CARD_STYLES.BeCl2;
 
-                    {/* Dropdown Selector */}
-                    <select
-                      disabled={boxesUnlocked}
-                      value={assigned || ''}
-                      onChange={(e) => handleAssignClue(count, e.target.value)}
-                      className={`mt-2 w-full text-xs font-mono font-bold rounded-xl px-2 py-1 text-center border focus:outline-none transition-all ${
-                        boxesUnlocked || isCorrect
-                          ? 'bg-emerald-50 border-emerald-300 text-emerald-800 cursor-default'
-                          : assigned
-                            ? 'bg-blue-50 border-blue-300 text-blue-900'
-                            : 'bg-white border-slate-200 text-[#1E293B] hover:border-blue-300 cursor-pointer'
+                  return (
+                    <div
+                      key={mol.id}
+                      draggable={!isMatched}
+                      onDragStart={(e) => handleMoleculeDragStart(e, mol.id)}
+                      onTouchStart={(e) => handleTouchStart(e, mol.id)}
+                      onClick={() => setActiveMoleculeId(mol.id)}
+                      className={`border-2 rounded-xl p-1 flex flex-col items-center justify-between text-center cursor-pointer transition-all relative h-full w-full min-h-0 ${cardStyle.bg} ${
+                        isMatched
+                          ? 'border-emerald-400 bg-emerald-50/50'
+                          : isSelected
+                            ? `${cardStyle.glow} scale-[1.01]`
+                            : `${cardStyle.border} ${cardStyle.hover}`
                       }`}
                     >
-                      <option value="">Select...</option>
-                      <option value="sp">sp</option>
-                      <option value="sp²">sp²</option>
-                      <option value="sp³">sp³</option>
-                      <option value="sp³d">sp³d</option>
-                      <option value="sp³d²">sp³d²</option>
-                    </select>
-                  </div>
-                );
-              })}
-            </div>
+                      <Move className="w-2.5 h-2.5 text-slate-400 opacity-60 absolute top-1 right-1 pointer-events-none" />
 
-            {/* Green Banner Below Cards when Unlocked */}
-            {boxesUnlocked && (
-              <div className="w-full py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-extrabold text-center flex items-center justify-center gap-2 animate-in fade-in">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Boxes Unlocked Successfully! Proceed to inspect & match molecules below.</span>
-              </div>
-            )}
-          </div>
-        )}
-      </section>
-
-      {/* ── STEP 2 & 3: MAIN 3-PANEL GAMEPLAY AREA ─────────────────────────── */}
-      <div
-        ref={mainGameplayRef}
-        className={`flex flex-col sm:flex-row gap-3 items-stretch transition-all duration-300 flex-1 min-h-0 ${
-          !boxesUnlocked ? 'opacity-60 filter grayscale-[20%]' : 'opacity-100'
-        }`}
-      >
-        {/* ── PANEL 1 (LEFT): (2) MOLECULES (35% Width) ────────────────────── */}
-        <section className="w-full sm:w-[35%] order-1 bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-sm min-h-0 flex-1">
-          <div className="flex flex-col flex-1 min-h-0 justify-between">
-            <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-slate-100 shrink-0">
-              <div className="w-5 h-5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-extrabold text-[11px] flex items-center justify-center shrink-0">
-                2
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="text-xs sm:text-sm font-extrabold text-[#1E293B]">Molecules</h3>
-                <p className="text-[10px] sm:text-[11px] text-[#64748B] font-medium truncate">Select a molecule to view 3D structure and drag to box.</p>
-              </div>
-            </div>
-
-            {/* 5 Molecule Cards Grid (Auto-Scales cleanly inside Panel, NO Scrollbars) */}
-            <div className="grid grid-cols-2 gap-1.5 p-0.5 flex-1 min-h-0 auto-rows-fr">
-              {MOLECULES.map((mol) => {
-                const isMatched = !!matchedMolecules[mol.id];
-                const isSelected = activeMoleculeId === mol.id;
-                const cardStyle = MOLECULE_CARD_STYLES[mol.id] || MOLECULE_CARD_STYLES.BeCl2;
-
-                return (
-                  <div
-                    key={mol.id}
-                    draggable={!isMatched && boxesUnlocked}
-                    onDragStart={(e) => handleMoleculeDragStart(e, mol.id)}
-                    onTouchStart={(e) => handleTouchStart(e, mol.id)}
-                    onClick={() => boxesUnlocked && setActiveMoleculeId(mol.id)}
-                    className={`border-2 rounded-xl p-1 sm:p-1.5 flex flex-col items-center justify-between text-center cursor-pointer transition-all relative h-full w-full min-h-0 ${cardStyle.bg} ${
-                      isMatched
-                        ? 'border-emerald-400 bg-emerald-50/50'
-                        : isSelected
-                          ? `${cardStyle.glow} scale-[1.01]`
-                          : `${cardStyle.border} ${cardStyle.hover}`
-                    }`}
-                  >
-                    <Move className="w-3 h-3 text-slate-400 opacity-60 absolute top-1 right-1 pointer-events-none" />
-
-                    {isMatched && (
-                      <div className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 text-white font-extrabold flex items-center justify-center text-[9px] shadow-sm z-10">
-                        ✓
-                      </div>
-                    )}
-
-                    <div className="w-full flex-1 min-h-[30px] rounded-lg bg-white border border-slate-200 overflow-hidden relative shadow-inner">
-                      <Canvas camera={{ position: [0, 0, 4.2], fov: 45 }}>
-                        <ambientLight intensity={1.0} />
-                        <directionalLight position={[4, 5, 3]} intensity={1.3} />
-                        <Molecule3DRenderer code={mol.id} autoRotate={!isMatched} showLabels={false} />
-                      </Canvas>
-                    </div>
-
-                    <div className="mt-0.5 text-center shrink-0">
-                      <div className="text-[10px] sm:text-xs font-extrabold text-[#1E293B] leading-tight">{mol.formula}</div>
-                      <div className="text-[8.5px] sm:text-[9.5px] font-semibold text-[#64748B] truncate max-w-[80px] sm:max-w-none">{mol.centralAtomName}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {!boxesUnlocked && (
-            <div className="w-full mt-1.5 p-1.5 rounded-xl bg-slate-50 border border-slate-200 text-center text-[10px] font-bold text-[#64748B] flex items-center justify-center gap-1.5 shrink-0">
-              <Lock className="w-3 h-3 text-slate-400" />
-              <span>Complete Step 1 to unlock molecules.</span>
-            </div>
-          )}
-        </section>
-
-        {/* ── PANEL 2 (MIDDLE): (3) HYBRIDIZATION BOXES (35% Width) ────────── */}
-        <section className="w-full sm:w-[35%] order-2 bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-sm min-h-0 flex-1">
-          <div className="flex flex-col flex-1 min-h-0 justify-between">
-            <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-slate-100 shrink-0">
-              <div className="w-5 h-5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-extrabold text-[11px] flex items-center justify-center shrink-0">
-                3
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="text-xs sm:text-sm font-extrabold text-[#1E293B]">Hybridization Boxes</h3>
-                <p className="text-[10px] sm:text-[11px] text-[#64748B] font-medium truncate">Drag the molecule to the correct box.</p>
-              </div>
-            </div>
-
-            {/* 5 Target Box Cards Grid (Auto-Scales cleanly inside Panel, NO Scrollbars) */}
-            <div className="grid grid-cols-2 gap-1.5 p-0.5 flex-1 min-h-0 auto-rows-fr">
-              {(['A', 'B', 'C', 'D', 'E'] as const).map((boxKey) => {
-                const info = BOX_MAPPINGS[boxKey];
-                const matchedMolId = Object.keys(matchedMolecules).find(
-                  (mId) => matchedMolecules[mId] === boxKey
-                );
-                const matchedMol = MOLECULES.find((m) => m.id === matchedMolId);
-
-                return (
-                  <div
-                    key={boxKey}
-                    data-box-key={boxKey}
-                    onDrop={(e) => handleBoxDrop(e, boxKey)}
-                    onDragOver={handleDragOver}
-                    onClick={() => boxesUnlocked && handleMatchToBox(activeMoleculeId, boxKey)}
-                    className={`bg-slate-50 border-2 rounded-xl p-1 sm:p-1.5 flex flex-col items-center justify-between transition-all cursor-pointer h-full w-full min-h-0 ${
-                      matchedMol
-                        ? 'border-emerald-400 bg-emerald-50/50 shadow-sm cursor-default'
-                        : !info.isUsed
-                          ? 'border-slate-200 opacity-40 cursor-not-allowed'
-                          : 'border-blue-200 bg-blue-50/30 hover:border-blue-400 hover:scale-[1.01]'
-                    }`}
-                  >
-                    <div className="text-center shrink-0">
-                      <div className="text-xs sm:text-sm font-extrabold text-[#1E293B] leading-none">{boxKey}</div>
-                      <div className="text-[9.5px] sm:text-[10.5px] font-mono font-bold text-blue-700 mt-0.5">{info.hybridization}</div>
-                    </div>
-
-                    {/* Drop Zone Box */}
-                    <div className={`w-full mt-0.5 flex-1 min-h-[26px] rounded-lg border-2 border-dashed flex flex-col items-center justify-center transition-all ${
-                      matchedMol
-                        ? 'border-emerald-300 bg-white text-emerald-800 font-extrabold text-xs'
-                        : 'border-slate-300 bg-white text-[#64748B]'
-                    }`}>
-                      {matchedMol ? (
-                        <div className="flex flex-col items-center gap-0.5">
-                          <span className="text-[10px] font-extrabold text-emerald-800">{matchedMol.formula}</span>
-                          <span className="w-3 h-3 rounded-full bg-emerald-500 text-white text-[8px] flex items-center justify-center font-extrabold">✓</span>
+                      {isMatched && (
+                        <div className="absolute top-1 right-1 w-3 h-3 rounded-full bg-emerald-500 text-white font-extrabold flex items-center justify-center text-[8px] shadow-sm z-10">
+                          ✓
                         </div>
-                      ) : (
-                        <span className="text-[8.5px] font-mono font-bold text-[#64748B]">DROP</span>
                       )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
 
-        {/* ── PANEL 3 (RIGHT): 3D MOLECULE INSPECTION VIEWER (30% Width) ───── */}
-        <section className="w-full sm:w-[30%] order-3 bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-sm min-h-0 flex-1">
-          <div className="shrink-0">
-            <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-100">
-              <div className="min-w-0 flex-1">
-                <h3 className="text-sm sm:text-base font-extrabold text-[#1E293B] tracking-tight truncate">{activeMolecule.formula}</h3>
-                <p className="text-[11px] font-bold text-[#64748B] truncate">{activeMolecule.centralAtomName}</p>
+                      <div className="w-full flex-1 min-h-[28px] rounded-lg bg-white border border-slate-200 overflow-hidden relative shadow-inner">
+                        <Canvas camera={{ position: [0, 0, 4.2], fov: 45 }}>
+                          <ambientLight intensity={1.1} />
+                          <directionalLight position={[4, 5, 3]} intensity={1.3} />
+                          <Molecule3DRenderer code={mol.id} autoRotate={!isMatched} showLabels={false} />
+                        </Canvas>
+                      </div>
+
+                      <div className="mt-0.5 text-center shrink-0">
+                        <div className="text-[10px] sm:text-[11px] font-extrabold text-[#1E293B] leading-tight">{mol.formula}</div>
+                        <div className="text-[8px] sm:text-[9px] font-semibold text-[#64748B] truncate max-w-[80px] sm:max-w-none">{mol.centralAtomName}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* ── PANEL 2 (MIDDLE): (3) HYBRIDIZATION BOXES (35% Width) ────────── */}
+          <section className="w-full sm:w-[35%] bg-white border border-slate-200 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between shadow-sm min-h-0 flex-1">
+            <div className="flex flex-col flex-1 min-h-0 justify-between">
+              <div className="flex items-center gap-1.5 mb-1 pb-1 border-b border-slate-100 shrink-0">
+                <div className="w-4 h-4 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-extrabold text-[10px] flex items-center justify-center shrink-0">
+                  3
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xs font-extrabold text-[#1E293B] leading-tight">Hybridization Boxes</h3>
+                  <p className="text-[9.5px] text-[#64748B] font-medium truncate">Drag or tap molecule to the correct box.</p>
+                </div>
               </div>
 
-              {feedback && (
-                <div className={`px-2 py-0.5 rounded-xl text-[9.5px] font-bold border transition-all shrink-0 ml-1.5 ${
-                  feedback.type === 'correct'
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                    : 'bg-rose-50 border-rose-200 text-rose-800'
-                }`}>
-                  {feedback.message}
+              {/* 5 Target Box Cards Grid */}
+              <div className="grid grid-cols-2 gap-1 p-0.5 flex-1 min-h-0 auto-rows-fr">
+                {(['A', 'B', 'C', 'D', 'E'] as const).map((boxKey) => {
+                  const info = BOX_MAPPINGS[boxKey];
+                  const matchedMolId = Object.keys(matchedMolecules).find(
+                    (mId) => matchedMolecules[mId] === boxKey
+                  );
+                  const matchedMol = MOLECULES.find((m) => m.id === matchedMolId);
+
+                  return (
+                    <div
+                      key={boxKey}
+                      data-box-key={boxKey}
+                      onDrop={(e) => handleBoxDrop(e, boxKey)}
+                      onDragOver={handleDragOver}
+                      onClick={() => handleMatchToBox(activeMoleculeId, boxKey)}
+                      className={`bg-slate-50 border-2 rounded-xl p-1 flex flex-col items-center justify-between transition-all cursor-pointer h-full w-full min-h-0 ${
+                        matchedMol
+                          ? 'border-emerald-400 bg-emerald-50/50 shadow-sm cursor-default'
+                          : 'border-blue-200 bg-blue-50/30 hover:border-blue-400 hover:scale-[1.01]'
+                      }`}
+                    >
+                      <div className="text-center shrink-0">
+                        <div className="text-xs sm:text-sm font-extrabold text-[#1E293B] leading-none">{boxKey}</div>
+                        <div className="text-[9px] sm:text-[10px] font-mono font-bold text-blue-700 mt-0.5">{info.hybridization}</div>
+                      </div>
+
+                      {/* Drop Zone Box */}
+                      <div className={`w-full mt-0.5 flex-1 min-h-[24px] rounded-lg border-2 border-dashed flex flex-col items-center justify-center transition-all ${
+                        matchedMol
+                          ? 'border-emerald-300 bg-white text-emerald-800 font-extrabold text-xs'
+                          : 'border-slate-300 bg-white text-[#64748B]'
+                      }`}>
+                        {matchedMol ? (
+                          <div className="flex flex-col items-center gap-0.5">
+                            <span className="text-[9.5px] font-extrabold text-emerald-800">{matchedMol.formula}</span>
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 text-white text-[7.5px] flex items-center justify-center font-extrabold">✓</span>
+                          </div>
+                        ) : (
+                          <span className="text-[8px] font-mono font-bold text-[#64748B]">DROP</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          {/* ── PANEL 3 (RIGHT): 3D MOLECULE INSPECTION VIEWER (30% Width) ───── */}
+          <section className="w-full sm:w-[30%] bg-white border border-slate-200 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between shadow-sm min-h-0 flex-1">
+            <div className="shrink-0">
+              <div className="flex items-center justify-between mb-1 pb-1 border-b border-slate-100">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xs sm:text-sm font-extrabold text-[#1E293B] tracking-tight truncate">{activeMolecule.formula}</h3>
+                  <p className="text-[10px] font-bold text-[#64748B] truncate">{activeMolecule.centralAtomName}</p>
                 </div>
-              )}
+
+                {feedback && (
+                  <div className={`px-1.5 py-0.5 rounded-lg text-[9px] font-bold border transition-all shrink-0 ml-1 ${
+                    feedback.type === 'correct'
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                      : 'bg-rose-50 border-rose-200 text-rose-800'
+                  }`}>
+                    {feedback.message}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 3D Canvas View Container */}
+            <div className="relative bg-slate-50 border border-slate-200 rounded-xl overflow-hidden flex-1 min-h-[120px] flex items-center justify-center shadow-inner my-0.5">
+              <Canvas camera={{ position: [0, 0, 5.2 / zoomLevel], fov: 45 }}>
+                <ambientLight intensity={1.1} />
+                <directionalLight position={[5, 6, 4]} intensity={1.4} />
+                <directionalLight position={[-5, -4, -3]} intensity={0.4} />
+                <Molecule3DRenderer code={activeMolecule.id} isHighlighted={true} autoRotate={autoRotate} showLabels={false} />
+                <OrbitControls ref={controlsRef} enableZoom={true} />
+              </Canvas>
+
+              {/* Bottom Control Buttons */}
+              <div className="absolute bottom-1.5 left-1.5 right-1.5 flex flex-wrap items-center justify-start gap-1 z-10 pointer-events-auto">
+                <button
+                  type="button"
+                  onClick={() => setAutoRotate((prev) => !prev)}
+                  className={`px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-1 border transition-all cursor-pointer ${
+                    autoRotate
+                      ? 'bg-blue-50 border-blue-200 text-blue-700'
+                      : 'bg-white border-slate-200 text-[#1E293B]'
+                  }`}
+                >
+                  <RotateCcw className="w-2.5 h-2.5" />
+                  <span>Rotate</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel((prev) => (prev === 1 ? 1.3 : 1))}
+                  className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white border border-slate-200 text-[#1E293B] hover:bg-slate-50 flex items-center gap-1 cursor-pointer"
+                >
+                  <ZoomIn className="w-2.5 h-2.5" />
+                  <span>Zoom</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleResetCamera}
+                  className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white border border-slate-200 text-[#1E293B] hover:bg-slate-50 flex items-center gap-1 cursor-pointer"
+                >
+                  <RefreshCw className="w-2.5 h-2.5" />
+                  <span>Reset</span>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* ── EDUCATIONAL EXPLANATION & THEORY MODAL ───────────────────────── */}
+      {showExplanationModal && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 text-[#1E293B]">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-slate-50/80 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-black text-slate-900 leading-tight">
+                    Hybridization & Molecular Geometries Guide
+                  </h2>
+                  <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium">
+                    Mastering Steric Numbers, Hybrid Orbitals, and 3D Molecular Shapes
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowExplanationModal(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs sm:text-sm text-slate-700 font-sans">
+              {/* Section 1: Core Principles */}
+              <div className="space-y-2 border-b border-slate-200 pb-4">
+                <div className="flex items-center gap-2 text-blue-900 font-extrabold text-sm sm:text-base">
+                  <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs">
+                    1
+                  </div>
+                  <h3>Principles of Orbital Hybridization</h3>
+                </div>
+                <p className="text-slate-600 leading-relaxed text-xs sm:text-sm">
+                  Hybridization is the mathematical and quantum mechanical mixing of atomic orbitals (such as s, p, and d) of comparable energies in the valence shell of an atom. When bonds form, these mixed orbitals produce an equal number of new, degenerate <strong>hybrid orbitals</strong>. These hybrid orbitals feature concentrated directional electron lobes that maximize spatial separation and orbital overlap with neighboring atoms, thereby minimizing electrostatic electron-pair repulsions according to VSEPR theory.
+                </p>
+                <div className="bg-blue-50/80 border border-blue-200 rounded-xl p-3 flex items-start gap-2 text-xs text-blue-800">
+                  <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <div>
+                    <strong>Golden Rule:</strong> Number of Hybrid Orbitals Formed = Number of Pure Atomic Orbitals Mixed.
+                    <br />
+                    • 1s + 1p → <strong>2 sp</strong> orbitals (180° apart)
+                    <br />
+                    • 1s + 2p → <strong>3 sp²</strong> orbitals (120° apart)
+                    <br />
+                    • 1s + 3p → <strong>4 sp³</strong> orbitals (109.5° apart)
+                    <br />
+                    • 1s + 3p + 1d → <strong>5 sp³d</strong> orbitals (90° and 120° apart)
+                    <br />
+                    • 1s + 3p + 2d → <strong>6 sp³d²</strong> orbitals (all 90° apart)
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Master Reference Table */}
+              <div className="space-y-2 border-b border-slate-200 pb-4">
+                <div className="flex items-center gap-2 text-purple-900 font-extrabold text-sm sm:text-base">
+                  <div className="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-xs">
+                    2
+                  </div>
+                  <h3>Master Quick Reference Table</h3>
+                </div>
+                <div className="overflow-x-auto pt-1">
+                  <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                    <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200 text-[11px]">
+                      <tr>
+                        <th className="p-2">Molecule</th>
+                        <th className="p-2">Central Atom</th>
+                        <th className="p-2">Steric No.</th>
+                        <th className="p-2">Hybridization</th>
+                        <th className="p-2">Geometry</th>
+                        <th className="p-2">Bond Angles</th>
+                        <th className="p-2">Net Dipole (μ)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-medium text-slate-700 text-xs">
+                      <tr className="hover:bg-slate-50">
+                        <td className="p-2 font-bold text-cyan-700">BeCl₂</td>
+                        <td className="p-2">Beryllium (Z=4)</td>
+                        <td className="p-2 font-mono">2</td>
+                        <td className="p-2 font-bold font-mono text-blue-700">sp</td>
+                        <td className="p-2 font-semibold">Linear</td>
+                        <td className="p-2 font-mono">180°</td>
+                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50">
+                        <td className="p-2 font-bold text-emerald-700">BF₃</td>
+                        <td className="p-2">Boron (Z=5)</td>
+                        <td className="p-2 font-mono">3</td>
+                        <td className="p-2 font-bold font-mono text-emerald-700">sp²</td>
+                        <td className="p-2 font-semibold">Trigonal Planar</td>
+                        <td className="p-2 font-mono">120°</td>
+                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50">
+                        <td className="p-2 font-bold text-purple-700">CH₄</td>
+                        <td className="p-2">Carbon (Z=6)</td>
+                        <td className="p-2 font-mono">4</td>
+                        <td className="p-2 font-bold font-mono text-purple-700">sp³</td>
+                        <td className="p-2 font-semibold">Tetrahedral</td>
+                        <td className="p-2 font-mono">109.5°</td>
+                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50">
+                        <td className="p-2 font-bold text-amber-700">PCl₅</td>
+                        <td className="p-2">Phosphorus (Z=15)</td>
+                        <td className="p-2 font-mono">5</td>
+                        <td className="p-2 font-bold font-mono text-amber-700">sp³d</td>
+                        <td className="p-2 font-semibold">Trigonal Bipyramidal</td>
+                        <td className="p-2 font-mono">90° (ax) & 120° (eq)</td>
+                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
+                      </tr>
+                      <tr className="hover:bg-slate-50">
+                        <td className="p-2 font-bold text-rose-700">SF₆</td>
+                        <td className="p-2">Sulfur (Z=16)</td>
+                        <td className="p-2 font-mono">6</td>
+                        <td className="p-2 font-bold font-mono text-rose-700">sp³d²</td>
+                        <td className="p-2 font-semibold">Octahedral</td>
+                        <td className="p-2 font-mono">90° (all adjacent)</td>
+                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Section 3: Detailed Molecule-by-Molecule Theory */}
+              <div className="space-y-4 border-b border-slate-200 pb-4">
+                <div className="flex items-center gap-2 text-indigo-900 font-extrabold text-sm sm:text-base">
+                  <div className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs">
+                    3
+                  </div>
+                  <h3>Comprehensive Theory for All 5 Molecules</h3>
+                </div>
+
+                {/* 1. BeCl2 */}
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <span className="font-extrabold text-sm text-blue-900 flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 font-mono text-xs">Box A</span>
+                      BeCl₂ — Beryllium Dichloride
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800 font-bold text-xs font-mono">
+                      sp Hybridization • Linear (180°)
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Ground State Be (Z=4):</strong> 1s² 2s² (zero unpaired electrons)
+                        <br />
+                        • <strong>Excited State:</strong> One 2s electron promotes to 2pₓ → 1s² 2s¹ 2pₓ¹
+                      </div>
+                    </div>
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Mixing:</strong> 1s + 1p orbital combine to yield <strong>2 sp hybrid orbitals</strong>
+                        <br />
+                        • <strong>Orientation:</strong> Collinear at <strong>180°</strong> along the internuclear axis
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    <strong>Bonding & Chemical Details:</strong> Each of the two sp hybrid orbitals on Be overlaps axially (head-on) with a half-filled 3p_z orbital from a Chlorine atom, generating two identical, highly directional σ(Be–Cl) bonds. The two bond dipole vectors are equal in magnitude and point in exactly opposite directions (180°), completely canceling each other (μ = 0 D). Two unhybridized 2p orbitals (2p_y, 2p_z) on Beryllium remain empty.
+                  </p>
+                </div>
+
+                {/* 2. BF3 */}
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <span className="font-extrabold text-sm text-emerald-900 flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-mono text-xs">Box B</span>
+                      BF₃ — Boron Trifluoride
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-xs font-mono">
+                      sp² Hybridization • Trigonal Planar (120°)
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Ground State B (Z=5):</strong> 1s² 2s² 2p¹ (1 unpaired electron)
+                        <br />
+                        • <strong>Excited State:</strong> 2s electron unpairs and promotes to 2p_y → 1s² 2s¹ 2pₓ¹ 2p_y¹
+                      </div>
+                    </div>
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Mixing:</strong> One 2s + two 2p (2pₓ, 2p_y) mix to form <strong>3 sp² hybrid orbitals</strong>
+                        <br />
+                        • <strong>Orientation:</strong> Planar, directed to vertices of an equilateral triangle at <strong>120°</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    <strong>Bonding & Chemical Details:</strong> The three sp² hybrid orbitals overlap head-on with singly occupied 2p_z orbitals of 3 Fluorine atoms, forming three strong σ(B–F) bonds. The remaining unhybridized 2p_z orbital lies perpendicular to the triangular plane and stays vacant. Because Boron only possesses 6 valence electrons around it in BF₃, it has an incomplete octet and acts as a quintessential <em>Lewis acid</em>, readily accepting electron pairs from Lewis bases (like NH₃). Symmetrical triangular cancellation gives μ = 0 D.
+                  </p>
+                </div>
+
+                {/* 3. CH4 */}
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <span className="font-extrabold text-sm text-purple-900 flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 font-mono text-xs">Box C</span>
+                      CH₄ — Methane
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-800 font-bold text-xs font-mono">
+                      sp³ Hybridization • Tetrahedral (109.5°)
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Ground State C (Z=6):</strong> 1s² 2s² 2pₓ¹ 2p_y¹ (2 unpaired electrons)
+                        <br />
+                        • <strong>Excited State:</strong> 2s electron promotes to 2p_z → 1s² 2s¹ 2pₓ¹ 2p_y¹ 2p_z¹ (tetravalent)
+                      </div>
+                    </div>
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Mixing:</strong> One 2s + three 2p orbitals mix to form <strong>4 equivalent sp³ hybrid orbitals</strong>
+                        <br />
+                        • <strong>Orientation:</strong> Point toward vertices of a regular tetrahedron at <strong>109.5°</strong> (109°28')
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    <strong>Bonding & Chemical Details:</strong> Each sp³ hybrid orbital on Carbon overlaps axially with the spherical 1s orbital of a Hydrogen atom to form 4 equivalent, exceptionally strong σ(C–H) bonds. Each C–H bond length is identical (108.7 pm) with equal bond dissociation energy (435 kJ/mol). The regular tetrahedral geometry distributes the electron density symmetrically in 3D space, meaning all individual bond dipoles cancel completely (μ = 0 D), rendering methane non-polar and chemically stable.
+                  </p>
+                </div>
+
+                {/* 4. PCl5 */}
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <span className="font-extrabold text-sm text-amber-900 flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 font-mono text-xs">Box D</span>
+                      PCl₅ — Phosphorus Pentachloride
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-bold text-xs font-mono">
+                      sp³d Hybridization • Trigonal Bipyramidal (90° & 120°)
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration & Expanded Octet</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Ground State P (Z=15):</strong> [Ne] 3s² 3pₓ¹ 3p_y¹ 3p_z¹
+                        <br />
+                        • <strong>Excited State:</strong> 3s electron promotes to vacant 3d_z² orbital → [Ne] 3s¹ 3p³ 3d_z²¹ (5 unpaired electrons)
+                      </div>
+                    </div>
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Mixing:</strong> 1s + 3p + 1d (d_z²) combine into <strong>5 sp³d hybrid orbitals</strong>
+                        <br />
+                        • <strong>Orientation:</strong> Trigonal Bipyramid with <strong>3 equatorial bonds</strong> (120°) and <strong>2 axial bonds</strong> (90° to equatorial, 180° to each other)
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-amber-100/60 border border-amber-300/80 rounded-xl p-2.5 text-xs text-amber-900 space-y-1">
+                    <div className="font-bold flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      Crucial Scientific Concept: Axial vs Equatorial Bond Asymmetry
+                    </div>
+                    <p className="leading-relaxed">
+                      In PCl₅, the 5 bonds are <strong>not equivalent</strong>! The two axial P–Cl bonds experience greater repulsion (repelled by 3 equatorial electron pairs at 90°) than the equatorial bonds (repelled by only 2 axial pairs at 90°). Consequently, the <strong>axial bonds are longer (214 pm) and weaker</strong> than the <strong>equatorial bonds (202 pm)</strong>. This explains why PCl₅ is thermally reactive and easily dissociates when heated:
+                      <br />
+                      <span className="font-mono font-bold text-slate-800 bg-white/80 px-2 py-0.5 rounded inline-block mt-1">
+                        PCl₅(g) ⇌ PCl₃(g) + Cl₂(g)
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* 5. SF6 */}
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <span className="font-extrabold text-sm text-rose-900 flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 font-mono text-xs">Box E</span>
+                      SF₆ — Sulfur Hexafluoride
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800 font-bold text-xs font-mono">
+                      sp³d² Hybridization • Octahedral (All 90°)
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration & Expanded Octet</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Ground State S (Z=16):</strong> [Ne] 3s² 3pₓ² 3p_y¹ 3p_z¹ (2 unpaired electrons)
+                        <br />
+                        • <strong>Excited State:</strong> 3s and 3p electrons promote to 3d_x²-y² and 3d_z² → [Ne] 3s¹ 3p³ 3d² (6 unpaired electrons)
+                      </div>
+                    </div>
+                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
+                      <div className="mt-0.5 text-slate-700">
+                        • <strong>Mixing:</strong> 1s + 3p + 2d (d_x²-y², d_z²) mix to form <strong>6 equivalent sp³d² hybrid orbitals</strong>
+                        <br />
+                        • <strong>Orientation:</strong> Regular Octahedron (square bipyramid); <strong>all adjacent bond angles are 90°</strong> (trans angles 180°)
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    <strong>Bonding & Chemical Inertness:</strong> All 6 S–F bonds are completely identical in length (156 pm) and strength. The 6 highly electronegative Fluorine atoms form an octahedral steric cage that tightly encloses and shields the central Sulfur atom. This exceptional steric shielding makes SF₆ chemically unreactive, non-flammable, non-toxic, and an extraordinary electrical insulator widely used in high-voltage circuit breakers and power substations. Symmetrical cancellation guarantees μ = 0 D.
+                  </p>
+                </div>
+              </div>
+
+              {/* Section 4: Fast Calculation / Exam Shortcut */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-sm sm:text-base">
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">
+                    4
+                  </div>
+                  <h3>Quick Steric Number Formula for Competitive Exams</h3>
+                </div>
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 space-y-1.5">
+                  <div className="font-mono font-bold text-emerald-800 bg-white/90 p-1.5 rounded-lg border border-emerald-200 text-center">
+                    Steric Number (SN) = (Number of σ-Bonds) + (Number of Lone Pairs on Central Atom)
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 pt-1 text-center font-mono text-[11px]">
+                    <div className="bg-white p-1 rounded-lg border border-emerald-200">
+                      <strong>SN = 2</strong> → sp
+                      <div className="text-[10px] text-slate-500 font-sans">Linear (180°)</div>
+                    </div>
+                    <div className="bg-white p-1 rounded-lg border border-emerald-200">
+                      <strong>SN = 3</strong> → sp²
+                      <div className="text-[10px] text-slate-500 font-sans">Trigonal Planar (120°)</div>
+                    </div>
+                    <div className="bg-white p-1 rounded-lg border border-emerald-200">
+                      <strong>SN = 4</strong> → sp³
+                      <div className="text-[10px] text-slate-500 font-sans">Tetrahedral (109.5°)</div>
+                    </div>
+                    <div className="bg-white p-1 rounded-lg border border-emerald-200">
+                      <strong>SN = 5</strong> → sp³d
+                      <div className="text-[10px] text-slate-500 font-sans">TBP (90° & 120°)</div>
+                    </div>
+                    <div className="bg-white p-1 rounded-lg border border-emerald-200 col-span-2 sm:col-span-1">
+                      <strong>SN = 6</strong> → sp³d²
+                      <div className="text-[10px] text-slate-500 font-sans">Octahedral (90°)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* 3D Canvas View Container */}
-          <div className="relative bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden flex-1 min-h-[160px] flex items-center justify-center shadow-inner my-0.5">
-            <Canvas camera={{ position: [0, 0, 5.2 / zoomLevel], fov: 45 }}>
-              <ambientLight intensity={1.0} />
-              <directionalLight position={[5, 6, 4]} intensity={1.4} />
-              <directionalLight position={[-5, -4, -3]} intensity={0.4} />
-              <Molecule3DRenderer code={activeMolecule.id} isHighlighted={true} autoRotate={autoRotate} showLabels={false} />
-              <OrbitControls ref={controlsRef} enableZoom={true} />
-            </Canvas>
-
-            {/* Bottom Control Buttons */}
-            <div className="absolute bottom-2 left-2 right-2 flex flex-wrap items-center justify-start gap-1.5 z-10 pointer-events-auto">
-              <button
-                onClick={() => setAutoRotate((prev) => !prev)}
-                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold flex items-center gap-1 border transition-all cursor-pointer ${
-                  autoRotate
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-white border-slate-200 text-[#1E293B]'
-                }`}
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>Rotate</span>
-              </button>
-
-              <button
-                onClick={() => setZoomLevel((prev) => (prev === 1 ? 1.3 : 1))}
-                className="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-white border border-slate-200 text-[#1E293B] hover:bg-slate-50 flex items-center gap-1 cursor-pointer"
-              >
-                <ZoomIn className="w-3 h-3" />
-                <span>Zoom</span>
-              </button>
-
-              <button
-                onClick={handleResetCamera}
-                className="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-white border border-slate-200 text-[#1E293B] hover:bg-slate-50 flex items-center gap-1 cursor-pointer"
-              >
-                <RefreshCw className="w-3 h-3" />
-                <span>Reset</span>
-              </button>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* ── FINAL COMPLETION & THEORY MODAL ───────────────────────────────── */}
+      {/* ── FINAL SUCCESS COMPLETION MODAL ───────────────────────────────── */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-[9999] bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative text-center animate-in fade-in zoom-in-95 my-auto text-[#1E293B]">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl relative text-center animate-in fade-in zoom-in-95 my-auto text-[#1E293B]">
             <button
+              type="button"
               onClick={() => setShowSuccessModal(false)}
-              className="absolute top-4 right-4 p-1 rounded-full bg-slate-100 text-[#64748B] hover:text-[#1E293B]"
+              className="absolute top-4 right-4 p-1 rounded-full bg-slate-100 text-[#64748B] hover:text-[#1E293B] cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 mx-auto mb-3 shadow-sm">
-              <BookOpen className="w-7 h-7" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mx-auto mb-2.5 shadow-sm">
+              <CheckCircle2 className="w-6 h-6 text-emerald-600" />
             </div>
 
-            <h2 className="text-xl font-extrabold text-[#1E293B] tracking-tight mb-1">
-              🎉 Hybridization Match Complete!
+            <h2 className="text-lg sm:text-xl font-extrabold text-[#1E293B] tracking-tight mb-1">
+              🎉 Level 3 Completed!
             </h2>
-            <p className="text-xs text-[#64748B] font-medium mb-4">
+            <p className="text-xs text-[#64748B] font-medium mb-3">
               Successfully matched all 5 molecules to their correct hybridization boxes!
             </p>
 
-            <div className="inline-block bg-emerald-50 border border-emerald-200 px-4 py-1 rounded-full text-xs font-bold text-emerald-800 mb-4 font-mono">
-              Score: 5/5 Correct
+            <div className="inline-block bg-emerald-50 border border-emerald-200 px-3.5 py-0.5 rounded-full text-xs font-bold text-emerald-800 mb-3 font-mono">
+              Score: 5/5 Correct (100%)
             </div>
 
             {/* Summary Table */}
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-left mb-5 overflow-x-auto">
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-left mb-4 overflow-x-auto">
               <table className="w-full text-xs font-mono">
                 <thead>
-                  <tr className="text-blue-700 border-b border-slate-200 text-[10.5px]">
-                    <th className="pb-1.5 font-bold text-left">Molecule</th>
-                    <th className="pb-1.5 font-bold text-center">Hybridization</th>
-                    <th className="pb-1.5 font-bold text-right">Geometry</th>
+                  <tr className="text-blue-700 border-b border-slate-200 text-[10px]">
+                    <th className="pb-1 font-bold text-left">Molecule</th>
+                    <th className="pb-1 font-bold text-center">Hybridization</th>
+                    <th className="pb-1 font-bold text-right">Geometry</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-200 text-xs">
                   {MOLECULES.map((m) => (
                     <tr key={m.id} className="text-[#1E293B]">
-                      <td className="py-1.5 font-bold">{m.formula} ({m.name})</td>
-                      <td className="py-1.5 text-center text-blue-700 font-bold">{m.hybridization}</td>
-                      <td className="py-1.5 text-right text-purple-700">{m.geometry}</td>
+                      <td className="py-1 font-bold">{m.formula} ({m.name})</td>
+                      <td className="py-1 text-center text-blue-700 font-bold">{m.hybridization}</td>
+                      <td className="py-1 text-right text-purple-700">{m.geometry}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button
+                type="button"
                 onClick={handleResetGame}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[#1E293B] py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer"
+                className="flex-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[#1E293B] py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer"
               >
                 Replay Challenge
               </button>
 
               <button
-                onClick={() => router.back()}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1d4ed8] text-white py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                type="button"
+                onClick={() => (onExit ? onExit() : router.back())}
+                className="flex-1 flex items-center justify-center gap-1.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all shadow-md cursor-pointer"
               >
                 <span>Back to Topic</span>
                 <ArrowRight className="w-4 h-4" />

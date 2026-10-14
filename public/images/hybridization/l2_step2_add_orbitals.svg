@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" width="160" height="80">
+  <defs>
+    <linearGradient id="sp2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22D3EE" />
+      <stop offset="100%" stop-color="#0891B2" />
+    </linearGradient>
+    <linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C084FC" />
+      <stop offset="100%" stop-color="#9333EA" />
+    </linearGradient>
+    <linearGradient id="pGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB7185" />
+      <stop offset="100%" stop-color="#E11D48" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1" flood-color="#000" flood-opacity="0.12" />
+    </filter>
+  </defs>
+
+  <!-- Container -->
+  <rect x="2" y="2" width="156" height="76" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5" />
+
+  <!-- sp2 pill -->
+  <g transform="translate(14, 15)" filter="url(#shadow)">
+    <rect width="38" height="34" rx="7" fill="#ECFEFF" stroke="#A5F3FC" stroke-width="1.2" />
+    <circle cx="19" cy="14" r="8" fill="url(#sp2Grad)" />
+    <text x="19" y="17" font-family="system-ui, sans-serif" font-weight="900" font-size="7.5" fill="#FFFFFF" text-anchor="middle">sp²</text>
+    <text x="19" y="29" font-family="system-ui, sans-serif" font-weight="800" font-size="6.5" fill="#0E7490" text-anchor="middle">×6</text>
+  </g>
+
+  <!-- 1s pill -->
+  <g transform="translate(61, 15)" filter="url(#shadow)">
+    <rect width="38" height="34" rx="7" fill="#FAF5FF" stroke="#E9D5FF" stroke-width="1.2" />
+    <circle cx="19" cy="14" r="8" fill="url(#sGrad)" />
+    <text x="19" y="17" font-family="system-ui, sans-serif" font-weight="900" font-size="8" fill="#FFFFFF" text-anchor="middle">1s</text>
+    <text x="19" y="29" font-family="system-ui, sans-serif" font-weight="800" font-size="6.5" fill="#7E22CE" text-anchor="middle">×4</text>
+  </g>
+
+  <!-- p pill -->
+  <g transform="translate(108, 15)" filter="url(#shadow)">
+    <rect width="38" height="34" rx="7" fill="#FFF1F2" stroke="#FECDD3" stroke-width="1.2" />
+    <circle cx="19" cy="14" r="8" fill="url(#pGrad)" />
+    <text x="19" y="17" font-family="system-ui, sans-serif" font-weight="900" font-size="8" fill="#FFFFFF" text-anchor="middle">p</text>
+    <text x="19" y="29" font-family="system-ui, sans-serif" font-weight="800" font-size="6.5" fill="#BE123C" text-anchor="middle">×2</text>
+  </g>
+
+  <!-- Tap indicator badge -->
+  <g transform="translate(80, 62)">
+    <rect x="-42" y="-7" width="84" height="14" rx="7" fill="#9333EA" />
+    <text x="0" y="3.5" font-family="system-ui, sans-serif" font-weight="800" font-size="7" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">ADD ORBITALS</text>
+  </g>
+</svg>

@@ -70,7 +70,7 @@ const VseprGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   { ssr: false, loading: LoadingFallback }
 );
 
-const HybridizationGamePage = dynamic<{ difficulty?: string }>(
+const HybridizationGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
       "@/features/challenges/topics/chemistry/hybridization_orbital_overlap/HybridizationGamePage"
@@ -78,7 +78,7 @@ const HybridizationGamePage = dynamic<{ difficulty?: string }>(
   { ssr: false, loading: LoadingFallback }
 );
 
-const OrbitalWorkshopGamePage = dynamic<{ difficulty?: string }>(
+const OrbitalWorkshopGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
       "@/features/challenges/topics/chemistry/hybridization_orbital_overlap/OrbitalWorkshopGamePage"
@@ -86,7 +86,7 @@ const OrbitalWorkshopGamePage = dynamic<{ difficulty?: string }>(
   { ssr: false, loading: LoadingFallback }
 );
 
-const HybridizationMatchPuzzleGamePage = dynamic<{ difficulty?: string }>(
+const HybridizationMatchPuzzleGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
       "@/features/challenges/topics/chemistry/hybridization_orbital_overlap/HybridizationMatchPuzzleGamePage"
@@ -181,11 +181,11 @@ export function ChallengeDispatcher({
     }
   } else if (isHybridization) {
     if (isLevel2) {
-      content = <OrbitalWorkshopGamePage difficulty={normDifficulty} />;
+      content = <OrbitalWorkshopGamePage difficulty={normDifficulty} onExit={onExit} />;
     } else if (isLevel3) {
-      content = <HybridizationMatchPuzzleGamePage difficulty={normDifficulty} />;
+      content = <HybridizationMatchPuzzleGamePage difficulty={normDifficulty} onExit={onExit} />;
     } else {
-      content = <HybridizationGamePage difficulty={normDifficulty} />;
+      content = <HybridizationGamePage difficulty={normDifficulty} onExit={onExit} />;
     }
   } else if (isVsepr) {
     content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -194,11 +194,15 @@ export function ChallengeDispatcher({
     content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
   }
 
+  const isHybridizationLevel1 = isHybridization && !isLevel2 && !isLevel3;
+  const isHybridizationLevel2 = isHybridization && isLevel2;
+  const isHybridizationLevel3 = isHybridization && isLevel3;
+
   return (
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isVsepr && (
+        {showExitButton && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

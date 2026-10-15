@@ -987,16 +987,11 @@ export default function HybridizationGamePage({
         </div>
       )}
 
-      {/* ── THEORY / EXPLANATION MODAL (ENCLOSED FULL-SCREEN BOX MATCHING TOPIC 1) ── */}
+      {/* ── THEORY / EXPLANATION PAGE (FULL CANVAS / WHOLE SCREEN) ── */}
       {showSuccessModal && (
-        <div
-          onClick={(e) => { if (e.target === e.currentTarget) setShowSuccessModal(false); }}
-          className="fixed inset-0 z-[999999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200 select-text"
-        >
-          {/* Modal Container Box */}
-          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-4xl max-h-[94vh] sm:max-h-[90vh] flex flex-col overflow-hidden text-[#1E293B] animate-in zoom-in-95 duration-200">
-            {/* Modal Header Bar */}
-            <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-slate-200 bg-white shrink-0 shadow-sm">
+        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-[#1E293B] animate-in fade-in duration-200 select-text">
+          {/* Header Bar */}
+          <div className="flex items-center justify-between px-3.5 sm:px-6 py-2 sm:py-2.5 border-b border-slate-200 bg-white shrink-0 shadow-xs">
               <div className="flex items-center gap-2.5 sm:gap-3">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shadow-sm shrink-0">
                   <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -1296,8 +1291,7 @@ export default function HybridizationGamePage({
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
     </div>
   );

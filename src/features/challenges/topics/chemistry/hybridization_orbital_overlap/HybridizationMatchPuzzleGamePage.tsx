@@ -1181,34 +1181,34 @@ export default function HybridizationMatchPuzzleGamePage({
         </div>
       )}
 
-      {/* ── EDUCATIONAL EXPLANATION & THEORY MODAL ───────────────────────── */}
+      {/* ── EDUCATIONAL EXPLANATION & THEORY PAGE (FULL CANVAS / WHOLE SCREEN) ── */}
       {showExplanationModal && (
-        <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 text-[#1E293B]">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-slate-50/80 shrink-0">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0">
-                  <BookOpen className="w-4 h-4" />
-                </div>
-                <div>
-                  <h2 className="text-sm sm:text-base font-black text-slate-900 leading-tight">
-                    Hybridization & Molecular Geometries Guide
-                  </h2>
-                  <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium">
-                    Mastering Steric Numbers, Hybrid Orbitals, and 3D Molecular Shapes
-                  </p>
-                </div>
+        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-[#1E293B] animate-in fade-in duration-200 select-text">
+          {/* Header Bar */}
+          <div className="flex items-center justify-between px-3.5 sm:px-6 py-2 sm:py-2.5 border-b border-slate-200 bg-white shrink-0 shadow-xs">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-8 h-8 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0 shadow-xs">
+                <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <button
-                type="button"
-                onClick={() => setShowExplanationModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer"
-                title="Close"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div>
+                <h2 className="text-xs sm:text-base font-black text-slate-900 leading-tight">
+                  Hybridization & Molecular Geometries Guide
+                </h2>
+                <p className="text-[10px] sm:text-xs text-slate-500 font-medium hidden sm:block">
+                  Mastering Steric Numbers, Hybrid Orbitals, and 3D Molecular Shapes
+                </p>
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={() => setShowExplanationModal(false)}
+              className="p-1.5 sm:p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 flex items-center gap-1.5 font-bold text-xs transition-all cursor-pointer shadow-xs active:scale-95"
+              title="Close Explanation"
+            >
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Close</span>
+            </button>
+          </div>
 
             {/* Modal Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs sm:text-sm text-slate-700 font-sans">
@@ -1541,8 +1541,7 @@ export default function HybridizationMatchPuzzleGamePage({
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* ── FINAL SUCCESS COMPLETION MODAL ───────────────────────────────── */}
       {showSuccessModal && (

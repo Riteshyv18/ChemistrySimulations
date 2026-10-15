@@ -94,7 +94,7 @@ const HybridizationMatchPuzzleGamePage = dynamic<{ difficulty?: string; onExit?:
   { ssr: false, loading: LoadingFallback }
 );
 
-const MotEasyGamePage = dynamic<{ difficulty?: string }>(
+const MotEasyGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
       "@/features/challenges/topics/chemistry/Molecular_orbital_theory/MotEasyGamePage"
@@ -102,7 +102,7 @@ const MotEasyGamePage = dynamic<{ difficulty?: string }>(
   { ssr: false, loading: LoadingFallback }
 );
 
-const MotMediumGamePage = dynamic<{ difficulty?: string }>(
+const MotMediumGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
       "@/features/challenges/topics/chemistry/Molecular_orbital_theory/MotMediumGamePage"
@@ -173,11 +173,11 @@ export function ChallengeDispatcher({
 
   if (isMot) {
     if (isLevel2) {
-      content = <MotMediumGamePage difficulty={normDifficulty} />;
+      content = <MotMediumGamePage difficulty={normDifficulty} onExit={onExit} />;
     } else if (isLevel3) {
       content = <MotHardGamePage difficulty={normDifficulty} />;
     } else {
-      content = <MotEasyGamePage difficulty={normDifficulty} />;
+      content = <MotEasyGamePage difficulty={normDifficulty} onExit={onExit} />;
     }
   } else if (isHybridization) {
     if (isLevel2) {
@@ -197,12 +197,14 @@ export function ChallengeDispatcher({
   const isHybridizationLevel1 = isHybridization && !isLevel2 && !isLevel3;
   const isHybridizationLevel2 = isHybridization && isLevel2;
   const isHybridizationLevel3 = isHybridization && isLevel3;
+  const isMotLevel1 = isMot && !isLevel2 && !isLevel3;
+  const isMotLevel2 = isMot && isLevel2;
 
   return (
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && (
+        {showExitButton && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

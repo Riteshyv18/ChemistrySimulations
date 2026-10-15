@@ -629,12 +629,12 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
 
           {/* STEP 1: MISSION SCREEN (COMPACT, FITS AT HEIGHT 376) */}
           {introStep === 'mission' && (
-            <div className="max-w-2xl mx-auto my-auto text-center space-y-1.5 sm:space-y-2.5 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200">
-              <div className="text-[#2563EB] text-[9.5px] sm:text-[11px] font-mono font-bold tracking-[0.2em] uppercase">
+            <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-4 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200">
+              <div className="text-[#2563EB] text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
                 HYBRIDIZATION & ORBITAL OVERLAP
               </div>
 
-              <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+              <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
                 <span className="text-[#2563EB]">MISSION:</span> Construct & Overlap Orbitals for C₂H₄ (Ethylene)
               </h1>
 
@@ -1061,212 +1061,191 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
 
       {/* ── THEORY / EXPLANATION PAGE (FULL CANVAS / WHOLE SCREEN) ─── */}
       {showCompletionModal && (
-        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-[#1E293B] animate-in fade-in duration-200 select-text">
+        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-black animate-in fade-in duration-200 select-text">
           {/* Header Bar */}
-          <div className="flex items-center justify-between px-3.5 sm:px-6 py-2 sm:py-2.5 border-b border-slate-200 bg-white shrink-0 shadow-xs">
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shadow-sm shrink-0">
-                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <div>
-                  <h2 className="text-sm sm:text-base md:text-lg font-black text-[#1E293B] tracking-tight">
-                    C₂H₄ (Ethylene) Orbital Overlap & Double Bond Guide
-                  </h2>
-                  <p className="text-[11px] sm:text-xs text-[#64748B] font-medium hidden sm:block">
-                    sp² Hybridization, Head-on σ Overlap, and Sidewise π Overlap Principles
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCompletionModal(false)}
-                className="p-1.5 sm:p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#475569] hover:text-[#0F172A] transition-all cursor-pointer shadow-sm"
-                title="Close Explanation"
-              >
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
+          <div className="flex items-center justify-between px-4 sm:px-8 py-3 border-b border-neutral-300 bg-white shrink-0">
+            <div>
+              <h2 className="text-base sm:text-xl font-bold text-black tracking-tight">
+                C₂H₄ (Ethylene) Orbital Overlap &amp; Double Bond Guide
+              </h2>
+              <p className="text-xs text-neutral-600 font-normal">
+                sp² Hybridization, Head-on σ Overlap, and Sidewise π Overlap Principles
+              </p>
             </div>
 
-            {/* Scrollable Content Body */}
-            <div className="flex-1 overflow-y-auto px-3.5 sm:px-6 md:px-8 py-3.5 sm:py-5 pb-8 sm:pb-10 space-y-4 sm:space-y-6 w-full text-slate-800">
-              {/* Section 1: Core Principles of Sigma and Pi Overlap */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center">1</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-blue-900 tracking-tight">
-                    Core Principles of σ (Sigma) and π (Pi) Overlap
-                  </h3>
-                </div>
-                <div className="pl-8 space-y-3 text-xs sm:text-sm">
-                  <p className="text-slate-600 leading-relaxed">
-                    According to <strong>Valence Bond (VB) Theory</strong>, a covalent bond forms when two atomic or hybrid orbitals overlap and their shared electron spins pair up. The nature and strength of the bond depends directly on the geometry of spatial overlap:
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="bg-sky-50/70 border border-sky-200 rounded-xl p-3">
-                      <span className="font-extrabold text-sky-900 block mb-1">σ (Sigma) Bond — Head-On Overlap</span>
-                      <p className="text-slate-600 text-xs leading-normal">
-                        Formed by direct end-to-end (axial) overlap along the internuclear axis. The resulting electron charge density is <strong>cylindrically symmetrical</strong> around the bond line. All single bonds are σ bonds, giving maximum orbital overlap and high bond strength (~347 kJ/mol).
-                      </p>
-                    </div>
-                    <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-3">
-                      <span className="font-extrabold text-rose-900 block mb-1">π (Pi) Bond — Sidewise (Lateral) Overlap</span>
-                      <p className="text-slate-600 text-xs leading-normal">
-                        Formed by lateral/sidewise overlap of two parallel, unhybridized 2p orbitals oriented perpendicular to the internuclear axis. The electron cloud is concentrated in two lobes: one <strong>above</strong> and one <strong>below</strong> the nodal molecular plane. π bonds are weaker (~264 kJ/mol) and cannot rotate freely.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 2: sp² Hybridization in Carbon */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-600 text-white font-extrabold text-xs flex items-center justify-center">2</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-purple-900 tracking-tight">
-                    sp² Hybridization of Carbon in Ethylene (C₂H₄)
-                  </h3>
-                </div>
-                <div className="pl-8 space-y-3 text-xs sm:text-sm">
-                  <p className="text-slate-600 leading-relaxed">
-                    Carbon has a ground-state valence configuration of <strong>2s² 2p²</strong>. In ethylene, carbon promotes one 2s electron to the vacant 2p_z orbital, then mixes the <strong>2s</strong> with two 2p orbitals (<strong>2p_x and 2p_y</strong>):
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                      <span className="font-extrabold text-blue-800 block mb-1">3 sp² Hybrid Orbitals</span>
-                      <p className="text-slate-600 leading-normal">
-                        Contain 33.3% s and 66.7% p character. Spread out symmetrically in the XY plane separated by <strong>120° bond angles</strong> (Trigonal Planar).
-                      </p>
-                    </div>
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                      <span className="font-extrabold text-rose-800 block mb-1">1 Unhybridized 2p_z Orbital</span>
-                      <p className="text-slate-600 leading-normal">
-                        Remains pure p character. Points strictly along the Z-axis, perpendicular (90°) to the molecular trigonal plane.
-                      </p>
-                    </div>
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                      <span className="font-extrabold text-emerald-800 block mb-1">Planar Molecular Skeleton</span>
-                      <p className="text-slate-600 leading-normal">
-                        All 6 atoms (2 Carbons and 4 Hydrogens) reside in a single flat plane, minimizing steric repulsion.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 3: Master Bond Accounting Matrix */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center">3</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-emerald-900 tracking-tight">
-                    Master Bond Breakdown for Ethylene (C₂H₄)
-                  </h3>
-                </div>
-                <div className="pl-8 overflow-x-auto pt-1">
-                  <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-                    <thead className="bg-slate-100/90 text-slate-700 font-bold border-b border-slate-200 text-[11px]">
-                      <tr>
-                        <th className="p-2.5">Bond</th>
-                        <th className="p-2.5">Type</th>
-                        <th className="p-2.5">Overlapping Orbitals</th>
-                        <th className="p-2.5">Overlap Geometry</th>
-                        <th className="p-2.5">Quantity</th>
-                        <th className="p-2.5">Approx. Energy</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold font-mono text-cyan-700">C — C</td>
-                        <td className="p-2.5 font-bold text-sky-700">σ (Sigma)</td>
-                        <td className="p-2.5 font-mono">C(sp²) — C(sp²)</td>
-                        <td className="p-2.5 font-bold">Head-on axial</td>
-                        <td className="p-2.5 font-bold font-mono">1</td>
-                        <td className="p-2.5 font-mono text-slate-600">~347 kJ/mol</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold font-mono text-blue-700">C — H</td>
-                        <td className="p-2.5 font-bold text-sky-700">σ (Sigma)</td>
-                        <td className="p-2.5 font-mono">C(sp²) — H(1s)</td>
-                        <td className="p-2.5 font-bold">Head-on axial</td>
-                        <td className="p-2.5 font-bold font-mono">4</td>
-                        <td className="p-2.5 font-mono text-slate-600">~413 kJ/mol</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold font-mono text-rose-700">C = C</td>
-                        <td className="p-2.5 font-bold text-rose-700">π (Pi)</td>
-                        <td className="p-2.5 font-mono">C(2p_z) — C(2p_z)</td>
-                        <td className="p-2.5 font-bold">Sidewise lateral</td>
-                        <td className="p-2.5 font-bold font-mono">1</td>
-                        <td className="p-2.5 font-mono text-slate-600">~264 kJ/mol</td>
-                      </tr>
-                      <tr className="bg-slate-50/80 font-bold text-slate-900 border-t border-slate-200">
-                        <td className="p-2.5">Total</td>
-                        <td className="p-2.5 text-[#2563EB]">Double Bond (C=C)</td>
-                        <td className="p-2.5 font-mono">5 σ + 1 π bonds</td>
-                        <td className="p-2.5">Trigonal Planar</td>
-                        <td className="p-2.5 font-mono text-[#2563EB]">6 bonds</td>
-                        <td className="p-2.5 font-mono text-emerald-700">Total ~2380 kJ/mol</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Section 4: Structural Consequences (Restricted Rotation) */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-amber-600 text-white font-extrabold text-xs flex items-center justify-center">4</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-amber-900 tracking-tight">
-                    Physical & Chemical Consequences of the π Bond
-                  </h3>
-                </div>
-                <div className="pl-8 space-y-2 text-xs sm:text-sm text-slate-600">
-                  <p className="leading-relaxed">
-                    The presence of the sidewise π bond has profound consequences on molecular properties:
-                  </p>
-                  <ul className="list-disc pl-5 space-y-1 text-slate-700">
-                    <li>
-                      <strong>Restricted Rotation:</strong> Unlike single σ bonds which rotate freely, rotating the C=C bond breaks the parallel alignment of the 2p orbitals, destroying the π bond. This requires ~264 kJ/mol of energy, locking the molecule into rigid cis/trans configurations.
-                    </li>
-                    <li>
-                      <strong>Enhanced Reactivity:</strong> The π electron cloud is exposed above and below the nuclear plane rather than shielded between nuclei, making it readily accessible to electrophilic reagents (e.g. halogen addition, hydrogenation).
-                    </li>
-                    <li>
-                      <strong>Shorter Bond Length:</strong> The C=C double bond length is <strong>1.34 Å</strong>, significantly shorter than the single C—C bond (1.54 Å) due to the combined pulling attraction of the σ and π bonds.
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Section 5: Step-by-Step Level 2 Challenge Guide */}
-              <div className="space-y-2 pb-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-extrabold text-xs flex items-center justify-center">5</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-indigo-900 tracking-tight">
-                    How to Solve the Level 2 Challenge in the Simulation
-                  </h3>
-                </div>
-                <div className="pl-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs pt-1">
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-blue-600 block mb-1">Step 1: Place Atoms</span>
-                    <p className="text-slate-600">Tap <strong>2 Carbon (C)</strong> atoms and <strong>4 Hydrogen (H)</strong> atoms from the tray to place them in the workspace.</p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-purple-600 block mb-1">Step 2: C–C σ Bond</span>
-                    <p className="text-slate-600">Tap 2 <strong>sp² orbitals</strong> for the carbon atoms, then click <strong>Form C–C σ Bond ✨</strong>.</p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-cyan-600 block mb-1">Step 3: C–H σ Bonds</span>
-                    <p className="text-slate-600">Tap the remaining 4 <strong>sp² orbitals</strong> and 4 <strong>1s orbitals</strong>, then click <strong>Form C–H σ Bonds ✨</strong>.</p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-rose-600 block mb-1">Step 4: C=C π Bond</span>
-                    <p className="text-slate-600">Tap 2 <strong>p orbitals</strong> along the Z-axis, then click <strong>Form π Bond ✨</strong> to finish the molecule!</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setShowCompletionModal(false)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-black font-semibold text-xs transition-all cursor-pointer border border-neutral-300 active:scale-95"
+            >
+              <X className="w-4 h-4 text-black" />
+              <span>Close</span>
+            </button>
           </div>
-        )}
+
+          {/* Scrollable Content Body */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-5 sm:py-7 space-y-6 sm:space-y-8 text-black text-xs sm:text-sm leading-relaxed max-w-3xl mx-auto w-full">
+            
+            {/* Section 1: Core Principles of Sigma and Pi Overlap */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                1. Core Principles of σ (Sigma) and π (Pi) Overlap
+              </h3>
+              <p className="text-black leading-relaxed">
+                According to <strong>Valence Bond (VB) Theory</strong>, a covalent bond forms when two atomic or hybrid orbitals overlap and their shared electron spins pair up. The nature and strength of the bond depends directly on the geometry of spatial overlap:
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Bond Types &amp; Spatial Orientation:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>σ (Sigma) Bond (Head-On Overlap):</strong> Formed by direct end-to-end (axial) overlap along the internuclear axis. The resulting electron charge density is cylindrically symmetrical around the bond line. All single bonds are σ bonds, giving maximum orbital overlap and high bond strength (~347 kJ/mol).
+                </li>
+                <li>
+                  <strong>π (Pi) Bond (Sidewise / Lateral Overlap):</strong> Formed by lateral/sidewise overlap of two parallel, unhybridized 2p orbitals oriented perpendicular to the internuclear axis. The electron cloud is concentrated in two lobes: one above and one below the nodal molecular plane. π bonds are weaker (~264 kJ/mol) and cannot rotate freely.
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 2: sp² Hybridization in Carbon */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                2. sp² Hybridization of Carbon in Ethylene (C₂H₄)
+              </h3>
+              <p className="text-black leading-relaxed">
+                Carbon has a ground-state valence configuration of <strong>2s² 2p²</strong>. In ethylene, carbon promotes one 2s electron to the vacant 2p_z orbital, then mixes the <strong>2s</strong> with two 2p orbitals (<strong>2p_x and 2p_y</strong>):
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Orbital Breakdown:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>3 sp² Hybrid Orbitals:</strong> Contain 33.3% s and 66.7% p character. Spread out symmetrically in the XY plane separated by <strong>120° bond angles</strong> (Trigonal Planar).
+                </li>
+                <li>
+                  <strong>1 Unhybridized 2p_z Orbital:</strong> Remains pure p character. Points strictly along the Z-axis, perpendicular (90°) to the molecular trigonal plane.
+                </li>
+                <li>
+                  <strong>Planar Molecular Skeleton:</strong> All 6 atoms (2 Carbons and 4 Hydrogens) reside in a single flat plane, minimizing steric repulsion.
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 3: Master Bond Accounting Matrix */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                3. Master Bond Breakdown for Ethylene (C₂H₄)
+              </h3>
+              <div className="overflow-x-auto pt-1">
+                <table className="w-full text-left text-xs border border-neutral-300 rounded-lg overflow-hidden">
+                  <thead className="bg-neutral-100 text-black font-bold border-b border-neutral-300 text-[11px]">
+                    <tr>
+                      <th className="p-2.5">Bond</th>
+                      <th className="p-2.5">Type</th>
+                      <th className="p-2.5">Overlapping Orbitals</th>
+                      <th className="p-2.5">Overlap Geometry</th>
+                      <th className="p-2.5">Quantity</th>
+                      <th className="p-2.5">Approx. Energy</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-200 text-black">
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">C — C</td>
+                      <td className="p-2.5 font-bold">σ (Sigma)</td>
+                      <td className="p-2.5 font-mono">C(sp²) — C(sp²)</td>
+                      <td className="p-2.5 font-bold">Head-on axial</td>
+                      <td className="p-2.5 font-bold font-mono">1</td>
+                      <td className="p-2.5 font-mono">~347 kJ/mol</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">C — H</td>
+                      <td className="p-2.5 font-bold">σ (Sigma)</td>
+                      <td className="p-2.5 font-mono">C(sp²) — H(1s)</td>
+                      <td className="p-2.5 font-bold">Head-on axial</td>
+                      <td className="p-2.5 font-bold font-mono">4</td>
+                      <td className="p-2.5 font-mono">~413 kJ/mol</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">C = C</td>
+                      <td className="p-2.5 font-bold">π (Pi)</td>
+                      <td className="p-2.5 font-mono">C(2p_z) — C(2p_z)</td>
+                      <td className="p-2.5 font-bold">Sidewise lateral</td>
+                      <td className="p-2.5 font-bold font-mono">1</td>
+                      <td className="p-2.5 font-mono">~264 kJ/mol</td>
+                    </tr>
+                    <tr className="bg-neutral-100 font-bold text-black border-t border-neutral-300">
+                      <td className="p-2.5">Total</td>
+                      <td className="p-2.5">Double Bond (C=C)</td>
+                      <td className="p-2.5 font-mono">5 σ + 1 π bonds</td>
+                      <td className="p-2.5">Trigonal Planar</td>
+                      <td className="p-2.5 font-mono">6 bonds</td>
+                      <td className="p-2.5 font-mono">Total ~2380 kJ/mol</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Section 4: Structural Consequences (Restricted Rotation) */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                4. Physical &amp; Chemical Consequences of the π Bond
+              </h3>
+              <p className="text-black leading-relaxed">
+                The presence of the sidewise π bond has profound consequences on molecular properties:
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Key Structural Effects:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>Restricted Rotation:</strong> Unlike single σ bonds which rotate freely, rotating the C=C bond breaks the parallel alignment of the 2p orbitals, destroying the π bond. This requires ~264 kJ/mol of energy, locking the molecule into rigid cis/trans configurations.
+                </li>
+                <li>
+                  <strong>Enhanced Reactivity:</strong> The π electron cloud is exposed above and below the nuclear plane rather than shielded between nuclei, making it readily accessible to electrophilic reagents (e.g. halogen addition, hydrogenation).
+                </li>
+                <li>
+                  <strong>Shorter Bond Length:</strong> The C=C double bond length is <strong>1.34 Å</strong>, significantly shorter than the single C—C bond (1.54 Å) due to the combined pulling attraction of the σ and π bonds.
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 5: Step-by-Step Level 2 Challenge Guide */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                5. How to Solve the Level 2 Challenge in the Simulation
+              </h3>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>Step 1 (Place Atoms):</strong> Tap <strong>2 Carbon (C)</strong> atoms and <strong>4 Hydrogen (H)</strong> atoms from the tray to place them in the workspace.
+                </li>
+                <li>
+                  <strong>Step 2 (C–C σ Bond):</strong> Tap 2 <strong>sp² orbitals</strong> for the carbon atoms, then click <strong>Form C–C σ Bond ✨</strong>.
+                </li>
+                <li>
+                  <strong>Step 3 (C–H σ Bonds):</strong> Tap the remaining 4 <strong>sp² orbitals</strong> and 4 <strong>1s orbitals</strong>, then click <strong>Form C–H σ Bonds ✨</strong>.
+                </li>
+                <li>
+                  <strong>Step 4 (C=C π Bond):</strong> Tap 2 <strong>p orbitals</strong> along the Z-axis, then click <strong>Form π Bond ✨</strong> to finish the molecule!
+                </li>
+              </ul>
+            </div>
+
+          </div>
+
+          {/* Bottom Footer */}
+          <div className="p-3 border-t border-neutral-300 bg-white shrink-0 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setShowCompletionModal(false)}
+              className="w-full max-w-sm py-2.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer active:scale-95"
+            >
+              Resume Challenge
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

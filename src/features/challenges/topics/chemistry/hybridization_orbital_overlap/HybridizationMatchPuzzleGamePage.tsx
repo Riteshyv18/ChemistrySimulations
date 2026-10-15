@@ -752,12 +752,12 @@ export default function HybridizationMatchPuzzleGamePage({
 
           {/* STEP 1: MISSION SCREEN (COMPACT, FITS AT HEIGHT 376) */}
           {introStep === 'mission' && (
-            <div className="max-w-2xl mx-auto my-auto text-center space-y-2 sm:space-y-3 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200">
-              <div className="text-[#2563EB] text-[9.5px] sm:text-[11px] font-mono font-bold tracking-[0.2em] uppercase">
+            <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-4 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200">
+              <div className="text-[#2563EB] text-[10px] sm:text-xs font-mono font-bold tracking-[0.2em] uppercase">
                 HYBRIDIZATION & ORBITAL OVERLAP
               </div>
 
-              <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+              <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
                 <span className="text-[#2563EB]">MISSION:</span> Match Hybridization Boxes & 3D Molecular Geometries
               </h1>
 
@@ -1183,365 +1183,273 @@ export default function HybridizationMatchPuzzleGamePage({
 
       {/* ── EDUCATIONAL EXPLANATION & THEORY PAGE (FULL CANVAS / WHOLE SCREEN) ── */}
       {showExplanationModal && (
-        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-[#1E293B] animate-in fade-in duration-200 select-text">
+        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-black animate-in fade-in duration-200 select-text">
           {/* Header Bar */}
-          <div className="flex items-center justify-between px-3.5 sm:px-6 py-2 sm:py-2.5 border-b border-slate-200 bg-white shrink-0 shadow-xs">
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0 shadow-xs">
-                <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-              </div>
-              <div>
-                <h2 className="text-xs sm:text-base font-black text-slate-900 leading-tight">
-                  Hybridization & Molecular Geometries Guide
-                </h2>
-                <p className="text-[10px] sm:text-xs text-slate-500 font-medium hidden sm:block">
-                  Mastering Steric Numbers, Hybrid Orbitals, and 3D Molecular Shapes
-                </p>
-              </div>
+          <div className="flex items-center justify-between px-4 sm:px-8 py-3 border-b border-neutral-300 bg-white shrink-0">
+            <div>
+              <h2 className="text-base sm:text-xl font-bold text-black tracking-tight">
+                Hybridization &amp; Molecular Geometries Guide
+              </h2>
+              <p className="text-xs text-neutral-600 font-normal">
+                Mastering Steric Numbers, Hybrid Orbitals, and 3D Molecular Shapes
+              </p>
             </div>
+
+            {/* Close Button */}
             <button
               type="button"
               onClick={() => setShowExplanationModal(false)}
-              className="p-1.5 sm:p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 flex items-center gap-1.5 font-bold text-xs transition-all cursor-pointer shadow-xs active:scale-95"
-              title="Close Explanation"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-black font-semibold text-xs transition-all cursor-pointer border border-neutral-300 active:scale-95"
             >
-              <X className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Close</span>
+              <X className="w-4 h-4 text-black" />
+              <span>Close</span>
             </button>
           </div>
 
-            {/* Modal Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs sm:text-sm text-slate-700 font-sans">
-              {/* Section 1: Core Principles */}
-              <div className="space-y-2 border-b border-slate-200 pb-4">
-                <div className="flex items-center gap-2 text-blue-900 font-extrabold text-sm sm:text-base">
-                  <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs">
-                    1
-                  </div>
-                  <h3>Principles of Orbital Hybridization</h3>
-                </div>
-                <p className="text-slate-600 leading-relaxed text-xs sm:text-sm">
-                  Hybridization is the mathematical and quantum mechanical mixing of atomic orbitals (such as s, p, and d) of comparable energies in the valence shell of an atom. When bonds form, these mixed orbitals produce an equal number of new, degenerate <strong>hybrid orbitals</strong>. These hybrid orbitals feature concentrated directional electron lobes that maximize spatial separation and orbital overlap with neighboring atoms, thereby minimizing electrostatic electron-pair repulsions according to VSEPR theory.
-                </p>
-                <div className="bg-blue-50/80 border border-blue-200 rounded-xl p-3 flex items-start gap-2 text-xs text-blue-800">
-                  <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                  <div>
-                    <strong>Golden Rule:</strong> Number of Hybrid Orbitals Formed = Number of Pure Atomic Orbitals Mixed.
-                    <br />
-                    • 1s + 1p → <strong>2 sp</strong> orbitals (180° apart)
-                    <br />
-                    • 1s + 2p → <strong>3 sp²</strong> orbitals (120° apart)
-                    <br />
-                    • 1s + 3p → <strong>4 sp³</strong> orbitals (109.5° apart)
-                    <br />
-                    • 1s + 3p + 1d → <strong>5 sp³d</strong> orbitals (90° and 120° apart)
-                    <br />
-                    • 1s + 3p + 2d → <strong>6 sp³d²</strong> orbitals (all 90° apart)
-                  </div>
-                </div>
-              </div>
+          {/* Scrollable Content Body */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-5 sm:py-7 space-y-6 sm:space-y-8 text-black text-xs sm:text-sm leading-relaxed max-w-3xl mx-auto w-full">
+            
+            {/* Section 1: Core Principles */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                1. Principles of Orbital Hybridization
+              </h3>
+              <p className="text-black leading-relaxed">
+                Hybridization is the mathematical and quantum mechanical mixing of atomic orbitals (such as s, p, and d) of comparable energies in the valence shell of an atom. When bonds form, these mixed orbitals produce an equal number of new, degenerate <strong>hybrid orbitals</strong>. These hybrid orbitals feature concentrated directional electron lobes that maximize spatial separation and orbital overlap with neighboring atoms, thereby minimizing electrostatic electron-pair repulsions according to VSEPR theory.
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Golden Rule of Orbital Hybridization:
+              </h4>
+              <p className="text-black leading-relaxed font-semibold">
+                Number of Hybrid Orbitals Formed = Number of Pure Atomic Orbitals Mixed.
+              </p>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>sp Hybridization:</strong> 1s + 1p → <strong>2 sp</strong> orbitals (180° apart)
+                </li>
+                <li>
+                  <strong>sp² Hybridization:</strong> 1s + 2p → <strong>3 sp²</strong> orbitals (120° apart)
+                </li>
+                <li>
+                  <strong>sp³ Hybridization:</strong> 1s + 3p → <strong>4 sp³</strong> orbitals (109.5° apart)
+                </li>
+                <li>
+                  <strong>sp³d Hybridization:</strong> 1s + 3p + 1d → <strong>5 sp³d</strong> orbitals (90° and 120° apart)
+                </li>
+                <li>
+                  <strong>sp³d² Hybridization:</strong> 1s + 3p + 2d → <strong>6 sp³d²</strong> orbitals (all 90° apart)
+                </li>
+              </ul>
+            </div>
 
-              {/* Section 2: Master Reference Table */}
-              <div className="space-y-2 border-b border-slate-200 pb-4">
-                <div className="flex items-center gap-2 text-purple-900 font-extrabold text-sm sm:text-base">
-                  <div className="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-xs">
-                    2
-                  </div>
-                  <h3>Master Quick Reference Table</h3>
-                </div>
-                <div className="overflow-x-auto pt-1">
-                  <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-                    <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200 text-[11px]">
-                      <tr>
-                        <th className="p-2">Molecule</th>
-                        <th className="p-2">Central Atom</th>
-                        <th className="p-2">Steric No.</th>
-                        <th className="p-2">Hybridization</th>
-                        <th className="p-2">Geometry</th>
-                        <th className="p-2">Bond Angles</th>
-                        <th className="p-2">Net Dipole (μ)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-slate-700 text-xs">
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2 font-bold text-cyan-700">BeCl₂</td>
-                        <td className="p-2">Beryllium (Z=4)</td>
-                        <td className="p-2 font-mono">2</td>
-                        <td className="p-2 font-bold font-mono text-blue-700">sp</td>
-                        <td className="p-2 font-semibold">Linear</td>
-                        <td className="p-2 font-mono">180°</td>
-                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2 font-bold text-emerald-700">BF₃</td>
-                        <td className="p-2">Boron (Z=5)</td>
-                        <td className="p-2 font-mono">3</td>
-                        <td className="p-2 font-bold font-mono text-emerald-700">sp²</td>
-                        <td className="p-2 font-semibold">Trigonal Planar</td>
-                        <td className="p-2 font-mono">120°</td>
-                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2 font-bold text-purple-700">CH₄</td>
-                        <td className="p-2">Carbon (Z=6)</td>
-                        <td className="p-2 font-mono">4</td>
-                        <td className="p-2 font-bold font-mono text-purple-700">sp³</td>
-                        <td className="p-2 font-semibold">Tetrahedral</td>
-                        <td className="p-2 font-mono">109.5°</td>
-                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2 font-bold text-amber-700">PCl₅</td>
-                        <td className="p-2">Phosphorus (Z=15)</td>
-                        <td className="p-2 font-mono">5</td>
-                        <td className="p-2 font-bold font-mono text-amber-700">sp³d</td>
-                        <td className="p-2 font-semibold">Trigonal Bipyramidal</td>
-                        <td className="p-2 font-mono">90° (ax) & 120° (eq)</td>
-                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2 font-bold text-rose-700">SF₆</td>
-                        <td className="p-2">Sulfur (Z=16)</td>
-                        <td className="p-2 font-mono">6</td>
-                        <td className="p-2 font-bold font-mono text-rose-700">sp³d²</td>
-                        <td className="p-2 font-semibold">Octahedral</td>
-                        <td className="p-2 font-mono">90° (all adjacent)</td>
-                        <td className="p-2 font-mono text-emerald-600">0 (Non-polar)</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Section 3: Detailed Molecule-by-Molecule Theory */}
-              <div className="space-y-4 border-b border-slate-200 pb-4">
-                <div className="flex items-center gap-2 text-indigo-900 font-extrabold text-sm sm:text-base">
-                  <div className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs">
-                    3
-                  </div>
-                  <h3>Comprehensive Theory for All 5 Molecules</h3>
-                </div>
-
-                {/* 1. BeCl2 */}
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
-                  <div className="flex items-center justify-between flex-wrap gap-1">
-                    <span className="font-extrabold text-sm text-blue-900 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 font-mono text-xs">Box A</span>
-                      BeCl₂ — Beryllium Dichloride
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800 font-bold text-xs font-mono">
-                      sp Hybridization • Linear (180°)
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Ground State Be (Z=4):</strong> 1s² 2s² (zero unpaired electrons)
-                        <br />
-                        • <strong>Excited State:</strong> One 2s electron promotes to 2pₓ → 1s² 2s¹ 2pₓ¹
-                      </div>
-                    </div>
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Mixing:</strong> 1s + 1p orbital combine to yield <strong>2 sp hybrid orbitals</strong>
-                        <br />
-                        • <strong>Orientation:</strong> Collinear at <strong>180°</strong> along the internuclear axis
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    <strong>Bonding & Chemical Details:</strong> Each of the two sp hybrid orbitals on Be overlaps axially (head-on) with a half-filled 3p_z orbital from a Chlorine atom, generating two identical, highly directional σ(Be–Cl) bonds. The two bond dipole vectors are equal in magnitude and point in exactly opposite directions (180°), completely canceling each other (μ = 0 D). Two unhybridized 2p orbitals (2p_y, 2p_z) on Beryllium remain empty.
-                  </p>
-                </div>
-
-                {/* 2. BF3 */}
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
-                  <div className="flex items-center justify-between flex-wrap gap-1">
-                    <span className="font-extrabold text-sm text-emerald-900 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-mono text-xs">Box B</span>
-                      BF₃ — Boron Trifluoride
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-xs font-mono">
-                      sp² Hybridization • Trigonal Planar (120°)
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Ground State B (Z=5):</strong> 1s² 2s² 2p¹ (1 unpaired electron)
-                        <br />
-                        • <strong>Excited State:</strong> 2s electron unpairs and promotes to 2p_y → 1s² 2s¹ 2pₓ¹ 2p_y¹
-                      </div>
-                    </div>
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Mixing:</strong> One 2s + two 2p (2pₓ, 2p_y) mix to form <strong>3 sp² hybrid orbitals</strong>
-                        <br />
-                        • <strong>Orientation:</strong> Planar, directed to vertices of an equilateral triangle at <strong>120°</strong>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    <strong>Bonding & Chemical Details:</strong> The three sp² hybrid orbitals overlap head-on with singly occupied 2p_z orbitals of 3 Fluorine atoms, forming three strong σ(B–F) bonds. The remaining unhybridized 2p_z orbital lies perpendicular to the triangular plane and stays vacant. Because Boron only possesses 6 valence electrons around it in BF₃, it has an incomplete octet and acts as a quintessential <em>Lewis acid</em>, readily accepting electron pairs from Lewis bases (like NH₃). Symmetrical triangular cancellation gives μ = 0 D.
-                  </p>
-                </div>
-
-                {/* 3. CH4 */}
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
-                  <div className="flex items-center justify-between flex-wrap gap-1">
-                    <span className="font-extrabold text-sm text-purple-900 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 font-mono text-xs">Box C</span>
-                      CH₄ — Methane
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-800 font-bold text-xs font-mono">
-                      sp³ Hybridization • Tetrahedral (109.5°)
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Ground State C (Z=6):</strong> 1s² 2s² 2pₓ¹ 2p_y¹ (2 unpaired electrons)
-                        <br />
-                        • <strong>Excited State:</strong> 2s electron promotes to 2p_z → 1s² 2s¹ 2pₓ¹ 2p_y¹ 2p_z¹ (tetravalent)
-                      </div>
-                    </div>
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Mixing:</strong> One 2s + three 2p orbitals mix to form <strong>4 equivalent sp³ hybrid orbitals</strong>
-                        <br />
-                        • <strong>Orientation:</strong> Point toward vertices of a regular tetrahedron at <strong>109.5°</strong> (109°28')
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    <strong>Bonding & Chemical Details:</strong> Each sp³ hybrid orbital on Carbon overlaps axially with the spherical 1s orbital of a Hydrogen atom to form 4 equivalent, exceptionally strong σ(C–H) bonds. Each C–H bond length is identical (108.7 pm) with equal bond dissociation energy (435 kJ/mol). The regular tetrahedral geometry distributes the electron density symmetrically in 3D space, meaning all individual bond dipoles cancel completely (μ = 0 D), rendering methane non-polar and chemically stable.
-                  </p>
-                </div>
-
-                {/* 4. PCl5 */}
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
-                  <div className="flex items-center justify-between flex-wrap gap-1">
-                    <span className="font-extrabold text-sm text-amber-900 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 font-mono text-xs">Box D</span>
-                      PCl₅ — Phosphorus Pentachloride
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-bold text-xs font-mono">
-                      sp³d Hybridization • Trigonal Bipyramidal (90° & 120°)
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration & Expanded Octet</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Ground State P (Z=15):</strong> [Ne] 3s² 3pₓ¹ 3p_y¹ 3p_z¹
-                        <br />
-                        • <strong>Excited State:</strong> 3s electron promotes to vacant 3d_z² orbital → [Ne] 3s¹ 3p³ 3d_z²¹ (5 unpaired electrons)
-                      </div>
-                    </div>
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Mixing:</strong> 1s + 3p + 1d (d_z²) combine into <strong>5 sp³d hybrid orbitals</strong>
-                        <br />
-                        • <strong>Orientation:</strong> Trigonal Bipyramid with <strong>3 equatorial bonds</strong> (120°) and <strong>2 axial bonds</strong> (90° to equatorial, 180° to each other)
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-amber-100/60 border border-amber-300/80 rounded-xl p-2.5 text-xs text-amber-900 space-y-1">
-                    <div className="font-bold flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                      Crucial Scientific Concept: Axial vs Equatorial Bond Asymmetry
-                    </div>
-                    <p className="leading-relaxed">
-                      In PCl₅, the 5 bonds are <strong>not equivalent</strong>! The two axial P–Cl bonds experience greater repulsion (repelled by 3 equatorial electron pairs at 90°) than the equatorial bonds (repelled by only 2 axial pairs at 90°). Consequently, the <strong>axial bonds are longer (214 pm) and weaker</strong> than the <strong>equatorial bonds (202 pm)</strong>. This explains why PCl₅ is thermally reactive and easily dissociates when heated:
-                      <br />
-                      <span className="font-mono font-bold text-slate-800 bg-white/80 px-2 py-0.5 rounded inline-block mt-1">
-                        PCl₅(g) ⇌ PCl₃(g) + Cl₂(g)
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                {/* 5. SF6 */}
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2">
-                  <div className="flex items-center justify-between flex-wrap gap-1">
-                    <span className="font-extrabold text-sm text-rose-900 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 font-mono text-xs">Box E</span>
-                      SF₆ — Sulfur Hexafluoride
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800 font-bold text-xs font-mono">
-                      sp³d² Hybridization • Octahedral (All 90°)
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Electronic Configuration & Expanded Octet</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Ground State S (Z=16):</strong> [Ne] 3s² 3pₓ² 3p_y¹ 3p_z¹ (2 unpaired electrons)
-                        <br />
-                        • <strong>Excited State:</strong> 3s and 3p electrons promote to 3d_x²-y² and 3d_z² → [Ne] 3s¹ 3p³ 3d² (6 unpaired electrons)
-                      </div>
-                    </div>
-                    <div className="bg-white p-2 rounded-xl border border-slate-200/80">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Orbital Mixing & Geometry</div>
-                      <div className="mt-0.5 text-slate-700">
-                        • <strong>Mixing:</strong> 1s + 3p + 2d (d_x²-y², d_z²) mix to form <strong>6 equivalent sp³d² hybrid orbitals</strong>
-                        <br />
-                        • <strong>Orientation:</strong> Regular Octahedron (square bipyramid); <strong>all adjacent bond angles are 90°</strong> (trans angles 180°)
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    <strong>Bonding & Chemical Inertness:</strong> All 6 S–F bonds are completely identical in length (156 pm) and strength. The 6 highly electronegative Fluorine atoms form an octahedral steric cage that tightly encloses and shields the central Sulfur atom. This exceptional steric shielding makes SF₆ chemically unreactive, non-flammable, non-toxic, and an extraordinary electrical insulator widely used in high-voltage circuit breakers and power substations. Symmetrical cancellation guarantees μ = 0 D.
-                  </p>
-                </div>
-              </div>
-
-              {/* Section 4: Fast Calculation / Exam Shortcut */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-sm sm:text-base">
-                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">
-                    4
-                  </div>
-                  <h3>Quick Steric Number Formula for Competitive Exams</h3>
-                </div>
-                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 space-y-1.5">
-                  <div className="font-mono font-bold text-emerald-800 bg-white/90 p-1.5 rounded-lg border border-emerald-200 text-center">
-                    Steric Number (SN) = (Number of σ-Bonds) + (Number of Lone Pairs on Central Atom)
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 pt-1 text-center font-mono text-[11px]">
-                    <div className="bg-white p-1 rounded-lg border border-emerald-200">
-                      <strong>SN = 2</strong> → sp
-                      <div className="text-[10px] text-slate-500 font-sans">Linear (180°)</div>
-                    </div>
-                    <div className="bg-white p-1 rounded-lg border border-emerald-200">
-                      <strong>SN = 3</strong> → sp²
-                      <div className="text-[10px] text-slate-500 font-sans">Trigonal Planar (120°)</div>
-                    </div>
-                    <div className="bg-white p-1 rounded-lg border border-emerald-200">
-                      <strong>SN = 4</strong> → sp³
-                      <div className="text-[10px] text-slate-500 font-sans">Tetrahedral (109.5°)</div>
-                    </div>
-                    <div className="bg-white p-1 rounded-lg border border-emerald-200">
-                      <strong>SN = 5</strong> → sp³d
-                      <div className="text-[10px] text-slate-500 font-sans">TBP (90° & 120°)</div>
-                    </div>
-                    <div className="bg-white p-1 rounded-lg border border-emerald-200 col-span-2 sm:col-span-1">
-                      <strong>SN = 6</strong> → sp³d²
-                      <div className="text-[10px] text-slate-500 font-sans">Octahedral (90°)</div>
-                    </div>
-                  </div>
-                </div>
+            {/* Section 2: Master Quick Reference Table */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                2. Master Quick Reference Table
+              </h3>
+              <div className="overflow-x-auto pt-1">
+                <table className="w-full text-left text-xs border border-neutral-300 rounded-lg overflow-hidden">
+                  <thead className="bg-neutral-100 text-black font-bold border-b border-neutral-300 text-[11px]">
+                    <tr>
+                      <th className="p-2.5">Molecule</th>
+                      <th className="p-2.5">Central Atom</th>
+                      <th className="p-2.5">Steric No.</th>
+                      <th className="p-2.5">Hybridization</th>
+                      <th className="p-2.5">Geometry</th>
+                      <th className="p-2.5">Bond Angles</th>
+                      <th className="p-2.5">Net Dipole (μ)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-200 text-black">
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">BeCl₂</td>
+                      <td className="p-2.5">Beryllium (Z=4)</td>
+                      <td className="p-2.5 font-mono">2</td>
+                      <td className="p-2.5 font-bold font-mono">sp</td>
+                      <td className="p-2.5 font-bold">Linear</td>
+                      <td className="p-2.5 font-mono">180°</td>
+                      <td className="p-2.5 font-mono">0 (Non-polar)</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">BF₃</td>
+                      <td className="p-2.5">Boron (Z=5)</td>
+                      <td className="p-2.5 font-mono">3</td>
+                      <td className="p-2.5 font-bold font-mono">sp²</td>
+                      <td className="p-2.5 font-bold">Trigonal Planar</td>
+                      <td className="p-2.5 font-mono">120°</td>
+                      <td className="p-2.5 font-mono">0 (Non-polar)</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">CH₄</td>
+                      <td className="p-2.5">Carbon (Z=6)</td>
+                      <td className="p-2.5 font-mono">4</td>
+                      <td className="p-2.5 font-bold font-mono">sp³</td>
+                      <td className="p-2.5 font-bold">Tetrahedral</td>
+                      <td className="p-2.5 font-mono">109.5°</td>
+                      <td className="p-2.5 font-mono">0 (Non-polar)</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">PCl₅</td>
+                      <td className="p-2.5">Phosphorus (Z=15)</td>
+                      <td className="p-2.5 font-mono">5</td>
+                      <td className="p-2.5 font-bold font-mono">sp³d</td>
+                      <td className="p-2.5 font-bold">Trigonal Bipyramidal</td>
+                      <td className="p-2.5 font-mono">90° (ax) &amp; 120° (eq)</td>
+                      <td className="p-2.5 font-mono">0 (Non-polar)</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">SF₆</td>
+                      <td className="p-2.5">Sulfur (Z=16)</td>
+                      <td className="p-2.5 font-mono">6</td>
+                      <td className="p-2.5 font-bold font-mono">sp³d²</td>
+                      <td className="p-2.5 font-bold">Octahedral</td>
+                      <td className="p-2.5 font-mono">90° (all adjacent)</td>
+                      <td className="p-2.5 font-mono">0 (Non-polar)</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
+
+            {/* Section 3: Detailed Molecule-by-Molecule Theory */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                3. Comprehensive Theory for All 5 Molecules
+              </h3>
+
+              {/* 1. BeCl2 */}
+              <div className="space-y-1.5 pt-1">
+                <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4">
+                  BeCl₂ — Beryllium Dichloride (sp Hybridization, Linear 180°)
+                </h4>
+                <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                  <li>
+                    <strong>Electronic Configuration:</strong> Ground State Be (Z=4): 1s² 2s² (zero unpaired electrons). Excited State: One 2s electron promotes to 2pₓ → 1s² 2s¹ 2pₓ¹.
+                  </li>
+                  <li>
+                    <strong>Orbital Mixing &amp; Geometry:</strong> 1s + 1p orbital combine to yield 2 sp hybrid orbitals. Collinear at 180° along the internuclear axis.
+                  </li>
+                  <li>
+                    <strong>Bonding &amp; Chemical Details:</strong> Each of the two sp hybrid orbitals on Be overlaps axially (head-on) with a half-filled 3p_z orbital from a Chlorine atom, generating two identical, highly directional σ(Be–Cl) bonds. The two bond dipole vectors are equal in magnitude and point in exactly opposite directions (180°), completely canceling each other (μ = 0 D). Two unhybridized 2p orbitals (2p_y, 2p_z) on Beryllium remain empty.
+                  </li>
+                </ul>
+              </div>
+
+              {/* 2. BF3 */}
+              <div className="space-y-1.5 pt-1">
+                <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4">
+                  BF₃ — Boron Trifluoride (sp² Hybridization, Trigonal Planar 120°)
+                </h4>
+                <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                  <li>
+                    <strong>Electronic Configuration:</strong> Ground State B (Z=5): 1s² 2s² 2p¹ (1 unpaired electron). Excited State: 2s electron unpairs and promotes to 2p_y → 1s² 2s¹ 2pₓ¹ 2p_y¹.
+                  </li>
+                  <li>
+                    <strong>Orbital Mixing &amp; Geometry:</strong> One 2s + two 2p (2pₓ, 2p_y) mix to form 3 sp² hybrid orbitals. Planar, directed to vertices of an equilateral triangle at 120°.
+                  </li>
+                  <li>
+                    <strong>Bonding &amp; Chemical Details:</strong> The three sp² hybrid orbitals overlap head-on with singly occupied 2p_z orbitals of 3 Fluorine atoms, forming three strong σ(B–F) bonds. The remaining unhybridized 2p_z orbital lies perpendicular to the triangular plane and stays vacant. Because Boron only possesses 6 valence electrons around it in BF₃, it has an incomplete octet and acts as a quintessential Lewis acid, readily accepting electron pairs from Lewis bases (like NH₃). Symmetrical triangular cancellation gives μ = 0 D.
+                  </li>
+                </ul>
+              </div>
+
+              {/* 3. CH4 */}
+              <div className="space-y-1.5 pt-1">
+                <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4">
+                  CH₄ — Methane (sp³ Hybridization, Tetrahedral 109.5°)
+                </h4>
+                <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                  <li>
+                    <strong>Electronic Configuration:</strong> Ground State C (Z=6): 1s² 2s² 2pₓ¹ 2p_y¹ (2 unpaired electrons). Excited State: 2s electron promotes to 2p_z → 1s² 2s¹ 2pₓ¹ 2p_y¹ 2p_z¹ (tetravalent).
+                  </li>
+                  <li>
+                    <strong>Orbital Mixing &amp; Geometry:</strong> One 2s + three 2p orbitals mix to form 4 equivalent sp³ hybrid orbitals. Point toward vertices of a regular tetrahedron at 109.5° (109°28').
+                  </li>
+                  <li>
+                    <strong>Bonding &amp; Chemical Details:</strong> Each sp³ hybrid orbital on Carbon overlaps axially with the spherical 1s orbital of a Hydrogen atom to form 4 equivalent, exceptionally strong σ(C–H) bonds. Each C–H bond length is identical (108.7 pm) with equal bond dissociation energy (435 kJ/mol). The regular tetrahedral geometry distributes the electron density symmetrically in 3D space, meaning all individual bond dipoles cancel completely (μ = 0 D), rendering methane non-polar and chemically stable.
+                  </li>
+                </ul>
+              </div>
+
+              {/* 4. PCl5 */}
+              <div className="space-y-1.5 pt-1">
+                <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4">
+                  PCl₅ — Phosphorus Pentachloride (sp³d Hybridization, Trigonal Bipyramidal 90° &amp; 120°)
+                </h4>
+                <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                  <li>
+                    <strong>Electronic Configuration &amp; Expanded Octet:</strong> Ground State P (Z=15): [Ne] 3s² 3pₓ¹ 3p_y¹ 3p_z¹. Excited State: 3s electron promotes to vacant 3d_z² orbital → [Ne] 3s¹ 3p³ 3d_z²¹ (5 unpaired electrons).
+                  </li>
+                  <li>
+                    <strong>Orbital Mixing &amp; Geometry:</strong> 1s + 3p + 1d (d_z²) combine into 5 sp³d hybrid orbitals. Trigonal Bipyramid with 3 equatorial bonds (120°) and 2 axial bonds (90° to equatorial, 180° to each other).
+                  </li>
+                  <li>
+                    <strong>Axial vs Equatorial Bond Asymmetry:</strong> In PCl₅, the 5 bonds are not equivalent! The two axial P–Cl bonds experience greater repulsion (repelled by 3 equatorial electron pairs at 90°) than the equatorial bonds (repelled by only 2 axial pairs at 90°). Consequently, the axial bonds are longer (214 pm) and weaker than the equatorial bonds (202 pm). This explains why PCl₅ is thermally reactive and easily dissociates when heated: PCl₅(g) ⇌ PCl₃(g) + Cl₂(g).
+                  </li>
+                </ul>
+              </div>
+
+              {/* 5. SF6 */}
+              <div className="space-y-1.5 pt-1">
+                <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4">
+                  SF₆ — Sulfur Hexafluoride (sp³d² Hybridization, Octahedral All 90°)
+                </h4>
+                <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                  <li>
+                    <strong>Electronic Configuration &amp; Expanded Octet:</strong> Ground State S (Z=16): [Ne] 3s² 3pₓ² 3p_y¹ 3p_z¹ (2 unpaired electrons). Excited State: 3s and 3p electrons promote to 3d_x²-y² and 3d_z² → [Ne] 3s¹ 3p³ 3d² (6 unpaired electrons).
+                  </li>
+                  <li>
+                    <strong>Orbital Mixing &amp; Geometry:</strong> 1s + 3p + 2d (d_x²-y², d_z²) mix to form 6 equivalent sp³d² hybrid orbitals. Regular Octahedron (square bipyramid); all adjacent bond angles are 90° (trans angles 180°).
+                  </li>
+                  <li>
+                    <strong>Bonding &amp; Chemical Inertness:</strong> All 6 S–F bonds are completely identical in length (156 pm) and strength. The 6 highly electronegative Fluorine atoms form an octahedral steric cage that tightly encloses and shields the central Sulfur atom. This exceptional steric shielding makes SF₆ chemically unreactive, non-flammable, non-toxic, and an extraordinary electrical insulator widely used in high-voltage circuit breakers and power substations. Symmetrical cancellation guarantees μ = 0 D.
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+
+            {/* Section 4: Fast Calculation / Exam Shortcut */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                4. Quick Steric Number Formula for Competitive Exams
+              </h3>
+              <p className="text-black leading-relaxed">
+                <strong>Steric Number (SN) = (Number of σ-Bonds) + (Number of Lone Pairs on Central Atom)</strong>
+              </p>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>SN = 2:</strong> sp Hybridization → Linear (180°)
+                </li>
+                <li>
+                  <strong>SN = 3:</strong> sp² Hybridization → Trigonal Planar (120°)
+                </li>
+                <li>
+                  <strong>SN = 4:</strong> sp³ Hybridization → Tetrahedral (109.5°)
+                </li>
+                <li>
+                  <strong>SN = 5:</strong> sp³d Hybridization → Trigonal Bipyramidal (90° &amp; 120°)
+                </li>
+                <li>
+                  <strong>SN = 6:</strong> sp³d² Hybridization → Octahedral (90°)
+                </li>
+              </ul>
+            </div>
+
           </div>
-        )}
+
+          {/* Bottom Footer */}
+          <div className="p-3 border-t border-neutral-300 bg-white shrink-0 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setShowExplanationModal(false)}
+              className="w-full max-w-sm py-2.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer active:scale-95"
+            >
+              Resume Challenge
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── FINAL SUCCESS COMPLETION MODAL ───────────────────────────────── */}
       {showSuccessModal && (

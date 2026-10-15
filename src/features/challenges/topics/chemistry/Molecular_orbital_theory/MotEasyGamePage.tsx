@@ -3,25 +3,22 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, Html, Cylinder, Torus, Sparkles as DreiSparkles } from '@react-three/drei';
+import { OrbitControls, Sphere, Html, Sparkles as DreiSparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   ChevronLeft,
-  Atom,
-  RotateCcw,
+  ChevronRight,
   CheckCircle2,
   X,
-  ArrowRight,
   Sparkles,
   BookOpen,
   MoveHorizontal,
-  MousePointerClick,
-  Eye,
-  Maximize2,
   Play,
-  Pause,
-  Target
+  ArrowLeft,
+  Layers,
+  Info
 } from 'lucide-react';
+import { exitSimulation } from '@/lib/mobileBridge';
 
 import {
   getNucleusMaterial,
@@ -32,8 +29,7 @@ import {
 } from './materials';
 
 import {
-  MOT_EASY_STEPS,
-  KEY_CONCEPTS_DATA
+  MOT_EASY_STEPS
 } from './helpers';
 
 // ── 3D Nucleus Component ───────────────────────────────────────────────────
@@ -80,10 +76,11 @@ const AO1sSphere = ({
       </mesh>
       <Html position={[0, 0, 0]} center zIndexRange={[100, 0]}>
         <div
-          className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[11px] shadow-md border ${phase === '+'
+          className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[11px] shadow-md border ${
+            phase === '+'
               ? 'bg-blue-600/90 border-blue-300 text-white'
               : 'bg-red-600/90 border-red-300 text-white'
-            }`}
+          }`}
         >
           {phase}
         </div>
@@ -121,10 +118,10 @@ const BondingMO1s = ({ opacity = 0.65 }: { opacity?: number }) => {
       <Nucleus3D position={[-0.7, 0, 0]} label="H" />
       <Nucleus3D position={[0.7, 0, 0]} label="H" />
 
-      <Html position={[0, 1.4, 0]} center zIndexRange={[100, 0]}>
-        <div className="bg-white/95 border border-cyan-300 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-semibold text-cyan-900 shadow-md flex items-center gap-1.5 whitespace-nowrap">
+      <Html position={[0, 1.45, 0]} center zIndexRange={[100, 0]}>
+        <div className="bg-transparent border border-cyan-400/50 backdrop-blur-xs px-2.5 py-0.5 rounded-full text-[10.5px] font-bold text-cyan-800 flex items-center gap-1.5 whitespace-nowrap">
           <Sparkles className="w-3.5 h-3.5 text-cyan-500" />
-          <span>High Electron Density Between Nuclei (σ₁⛁)</span>
+          <span>High Electron Density Between Nuclei (σ₁s)</span>
         </div>
       </Html>
     </group>
@@ -181,10 +178,10 @@ const AntibondingMO1s = ({
       </group>
 
       {showNodeHighlight && (
-        <Html position={[0, 1.4, 0]} center zIndexRange={[100, 0]}>
-          <div className="bg-white/95 border border-rose-300 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-rose-900 shadow-md flex items-center gap-1.5 whitespace-nowrap">
+        <Html position={[0, 1.45, 0]} center zIndexRange={[100, 0]}>
+          <div className="bg-transparent border border-rose-400/50 backdrop-blur-xs px-2.5 py-0.5 rounded-full text-[10.5px] font-bold text-rose-700 flex items-center gap-1.5 whitespace-nowrap">
             <Sparkles className="w-3.5 h-3.5 text-rose-500" />
-            <span>Zero Electron Density at Nodal Plane (σ*₁⛁)</span>
+            <span>Zero Electron Density at Nodal Plane (σ*₁s)</span>
           </div>
         </Html>
       )}
@@ -193,44 +190,46 @@ const AntibondingMO1s = ({
 };
 
 // ── Main MOT Easy Game Page Component ────────────────────────────────────────
-export default function MotEasyGamePage({ difficulty = 'level1' }: { difficulty?: string }) {
+export default function MotEasyGamePage({
+  difficulty = 'level1',
+  onExit
+}: {
+  difficulty?: string;
+  onExit?: () => void;
+}) {
   const router = useRouter();
 
-  // Screen View Mode
+  // Screen View Mode: 'mission' | 'instructions'
+  const [introStep, setIntroStep] = useState<'mission' | 'instructions'>('mission');
   const [gameStarted, setGameStarted] = useState(false);
 
   // Challenge States
   const [currentStep, setCurrentStep] = useState(1);
-  const [score, setScore] = useState(0);
   const [orbitalDistance, setOrbitalDistance] = useState(3.4);
   const [isCombining, setIsCombining] = useState(false);
 
   // Placed Orbital Count: 0 = none, 1 = first orbital placed, 2 = both orbitals placed
   const [placedOrbitalCount, setPlacedOrbitalCount] = useState<number>(0);
-
   const [targetCompleted, setTargetCompleted] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [showHud, setShowHud] = useState(true);
 
-  // Selection choices
-  const [selectedOrbital, setSelectedOrbital] = useState<'1s' | 'px' | 'py' | 'pz'>('1s');
-  const [phaseMode, setPhaseMode] = useState<'+/+' | '+/-'>('+/+');
-
-  // Key Concepts Modal Drawer
+  // Key Concepts / Explanation Modal (Full Canvas)
   const [showConceptsModal, setShowConceptsModal] = useState(false);
 
-  // Step information
-  const stepInfo = MOT_EASY_STEPS.find((s) => s.id === currentStep) || MOT_EASY_STEPS[0];
+  // Reset Distance when navigating step 1
+  useEffect(() => {
+    if (currentStep === 1) {
+      setOrbitalDistance(3.4);
+    }
+  }, [currentStep]);
 
-  // Orbital selection / drag-drop placement (requires 2 clicks/drops)
-  const handleSelectOrbital = (orbId: '1s' | 'px' | 'py' | 'pz') => {
-    setSelectedOrbital(orbId);
+  // Orbital selection / tap placement
+  const handleSelectOrbital = (orbId: '1s' = '1s') => {
     setPlacedOrbitalCount((prev) => Math.min(prev + 1, 2));
   };
 
   // Bring Orbitals Together Action (requires placedOrbitalCount === 2)
   const handleBringTogether = () => {
-    if (placedOrbitalCount < 2) return;
+    if (placedOrbitalCount < 2 || isCombining || targetCompleted) return;
     setIsCombining(true);
     let dist = 3.4;
     const interval = setInterval(() => {
@@ -240,54 +239,25 @@ export default function MotEasyGamePage({ difficulty = 'level1' }: { difficulty?
         clearInterval(interval);
         setIsCombining(false);
         setTargetCompleted(true);
-        if (currentStep === 1) {
-          setCurrentStep(2);
-          setScore((prev) => Math.max(prev, 100));
-        }
+        setCurrentStep(2); // show both Bonding & Antibonding MOs
       }
       setOrbitalDistance(dist);
     }, 35);
   };
 
-  // Reset Distance when navigating step 1
-  useEffect(() => {
-    if (currentStep === 1) {
-      setOrbitalDistance(3.4);
-    }
-  }, [currentStep]);
-
-  const handleReset = () => {
-    setCurrentStep(1);
-    setOrbitalDistance(3.4);
-    setPlacedOrbitalCount(0);
-    setIsCombining(false);
-    setTargetCompleted(false);
-  };
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => { });
-    } else {
-      document.exitFullscreen().catch(() => { });
-    }
-  };
-
   return (
-    <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col">
+    <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-1.5 sm:p-2.5 gap-1.5 sm:gap-2">
 
-      {/* ── 3D CANVAS BACKGROUND (Design System #F8FAFC) ───────────────────── */}
+      {/* ── 3D CANVAS BACKGROUND ────────────────────────────────────────────── */}
       <div
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
-          const orb = e.dataTransfer.getData('orbital');
-          if (orb) {
-            handleSelectOrbital(orb as any);
-          }
+          handleSelectOrbital('1s');
         }}
         className="absolute inset-0 z-0 bg-[#F8FAFC]"
       >
-        <Canvas camera={{ position: [0, 1.95, 11.6], fov: 38 }}>
+        <Canvas camera={{ position: [0, 1.1, 9.8], fov: 36 }}>
           <ambientLight intensity={1.1} />
           <directionalLight position={[5, 10, 5]} intensity={1.5} />
           <pointLight position={[-5, -4, -5]} intensity={0.5} />
@@ -295,54 +265,12 @@ export default function MotEasyGamePage({ difficulty = 'level1' }: { difficulty?
           {/* Background Ambient Sparkles */}
           <DreiSparkles count={45} scale={18} size={2.2} speed={0.4} opacity={0.5} color="#38A9E8" />
 
-          {/* SINGLE STAGE GROUP: Ground Pedestal + Orbitals locked together */}
+          {/* SINGLE STAGE GROUP (Plate removed completely from center as requested) */}
           <group position={[0, 0, 0]}>
 
-            {/* 1. PEDESTAL BASE RING PLATFORM (Z-Fighting Fixed with World Y Offset & PolygonOffset) */}
-            <group position={[0, -1.65, 0]}>
-              {/* Main Plate (#F1F5F9) */}
-              <mesh rotation={[-Math.PI / 2, 0, 0]} renderOrder={0}>
-                <circleGeometry args={[3.6, 128]} />
-                <meshStandardMaterial color="#F1F5F9" roughness={0.3} metalness={0.1} />
-              </mesh>
-              {/* Inner Plate (#E5EEF5) */}
-              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, 0]} renderOrder={1}>
-                <circleGeometry args={[2.2, 128]} />
-                <meshStandardMaterial
-                  color="#E5EEF5"
-                  roughness={0.35}
-                  metalness={0.05}
-                  polygonOffset={true}
-                  polygonOffsetFactor={-1}
-                />
-              </mesh>
-              {/* Plate Border Outer Ring (#38A9E8) */}
-              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 0]} renderOrder={2}>
-                <ringGeometry args={[3.53, 3.67, 128]} />
-                <meshBasicMaterial
-                  color="#38A9E8"
-                  transparent
-                  opacity={0.95}
-                  polygonOffset={true}
-                  polygonOffsetFactor={-2}
-                />
-              </mesh>
-              {/* Inner Ring Border (#38A9E8) */}
-              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.008, 0]} renderOrder={3}>
-                <ringGeometry args={[2.17, 2.23, 128]} />
-                <meshBasicMaterial
-                  color="#38A9E8"
-                  transparent
-                  opacity={0.8}
-                  polygonOffset={true}
-                  polygonOffsetFactor={-3}
-                />
-              </mesh>
-            </group>
-
-            {/* 2. DYNAMIC ORBITAL STEP SCENE */}
+            {/* DYNAMIC ORBITAL STEP SCENE */}
             {currentStep === 1 && (
-              <group position={[0, 0.2, 0]}>
+              <group position={[0, 0.1, 0]}>
                 {/* Slot A (Left Orbital) */}
                 <group position={[-orbitalDistance / 2, 0, 0]}>
                   {placedOrbitalCount >= 1 ? (
@@ -367,8 +295,8 @@ export default function MotEasyGamePage({ difficulty = 'level1' }: { difficulty?
                         <meshBasicMaterial color="#0284c7" transparent opacity={0.7} />
                       </mesh>
                       <Html position={[0, 0, 0]} center zIndexRange={[100, 0]}>
-                        <span className="text-[10px] font-mono text-sky-800 bg-white/90 px-2 py-1 rounded border border-sky-300 whitespace-nowrap animate-pulse shadow">
-                          Drop 1s Slot A (1/2)
+                        <span className="text-[10px] font-mono font-bold text-slate-700 bg-white/95 px-2.5 py-1 rounded-md border border-slate-300 whitespace-nowrap shadow-sm">
+                          Slot A
                         </span>
                       </Html>
                     </group>
@@ -379,7 +307,7 @@ export default function MotEasyGamePage({ difficulty = 'level1' }: { difficulty?
                 <group position={[orbitalDistance / 2, 0, 0]}>
                   {placedOrbitalCount >= 2 ? (
                     <>
-                      <AO1sSphere position={[0, 0, 0]} phase={phaseMode === '+/+' ? '+' : '-'} />
+                      <AO1sSphere position={[0, 0, 0]} phase="+" />
                       <Nucleus3D position={[0, 0, 0]} />
                       <Html position={[0, 1.25, 0]} center zIndexRange={[100, 0]}>
                         <span className="text-xs font-bold text-slate-800 tracking-wider drop-shadow-sm bg-white/80 px-2 py-0.5 rounded">
@@ -399,8 +327,8 @@ export default function MotEasyGamePage({ difficulty = 'level1' }: { difficulty?
                         <meshBasicMaterial color="#0284c7" transparent opacity={0.7} />
                       </mesh>
                       <Html position={[0, 0, 0]} center zIndexRange={[100, 0]}>
-                        <span className="text-[10px] font-mono text-sky-800 bg-white/90 px-2 py-1 rounded border border-sky-300 whitespace-nowrap animate-pulse shadow">
-                          {placedOrbitalCount === 1 ? 'Drop 1s Slot B (2/2)' : 'Drop 1s Slot B'}
+                        <span className="text-[10px] font-mono font-bold text-slate-700 bg-white/95 px-2.5 py-1 rounded-md border border-slate-300 whitespace-nowrap shadow-sm">
+                          Slot B
                         </span>
                       </Html>
                     </group>
@@ -418,38 +346,26 @@ export default function MotEasyGamePage({ difficulty = 'level1' }: { difficulty?
               </group>
             )}
 
-            {/* STEP 2: Render Bonding and Antibonding MOs */}
-            {currentStep === 2 && (
-              <group position={[0, 0.2, 0]}>
-                <group position={[-2.2, 0, 0]} scale={[0.75, 0.75, 0.75]}>
+            {/* STEP 2: Render Bonding and Antibonding MOs simultaneously with larger scale and separation */}
+            {currentStep >= 2 && (
+              <group position={[0, 0.1, 0]}>
+                <group position={[-2.7, 0, 0]} scale={[0.92, 0.92, 0.92]}>
                   <BondingMO1s opacity={0.75} />
-                  <Html position={[0, -1.6, 0]} center zIndexRange={[100, 0]}>
-                    <span className="text-xs font-bold text-[#1E293B] bg-white border border-[#38A9E8] px-3 py-1 rounded-full shadow-md whitespace-nowrap">
-                      Bonding MO (σ₁⛁)
+                  <Html position={[0, -1.65, 0]} center zIndexRange={[100, 0]}>
+                    <span className="text-xs font-bold text-[#1E293B] bg-white/85 border border-[#38A9E8] px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
+                      Bonding MO (σ₁s)
                     </span>
                   </Html>
                 </group>
 
-                <group position={[2.2, 0, 0]} scale={[0.75, 0.75, 0.75]}>
+                <group position={[2.7, 0, 0]} scale={[0.92, 0.92, 0.92]}>
                   <AntibondingMO1s showNodeHighlight={true} opacity={0.75} />
-                  <Html position={[0, -1.6, 0]} center zIndexRange={[100, 0]}>
-                    <span className="text-xs font-bold text-[#1E293B] bg-white border border-[#EF4444] px-3 py-1 rounded-full shadow-md whitespace-nowrap">
-                      Antibonding MO (σ*₁⛁)
+                  <Html position={[0, -1.65, 0]} center zIndexRange={[100, 0]}>
+                    <span className="text-xs font-bold text-[#1E293B] bg-white/85 border border-[#EF4444] px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
+                      Antibonding MO (σ*₁s)
                     </span>
                   </Html>
                 </group>
-              </group>
-            )}
-
-            {currentStep === 3 && (
-              <group position={[0, 0.2, 0]}>
-                <BondingMO1s />
-              </group>
-            )}
-
-            {currentStep === 4 && (
-              <group position={[0, 0.2, 0]}>
-                <AntibondingMO1s showNodeHighlight={true} />
               </group>
             )}
           </group>
@@ -461,353 +377,406 @@ export default function MotEasyGamePage({ difficulty = 'level1' }: { difficulty?
             maxDistance={15.0}
             maxPolarAngle={Math.PI / 2 - 0.05}
             minPolarAngle={0.1}
-            target={[0, -0.3, 0]}
+            target={[0, 0, 0]}
           />
         </Canvas>
       </div>
 
-      {/* ── SCREEN 1: INTRO MISSION TARGET OVERLAY VIEW ────────────────────────── */}
+      {/* ── INTRO MISSION & INSTRUCTIONS VIEW OVERLAY ────────────────────────── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-6 bg-white/40 backdrop-blur-sm overflow-y-auto">
-          {/* Top Header Bar */}
+        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-4 bg-white/80 backdrop-blur-md overflow-hidden">
+          {/* Top Header Bar: Exit Button Only */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
-              onClick={() => router.back()}
-              className="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-sm cursor-pointer"
+              type="button"
+              onClick={() => (onExit ? onExit() : exitSimulation())}
+              className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              title="Exit Simulation (Back to App)"
             >
-              <ChevronLeft className="w-4 h-4 text-[#2563EB]" />
+              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>EXIT</span>
             </button>
           </div>
 
-          {/* Central Target Text & Start Mission Button */}
-          <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-5 z-10 px-2 sm:px-4 py-2">
-            <div className="text-[#2563EB] text-[10px] sm:text-sm font-mono font-bold tracking-[0.25em] uppercase">
-              MOLECULAR ORBITAL THEORY
-            </div>
-
-            <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
-              <span className="text-[#2563EB]">TARGET:</span> Combine 1s atomic orbitals to form bonding & antibonding molecular orbitals
-            </h1>
-
-            <div className="pt-1 sm:pt-4">
-              <button
-                onClick={() => setGameStarted(true)}
-                className="px-6 py-2 sm:px-8 sm:py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider rounded-full shadow-lg border border-blue-400 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                START MISSION
-              </button>
-            </div>
-          </div>
-
-          {/* Bottom Footer Info */}
-          <div className="text-center text-[10px] sm:text-xs text-[#64748B] z-10 shrink-0">
-            Click Start Mission to launch the single canvas orbital workshop
-          </div>
-        </div>
-      )}
-
-      {/* ── SCREEN 2: ACTIVE SINGLE CANVAS SIMULATION VIEW ─────────────────────── */}
-      {gameStarted && (
-        <div className="absolute inset-0 z-20 pointer-events-none flex flex-col justify-between p-4">
-
-          {/* ── 1. TOP FLOATING NAVIGATION BAR ─────────────────────────────────── */}
-          <div className="w-full flex items-center justify-between pointer-events-auto z-30">
-            {/* Top Left: Back Button & Scene Tools */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => router.back()}
-                className="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center gap-1.5 text-[#1E293B] font-extrabold text-xs transition-all shadow-md backdrop-blur-md cursor-pointer"
-                title="Back to Topics"
-              >
-                <ChevronLeft className="w-5 h-5 text-[#2563EB]" />
-                <span className="hidden sm:inline">Back</span>
-              </button>
-
-              <button
-                onClick={toggleFullscreen}
-                className="w-10 h-10 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center text-[#1E293B] transition-all shadow-md backdrop-blur-md cursor-pointer"
-                title="Toggle Fullscreen"
-              >
-                <Maximize2 className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Top Center Challenge Title / TARGET COMPLETED Badge */}
-            {targetCompleted ? (
-              <div className="bg-[#22C55E]/10 border border-[#22C55E]/40 px-4 py-1.5 rounded-full backdrop-blur-md shadow-sm text-xs font-extrabold text-[#22C55E] flex items-center gap-2 animate-pulse">
-                <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
-                <span>TARGET COMPLETED</span>
-              </div>
-            ) : (
-              <div className="bg-white/90 border border-slate-200 px-4 py-1.5 rounded-full backdrop-blur-md shadow-sm text-xs font-extrabold text-[#2563EB] font-mono tracking-wider">
-                Level 1 Challenge
-              </div>
-            )}
-
-            {/* Top Right: Explanation Button & Score */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <button
-                onClick={() => setShowConceptsModal(true)}
-                className="h-10 px-3.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 flex items-center gap-2 text-purple-700 text-xs font-bold transition-all shadow-md backdrop-blur-md cursor-pointer"
-                title="View Explanation & Key Concepts"
-              >
-                <BookOpen className="w-4 h-4 text-purple-600" />
-                <span>Explanation</span>
-              </button>
-
-              <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl text-amber-800 font-extrabold text-xs shadow-sm backdrop-blur-md">
-                <span>⭐</span>
-                <span>{score}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* ── 2. LEFT FLOATING DRAG & DROP PALETTE ────────────────────────────── */}
-          {showHud && (
-            <div className="absolute top-16 left-4 z-20 w-48 bg-white border border-slate-200 rounded-2xl p-3 shadow-xl backdrop-blur-xl pointer-events-auto space-y-2.5">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                <div className="flex items-center gap-1.5 text-xs font-extrabold text-[#1E293B]">
-                  <MousePointerClick className="w-3.5 h-3.5 text-[#2563EB]" />
-                  <span>Orbitals Tray</span>
-                </div>
-                <span className="text-[10px] text-[#2563EB] font-mono font-bold bg-[#E5EEF5] px-1.5 py-0.5 rounded border border-blue-200">
-                  {placedOrbitalCount}/2 Placed
-                </span>
+          {/* STEP 1: MISSION SCREEN */}
+          {introStep === 'mission' && (
+            <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-5 z-10 px-2 sm:px-4 py-2 animate-in fade-in duration-200">
+              <div className="text-[#2563EB] text-[10px] sm:text-sm font-mono font-bold tracking-[0.25em] uppercase">
+                MOLECULAR ORBITAL THEORY
               </div>
 
-              <div className="space-y-2">
-                {[
-                  { id: '1s', label: '1s Orbital', desc: 'Click / Drag x2' },
-                  { id: 'px', label: 'Phase (+/+)', desc: 'Bonding Mode' },
-                  { id: 'py', label: 'Phase (+/-)', desc: 'Antibonding Mode' }
-                ].map((orb) => (
-                  <div
-                    key={orb.id}
-                    draggable="true"
-                    onDragStart={(e) => {
-                      e.dataTransfer.setData('orbital', orb.id);
-                    }}
-                    onClick={() => {
-                      if (orb.id === 'py') setPhaseMode('+/-');
-                      else if (orb.id === 'px') setPhaseMode('+/+');
-                      handleSelectOrbital('1s');
-                    }}
-                    className={`p-2.5 rounded-xl border transition-all cursor-grab active:cursor-grabbing flex items-center justify-between ${placedOrbitalCount > 0 && ((orb.id === 'py' && phaseMode === '+/-') || (orb.id !== 'py' && phaseMode === '+/+'))
-                        ? 'bg-[#E5EEF5] border-[#22B8CF] text-[#1E293B] shadow-md ring-1 ring-[#22B8CF]'
-                        : 'bg-slate-50/80 border-slate-200 text-[#64748B] hover:border-slate-300 hover:bg-slate-100'
-                      }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-[#2196F3] shadow-sm flex items-center justify-center text-[10px] font-bold text-white">
-                        1s
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-[#1E293B]">{orb.label}</div>
-                        <div className="text-[10px] text-[#64748B]">{orb.desc}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+                <span className="text-[#2563EB]">MISSION:</span> Combine 1s atomic orbitals to form H₂ molecular orbitals (σ₁s &amp; σ*₁s)
+              </h1>
+
+              <div className="pt-1.5 sm:pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIntroStep('instructions')}
+                  className="px-6 sm:px-8 py-2 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-2 mx-auto cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                >
+                  <span>NEXT</span>
+                  <ChevronRight className="w-4 h-4 text-sky-200" />
+                </button>
               </div>
             </div>
           )}
 
-
-
-          {/* ── 4. FLOATING BOTTOM CONTROL DOCK & SHIFTED TARGET DOCK ──────────────── */}
-          <div className="w-full flex flex-col items-center gap-2 pointer-events-auto z-30">
-            {/* Shifted Target Drag & Drop Instruction Pill (Bottom Line) */}
-            {!targetCompleted && (
-              <div className="flex items-center gap-2 bg-white/95 border border-[#38A9E8]/40 px-4 py-1.5 rounded-full text-[#1E293B] text-xs font-extrabold shadow-lg backdrop-blur-md">
-                <Target className="w-4 h-4 text-[#2563EB]" />
-                <span>
-                  {placedOrbitalCount === 0
-                    ? 'TARGET: Drag or Click 2 1s Orbitals into Slots'
-                    : placedOrbitalCount === 1
-                      ? 'TARGET: Drag or Click 2nd 1s Orbital into Slot B'
-                      : 'TARGET: Click "Bring Orbitals Together" to Combine'}
-                </span>
+          {/* STEP 2: INSTRUCTIONS SCREEN */}
+          {introStep === 'instructions' && (
+            <div className="max-w-xl mx-auto my-auto text-center space-y-1.5 sm:space-y-2 z-10 px-2 sm:px-3 py-0.5 animate-in fade-in duration-200 w-full">
+              <div className="text-[#1E293B] text-sm sm:text-base font-black tracking-wide">
+                Instructions
               </div>
+
+              <div className="space-y-2 text-left max-w-xl mx-auto">
+                {/* 1. Tap 1s orbital */}
+                <div className="bg-white/95 backdrop-blur-md rounded-xl p-2 sm:p-2.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-3 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
+                      1
+                    </div>
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                      Tap on the 1s orbital to place into 3D space.
+                    </p>
+                  </div>
+                  <div className="w-28 sm:w-36 h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-sm shrink-0 flex items-center justify-center p-0.5">
+                    <img
+                      src="/images/mot/l1_step1_place_orbital.svg"
+                      alt="Step 1: Place 1s orbital"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Bring orbitals together */}
+                <div className="bg-white/95 backdrop-blur-md rounded-xl p-2 sm:p-2.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-3 transition-all hover:border-blue-300">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
+                      2
+                    </div>
+                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                      Tap on the Bring Orbitals Together button to unlock the Molecular Orbitals.
+                    </p>
+                  </div>
+                  <div className="w-28 sm:w-36 h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-sm shrink-0 flex items-center justify-center p-0.5">
+                    <img
+                      src="/images/mot/l1_step2_bring_together.svg"
+                      alt="Step 2: Bring orbitals together"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons: Back and Play */}
+              <div className="pt-1.5 sm:pt-2 flex items-center justify-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIntroStep('mission')}
+                  className="px-5 sm:px-6 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+                  <span>BACK</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setGameStarted(true)}
+                  className="px-6 sm:px-8 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                >
+                  <Play className="w-3.5 h-3.5 fill-white" />
+                  <span>PLAY</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Bottom Footer Note (Only on mission step) */}
+          {introStep === 'mission' && (
+            <div className="w-full text-center text-[9.5px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0">
+              Click NEXT to view challenge instructions
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── ACTIVE GAMEPLAY SCREEN (WHEN GAME STARTED) ───────────────────────── */}
+      {gameStarted && (
+        <div className="absolute inset-0 z-20 pointer-events-none flex flex-col justify-between p-2 sm:p-3">
+
+          {/* ── 1. TOP TOOLBAR HEADER (EXIT, TARGET COMPLETED BADGE, EXPLANATION) ── */}
+          <div className="w-full flex items-center justify-between pointer-events-auto z-30 gap-2">
+            {/* Top Left: Exit Button Only (no back / fullscreen buttons) */}
+            <button
+              type="button"
+              onClick={() => (onExit ? onExit() : exitSimulation())}
+              className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95 shrink-0"
+              title="Exit Simulation (Back to App)"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>EXIT</span>
+            </button>
+
+            {/* Center: Target Completed Badge (shown with green light color as used in Level 1 & Level 2) */}
+            {targetCompleted ? (
+              <div className="bg-emerald-600/85 border border-emerald-400/60 backdrop-blur-md text-white px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-xl shadow-md flex items-center gap-2 select-none animate-in fade-in zoom-in-95 duration-300">
+                <div className="w-4 h-4 rounded-md bg-white/20 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-3 h-3 text-white" />
+                </div>
+                <div className="text-left">
+                  <div className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-emerald-100 leading-tight">
+                    Target Completed (100%)
+                  </div>
+                  <div className="text-[9px] sm:text-[10px] font-medium text-white/95 leading-tight hidden xs:block">
+                    H₂ Molecular Orbitals Formed (σ₁s &amp; σ*₁s)!
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1" />
             )}
 
-            <div className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 shadow-2xl backdrop-blur-xl flex items-center gap-3 max-w-2xl w-full justify-between">
+            {/* Top Right: Explanation Button Only (no star button) */}
+            <button
+              type="button"
+              onClick={() => setShowConceptsModal(true)}
+              className="h-8 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 flex items-center gap-1.5 text-purple-700 text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95 shrink-0"
+              title="View Theory & Explanation"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-purple-600" />
+              <span>Explanation</span>
+            </button>
+          </div>
 
-              {/* Pause / Play Toggle */}
+          {/* ── 2. BOTTOM CONTROL DOCK (ONLY 1s ORBITAL AND BRING TOGETHER BUTTON) ── */}
+          <div className="w-full flex justify-center items-center pointer-events-auto z-30 pb-1 sm:pb-1.5">
+            <div className="bg-white/95 border border-slate-200 rounded-2xl p-1.5 sm:p-2 shadow-xl backdrop-blur-xl flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+              {/* Tray Title */}
+              <div className="flex items-center gap-1 text-[#2563EB] text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-blue-50 px-2 sm:px-2.5 py-1.5 rounded-xl border border-blue-200 shrink-0 select-none">
+                <Layers className="w-3.5 h-3.5 text-[#2563EB]" />
+                <span>Orbital:</span>
+              </div>
+
+              {/* 1s Orbital Button */}
               <button
-                onClick={() => setIsPaused(!isPaused)}
-                className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl text-xs font-bold text-amber-800 flex items-center gap-1.5 transition-all shadow-sm"
+                type="button"
+                onClick={() => handleSelectOrbital('1s')}
+                disabled={placedOrbitalCount >= 2}
+                className={`px-3 sm:px-4 py-1.5 rounded-xl border transition-all flex items-center gap-2 shadow-xs select-none ${
+                  placedOrbitalCount < 2
+                    ? 'bg-sky-500 hover:bg-sky-600 text-white border-sky-400 shadow-sky-500/20 cursor-pointer active:scale-95'
+                    : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60'
+                }`}
+                title="Tap to place 1s orbital into 3D space"
               >
-                {isPaused ? <Play className="w-3.5 h-3.5 text-[#22C55E]" /> : <Pause className="w-3.5 h-3.5 text-amber-600" />}
-                <span className="hidden sm:inline">{isPaused ? 'RESUME' : 'PAUSE'}</span>
+                <div className="w-5 h-5 rounded-full bg-white/20 text-white font-extrabold text-[10px] flex items-center justify-center shrink-0">
+                  1s
+                </div>
+                <span className="font-extrabold text-xs">
+                  1s Orbital
+                </span>
               </button>
 
-              {/* Phase Swap Button */}
+              {/* Bring Orbitals Together Button */}
               <button
-                onClick={() => setPhaseMode(phaseMode === '+/+' ? '+/-' : '+/+')}
-                className="px-3 py-1.5 bg-[#E5EEF5] hover:bg-blue-100 border border-[#38A9E8] rounded-xl text-xs font-bold text-[#2563EB] flex items-center gap-1.5 transition-all shadow-sm"
-              >
-                <span>Phase: {phaseMode}</span>
-              </button>
-
-              {/* Main Action Button (Requires placedOrbitalCount === 2) */}
-              <button
+                type="button"
                 onClick={handleBringTogether}
-                disabled={placedOrbitalCount < 2 || isCombining}
-                className={`px-5 py-2 font-extrabold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2 uppercase tracking-wider ${placedOrbitalCount === 2 && !isCombining
-                    ? 'bg-[#2563EB] hover:bg-[#1d4ed8] text-white cursor-pointer transform hover:scale-105'
-                    : 'bg-slate-200 text-[#64748B] border border-slate-300 cursor-not-allowed opacity-75'
-                  }`}
+                disabled={placedOrbitalCount < 2 || isCombining || targetCompleted}
+                className={`px-4 sm:px-5 py-2 font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center gap-2 uppercase tracking-wider select-none ${
+                  placedOrbitalCount === 2 && !isCombining && !targetCompleted
+                    ? 'bg-[#2563EB] hover:bg-[#1d4ed8] text-white cursor-pointer transform hover:scale-105 active:scale-95 shadow-blue-500/25'
+                    : targetCompleted
+                      ? 'bg-emerald-600 text-white opacity-95 cursor-default'
+                      : 'bg-slate-200 text-[#64748B] border border-slate-300 cursor-not-allowed opacity-75'
+                }`}
               >
                 <MoveHorizontal className="w-4 h-4" />
                 <span>
-                  {placedOrbitalCount === 0
-                    ? 'Place 1st 1s Orbital (0/2)'
-                    : placedOrbitalCount === 1
-                      ? 'Place 2nd 1s Orbital (1/2)'
-                      : isCombining
-                        ? 'Combining...'
-                        : 'Bring Orbitals Together'}
+                  {isCombining ? 'Combining Orbitals...' : 'Bring Orbitals Together'}
                 </span>
               </button>
-
-              {/* Step Navigation Buttons */}
-              <div className="flex items-center gap-1">
-                {currentStep > 1 && (
-                  <button
-                    onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 1))}
-                    className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-xs font-bold text-[#1E293B] transition-all"
-                  >
-                    ‹ Prev
-                  </button>
-                )}
-                {currentStep < MOT_EASY_STEPS.length ? (
-                  <button
-                    onClick={() => setCurrentStep((prev) => Math.min(prev + 1, MOT_EASY_STEPS.length))}
-                    className="px-3 py-1.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1"
-                  >
-                    <span>Next</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleReset}
-                    className="px-3 py-1.5 bg-[#22C55E] hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Restart</span>
-                  </button>
-                )}
-              </div>
             </div>
           </div>
+
         </div>
       )}
 
-      {/* ── EXPLANATION & THEORY MODAL DRAWER ────────────────────────────────── */}
+      {/* ── THEORY / EXPLANATION PAGE (BLACK FONT TEXTBOOK STYLE) ───────────── */}
       {showConceptsModal && (
-        <div className="fixed inset-0 z-[99999] bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 pt-20 sm:pt-24 pb-6">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full flex flex-col max-h-[calc(100vh-7rem)] shadow-2xl overflow-hidden relative text-[#1E293B]">
-
-            {/* Sticky Top Header */}
-            <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 shadow-sm">
-                  <BookOpen className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base sm:text-lg font-extrabold text-[#1E293B]">Molecular Orbital Theory — Beginner's Guide</h3>
-                  <p className="text-xs text-[#64748B]">Understanding how 1s atomic orbitals combine to form chemical bonds</p>
-                </div>
-              </div>
-
-              {/* Close Button */}
-              <button
-                onClick={() => setShowConceptsModal(false)}
-                className="p-2 rounded-full bg-slate-100 text-[#64748B] hover:text-[#1E293B] hover:bg-slate-200 transition-all cursor-pointer shrink-0 ml-2"
-                title="Close Explanation"
-              >
-                <X className="w-5 h-5" />
-              </button>
+        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-black animate-in fade-in duration-200 select-text">
+          {/* Header Bar */}
+          <div className="flex items-center justify-between px-4 sm:px-8 py-3 border-b border-neutral-300 bg-white shrink-0">
+            <div>
+              <h2 className="text-base sm:text-xl font-bold text-black tracking-tight">
+                Molecular Orbital Theory (MOT) Guide — Level 1: H₂ Formation
+              </h2>
+              <p className="text-xs text-neutral-600 font-normal">
+                Linear Combination of Atomic Orbitals (LCAO), Bonding (σ₁s), Antibonding (σ*₁s), and Nodal Planes
+              </p>
             </div>
 
-            {/* Scrollable Body Content */}
-            <div className="p-5 sm:p-6 space-y-5 text-xs text-[#1E293B] leading-relaxed overflow-y-auto flex-1">
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setShowConceptsModal(false)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-black font-semibold text-xs transition-all cursor-pointer border border-neutral-300 active:scale-95"
+            >
+              <X className="w-4 h-4 text-black" />
+              <span>Close</span>
+            </button>
+          </div>
 
-              {/* Intro Section */}
-              <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl space-y-2">
-                <h4 className="text-sm font-extrabold text-[#2563EB] flex items-center gap-2">
-                  <span>⚛️</span> What is Molecular Orbital Theory (MOT)?
-                </h4>
-                <p className="text-[#1E293B]">
-                  In basic chemistry, we often imagine electrons orbiting individual isolated atoms. However, when two atoms come close together to form a molecule, their atomic orbitals overlap and merge into completely new energy states called <strong>Molecular Orbitals (MOs)</strong>. Unlike atomic orbitals, molecular orbitals cover the entire molecule and govern its chemical stability and bonding.
-                </p>
-              </div>
-
-              {/* 1s + 1s Combination */}
-              <div className="p-4 bg-white border border-slate-200 rounded-2xl space-y-2 shadow-sm">
-                <h4 className="text-sm font-extrabold text-[#2563EB] flex items-center gap-2">
-                  <span>🔄</span> Combining 1s Atomic Orbitals (1s + 1s)
-                </h4>
-                <p className="text-[#64748B]">
-                  In this challenge, we take two Hydrogen (H) atoms, each bringing one spherical <strong>1s atomic orbital</strong>. Electrons behave like 3D quantum waves. When these two 1s wave functions overlap along the internuclear axis, they interact in two different ways depending on their phase: <strong>In-Phase Combination (+ / +)</strong> or <strong>Out-of-Phase Combination (+ / -)</strong>.
-                </p>
-              </div>
-
-              {/* Bonding MO */}
-              <div className="p-4 bg-[#E5EEF5]/50 border border-[#38A9E8]/40 rounded-2xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-extrabold text-[#2563EB] flex items-center gap-2">
-                    <span>✨</span> Bonding Molecular Orbital (σ₁⛁)
-                  </h4>
-                  <span className="text-[11px] font-bold px-2.5 py-0.5 bg-blue-100 text-[#2563EB] rounded-full border border-blue-200">
-                    Same Phase (+/+)
-                  </span>
-                </div>
-                <p className="text-[#1E293B]">
-                  When the two 1s orbitals combine with the <strong>same phase (+ / +)</strong>, constructive wave interference occurs. This builds up a high concentration of negative electron density directly between the two positive atomic nuclei. This central electron cloud acts like electrostatic glue, pulling both nuclei together, lowering potential energy, and creating a stable <strong>Bonding MO (σ₁⛁)</strong>.
-                </p>
-              </div>
-
-              {/* Antibonding MO */}
-              <div className="p-4 bg-rose-50/50 border border-rose-200 rounded-2xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-extrabold text-[#EF4444] flex items-center gap-2">
-                    <span>🚫</span> Antibonding Molecular Orbital (σ*₁⛁)
-                  </h4>
-                  <span className="text-[11px] font-bold px-2.5 py-0.5 bg-rose-100 text-[#EF4444] rounded-full border border-rose-200">
-                    Opposite Phase (+/-)
-                  </span>
-                </div>
-                <p className="text-[#1E293B]">
-                  When the two 1s orbitals combine with <strong>opposite phases (+ / -)</strong>, destructive wave interference occurs. The wave amplitudes cancel each other out in the center, creating a <strong>Nodal Plane</strong> halfway between the nuclei where electron probability drops to absolute zero. With no electron density to shield the positive nuclei, they strongly repel each other. This <strong>Antibonding MO (σ*₁⛁)</strong> has higher energy and destabilizes the molecule.
-                </p>
-              </div>
-
-              {/* Energy Summary Callout */}
-              <div className="p-4 bg-[#22C55E]/10 border border-[#22C55E]/30 rounded-2xl space-y-1.5">
-                <h4 className="text-xs font-extrabold text-[#22C55E] uppercase tracking-wider">
-                  💡 Golden Rule of Orbital Conservation
-                </h4>
-                <p className="text-[#1E293B] text-xs font-medium">
-                  <strong>Number of Atomic Orbitals Combined = Number of Molecular Orbitals Formed.</strong> Combining 2 atomic 1s orbitals always yields exactly 2 molecular orbitals: 1 lower-energy Bonding MO (σ₁⛁) and 1 higher-energy Antibonding MO (σ*₁⛁).
-                </p>
-              </div>
-
+          {/* Scrollable Content Body (Pure Black Font, Generous Line Height, Mixed Paragraphs & Bullet Points) */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-5 sm:py-7 space-y-6 sm:space-y-8 text-black text-xs sm:text-sm leading-relaxed max-w-3xl mx-auto w-full">
+            
+            {/* Section 1: Core Principles of MOT & LCAO */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                1. Core Principle of Molecular Orbital Theory (LCAO Principle)
+              </h3>
+              <p className="text-black leading-relaxed">
+                In classical Lewis and Valence Bond structures, valence electrons are viewed as localized between pairs of bonded atoms. However, Molecular Orbital Theory (MOT), developed by Robert Mulliken and Friedrich Hund, establishes that electrons in molecules occupy quantum wavefunctions known as Molecular Orbitals (MOs) that are polycentric and delocalized across the entire molecule.
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Conservation of Orbitals Law:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>Fundamental rule:</strong> When atomic orbitals combine, the total number of molecular orbitals formed must always strictly equal the number of combining atomic orbitals.
+                </li>
+                <li>
+                  <strong>Linear combination for Hydrogen:</strong> 1s(A) + 1s(B) → 2 Molecular Orbitals: 1 Bonding (σ₁s) + 1 Antibonding (σ*₁s).
+                </li>
+                <li>
+                  <strong>Delocalization:</strong> Unlike atomic orbitals centered on single nuclei, molecular orbitals span multiple atomic nuclei across the entire molecular frame.
+                </li>
+              </ul>
             </div>
 
-            {/* Sticky Bottom Footer */}
-            <div className="p-4 sm:p-5 border-t border-slate-100 bg-white shrink-0">
-              <button
-                onClick={() => setShowConceptsModal(false)}
-                className="w-full py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all cursor-pointer"
-              >
-                Close Explanation & Resume Workshop
-              </button>
+            {/* Section 2: Bonding Molecular Orbital (sigma 1s) */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                2. In-Phase Wave Overlap → Bonding MO (σ₁s)
+              </h3>
+              <p className="text-black leading-relaxed">
+                When two atomic wavefunctions overlap with the same sign/phase (+/+), they undergo constructive wave interference, creating a bonding molecular orbital.
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Mathematical Wave Addition &amp; Electrostatic Stabilization:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>Wavefunction addition:</strong> ψ(bonding) = ψ_A + ψ_B.
+                </li>
+                <li>
+                  <strong>Probability density accumulation:</strong> Squaring the wave equation yields electron probability density: |ψ_b|² = ψ_A² + ψ_B² + 2ψ_Aψ_B. The positive cross term (+2ψ_Aψ_B) represents an enhanced concentration of negative electron density accumulated directly in the internuclear region.
+                </li>
+                <li>
+                  <strong>Nuclear shielding and attraction:</strong> This dense negative electron cloud shields the two positively charged Hydrogen nuclei from mutual electrostatic repulsion, while simultaneously attracting both nuclei inward.
+                </li>
+                <li>
+                  <strong>Energy lowering:</strong> This significantly lowers the potential energy of the molecule relative to isolated atoms, resulting in a stable σ₁s covalent bond.
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 3: Antibonding Molecular Orbital (sigma* 1s) */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                3. Out-of-Phase Wave Overlap → Antibonding MO (σ*₁s) &amp; Nodal Plane
+              </h3>
+              <p className="text-black leading-relaxed">
+                When two 1s atomic orbitals overlap with opposite phases (+/-), they undergo destructive wave interference, generating an antibonding molecular orbital.
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Wave Subtraction &amp; Nodal Plane Formation:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>Wavefunction subtraction:</strong> ψ(antibonding) = ψ_A - ψ_B.
+                </li>
+                <li>
+                  <strong>Probability density depletion:</strong> Probability density |ψ_a|² = ψ_A² + ψ_B² - 2ψ_Aψ_B. The negative cross term (-2ψ_Aψ_B) reduces electron probability between the two nuclei to exactly zero.
+                </li>
+                <li>
+                  <strong>Nodal plane:</strong> A planar boundary perpendicular to the internuclear axis where electron probability density is identically zero (ψ = 0).
+                </li>
+                <li>
+                  <strong>Destabilizing nuclear repulsion:</strong> Because zero electron density exists between the nuclei, the two positively charged protons experience direct, unshielded electrostatic repulsion. Consequently, the σ*₁s orbital has significantly higher energy than isolated 1s atomic orbitals.
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 4: Energy Level Diagram & Electron Configuration for H2 */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                4. Energy Level Diagram &amp; Electron Configuration for H₂
+              </h3>
+              <p className="text-black leading-relaxed">
+                Molecular orbitals are filled in accordance with the Aufbau Principle (lowest energy first), the Pauli Exclusion Principle (maximum 2 electrons with opposite spins per orbital), and Hund&apos;s Rule.
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Electronic Structure Breakdown:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>Isolated atoms:</strong> Hydrogen atom A (1s¹) and Hydrogen atom B (1s¹) bring a combined total of 2 valence electrons.
+                </li>
+                <li>
+                  <strong>Ground state molecular configuration:</strong> (σ₁s)² (σ*₁s)⁰. Both electrons occupy the lower-energy bonding σ₁s orbital with paired, opposite spins (↑↓).
+                </li>
+                <li>
+                  <strong>Antibonding vacancy:</strong> The higher-energy antibonding σ*₁s orbital remains completely empty in the ground state.
+                </li>
+                <li>
+                  <strong>Magnetic properties:</strong> Because all electrons are paired (zero unpaired electrons), the H₂ molecule is diamagnetic and weakly repelled by magnetic fields.
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 5: Bond Order Formula & He2 Non-existence */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                5. Bond Order Formula &amp; The He₂ Non-existence Proof
+              </h3>
+              <p className="text-black leading-relaxed">
+                The stability of a diatomic molecule is quantitatively assessed using the concept of Bond Order, defined as half the difference between the number of bonding and antibonding electrons.
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Formula &amp; Comparative Analysis:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>Formula:</strong> Bond Order = ½ × (Nb - Na), where Nb is the number of electrons in bonding molecular orbitals and Na is the number of electrons in antibonding molecular orbitals.
+                </li>
+                <li>
+                  <strong>Hydrogen molecule (H₂):</strong> Nb = 2 (in σ₁s), Na = 0. Bond Order = ½ × (2 - 0) = 1.0. This corresponds to a stable single covalent bond with a bond dissociation energy of 436 kJ/mol and an equilibrium bond distance of 74 pm.
+                </li>
+                <li>
+                  <strong>Helium dimer (He₂):</strong> Each Helium atom brings 2 electrons, giving 4 total electrons with configuration (σ₁s)² (σ*₁s)². Here Nb = 2 and Na = 2.
+                </li>
+                <li>
+                  <strong>He₂ Bond Order:</strong> Bond Order = ½ × (2 - 2) = 0.0. Antibonding electron destabilization cancels out bonding stabilization, conclusively explaining why He₂ molecules cannot exist under standard conditions.
+                </li>
+              </ul>
             </div>
 
           </div>
+
+          {/* Bottom Footer */}
+          <div className="p-3 border-t border-neutral-300 bg-white shrink-0 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setShowConceptsModal(false)}
+              className="w-full max-w-sm py-2.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer active:scale-95"
+            >
+              Resume Challenge
+            </button>
+          </div>
         </div>
       )}
+
     </div>
   );
 }

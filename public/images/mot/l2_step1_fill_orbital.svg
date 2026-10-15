@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 90" width="180" height="90">
+  <defs>
+    <filter id="boxShadow1" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#000" flood-opacity="0.1" />
+    </filter>
+  </defs>
+
+  <!-- Clean card background -->
+  <rect x="2" y="2" width="176" height="86" rx="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" />
+
+  <!-- Orbital Level representation -->
+  <line x1="20" y1="45" x2="45" y2="45" stroke="#94A3B8" stroke-width="1.5" />
+  
+  <!-- Empty Orbital Box getting filled -->
+  <g transform="translate(48, 25)" filter="url(#boxShadow1)">
+    <rect x="0" y="0" width="84" height="40" rx="10" fill="#FFFFFF" stroke="#38BDF8" stroke-width="2" />
+    <!-- Electron arrow inside -->
+    <text x="42" y="27" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="22" fill="#EF4444" text-anchor="middle">↑</text>
+  </g>
+
+  <line x1="135" y1="45" x2="160" y2="45" stroke="#94A3B8" stroke-width="1.5" />
+
+  <!-- Tap indicator / Finger tap dot -->
+  <g transform="translate(112, 54)">
+    <circle cx="0" cy="0" r="10" fill="#2563EB" opacity="0.2" />
+    <circle cx="0" cy="0" r="5" fill="#2563EB" />
+  </g>
+</svg>

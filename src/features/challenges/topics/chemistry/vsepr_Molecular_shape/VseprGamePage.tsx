@@ -2266,7 +2266,7 @@ export default function VseprGamePage({
                 VSEPR THEORY & MOLECULAR GEOMETRIES
               </div>
 
-              <h1 className="text-lg sm:text-2xl md:text-4xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+              <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
                 <span className="text-[#2563EB]">MISSION:</span> {currentLevel === 1 ? 'Create Methane molecule Structure' : currentLevel === 2 ? 'Fill the target Holes & Unlock the Molecules properties' : 'Order Molecules by Decreasing Bond Angle'}
               </h1>
 
@@ -2536,138 +2536,115 @@ export default function VseprGamePage({
       </div>
 
       {/* ── THEORY / EXPLANATION PAGE (FULL CANVAS / WHOLE SCREEN) ── */}
-      {showExplanationModal && (
-        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-[#1E293B] animate-in fade-in duration-200 select-text">
-          {/* Header Bar */}
-          <div className="flex items-center justify-between px-3.5 sm:px-6 py-2 sm:py-2.5 border-b border-slate-200 bg-white shrink-0 shadow-xs">
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shadow-sm shrink-0">
-                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <div>
-                  <h2 className="text-sm sm:text-base md:text-lg font-black text-[#1E293B] tracking-tight">
-                    VSEPR Theory & Molecular Geometry Guide
-                  </h2>
-                  <p className="text-[11px] sm:text-xs text-[#64748B] font-medium hidden sm:block">
-                    Valence Shell Electron Pair Repulsion: Principles, Geometries, Angles & Repulsions
-                  </p>
-                </div>
+      {showExplanationModal && (() => {
+        const isL3Theory = currentLevel === 3;
+        return (
+          <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-black animate-in fade-in duration-200 select-text">
+            {/* Header Bar */}
+            <div className="flex items-center justify-between px-4 sm:px-8 py-3 border-b border-neutral-300 bg-white shrink-0">
+              <div>
+                <h2 className={`${isL3Theory ? "text-lg sm:text-2xl" : "text-base sm:text-xl"} font-bold text-black tracking-tight`}>
+                  VSEPR Theory &amp; Molecular Geometry Guide
+                </h2>
+                <p className={`${isL3Theory ? "text-xs sm:text-sm" : "text-xs"} text-neutral-600 font-normal`}>
+                  Valence Shell Electron Pair Repulsion: Principles, Geometries, Angles &amp; Repulsions
+                </p>
               </div>
+
+              {/* Close Button */}
               <button
+                type="button"
                 onClick={() => setShowExplanationModal(false)}
-                className="p-1.5 sm:p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#475569] hover:text-[#0F172A] transition-all cursor-pointer shadow-sm"
-                title="Close Explanation"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-black font-semibold text-xs transition-all cursor-pointer border border-neutral-300 active:scale-95"
               >
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                <X className="w-4 h-4 text-black" />
+                <span>Close</span>
               </button>
             </div>
 
             {/* Scrollable Content Body */}
-            <div className="flex-1 overflow-y-auto px-3.5 sm:px-6 md:px-8 py-3.5 sm:py-5 pb-8 sm:pb-10 space-y-4 sm:space-y-6 w-full text-slate-800">
+            <div className={`flex-1 overflow-y-auto px-4 sm:px-8 py-5 sm:py-7 ${isL3Theory ? "space-y-7 sm:space-y-9 text-base sm:text-lg" : "space-y-6 sm:space-y-8 text-xs sm:text-sm"} text-black leading-relaxed max-w-3xl mx-auto w-full`}>
+              
               {/* Section 1: Core Principle */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center">1</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-blue-900 tracking-tight">
-                    Core Principle of VSEPR Theory
-                  </h3>
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-8">
+              <div className={isL3Theory ? "space-y-3.5" : "space-y-3"}>
+                <h3 className={`${isL3Theory ? "text-xl sm:text-2xl" : "text-base sm:text-lg"} font-bold text-black`}>
+                  1. Core Principle of VSEPR Theory
+                </h3>
+                <p className={`text-black leading-relaxed ${isL3Theory ? "text-base sm:text-lg" : ""}`}>
                   <strong>VSEPR</strong> stands for <strong>Valence Shell Electron Pair Repulsion</strong>. It is a fundamental model used in chemistry to predict the three-dimensional geometry of individual molecules based upon the extent of electron-pair electrostatic repulsion.
                 </p>
-                <div className="pl-8 pt-1 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                  <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-3">
-                    <h5 className="font-bold text-blue-800 mb-1">Electrostatic Minimization</h5>
-                    <p className="text-slate-600 leading-normal">
-                      Electrons have negative charges and naturally repel each other. They position themselves in space as far apart as possible to minimize potential energy and achieve the most stable geometric arrangement.
-                    </p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <h5 className="font-bold text-slate-800 mb-1">Electron Pairs Form Domains</h5>
-                    <p className="text-slate-600 leading-normal">
-                      Single bonds, double bonds, triple bonds, and unshared non-bonding lone pairs each count as a single <strong>electron domain</strong> around the central atom when determining the basic geometry.
-                    </p>
-                  </div>
-                </div>
+                <h4 className={`${isL3Theory ? "text-base sm:text-lg" : "text-xs sm:text-sm"} font-bold text-black underline underline-offset-4 pt-1`}>
+                  Foundational Postulates:
+                </h4>
+                <ul className={`list-disc pl-5 ${isL3Theory ? "sm:pl-7 space-y-3 sm:space-y-3.5 text-base sm:text-lg" : "sm:pl-6 space-y-2"} text-black leading-relaxed`}>
+                  <li>
+                    <strong>Electrostatic Minimization:</strong> Electrons have negative charges and naturally repel each other. They position themselves in space as far apart as possible to minimize potential energy and achieve the most stable geometric arrangement.
+                  </li>
+                  <li>
+                    <strong>Electron Pairs Form Domains:</strong> Single bonds, double bonds, triple bonds, and unshared non-bonding lone pairs each count as a single <strong>electron domain</strong> around the central atom when determining the basic geometry.
+                  </li>
+                </ul>
               </div>
 
               {/* Section 2: Repulsion Hierarchy */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-600 text-white font-extrabold text-xs flex items-center justify-center">2</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-purple-900 tracking-tight">
-                    The Electron Repulsion Magnitude Hierarchy
-                  </h3>
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-8">
+              <div className={isL3Theory ? "space-y-3.5" : "space-y-3"}>
+                <h3 className={`${isL3Theory ? "text-xl sm:text-2xl" : "text-base sm:text-lg"} font-bold text-black`}>
+                  2. The Electron Repulsion Magnitude Hierarchy
+                </h3>
+                <p className={`text-black leading-relaxed ${isL3Theory ? "text-base sm:text-lg" : ""}`}>
                   Not all electron pairs repel with equal force. Non-bonding lone pairs take up significantly more space than bonding pairs because they are attracted to only <strong>one</strong> atomic nucleus (the central atom), whereas bonding pairs are held tightly between <strong>two</strong> positive nuclei.
                 </p>
-                <div className="pl-8 pt-2">
-                  <div className="bg-purple-50/80 border border-purple-200 rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-                    <div>
-                      <span className="text-[11px] font-bold text-purple-600 uppercase tracking-wider block">Repulsion Strength Order</span>
-                      <span className="text-xs sm:text-sm font-black text-purple-950">
-                        Lone Pair – Lone Pair &gt; Lone Pair – Bond Pair &gt; Bond Pair – Bond Pair
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-purple-700 font-semibold bg-white/80 px-3 py-1.5 rounded-lg border border-purple-200 shrink-0">
-                      LP–LP &gt; LP–BP &gt; BP–BP
-                    </div>
-                  </div>
-
-                  {/* Example Comparison Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 text-xs">
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
-                      <span className="font-extrabold text-[#1E293B] block text-sm">CH₄ (Methane)</span>
-                      <span className="text-slate-500 text-[11px] block mt-0.5">4 Bond Pairs, 0 Lone Pairs</span>
-                      <div className="mt-2 text-blue-600 font-mono font-black text-base">109.5°</div>
-                      <span className="text-[11px] text-slate-500">Ideal Tetrahedral</span>
-                    </div>
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
-                      <span className="font-extrabold text-[#1E293B] block text-sm">NH₃ (Ammonia)</span>
-                      <span className="text-slate-500 text-[11px] block mt-0.5">3 Bond Pairs, 1 Lone Pair</span>
-                      <div className="mt-2 text-purple-600 font-mono font-black text-base">107.0°</div>
-                      <span className="text-[11px] text-slate-500">Compressed by ~2.5°</span>
-                    </div>
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
-                      <span className="font-extrabold text-[#1E293B] block text-sm">H₂O (Water)</span>
-                      <span className="text-slate-500 text-[11px] block mt-0.5">2 Bond Pairs, 2 Lone Pairs</span>
-                      <div className="mt-2 text-rose-600 font-mono font-black text-base">104.5°</div>
-                      <span className="text-[11px] text-slate-500">Compressed by ~5.0°</span>
-                    </div>
-                  </div>
-                </div>
+                <h4 className={`${isL3Theory ? "text-base sm:text-lg" : "text-xs sm:text-sm"} font-bold text-black underline underline-offset-4 pt-1`}>
+                  Repulsion Strength Order:
+                </h4>
+                <p className={`text-black leading-relaxed font-semibold ${isL3Theory ? "text-base sm:text-lg" : ""}`}>
+                  Lone Pair – Lone Pair (LP–LP) &gt; Lone Pair – Bond Pair (LP–BP) &gt; Bond Pair – Bond Pair (BP–BP)
+                </p>
+                <h4 className={`${isL3Theory ? "text-base sm:text-lg" : "text-xs sm:text-sm"} font-bold text-black underline underline-offset-4 pt-1`}>
+                  Bond Angle Compression in Tetrahedral Systems:
+                </h4>
+                <ul className={`list-disc pl-5 ${isL3Theory ? "sm:pl-7 space-y-3 sm:space-y-3.5 text-base sm:text-lg" : "sm:pl-6 space-y-2"} text-black leading-relaxed`}>
+                  <li>
+                    <strong>CH₄ (Methane):</strong> 4 Bond Pairs, 0 Lone Pairs. Ideal Tetrahedral angle: <strong>109.5°</strong>.
+                  </li>
+                  <li>
+                    <strong>NH₃ (Ammonia):</strong> 3 Bond Pairs, 1 Lone Pair. Lone pair compresses H–N–H angles by ~2.5° to <strong>107.0°</strong>.
+                  </li>
+                  <li>
+                    <strong>H₂O (Water):</strong> 2 Bond Pairs, 2 Lone Pairs. Two lone pairs exert strong mutual repulsion, compressing H–O–H angle to <strong>104.5°</strong>.
+                  </li>
+                </ul>
               </div>
 
               {/* Section 3: Steric Number & Formula Notation */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center">3</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-emerald-900 tracking-tight">
-                    Steric Number (SN) & Formula Notation (AXₘEₙ)
-                  </h3>
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-8">
+              <div className={isL3Theory ? "space-y-3.5" : "space-y-3"}>
+                <h3 className={`${isL3Theory ? "text-xl sm:text-2xl" : "text-base sm:text-lg"} font-bold text-black`}>
+                  3. Steric Number (SN) &amp; Formula Notation (AXₘEₙ)
+                </h3>
+                <p className={`text-black leading-relaxed ${isL3Theory ? "text-base sm:text-lg" : ""}`}>
                   In VSEPR notation: <strong>A</strong> represents the central atom, <strong>X</strong> represents bonded atoms (ligands), and <strong>E</strong> represents non-bonding lone pairs on the central atom.
                 </p>
-                <div className="pl-8 pt-1 text-xs text-slate-700 space-y-1">
-                  <p>• <strong>Steric Number (SN) = m + n</strong> (Total electron domains around the central atom).</p>
-                  <p>• <strong>Electron Geometry</strong>: Spatial arrangement of ALL electron domains (both bonded atoms and lone pairs).</p>
-                  <p>• <strong>Molecular Geometry</strong>: Actual observable spatial arrangement of ATOMS only (ignoring lone pairs in the final shape description).</p>
-                </div>
+                <ul className={`list-disc pl-5 ${isL3Theory ? "sm:pl-7 space-y-3 sm:space-y-3.5 text-base sm:text-lg" : "sm:pl-6 space-y-2"} text-black leading-relaxed`}>
+                  <li>
+                    <strong>Steric Number (SN) = m + n:</strong> Total electron domains around the central atom.
+                  </li>
+                  <li>
+                    <strong>Electron Geometry:</strong> Spatial arrangement of ALL electron domains (both bonded atoms and lone pairs).
+                  </li>
+                  <li>
+                    <strong>Molecular Geometry:</strong> Actual observable spatial arrangement of ATOMS only (ignoring lone pairs in the final shape description).
+                  </li>
+                </ul>
               </div>
 
               {/* Section 4: Full Geometries Table */}
-              <div className="space-y-3 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-amber-600 text-white font-extrabold text-xs flex items-center justify-center">4</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-amber-900 tracking-tight">
-                    Comprehensive Molecular Geometries & Ideal Angles Reference
-                  </h3>
-                </div>
-                <div className="pl-8 overflow-x-auto">
-                  <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                    <thead className="bg-slate-100 font-bold text-slate-700 border-b border-slate-200">
+              <div className={isL3Theory ? "space-y-3.5" : "space-y-3"}>
+                <h3 className={`${isL3Theory ? "text-xl sm:text-2xl" : "text-base sm:text-lg"} font-bold text-black`}>
+                  4. Comprehensive Molecular Geometries &amp; Ideal Angles Reference
+                </h3>
+                <div className="overflow-x-auto pt-1">
+                  <table className={`w-full text-left ${isL3Theory ? "text-xs sm:text-sm" : "text-xs"} border border-neutral-300 rounded-lg overflow-hidden`}>
+                    <thead className={`bg-neutral-100 font-bold text-black border-b border-neutral-300 ${isL3Theory ? "text-xs sm:text-sm" : "text-[11px]"}`}>
                       <tr>
                         <th className="p-2.5">Steric No.</th>
                         <th className="p-2.5">Formula</th>
@@ -2678,132 +2655,138 @@ export default function VseprGamePage({
                         <th className="p-2.5">Real Examples</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 bg-white">
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">2</td>
+                    <tbody className="divide-y divide-neutral-200 text-black">
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">2</td>
                         <td className="p-2.5 font-mono font-bold">AX₂</td>
                         <td className="p-2.5">2</td>
                         <td className="p-2.5">0</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Linear</td>
-                        <td className="p-2.5 font-mono font-bold text-blue-600">180°</td>
-                        <td className="p-2.5 font-mono text-slate-600">CO₂, BeCl₂, HCN</td>
+                        <td className="p-2.5 font-bold">Linear</td>
+                        <td className="p-2.5 font-mono font-bold">180°</td>
+                        <td className="p-2.5 font-mono">CO₂, BeCl₂, HCN</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">3</td>
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">3</td>
                         <td className="p-2.5 font-mono font-bold">AX₃</td>
                         <td className="p-2.5">3</td>
                         <td className="p-2.5">0</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Trigonal Planar</td>
-                        <td className="p-2.5 font-mono font-bold text-blue-600">120°</td>
-                        <td className="p-2.5 font-mono text-slate-600">BF₃, SO₃, AlCl₃</td>
+                        <td className="p-2.5 font-bold">Trigonal Planar</td>
+                        <td className="p-2.5 font-mono font-bold">120°</td>
+                        <td className="p-2.5 font-mono">BF₃, SO₃, AlCl₃</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">3</td>
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">3</td>
                         <td className="p-2.5 font-mono font-bold">AX₂E</td>
                         <td className="p-2.5">2</td>
                         <td className="p-2.5">1</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Bent / Angular</td>
-                        <td className="p-2.5 font-mono font-bold text-purple-600">&lt; 120° (~119°)</td>
-                        <td className="p-2.5 font-mono text-slate-600">SO₂, O₃, NO₂⁻</td>
+                        <td className="p-2.5 font-bold">Bent / Angular</td>
+                        <td className="p-2.5 font-mono font-bold">&lt; 120° (~119°)</td>
+                        <td className="p-2.5 font-mono">SO₂, O₃, NO₂⁻</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">4</td>
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">4</td>
                         <td className="p-2.5 font-mono font-bold">AX₄</td>
                         <td className="p-2.5">4</td>
                         <td className="p-2.5">0</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Tetrahedral</td>
-                        <td className="p-2.5 font-mono font-bold text-blue-600">109.5°</td>
-                        <td className="p-2.5 font-mono text-slate-600">CH₄, CCl₄, SiH₄, NH₄⁺</td>
+                        <td className="p-2.5 font-bold">Tetrahedral</td>
+                        <td className="p-2.5 font-mono font-bold">109.5°</td>
+                        <td className="p-2.5 font-mono">CH₄, CCl₄, SiH₄, NH₄⁺</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">4</td>
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">4</td>
                         <td className="p-2.5 font-mono font-bold">AX₃E</td>
                         <td className="p-2.5">3</td>
                         <td className="p-2.5">1</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Trigonal Pyramidal</td>
-                        <td className="p-2.5 font-mono font-bold text-purple-600">107.0°</td>
-                        <td className="p-2.5 font-mono text-slate-600">NH₃, PCl₃, H₃O⁺</td>
+                        <td className="p-2.5 font-bold">Trigonal Pyramidal</td>
+                        <td className="p-2.5 font-mono font-bold">107.0°</td>
+                        <td className="p-2.5 font-mono">NH₃, PCl₃, H₃O⁺</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">4</td>
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">4</td>
                         <td className="p-2.5 font-mono font-bold">AX₂E₂</td>
                         <td className="p-2.5">2</td>
                         <td className="p-2.5">2</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Bent / V-Shaped</td>
-                        <td className="p-2.5 font-mono font-bold text-rose-600">104.5°</td>
-                        <td className="p-2.5 font-mono text-slate-600">H₂O, OF₂, SCl₂</td>
+                        <td className="p-2.5 font-bold">Bent / V-Shaped</td>
+                        <td className="p-2.5 font-mono font-bold">104.5°</td>
+                        <td className="p-2.5 font-mono">H₂O, OF₂, SCl₂</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">5</td>
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">5</td>
                         <td className="p-2.5 font-mono font-bold">AX₅</td>
                         <td className="p-2.5">5</td>
                         <td className="p-2.5">0</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Trigonal Bipyramidal</td>
-                        <td className="p-2.5 font-mono font-bold text-blue-600">90° & 120°</td>
-                        <td className="p-2.5 font-mono text-slate-600">PCl₅, PF₅</td>
+                        <td className="p-2.5 font-bold">Trigonal Bipyramidal</td>
+                        <td className="p-2.5 font-mono font-bold">90° &amp; 120°</td>
+                        <td className="p-2.5 font-mono">PCl₅, PF₅</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">5</td>
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">5</td>
                         <td className="p-2.5 font-mono font-bold">AX₄E</td>
                         <td className="p-2.5">4</td>
                         <td className="p-2.5">1</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Seesaw</td>
-                        <td className="p-2.5 font-mono font-bold text-purple-600">&lt; 90° & &lt; 120°</td>
-                        <td className="p-2.5 font-mono text-slate-600">SF₄, TeCl₄</td>
+                        <td className="p-2.5 font-bold">Seesaw</td>
+                        <td className="p-2.5 font-mono font-bold">&lt; 90° &amp; &lt; 120°</td>
+                        <td className="p-2.5 font-mono">SF₄, TeCl₄</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">6</td>
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">6</td>
                         <td className="p-2.5 font-mono font-bold">AX₆</td>
                         <td className="p-2.5">6</td>
                         <td className="p-2.5">0</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Octahedral</td>
-                        <td className="p-2.5 font-mono font-bold text-blue-600">90°</td>
-                        <td className="p-2.5 font-mono text-slate-600">SF₆, [PCl₆]⁻</td>
+                        <td className="p-2.5 font-bold">Octahedral</td>
+                        <td className="p-2.5 font-mono font-bold">90°</td>
+                        <td className="p-2.5 font-mono">SF₆, [PCl₆]⁻</td>
                       </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold text-blue-600">6</td>
+                      <tr className="hover:bg-neutral-50">
+                        <td className="p-2.5 font-bold font-mono">6</td>
                         <td className="p-2.5 font-mono font-bold">AX₄E₂</td>
                         <td className="p-2.5">4</td>
                         <td className="p-2.5">2</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Square Planar</td>
-                        <td className="p-2.5 font-mono font-bold text-purple-600">90°</td>
-                        <td className="p-2.5 font-mono text-slate-600">XeF₄, [ICl₄]⁻</td>
+                        <td className="p-2.5 font-bold">Square Planar</td>
+                        <td className="p-2.5 font-mono font-bold">90°</td>
+                        <td className="p-2.5 font-mono">XeF₄, [ICl₄]⁻</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              {/* Section 5: Step-by-Step Guide for the Easy Challenge */}
-              <div className="space-y-2 pb-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-extrabold text-xs flex items-center justify-center">5</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-indigo-900 tracking-tight">
-                    How to Complete the Level 1 Challenge Workshop
-                  </h3>
-                </div>
-                <div className="pl-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs pt-1">
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-blue-600 block mb-1">Step 1: Place Central</span>
-                    <p className="text-slate-600">Click or drag the central atom (e.g. Carbon <strong>C</strong>) onto the 3D pedestal.</p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-emerald-600 block mb-1">Step 2: Add Outer Atoms</span>
-                    <p className="text-slate-600">Add all outer atoms (e.g. 4 Hydrogen <strong>H</strong> atoms) around the central core.</p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-purple-600 block mb-1">Step 3: Connect Bonds</span>
-                    <p className="text-slate-600">Click single or double bonds to bridge each outer atom to the central atom.</p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-amber-600 block mb-1">Step 4: Check Bond Angle</span>
-                    <p className="text-slate-600">Select any atom pair, enter the ideal bond angle (e.g. 109.5° for CH₄), and click Check Angle!</p>
-                  </div>
-                </div>
+              {/* Section 5: Step-by-Step Guide for the Challenge */}
+              <div className={isL3Theory ? "space-y-3.5" : "space-y-3"}>
+                <h3 className={`${isL3Theory ? "text-xl sm:text-2xl" : "text-base sm:text-lg"} font-bold text-black`}>
+                  5. How to Complete the Challenge Workshop
+                </h3>
+                <ul className={`list-disc pl-5 ${isL3Theory ? "sm:pl-7 space-y-3 sm:space-y-3.5 text-base sm:text-lg" : "sm:pl-6 space-y-2"} text-black leading-relaxed`}>
+                  <li>
+                    <strong>Step 1 (Place Central):</strong> Click or drag the central atom (e.g. Carbon <strong>C</strong>) onto the 3D pedestal.
+                  </li>
+                  <li>
+                    <strong>Step 2 (Add Outer Atoms):</strong> Add all outer atoms (e.g. 4 Hydrogen <strong>H</strong> atoms) around the central core.
+                  </li>
+                  <li>
+                    <strong>Step 3 (Connect Bonds):</strong> Click single or double bonds to bridge each outer atom to the central atom.
+                  </li>
+                  <li>
+                    <strong>Step 4 (Check Bond Angle):</strong> Select any atom pair, enter the ideal bond angle (e.g. 109.5° for CH₄), and click Check Angle!
+                  </li>
+                </ul>
               </div>
+
+            </div>
+
+            {/* Bottom Footer */}
+            <div className="p-3 border-t border-neutral-300 bg-white shrink-0 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setShowExplanationModal(false)}
+                className="w-full max-w-sm py-2.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer active:scale-95"
+              >
+                Resume Challenge
+              </button>
             </div>
           </div>
-        )}
+        );
+      })()}
     </div>
   );
 }

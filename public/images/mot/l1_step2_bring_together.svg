@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 90" width="180" height="90">
+  <defs>
+    <filter id="btnShadow2" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#1d4ed8" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Clean card background -->
+  <rect x="2" y="2" width="176" height="86" rx="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" />
+
+  <!-- Empty Orbital Space 1 (Left Dashed Circle) -->
+  <g transform="translate(50, 30)">
+    <circle cx="0" cy="0" r="18" fill="#FFFFFF" stroke="#64748B" stroke-width="2" stroke-dasharray="4,3" />
+    <circle cx="0" cy="0" r="2.5" fill="#94A3B8" />
+  </g>
+
+  <!-- Subtle dotted connection line -->
+  <line x1="72" y1="30" x2="108" y2="30" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="3,3" />
+
+  <!-- Empty Orbital Space 2 (Right Dashed Circle) -->
+  <g transform="translate(130, 30)">
+    <circle cx="0" cy="0" r="18" fill="#FFFFFF" stroke="#64748B" stroke-width="2" stroke-dasharray="4,3" />
+    <circle cx="0" cy="0" r="2.5" fill="#94A3B8" />
+  </g>
+
+  <!-- Bring Orbitals Together Button (At bottom - only button and empty space visible) -->
+  <g transform="translate(90, 68)" filter="url(#btnShadow2)">
+    <rect x="-76" y="-12" width="152" height="24" rx="8" fill="#2563EB" stroke="#1D4ED8" stroke-width="1.2" />
+    <!-- Horizontal Arrow Icon -->
+    <path d="M -60 0 L -53 0 M -57 -3 L -60 0 L -57 3 M -51 0 L -44 0 M -47 -3 L -44 0 L -47 3" stroke="#BFDBFE" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="6" y="3.5" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="8.5" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.4">BRING ORBITALS TOGETHER</text>
+  </g>
+</svg>

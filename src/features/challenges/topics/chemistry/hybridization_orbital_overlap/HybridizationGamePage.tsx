@@ -569,7 +569,7 @@ export default function HybridizationGamePage({
                 HYBRIDIZATION & ORBITAL OVERLAP
               </div>
 
-              <h1 className="text-lg sm:text-2xl md:text-4xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+              <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
                 <span className="text-[#2563EB]">MISSION:</span> Mix s, p & d atomic orbitals to construct hybrid orbital geometries (sp to sp³d²)
               </h1>
 
@@ -989,309 +989,214 @@ export default function HybridizationGamePage({
 
       {/* ── THEORY / EXPLANATION PAGE (FULL CANVAS / WHOLE SCREEN) ── */}
       {showSuccessModal && (
-        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-[#1E293B] animate-in fade-in duration-200 select-text">
+        <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-black animate-in fade-in duration-200 select-text">
           {/* Header Bar */}
-          <div className="flex items-center justify-between px-3.5 sm:px-6 py-2 sm:py-2.5 border-b border-slate-200 bg-white shrink-0 shadow-xs">
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shadow-sm shrink-0">
-                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-                </div>
-                <div>
-                  <h2 className="text-sm sm:text-base md:text-lg font-black text-[#1E293B] tracking-tight">
-                    Hybridization & Orbital Overlap Guide
-                  </h2>
-                  <p className="text-[11px] sm:text-xs text-[#64748B] font-medium hidden sm:block">
-                    Atomic Orbitals (s, p, d), LCAO Mixing, 3D Geometries, and Bond Angles
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowSuccessModal(false)}
-                className="p-1.5 sm:p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#475569] hover:text-[#0F172A] transition-all cursor-pointer shadow-sm"
-                title="Close Explanation"
-              >
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
+          <div className="flex items-center justify-between px-4 sm:px-8 py-3 border-b border-neutral-300 bg-white shrink-0">
+            <div>
+              <h2 className="text-base sm:text-xl font-bold text-black tracking-tight">
+                Hybridization &amp; Orbital Overlap Guide
+              </h2>
+              <p className="text-xs text-neutral-600 font-normal">
+                Atomic Orbitals (s, p, d), LCAO Mixing, 3D Geometries, and Bond Angles
+              </p>
             </div>
 
-            {/* Scrollable Content Body */}
-            <div className="flex-1 overflow-y-auto px-3.5 sm:px-6 md:px-8 py-3.5 sm:py-5 pb-8 sm:pb-10 space-y-4 sm:space-y-6 w-full text-slate-800">
-              {/* Section 1: Core Principle */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-extrabold text-xs flex items-center justify-center">1</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-blue-900 tracking-tight">
-                    Core Principle of Orbital Hybridization (LCAO Theory)
-                  </h3>
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-8">
-                  <strong>Orbital Hybridization</strong> is the mathematical linear combination (mixing) of non-equivalent atomic wavefunctions (s, p, and d) on the same central atom to create a brand new set of equivalent, degenerate hybrid wavefunctions.
-                </p>
-                <div className="pl-8 pt-1 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                  <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-3">
-                    <h5 className="font-bold text-blue-800 mb-1">Energy Equalization & Repulsion Minimization</h5>
-                    <p className="text-slate-600 leading-normal">
-                      Pure unhybridized s and p orbitals possess different energies and fixed 90° orientations. Mixing them creates equalized hybrid orbitals that spread symmetrically across 3D space (180°, 120°, 109.5°, 90°) to maximize inter-electron distances and minimize mutual repulsion.
-                    </p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <h5 className="font-bold text-slate-800 mb-1">Directional Front Lobe Advantage (Stronger σ Bonds)</h5>
-                    <p className="text-slate-600 leading-normal">
-                      Each hybrid orbital features an asymmetric lobe structure—one large concentrated front lobe and a tiny back lobe. This concentrates electron probability forward along the bonding axis, yielding far stronger head-on coaxial <strong>sigma (σ) covalent bonds</strong>.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 2: Fundamental Atomic Orbitals (s, p, d) */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-600 text-white font-extrabold text-xs flex items-center justify-center">2</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-purple-900 tracking-tight">
-                    The Pure Atomic Orbital Building Blocks: s, p, and d
-                  </h3>
-                </div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-8">
-                  Before orbitals hybridize to form chemical bonds, electrons occupy pure 3D probability clouds defined by quantum numbers:
-                </p>
-                <div className="pl-8 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
-                  <div className="bg-purple-50/80 border border-purple-200 rounded-xl p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-extrabold text-purple-900 text-sm">s Orbital</span>
-                      <span className="text-[10px] bg-purple-200 text-purple-900 font-bold px-1.5 py-0.5 rounded">1 Orbital (Max 2 e⁻)</span>
-                    </div>
-                    <span className="text-[11px] font-bold text-purple-700 block mb-1">Spherical & Non-Directional</span>
-                    <p className="text-slate-600 leading-normal">
-                      Electron density is spherically symmetric with 0 angular nodes. Holds maximum 2 electrons with anti-parallel spins.
-                    </p>
-                  </div>
-
-                  <div className="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-extrabold text-emerald-900 text-sm">p Orbitals</span>
-                      <span className="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-1.5 py-0.5 rounded">3 Orbitals (Max 6 e⁻)</span>
-                    </div>
-                    <span className="text-[11px] font-bold text-emerald-700 block mb-1">Dumbbell Lobes (pₓ, pᵧ, p𝓏)</span>
-                    <p className="text-slate-600 leading-normal">
-                      Three degenerate perpendicular dumbbell lobes aligned along Cartesian axes ($x, y, z$). Separated by 90° with a central nodal plane at the nucleus.
-                    </p>
-                  </div>
-
-                  <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-extrabold text-amber-900 text-sm">d Orbitals</span>
-                      <span className="text-[10px] bg-amber-200 text-amber-900 font-bold px-1.5 py-0.5 rounded">5 Orbitals (Max 10 e⁻)</span>
-                    </div>
-                    <span className="text-[11px] font-bold text-amber-700 block mb-1">Cloverleaf & Torus</span>
-                    <p className="text-slate-600 leading-normal">
-                      Five degenerate complex orientations (dxy, dyz, dxz, dx²-y², dz²). Enables expanded octets in period 3+ elements (sp³d, sp³d²).
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 3: Master Hybridization Table */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center">3</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-emerald-900 tracking-tight">
-                    Master Hybridization & 3D Geometry Comparison Table
-                  </h3>
-                </div>
-                <div className="pl-8 overflow-x-auto pt-1">
-                  <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-                    <thead className="bg-slate-100/90 text-slate-700 font-bold border-b border-slate-200 text-[11px]">
-                      <tr>
-                        <th className="p-2.5">Hybrid</th>
-                        <th className="p-2.5">Orbitals Mixed</th>
-                        <th className="p-2.5">Hybrid Lobes</th>
-                        <th className="p-2.5">3D Geometry</th>
-                        <th className="p-2.5">Bond Angles</th>
-                        <th className="p-2.5">Unhybridized</th>
-                        <th className="p-2.5">Real Molecules</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold font-mono text-purple-700">s</td>
-                        <td className="p-2.5 font-mono">1s (Pure)</td>
-                        <td className="p-2.5 font-bold">1</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Spherical Cloud</td>
-                        <td className="p-2.5 font-mono text-slate-500">Non-directional</td>
-                        <td className="p-2.5 font-mono text-slate-500">None</td>
-                        <td className="p-2.5 font-mono text-slate-600">H, He, 1s atomic</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold font-mono text-blue-600">sp</td>
-                        <td className="p-2.5 font-mono">1s + 1p</td>
-                        <td className="p-2.5 font-bold">2</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Linear</td>
-                        <td className="p-2.5 font-mono font-bold text-blue-600">180°</td>
-                        <td className="p-2.5 font-mono text-slate-600">2 p (forms 2 π)</td>
-                        <td className="p-2.5 font-mono text-slate-600">BeCl₂, CO₂, C₂H₂</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold font-mono text-emerald-600">sp²</td>
-                        <td className="p-2.5 font-mono">1s + 2p</td>
-                        <td className="p-2.5 font-bold">3</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Trigonal Planar</td>
-                        <td className="p-2.5 font-mono font-bold text-emerald-600">120°</td>
-                        <td className="p-2.5 font-mono text-slate-600">1 p (forms 1 π)</td>
-                        <td className="p-2.5 font-mono text-slate-600">BF₃, SO₃, C₂H₄</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold font-mono text-purple-600">sp³</td>
-                        <td className="p-2.5 font-mono">1s + 3p</td>
-                        <td className="p-2.5 font-bold">4</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Tetrahedral</td>
-                        <td className="p-2.5 font-mono font-bold text-purple-600">109.5°</td>
-                        <td className="p-2.5 font-mono text-slate-600">0 unhybridized</td>
-                        <td className="p-2.5 font-mono text-slate-600">CH₄, CCl₄, NH₄⁺</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold font-mono text-amber-600">sp³d</td>
-                        <td className="p-2.5 font-mono">1s + 3p + 1d</td>
-                        <td className="p-2.5 font-bold">5</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Trigonal Bipyramidal</td>
-                        <td className="p-2.5 font-mono font-bold text-amber-600">90° (axial) & 120° (eq)</td>
-                        <td className="p-2.5 font-mono text-slate-600">Axial / Eq sites</td>
-                        <td className="p-2.5 font-mono text-slate-600">PCl₅, PF₅, SF₄</td>
-                      </tr>
-                      <tr className="hover:bg-slate-50">
-                        <td className="p-2.5 font-bold font-mono text-cyan-600">sp³d²</td>
-                        <td className="p-2.5 font-mono">1s + 3p + 2d</td>
-                        <td className="p-2.5 font-bold">6</td>
-                        <td className="p-2.5 font-extrabold text-slate-800">Octahedral</td>
-                        <td className="p-2.5 font-mono font-bold text-cyan-600">90° (all 12 angles)</td>
-                        <td className="p-2.5 font-mono text-slate-600">Fully orthogonal</td>
-                        <td className="p-2.5 font-mono text-slate-600">SF₆, [PCl₆]⁻, XeF₄</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Section 4: Detailed Breakdown of Each Hybridization */}
-              <div className="space-y-2 border-b border-slate-200 pb-5">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-amber-600 text-white font-extrabold text-xs flex items-center justify-center">4</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-amber-900 tracking-tight">
-                    Visual Breakdown & Stereochemistry of Each State
-                  </h3>
-                </div>
-                <div className="pl-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs pt-1">
-                  {/* sp */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[#2563EB] font-black text-sm font-mono">sp</span>
-                        <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.5 rounded">180° Linear</span>
-                      </div>
-                      <p className="text-slate-600 leading-normal mt-1">
-                        50% s, 50% p character. Two equivalent lobes point in collinear opposite directions. Leaves 2 perpendicular p-orbitals to form double or triple π bonds.
-                      </p>
-                    </div>
-                    <div className="mt-2 pt-1 border-t border-slate-200 font-mono text-[11px] text-slate-500">
-                      Example: <strong>BeCl₂</strong> (Cl—Be—Cl)
-                    </div>
-                  </div>
-
-                  {/* sp2 */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[#2563EB] font-black text-sm font-mono">sp²</span>
-                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">120° Trigonal</span>
-                      </div>
-                      <p className="text-slate-600 leading-normal mt-1">
-                        33.3% s, 66.7% p character. Three equivalent lobes lie coplanar in the XY plane separated by 120°. Leaves 1 perpendicular p_z orbital available for 1 π bond.
-                      </p>
-                    </div>
-                    <div className="mt-2 pt-1 border-t border-slate-200 font-mono text-[11px] text-slate-500">
-                      Example: <strong>BF₃, C₂H₄</strong>
-                    </div>
-                  </div>
-
-                  {/* sp3 */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[#2563EB] font-black text-sm font-mono">sp³</span>
-                        <span className="text-[10px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.5 rounded">109.5° Tetrahedral</span>
-                      </div>
-                      <p className="text-slate-600 leading-normal mt-1">
-                        25% s, 75% p character. Four equivalent lobes extend symmetrically toward the four vertices of a regular 3D tetrahedron. All 4 valence orbitals form σ bonds or lone pairs.
-                      </p>
-                    </div>
-                    <div className="mt-2 pt-1 border-t border-slate-200 font-mono text-[11px] text-slate-500">
-                      Example: <strong>CH₄, CCl₄</strong>
-                    </div>
-                  </div>
-
-                  {/* sp3d */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[#2563EB] font-black text-sm font-mono">sp³d</span>
-                        <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">90° / 120° TBP</span>
-                      </div>
-                      <p className="text-slate-600 leading-normal mt-1">
-                        5 hybrid lobes split into two non-equivalent sets: 3 equatorial lobes separated by 120° in the horizontal plane, and 2 axial lobes oriented vertically at 90°.
-                      </p>
-                    </div>
-                    <div className="mt-2 pt-1 border-t border-slate-200 font-mono text-[11px] text-slate-500">
-                      Example: <strong>PCl₅, SF₄</strong>
-                    </div>
-                  </div>
-
-                  {/* sp3d2 */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-between sm:col-span-2 md:col-span-2">
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[#2563EB] font-black text-sm font-mono">sp³d²</span>
-                        <span className="text-[10px] bg-cyan-100 text-cyan-800 font-bold px-1.5 py-0.5 rounded">90° Octahedral</span>
-                      </div>
-                      <p className="text-slate-600 leading-normal mt-1">
-                        6 equivalent hybrid lobes pointing along the Cartesian coordinate axes ($+x, -x, +y, -y, +z, -z$). Highly symmetrical with exactly 12 identical 90° angles and 3 collinear 180° axes.
-                      </p>
-                    </div>
-                    <div className="mt-2 pt-1 border-t border-slate-200 font-mono text-[11px] text-slate-500">
-                      Example: <strong>SF₆, [PCl₆]⁻</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 5: Step-by-Step Workshop Guide */}
-              <div className="space-y-2 pb-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-extrabold text-xs flex items-center justify-center">5</span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-indigo-900 tracking-tight">
-                    How to Complete the Level 1 Hybridization Challenge
-                  </h3>
-                </div>
-                <div className="pl-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs pt-1">
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-blue-600 block mb-1">Step 1: Select 1 s</span>
-                    <p className="text-slate-600">Click or drag the <strong>s orbital</strong> from the bottom tray to establish the central base.</p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-emerald-600 block mb-1">Step 2: Add p Orbitals</span>
-                    <p className="text-slate-600">Add <strong>pₓ, pᵧ, p𝓏</strong> sequentially to unlock <strong>sp (180°)</strong>, <strong>sp² (120°)</strong>, and <strong>sp³ (109.5°)</strong>.</p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-purple-600 block mb-1">Step 3: Add d Orbitals</span>
-                    <p className="text-slate-600">Add 2 <strong>d orbitals</strong> to form expanded octet geometries: <strong>sp³d</strong> and <strong>sp³d²</strong>.</p>
-                  </div>
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                    <span className="font-extrabold text-amber-600 block mb-1">Step 4: Rotate in 3D</span>
-                    <p className="text-slate-600">Drag to rotate the molecule, inspect axial vs equatorial lobe positions, and observe 3D bond angles!</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setShowSuccessModal(false)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-black font-semibold text-xs transition-all cursor-pointer border border-neutral-300 active:scale-95"
+            >
+              <X className="w-4 h-4 text-black" />
+              <span>Close</span>
+            </button>
           </div>
-        )}
+
+          {/* Scrollable Content Body */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-5 sm:py-7 space-y-6 sm:space-y-8 text-black text-xs sm:text-sm leading-relaxed max-w-3xl mx-auto w-full">
+            
+            {/* Section 1: Core Principle */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                1. Core Principle of Orbital Hybridization (LCAO Theory)
+              </h3>
+              <p className="text-black leading-relaxed">
+                <strong>Orbital Hybridization</strong> is the mathematical linear combination (mixing) of non-equivalent atomic wavefunctions (s, p, and d) on the same central atom to create a brand new set of equivalent, degenerate hybrid wavefunctions.
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Fundamental Characteristics:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>Energy Equalization &amp; Repulsion Minimization:</strong> Pure unhybridized s and p orbitals possess different energies and fixed 90° orientations. Mixing them creates equalized hybrid orbitals that spread symmetrically across 3D space (180°, 120°, 109.5°, 90°) to maximize inter-electron distances and minimize mutual repulsion.
+                </li>
+                <li>
+                  <strong>Directional Front Lobe Advantage (Stronger σ Bonds):</strong> Each hybrid orbital features an asymmetric lobe structure—one large concentrated front lobe and a tiny back lobe. This concentrates electron probability forward along the bonding axis, yielding far stronger head-on coaxial <strong>sigma (σ) covalent bonds</strong>.
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 2: Fundamental Atomic Orbitals (s, p, d) */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                2. The Pure Atomic Orbital Building Blocks: s, p, and d
+              </h3>
+              <p className="text-black leading-relaxed">
+                Before orbitals hybridize to form chemical bonds, electrons occupy pure 3D probability clouds defined by quantum numbers:
+              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-black underline underline-offset-4 pt-1">
+                Orbital Types:
+              </h4>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>s Orbital (1 Orbital, Max 2 e⁻):</strong> Spherical &amp; Non-Directional. Electron density is spherically symmetric with 0 angular nodes. Holds maximum 2 electrons with anti-parallel spins.
+                </li>
+                <li>
+                  <strong>p Orbitals (3 Orbitals, Max 6 e⁻):</strong> Dumbbell Lobes (pₓ, pᵧ, p𝓏). Three degenerate perpendicular dumbbell lobes aligned along Cartesian axes (x, y, z). Separated by 90° with a central nodal plane at the nucleus.
+                </li>
+                <li>
+                  <strong>d Orbitals (5 Orbitals, Max 10 e⁻):</strong> Cloverleaf &amp; Torus (dxy, dyz, dxz, dx²-y², dz²). Five degenerate complex orientations. Enables expanded octets in period 3+ elements (sp³d, sp³d²).
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 3: Master Hybridization Table */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                3. Master Hybridization &amp; 3D Geometry Comparison Table
+              </h3>
+              <div className="overflow-x-auto pt-1">
+                <table className="w-full text-left text-xs border border-neutral-300 rounded-lg overflow-hidden">
+                  <thead className="bg-neutral-100 text-black font-bold border-b border-neutral-300 text-[11px]">
+                    <tr>
+                      <th className="p-2.5">Hybrid</th>
+                      <th className="p-2.5">Orbitals Mixed</th>
+                      <th className="p-2.5">Hybrid Lobes</th>
+                      <th className="p-2.5">3D Geometry</th>
+                      <th className="p-2.5">Bond Angles</th>
+                      <th className="p-2.5">Unhybridized</th>
+                      <th className="p-2.5">Real Molecules</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-200 text-black">
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">s</td>
+                      <td className="p-2.5 font-mono">1s (Pure)</td>
+                      <td className="p-2.5 font-bold">1</td>
+                      <td className="p-2.5 font-bold">Spherical Cloud</td>
+                      <td className="p-2.5 font-mono">Non-directional</td>
+                      <td className="p-2.5 font-mono">None</td>
+                      <td className="p-2.5 font-mono">H, He, 1s atomic</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">sp</td>
+                      <td className="p-2.5 font-mono">1s + 1p</td>
+                      <td className="p-2.5 font-bold">2</td>
+                      <td className="p-2.5 font-bold">Linear</td>
+                      <td className="p-2.5 font-mono font-bold">180°</td>
+                      <td className="p-2.5 font-mono">2 p (forms 2 π)</td>
+                      <td className="p-2.5 font-mono">BeCl₂, CO₂, C₂H₂</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">sp²</td>
+                      <td className="p-2.5 font-mono">1s + 2p</td>
+                      <td className="p-2.5 font-bold">3</td>
+                      <td className="p-2.5 font-bold">Trigonal Planar</td>
+                      <td className="p-2.5 font-mono font-bold">120°</td>
+                      <td className="p-2.5 font-mono">1 p (forms 1 π)</td>
+                      <td className="p-2.5 font-mono">BF₃, SO₃, C₂H₄</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">sp³</td>
+                      <td className="p-2.5 font-mono">1s + 3p</td>
+                      <td className="p-2.5 font-bold">4</td>
+                      <td className="p-2.5 font-bold">Tetrahedral</td>
+                      <td className="p-2.5 font-mono font-bold">109.5°</td>
+                      <td className="p-2.5 font-mono">0 unhybridized</td>
+                      <td className="p-2.5 font-mono">CH₄, CCl₄, NH₄⁺</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">sp³d</td>
+                      <td className="p-2.5 font-mono">1s + 3p + 1d</td>
+                      <td className="p-2.5 font-bold">5</td>
+                      <td className="p-2.5 font-bold">Trigonal Bipyramidal</td>
+                      <td className="p-2.5 font-mono font-bold">90° (axial) &amp; 120° (eq)</td>
+                      <td className="p-2.5 font-mono">Axial / Eq sites</td>
+                      <td className="p-2.5 font-mono">PCl₅, PF₅, SF₄</td>
+                    </tr>
+                    <tr className="hover:bg-neutral-50">
+                      <td className="p-2.5 font-bold font-mono">sp³d²</td>
+                      <td className="p-2.5 font-mono">1s + 3p + 2d</td>
+                      <td className="p-2.5 font-bold">6</td>
+                      <td className="p-2.5 font-bold">Octahedral</td>
+                      <td className="p-2.5 font-mono font-bold">90° (all 12 angles)</td>
+                      <td className="p-2.5 font-mono">Fully orthogonal</td>
+                      <td className="p-2.5 font-mono">SF₆, [PCl₆]⁻, XeF₄</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Section 4: Detailed Breakdown of Each Hybridization */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                4. Visual Breakdown &amp; Stereochemistry of Each State
+              </h3>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>sp Hybridization (180° Linear):</strong> 50% s, 50% p character. Two equivalent lobes point in collinear opposite directions. Leaves 2 perpendicular p-orbitals to form double or triple π bonds. Example: <strong>BeCl₂</strong> (Cl—Be—Cl).
+                </li>
+                <li>
+                  <strong>sp² Hybridization (120° Trigonal Planar):</strong> 33.3% s, 66.7% p character. Three equivalent lobes lie coplanar in the XY plane separated by 120°. Leaves 1 perpendicular p_z orbital available for 1 π bond. Example: <strong>BF₃, C₂H₄</strong>.
+                </li>
+                <li>
+                  <strong>sp³ Hybridization (109.5° Tetrahedral):</strong> 25% s, 75% p character. Four equivalent lobes extend symmetrically toward the four vertices of a regular 3D tetrahedron. All 4 valence orbitals form σ bonds or lone pairs. Example: <strong>CH₄, CCl₄</strong>.
+                </li>
+                <li>
+                  <strong>sp³d Hybridization (90° &amp; 120° Trigonal Bipyramidal):</strong> 5 hybrid lobes split into two non-equivalent sets: 3 equatorial lobes separated by 120° in the horizontal plane, and 2 axial lobes oriented vertically at 90°. Example: <strong>PCl₅, SF₄</strong>.
+                </li>
+                <li>
+                  <strong>sp³d² Hybridization (90° Octahedral):</strong> 6 equivalent hybrid lobes pointing along the Cartesian coordinate axes (+x, -x, +y, -y, +z, -z). Highly symmetrical with exactly 12 identical 90° angles and 3 collinear 180° axes. Example: <strong>SF₆, [PCl₆]⁻</strong>.
+                </li>
+              </ul>
+            </div>
+
+            {/* Section 5: Step-by-Step Workshop Guide */}
+            <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-bold text-black">
+                5. How to Complete the Level 1 Hybridization Challenge
+              </h3>
+              <ul className="list-disc pl-5 sm:pl-6 space-y-2 text-black leading-relaxed">
+                <li>
+                  <strong>Step 1 (Select 1 s):</strong> Click or drag the <strong>s orbital</strong> from the bottom tray to establish the central base.
+                </li>
+                <li>
+                  <strong>Step 2 (Add p Orbitals):</strong> Add <strong>pₓ, pᵧ, p𝓏</strong> sequentially to unlock <strong>sp (180°)</strong>, <strong>sp² (120°)</strong>, and <strong>sp³ (109.5°)</strong>.
+                </li>
+                <li>
+                  <strong>Step 3 (Add d Orbitals):</strong> Add 2 <strong>d orbitals</strong> to form expanded octet geometries: <strong>sp³d</strong> and <strong>sp³d²</strong>.
+                </li>
+                <li>
+                  <strong>Step 4 (Rotate in 3D):</strong> Drag to rotate the molecule, inspect axial vs equatorial lobe positions, and observe 3D bond angles!
+                </li>
+              </ul>
+            </div>
+
+          </div>
+
+          {/* Bottom Footer */}
+          <div className="p-3 border-t border-neutral-300 bg-white shrink-0 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setShowSuccessModal(false)}
+              className="w-full max-w-sm py-2.5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all cursor-pointer active:scale-95"
+            >
+              Resume Challenge
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

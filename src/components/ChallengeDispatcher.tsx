@@ -110,7 +110,7 @@ const MotMediumGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   { ssr: false, loading: LoadingFallback }
 );
 
-const MotHardGamePage = dynamic<{ difficulty?: string }>(
+const MotHardGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
       "@/features/challenges/topics/chemistry/Molecular_orbital_theory/MotHardGamePage"
@@ -175,7 +175,7 @@ export function ChallengeDispatcher({
     if (isLevel2) {
       content = <MotMediumGamePage difficulty={normDifficulty} onExit={onExit} />;
     } else if (isLevel3) {
-      content = <MotHardGamePage difficulty={normDifficulty} />;
+      content = <MotHardGamePage difficulty={normDifficulty} onExit={onExit} />;
     } else {
       content = <MotEasyGamePage difficulty={normDifficulty} onExit={onExit} />;
     }
@@ -199,12 +199,13 @@ export function ChallengeDispatcher({
   const isHybridizationLevel3 = isHybridization && isLevel3;
   const isMotLevel1 = isMot && !isLevel2 && !isLevel3;
   const isMotLevel2 = isMot && isLevel2;
+  const isMotLevel3 = isMot && isLevel3;
 
   return (
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && (
+        {showExitButton && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

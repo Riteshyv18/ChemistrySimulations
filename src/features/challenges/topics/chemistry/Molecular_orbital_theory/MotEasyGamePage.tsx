@@ -384,36 +384,36 @@ export default function MotEasyGamePage({
 
       {/* ── INTRO MISSION & INSTRUCTIONS VIEW OVERLAY ────────────────────────── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-4 bg-white/80 backdrop-blur-md overflow-hidden">
+        <div className="absolute inset-0 z-30 flex flex-col justify-between p-1.5 sm:p-2.5 bg-white/95 backdrop-blur-md overflow-y-auto">
           {/* Top Header Bar: Exit Button Only */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
               type="button"
               onClick={() => (onExit ? onExit() : exitSimulation())}
-              className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 h-7 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[10px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
               title="Exit Simulation (Back to App)"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <ArrowLeft className="w-3 h-3 text-blue-600 shrink-0" />
               <span>EXIT</span>
             </button>
           </div>
 
           {/* STEP 1: MISSION SCREEN */}
           {introStep === 'mission' && (
-            <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-5 z-10 px-2 sm:px-4 py-2 animate-in fade-in duration-200">
+            <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-4 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200">
               <div className="text-[#2563EB] text-[10px] sm:text-sm font-mono font-bold tracking-[0.25em] uppercase">
                 MOLECULAR ORBITAL THEORY
               </div>
 
-              <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+              <h1 className="text-xl sm:text-2xl md:text-4xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
                 <span className="text-[#2563EB]">MISSION:</span> Combine 1s atomic orbitals to form H₂ molecular orbitals (σ₁s &amp; σ*₁s)
               </h1>
 
-              <div className="pt-1.5 sm:pt-2">
+              <div className="pt-1 sm:pt-2">
                 <button
                   type="button"
                   onClick={() => setIntroStep('instructions')}
-                  className="px-6 sm:px-8 py-2 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-2 mx-auto cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                  className="px-6 sm:px-8 py-1.5 sm:py-2 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-2 mx-auto cursor-pointer transition-all transform hover:scale-105 active:scale-95"
                 >
                   <span>NEXT</span>
                   <ChevronRight className="w-4 h-4 text-sky-200" />
@@ -424,23 +424,39 @@ export default function MotEasyGamePage({
 
           {/* STEP 2: INSTRUCTIONS SCREEN */}
           {introStep === 'instructions' && (
-            <div className="max-w-xl mx-auto my-auto text-center space-y-1.5 sm:space-y-2 z-10 px-2 sm:px-3 py-0.5 animate-in fade-in duration-200 w-full">
-              <div className="text-[#1E293B] text-sm sm:text-base font-black tracking-wide">
-                Instructions
+            <div className="max-w-3xl mx-auto my-auto flex flex-col justify-between z-10 px-2 sm:px-3 py-0.5 animate-in fade-in duration-200 w-full flex-1">
+              {/* Header Title */}
+              <div className="text-center pt-0.5 pb-1 sm:pb-1.5">
+                <h2 className="text-[#1E293B] text-xs sm:text-sm md:text-base font-black tracking-wide uppercase">
+                  INSTRUCTIONS TO PLAY
+                </h2>
               </div>
 
-              <div className="space-y-2 text-left max-w-xl mx-auto">
+              {/* Horizontal Instruction Cards Grid - side-by-side in landscape */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 landscape:grid-cols-2 gap-2 sm:gap-3.5 w-full mx-auto my-auto items-stretch">
                 {/* 1. Tap 1s orbital */}
-                <div className="bg-white/95 backdrop-blur-md rounded-xl p-2 sm:p-2.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-3 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
-                      1
+                <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                        1
+                      </div>
+                      <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                        Place 1s Orbital
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                    <div className="mt-1">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                        3D Space Placement
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
                       Tap on the 1s orbital to place into 3D space.
                     </p>
                   </div>
-                  <div className="w-28 sm:w-36 h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-sm shrink-0 flex items-center justify-center p-0.5">
+
+                  {/* Big Visible Image Box - sized to fit 370px height comfortably */}
+                  <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
                     <img
                       src="/images/mot/l1_step1_place_orbital.svg"
                       alt="Step 1: Place 1s orbital"
@@ -450,16 +466,28 @@ export default function MotEasyGamePage({
                 </div>
 
                 {/* 2. Bring orbitals together */}
-                <div className="bg-white/95 backdrop-blur-md rounded-xl p-2 sm:p-2.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-3 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
-                      2
+                <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                        2
+                      </div>
+                      <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                        Form Molecular Orbitals
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                    <div className="mt-1">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                        Overlap Orbitals
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
                       Tap on the Bring Orbitals Together button to unlock the Molecular Orbitals.
                     </p>
                   </div>
-                  <div className="w-28 sm:w-36 h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-sm shrink-0 flex items-center justify-center p-0.5">
+
+                  {/* Big Visible Image Box - sized to fit 370px height comfortably */}
+                  <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
                     <img
                       src="/images/mot/l1_step2_bring_together.svg"
                       alt="Step 2: Bring orbitals together"
@@ -470,11 +498,11 @@ export default function MotEasyGamePage({
               </div>
 
               {/* Action Buttons: Back and Play */}
-              <div className="pt-1.5 sm:pt-2 flex items-center justify-center gap-3 shrink-0">
+              <div className="pt-1.5 sm:pt-2 pb-0.5 flex items-center justify-center gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIntroStep('mission')}
-                  className="px-5 sm:px-6 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                  className="px-5 sm:px-6 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1 cursor-pointer transition-all active:scale-95"
                 >
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
                   <span>BACK</span>
@@ -483,7 +511,7 @@ export default function MotEasyGamePage({
                 <button
                   type="button"
                   onClick={() => setGameStarted(true)}
-                  className="px-6 sm:px-8 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                  className="px-6 sm:px-8 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
                 >
                   <Play className="w-3.5 h-3.5 fill-white" />
                   <span>PLAY</span>

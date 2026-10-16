@@ -613,16 +613,16 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
     <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-1.5 sm:p-2.5 gap-1.5 sm:gap-2">
       {/* ── INTRO MISSION TARGET & INSTRUCTIONS VIEW OVERLAY (NO SCROLL AT HEIGHT 376) ── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-4 bg-white/80 backdrop-blur-md overflow-hidden">
+        <div className="absolute inset-0 z-30 flex flex-col justify-between p-1.5 sm:p-2.5 bg-white/95 backdrop-blur-md overflow-y-auto">
           {/* Top Header Bar: Exit Button Only */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
               type="button"
               onClick={() => (onExit ? onExit() : exitSimulation())}
-              className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 h-7 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[10px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
               title="Exit Simulation (Back to App)"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <ArrowLeft className="w-3 h-3 text-blue-600 shrink-0" />
               <span>EXIT</span>
             </button>
           </div>
@@ -631,15 +631,14 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
           {introStep === 'mission' && (
             <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-4 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200">
               <div className="text-[#2563EB] text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
-                HYBRIDIZATION & ORBITAL OVERLAP
+                HYBRIDIZATION &amp; ORBITAL OVERLAP
               </div>
 
-              <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
-                <span className="text-[#2563EB]">MISSION:</span> Construct & Overlap Orbitals for C₂H₄ (Ethylene)
+              <h1 className="text-xl sm:text-2xl md:text-4xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+                <span className="text-[#2563EB]">MISSION:</span> Construct &amp; Overlap Orbitals for C₂H₄ (Ethylene)
               </h1>
 
-
-              <div className="pt-1.5 sm:pt-2.5">
+              <div className="pt-1.5 sm:pt-2">
                 <button
                   type="button"
                   onClick={() => setIntroStep('instructions')}
@@ -654,24 +653,38 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
 
           {/* STEP 2: INSTRUCTIONS SCREEN (WITH IMAGES, NO SUBTITLE TEXT, FULLY VISIBLE) */}
           {introStep === 'instructions' && (
-            <div className="max-w-xl mx-auto my-auto text-center space-y-1 sm:space-y-1.5 z-10 px-2 sm:px-4 py-0.5 w-full animate-in fade-in duration-200">
-              <div className="text-[#1E293B] text-sm sm:text-base font-black tracking-wide">
-                Instructions
+            <div className="max-w-4xl mx-auto my-auto flex flex-col justify-between z-10 px-2 sm:px-3 py-0.5 w-full animate-in fade-in duration-200 flex-1">
+              {/* Header Title */}
+              <div className="text-center pt-0.5 pb-1 sm:pb-1.5">
+                <h2 className="text-[#1E293B] text-xs sm:text-sm md:text-base font-black tracking-wide uppercase">
+                  INSTRUCTIONS TO PLAY
+                </h2>
               </div>
 
-              {/* 3 Instructions (One line each + SVG Image Hint, No Subtitles) */}
-              <div className="space-y-1 sm:space-y-1.5 text-left max-w-lg mx-auto w-full">
+              {/* 3 Instructions Side-by-Side in Landscape Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 landscape:grid-cols-3 gap-2 sm:gap-3 w-full mx-auto my-auto items-stretch">
                 {/* 1. Tap H and C to form C2H4 */}
-                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <div className="w-5 h-5 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
-                      1
+                <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                        1
+                      </div>
+                      <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                        Place Atoms
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                    <div className="mt-1">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                        C₂H₄ Molecule
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
                       Tap the C and H atoms to form the C₂H₄ (Ethylene) molecule.
                     </p>
                   </div>
-                  <div className="w-16 sm:w-20 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+
+                  <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
                     <img
                       src="/images/hybridization/l2_step1_place_atoms.svg"
                       alt="Step 1: Place atoms"
@@ -681,16 +694,27 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
                 </div>
 
                 {/* 2. Tap required orbitals */}
-                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <div className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
-                      2
+                <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                        2
+                      </div>
+                      <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                        Attach Orbitals
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
-                      Tap the required orbitals (sp², 1s, and p) to attach them to the atoms.
+                    <div className="mt-1">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                        Hybrid Orbitals
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
+                      Tap the required orbitals (sp², 1s, and p) to attach them.
                     </p>
                   </div>
-                  <div className="w-16 sm:w-20 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+
+                  <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
                     <img
                       src="/images/hybridization/l2_step2_add_orbitals.svg"
                       alt="Step 2: Add orbitals"
@@ -700,16 +724,27 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
                 </div>
 
                 {/* 3. Tap create bond button */}
-                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
-                      3
+                <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                        3
+                      </div>
+                      <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                        Form Bonds
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
-                      After placing orbitals, tap Create Bond button to form the bonds.
+                    <div className="mt-1">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                        Overlap Bonds
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
+                      After placing orbitals, tap Create Bond button to form bonds.
                     </p>
                   </div>
-                  <div className="w-24 sm:w-28 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center p-0.5">
+
+                  <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
                     <img
                       src="/images/hybridization/l2_step3_form_bonds.png"
                       alt="Step 3: Form bonds button"
@@ -719,12 +754,12 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
                 </div>
               </div>
 
-              {/* Action Buttons: Back and Play (Guaranteed visible at height 376) */}
-              <div className="pt-1.5 sm:pt-2 flex items-center justify-center gap-3 shrink-0">
+              {/* Action Buttons: Back and Play */}
+              <div className="pt-1.5 sm:pt-2 pb-0.5 flex items-center justify-center gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIntroStep('mission')}
-                  className="px-5 sm:px-6 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                  className="px-5 sm:px-6 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1 cursor-pointer transition-all active:scale-95"
                 >
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
                   <span>BACK</span>
@@ -733,7 +768,7 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
                 <button
                   type="button"
                   onClick={() => setGameStarted(true)}
-                  className="px-6 sm:px-8 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                  className="px-6 sm:px-8 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
                 >
                   <Play className="w-3.5 h-3.5 fill-white" />
                   <span>PLAY</span>

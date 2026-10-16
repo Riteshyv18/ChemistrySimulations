@@ -4,7 +4,7 @@ import React, { useState, useRef, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, Cylinder, Html } from '@react-three/drei';
+import { OrbitControls, Sphere, Cylinder, Html, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import {
   RotateCcw,
@@ -19,7 +19,6 @@ import {
   ChevronDown,
   ChevronUp,
   X,
-  Sparkles,
   ArrowDown,
   Move,
   BookOpen,
@@ -65,7 +64,7 @@ const MOLECULES: MoleculeItem[] = [
     centralAtomName: 'Boron',
     hybridization: 'sp²',
     geometry: 'Trigonal planar',
-    correctBox: 'B',
+    correctBox: 'D',
   },
   {
     id: 'CH4',
@@ -85,7 +84,7 @@ const MOLECULES: MoleculeItem[] = [
     centralAtomName: 'Phosphorus',
     hybridization: 'sp³d',
     geometry: 'Trigonal bipyramidal',
-    correctBox: 'D',
+    correctBox: 'B',
   },
   {
     id: 'SF6',
@@ -99,12 +98,12 @@ const MOLECULES: MoleculeItem[] = [
   },
 ];
 
-// Target hybridization mapping for boxes A-E
+// Target hybridization mapping for boxes A-E (Ordered: sp, sp³d, sp³, sp², sp³d²)
 const BOX_MAPPINGS: Record<'A' | 'B' | 'C' | 'D' | 'E', { hybridization: string; isUsed: boolean }> = {
   A: { hybridization: 'sp', isUsed: true },
-  B: { hybridization: 'sp²', isUsed: true },
+  B: { hybridization: 'sp³d', isUsed: true },
   C: { hybridization: 'sp³', isUsed: true },
-  D: { hybridization: 'sp³d', isUsed: true },
+  D: { hybridization: 'sp²', isUsed: true },
   E: { hybridization: 'sp³d²', isUsed: true },
 };
 
@@ -142,21 +141,89 @@ const MOLECULE_CARD_STYLES: Record<string, { border: string; bg: string; hover: 
   },
 };
 
-// ── Atom Label 3D Badge Helper ───────────────────────────────────────────────
-const AtomLabel = ({ symbol, color = "#1e293b", position = [0, 0, 0] }: { symbol: string; color?: string; position?: [number, number, number] }) => (
-  <Html position={[position[0], position[1] + 0.45, position[2]]} center distanceFactor={14} zIndexRange={[100, 0]}>
-    <span className="text-[11px] font-mono font-black leading-none select-none pointer-events-none drop-shadow-sm px-1 rounded bg-white/80 border border-slate-200" style={{ color }}>
-      {symbol}
-    </span>
-  </Html>
-);
+// ── 3D Atom & Bond Components (Matching Topic 2 Level 2 Style) ───────────────
+
+interface AtomTheme {
+  color: string;
+  emissive: string;
+  highlight: string;
+  emissiveHighlight: string;
+}
+
+const ATOM_THEMES: Record<string, AtomTheme> = {
+  Be: { color: '#0284c7', emissive: '#0369a1', highlight: '#bae6fd', emissiveHighlight: '#38bdf8' },
+  B:  { color: '#8b5cf6', emissive: '#5b21b6', highlight: '#ddd6fe', emissiveHighlight: '#a78bfa' },
+  C:  { color: '#6366f1', emissive: '#312e81', highlight: '#c7d2fe', emissiveHighlight: '#818cf8' },
+  H:  { color: '#3b82f6', emissive: '#1d4ed8', highlight: '#bfdbfe', emissiveHighlight: '#60a5fa' },
+  P:  { color: '#f59e0b', emissive: '#92400e', highlight: '#fde68a', emissiveHighlight: '#f59e0b' },
+  S:  { color: '#e11d48', emissive: '#9f1239', highlight: '#fecdd3', emissiveHighlight: '#fb7185' },
+  Cl: { color: '#10b981', emissive: '#047857', highlight: '#a7f3d0', emissiveHighlight: '#34d399' },
+  F:  { color: '#06b6d4', emissive: '#0e7490', highlight: '#cffafe', emissiveHighlight: '#22d3ee' },
+};
+
+// Atom3D matching Topic 2 Level 2 CarbonAtom3D & HydrogenAtom3D
+const Atom3D = ({
+  symbol,
+  position = [0, 0, 0],
+  radius = 0.48,
+  showLabels = true,
+}: {
+  symbol: string;
+  position?: [number, number, number];
+  radius?: number;
+  showLabels?: boolean;
+}) => {
+  const theme = ATOM_THEMES[symbol] || {
+    color: '#6366f1',
+    emissive: '#312e81',
+    highlight: '#c7d2fe',
+    emissiveHighlight: '#818cf8',
+  };
+
+  return (
+    <group position={position}>
+      {/* Central 3D Nucleus (Big, 3D Shaded Sphere) */}
+      <Sphere args={[radius, 32, 32]}>
+        <meshStandardMaterial
+          color={theme.color}
+          emissive={theme.emissive}
+          emissiveIntensity={0.25}
+          roughness={0.2}
+          metalness={0.45}
+        />
+      </Sphere>
+
+      {/* Specular Fresnel highlight shell */}
+      <Sphere args={[radius + 0.015, 24, 24]}>
+        <meshStandardMaterial
+          color={theme.highlight}
+          emissive={theme.emissiveHighlight}
+          emissiveIntensity={0.12}
+          roughness={0.1}
+          metalness={0.7}
+          transparent
+          opacity={0.35}
+        />
+      </Sphere>
+
+      {/* Level 2 crisp white label */}
+      {showLabels && (
+        <Html center distanceFactor={5.8} style={{ pointerEvents: 'none' }}>
+          <div className="text-white font-black text-xs select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] font-sans pointer-events-none tracking-wide text-center leading-none">
+            {symbol}
+          </div>
+        </Html>
+      )}
+    </group>
+  );
+};
 
 // ── 3D Bond Cylinder Helper ──────────────────────────────────────────────────
 const Bond = ({
   start,
   end,
-  color = "#94a3b8",
-  radius = 0.08
+  color = "#64748b",
+  radius = 0.05
 }: {
   start: [number, number, number];
   end: [number, number, number];
@@ -186,33 +253,17 @@ const Bond = ({
 // 1. BeCl2 - Linear
 const BeCl2Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
   const bePos: [number, number, number] = [0, 0, 0];
-  const cl1Pos: [number, number, number] = [-1.8, 0, 0];
-  const cl2Pos: [number, number, number] = [1.8, 0, 0];
+  const cl1Pos: [number, number, number] = [-1.7, 0, 0];
+  const cl2Pos: [number, number, number] = [1.7, 0, 0];
 
   return (
     <group>
-      <Sphere args={[0.45, 32, 32]} position={bePos}>
-        <meshStandardMaterial color="#0891b2" roughness={0.2} metalness={0.5} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="Be" position={bePos} color="#0891b2" />}
+      <Atom3D symbol="Be" position={bePos} radius={0.50} showLabels={showLabels} />
+      <Atom3D symbol="Cl" position={cl1Pos} radius={0.46} showLabels={showLabels} />
+      <Atom3D symbol="Cl" position={cl2Pos} radius={0.46} showLabels={showLabels} />
 
-      <Sphere args={[0.55, 32, 32]} position={cl1Pos}>
-        <meshStandardMaterial color="#16a34a" roughness={0.3} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="Cl" position={cl1Pos} color="#16a34a" />}
-
-      <Sphere args={[0.55, 32, 32]} position={cl2Pos}>
-        <meshStandardMaterial color="#16a34a" roughness={0.3} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="Cl" position={cl2Pos} color="#16a34a" />}
-
-      <Bond start={bePos} end={cl1Pos} color="#64748b" />
-      <Bond start={bePos} end={cl2Pos} color="#64748b" />
-
-      {/* Cloud Representation */}
-      <Sphere args={[0.65, 24, 24]} position={bePos}>
-        <meshBasicMaterial color="#06b6d4" wireframe transparent opacity={0.25} />
-      </Sphere>
+      <Bond start={bePos} end={cl1Pos} />
+      <Bond start={bePos} end={cl2Pos} />
     </group>
   );
 };
@@ -220,36 +271,21 @@ const BeCl2Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
 // 2. BF3 - Trigonal Planar
 const BF3Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
   const bPos: [number, number, number] = [0, 0, 0];
-  const r = 1.7;
+  const r = 1.6;
   const f1Pos: [number, number, number] = [0, r, 0];
   const f2Pos: [number, number, number] = [r * Math.cos(-Math.PI / 6), r * Math.sin(-Math.PI / 6), 0];
   const f3Pos: [number, number, number] = [-r * Math.cos(-Math.PI / 6), r * Math.sin(-Math.PI / 6), 0];
 
   return (
     <group>
-      <Sphere args={[0.42, 32, 32]} position={bPos}>
-        <meshStandardMaterial color="#16a34a" roughness={0.2} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="B" position={bPos} color="#16a34a" />}
+      <Atom3D symbol="B" position={bPos} radius={0.50} showLabels={showLabels} />
+      <Atom3D symbol="F" position={f1Pos} radius={0.44} showLabels={showLabels} />
+      <Atom3D symbol="F" position={f2Pos} radius={0.44} showLabels={showLabels} />
+      <Atom3D symbol="F" position={f3Pos} radius={0.44} showLabels={showLabels} />
 
-      <Sphere args={[0.48, 32, 32]} position={f1Pos}>
-        <meshStandardMaterial color="#ea580c" roughness={0.3} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="F" position={f1Pos} color="#ea580c" />}
-
-      <Sphere args={[0.48, 32, 32]} position={f2Pos}>
-        <meshStandardMaterial color="#ea580c" roughness={0.3} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="F" position={f2Pos} color="#ea580c" />}
-
-      <Sphere args={[0.48, 32, 32]} position={f3Pos}>
-        <meshStandardMaterial color="#ea580c" roughness={0.3} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="F" position={f3Pos} color="#ea580c" />}
-
-      <Bond start={bPos} end={f1Pos} color="#64748b" />
-      <Bond start={bPos} end={f2Pos} color="#64748b" />
-      <Bond start={bPos} end={f3Pos} color="#64748b" />
+      <Bond start={bPos} end={f1Pos} />
+      <Bond start={bPos} end={f2Pos} />
+      <Bond start={bPos} end={f3Pos} />
     </group>
   );
 };
@@ -257,7 +293,7 @@ const BF3Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
 // 3. CH4 - Tetrahedral
 const CH4Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
   const cPos: [number, number, number] = [0, 0, 0];
-  const r = 1.6;
+  const r = 1.5;
   const h1Pos: [number, number, number] = [0, r, 0];
   const h2Pos: [number, number, number] = [r * (8 / 9) ** 0.5, -r / 3, 0];
   const h3Pos: [number, number, number] = [-r * (2 / 9) ** 0.5, -r / 3, r * (2 / 3) ** 0.5];
@@ -265,18 +301,11 @@ const CH4Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
 
   return (
     <group>
-      <Sphere args={[0.45, 32, 32]} position={cPos}>
-        <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.7} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="C" position={cPos} color="#1e293b" />}
-
+      <Atom3D symbol="C" position={cPos} radius={0.52} showLabels={showLabels} />
       {[h1Pos, h2Pos, h3Pos, h4Pos].map((pos, idx) => (
         <group key={idx}>
-          <Sphere args={[0.38, 32, 32]} position={pos}>
-            <meshStandardMaterial color="#94a3b8" roughness={0.2} />
-          </Sphere>
-          {showLabels && <AtomLabel symbol="H" position={pos} color="#475569" />}
-          <Bond start={cPos} end={pos} color="#cbd5e1" />
+          <Atom3D symbol="H" position={pos} radius={0.38} showLabels={showLabels} />
+          <Bond start={cPos} end={pos} />
         </group>
       ))}
     </group>
@@ -286,8 +315,8 @@ const CH4Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
 // 4. PCl5 - Trigonal Bipyramidal
 const PCl5Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
   const pPos: [number, number, number] = [0, 0, 0];
-  const rAxial = 1.7;
-  const rEq = 1.5;
+  const rAxial = 1.55;
+  const rEq = 1.4;
 
   const clAx1: [number, number, number] = [0, rAxial, 0];
   const clAx2: [number, number, number] = [0, -rAxial, 0];
@@ -298,18 +327,11 @@ const PCl5Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
 
   return (
     <group>
-      <Sphere args={[0.45, 32, 32]} position={pPos}>
-        <meshStandardMaterial color="#d97706" roughness={0.2} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="P" position={pPos} color="#d97706" />}
-
+      <Atom3D symbol="P" position={pPos} radius={0.52} showLabels={showLabels} />
       {[clAx1, clAx2, clEq1, clEq2, clEq3].map((pos, idx) => (
         <group key={idx}>
-          <Sphere args={[0.42, 32, 32]} position={pos}>
-            <meshStandardMaterial color="#16a34a" roughness={0.3} />
-          </Sphere>
-          {showLabels && <AtomLabel symbol="Cl" position={pos} color="#16a34a" />}
-          <Bond start={pPos} end={pos} color="#64748b" />
+          <Atom3D symbol="Cl" position={pos} radius={0.42} showLabels={showLabels} />
+          <Bond start={pPos} end={pos} />
         </group>
       ))}
     </group>
@@ -319,7 +341,7 @@ const PCl5Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
 // 5. SF6 - Octahedral
 const SF6Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
   const sPos: [number, number, number] = [0, 0, 0];
-  const r = 1.5;
+  const r = 1.4;
 
   const fPositions: [number, number, number][] = [
     [r, 0, 0],
@@ -332,18 +354,11 @@ const SF6Molecule3D = ({ showLabels = true }: { showLabels?: boolean }) => {
 
   return (
     <group>
-      <Sphere args={[0.45, 32, 32]} position={sPos}>
-        <meshStandardMaterial color="#e11d48" roughness={0.2} />
-      </Sphere>
-      {showLabels && <AtomLabel symbol="S" position={sPos} color="#e11d48" />}
-
+      <Atom3D symbol="S" position={sPos} radius={0.52} showLabels={showLabels} />
       {fPositions.map((pos, idx) => (
         <group key={idx}>
-          <Sphere args={[0.4, 32, 32]} position={pos}>
-            <meshStandardMaterial color="#ea580c" roughness={0.3} />
-          </Sphere>
-          {showLabels && <AtomLabel symbol="F" position={pos} color="#ea580c" />}
-          <Bond start={sPos} end={pos} color="#64748b" />
+          <Atom3D symbol="F" position={pos} radius={0.40} showLabels={showLabels} />
+          <Bond start={sPos} end={pos} />
         </group>
       ))}
     </group>
@@ -371,7 +386,7 @@ const Molecule3DRenderer = ({
   });
 
   return (
-    <group ref={groupRef} scale={isHighlighted ? [1.1, 1.1, 1.1] : [0.95, 0.95, 0.95]}>
+    <group ref={groupRef} scale={isHighlighted ? [0.95, 0.95, 0.95] : [0.8, 0.8, 0.8]}>
       {code === 'BeCl2' && <BeCl2Molecule3D showLabels={showLabels} />}
       {code === 'BF3' && <BF3Molecule3D showLabels={showLabels} />}
       {code === 'CH4' && <CH4Molecule3D showLabels={showLabels} />}
@@ -388,6 +403,7 @@ const OrbitalClueLobe3D = ({ count }: { count: number }) => {
   useFrame((_, delta) => {
     if (groupRef.current) {
       groupRef.current.rotation.y += delta * 0.35;
+      groupRef.current.rotation.x = 0.22; // slight 3D tilt to clearly show depth and geometry
     }
   });
 
@@ -402,29 +418,30 @@ const OrbitalClueLobe3D = ({ count }: { count: number }) => {
   const color = colors[count] || '#3b82f6';
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} scale={0.82}>
       {/* Central Nucleus */}
-      <Sphere args={[0.22, 24, 24]}>
+      <Sphere args={[0.18, 24, 24]}>
         <meshStandardMaterial color="#1e293b" roughness={0.3} />
       </Sphere>
 
-      {/* Render lobe shapes based on count */}
+      {/* 2 hybrid orbitals (sp - Linear 180°) */}
       {count === 2 && (
         <group>
-          <Sphere args={[0.45, 24, 24]} position={[-0.75, 0, 0]} scale={[1.2, 0.65, 0.65]}>
+          <Sphere args={[0.38, 24, 24]} position={[-0.6, 0, 0]} scale={[1.2, 0.65, 0.65]}>
             <meshStandardMaterial color={color} roughness={0.3} transparent opacity={0.85} />
           </Sphere>
-          <Sphere args={[0.45, 24, 24]} position={[0.75, 0, 0]} scale={[1.2, 0.65, 0.65]}>
+          <Sphere args={[0.38, 24, 24]} position={[0.6, 0, 0]} scale={[1.2, 0.65, 0.65]}>
             <meshStandardMaterial color={color} roughness={0.3} transparent opacity={0.85} />
           </Sphere>
         </group>
       )}
 
+      {/* 3 hybrid orbitals (sp² - Trigonal Planar 120°) */}
       {count === 3 && (
         <group>
           {[0, (2 * Math.PI) / 3, (4 * Math.PI) / 3].map((angle, idx) => (
             <group key={idx} rotation={[0, 0, angle]}>
-              <Sphere args={[0.42, 24, 24]} position={[0, 0.7, 0]} scale={[0.6, 1.1, 0.6]}>
+              <Sphere args={[0.34, 24, 24]} position={[0, 0.58, 0]} scale={[0.65, 1.15, 0.65]}>
                 <meshStandardMaterial color={color} roughness={0.3} transparent opacity={0.85} />
               </Sphere>
             </group>
@@ -432,31 +449,55 @@ const OrbitalClueLobe3D = ({ count }: { count: number }) => {
         </group>
       )}
 
+      {/* 4 hybrid orbitals (sp³ - Tetrahedral 109.5°) */}
       {count === 4 && (
         <group>
           {[
-            [0, 0.7, 0],
-            [0.6, -0.35, 0],
-            [-0.3, -0.35, 0.5],
-            [-0.3, -0.35, -0.5],
+            [0, 0.62, 0],
+            [0.58, -0.22, 0],
+            [-0.29, -0.22, 0.5],
+            [-0.29, -0.22, -0.5],
           ].map((pos, idx) => (
-            <Sphere key={idx} args={[0.38, 24, 24]} position={pos as any}>
+            <Sphere key={idx} args={[0.31, 24, 24]} position={pos as any}>
               <meshStandardMaterial color={color} roughness={0.3} transparent opacity={0.85} />
             </Sphere>
           ))}
         </group>
       )}
 
-      {count >= 5 && (
+      {/* 5 hybrid orbitals (sp³d - Trigonal Bipyramidal: 2 Axial + 3 Equatorial) */}
+      {count === 5 && (
+        <group>
+          {/* 2 Axial Lobes (Top & Bottom along Y) */}
+          <Sphere args={[0.27, 24, 24]} position={[0, 0.62, 0]} scale={[0.65, 1.15, 0.65]}>
+            <meshStandardMaterial color={color} roughness={0.3} transparent opacity={0.85} />
+          </Sphere>
+          <Sphere args={[0.27, 24, 24]} position={[0, -0.62, 0]} scale={[0.65, 1.15, 0.65]}>
+            <meshStandardMaterial color={color} roughness={0.3} transparent opacity={0.85} />
+          </Sphere>
+          {/* 3 Equatorial Lobes (Horizontal at 120°) */}
+          {[0, (2 * Math.PI) / 3, (4 * Math.PI) / 3].map((angle, idx) => (
+            <group key={idx} rotation={[0, angle, 0]}>
+              <Sphere args={[0.27, 24, 24]} position={[0.54, 0, 0]} scale={[1.15, 0.65, 0.65]}>
+                <meshStandardMaterial color={color} roughness={0.3} transparent opacity={0.85} />
+              </Sphere>
+            </group>
+          ))}
+        </group>
+      )}
+
+      {/* 6 hybrid orbitals (sp³d² - Octahedral: 6 symmetric lobes along ±X, ±Y, ±Z) */}
+      {count === 6 && (
         <group>
           {[
-            [0, 0.7, 0],
-            [0, -0.7, 0],
-            [0.6, 0, 0],
-            [-0.3, 0, 0.5],
-            [-0.3, 0, -0.5],
-          ].map((pos, idx) => (
-            <Sphere key={idx} args={[0.35, 24, 24]} position={pos as any}>
+            { pos: [0, 0.56, 0], scale: [0.65, 1.15, 0.65] },
+            { pos: [0, -0.56, 0], scale: [0.65, 1.15, 0.65] },
+            { pos: [0.56, 0, 0], scale: [1.15, 0.65, 0.65] },
+            { pos: [-0.56, 0, 0], scale: [1.15, 0.65, 0.65] },
+            { pos: [0, 0, 0.56], scale: [0.65, 0.65, 1.15] },
+            { pos: [0, 0, -0.56], scale: [0.65, 0.65, 1.15] },
+          ].map((item, idx) => (
+            <Sphere key={idx} args={[0.25, 24, 24]} position={item.pos as any} scale={item.scale as any}>
               <meshStandardMaterial color={color} roughness={0.3} transparent opacity={0.85} />
             </Sphere>
           ))}
@@ -503,6 +544,9 @@ export default function HybridizationMatchPuzzleGamePage({
   // Matched molecules mapping: moleculeId -> boxKey ('A' | 'B' | 'C' | 'D' | 'E')
   const [matchedMolecules, setMatchedMolecules] = useState<Record<string, 'A' | 'B' | 'C' | 'D' | 'E'>>({});
 
+  // Incorrectly placed molecules mapping: moleculeId -> boxKey ('A' | 'B' | 'C' | 'D' | 'E')
+  const [incorrectMatches, setIncorrectMatches] = useState<Record<string, 'A' | 'B' | 'C' | 'D' | 'E'>>({});
+
   // Active step focus (1: 'Unlock', 2: 'Inspect', 3: 'Match', 4: 'Complete')
   const [activeStep, setActiveStep] = useState<number>(1);
 
@@ -531,6 +575,7 @@ export default function HybridizationMatchPuzzleGamePage({
 
   const handleReset = () => {
     setMatchedMolecules({});
+    setIncorrectMatches({});
     setClueAnswers({});
     setBoxesUnlocked(false);
     setActiveStep(1);
@@ -626,6 +671,13 @@ export default function HybridizationMatchPuzzleGamePage({
     const targetMolecule = MOLECULES.find((m) => m.id === moleculeId);
     if (!targetMolecule) return;
 
+    // If molecule is already correctly matched or placed in an incorrect box, ignore
+    if (matchedMolecules[moleculeId] || incorrectMatches[moleculeId]) return;
+
+    // If target box is already occupied by any molecule, ignore
+    const isBoxOccupied = Object.values(matchedMolecules).includes(boxKey) || Object.values(incorrectMatches).includes(boxKey);
+    if (isBoxOccupied) return;
+
     if (targetMolecule.correctBox === boxKey) {
       // Correct Match!
       const updatedMatches = {
@@ -641,19 +693,37 @@ export default function HybridizationMatchPuzzleGamePage({
       });
 
       // Automatically select the next unmatched molecule
-      const nextUnmatched = MOLECULES.find((m) => !updatedMatches[m.id]);
+      const nextUnmatched = MOLECULES.find((m) => !updatedMatches[m.id] && !incorrectMatches[m.id]);
       if (nextUnmatched) {
         setTimeout(() => {
           setActiveMoleculeId(nextUnmatched.id);
         }, 400);
       }
     } else {
-      // Incorrect Match
+      // Incorrect Match: Droppable into the red box with instant revert option
+      setIncorrectMatches((prev) => ({
+        ...prev,
+        [moleculeId]: boxKey,
+      }));
+
+      setActiveMoleculeId(moleculeId);
+
       setFeedback({
         type: 'incorrect',
-        message: '✕ Try Again! Look closely at the 3D domain arrangement.',
+        message: '✕ Incorrect Match! Look closely at the 3D domain arrangement.',
       });
     }
+  };
+
+  // Instant Revert Handler to return an incorrectly dropped molecule back to the pool
+  const handleRevert = (moleculeId: string) => {
+    setIncorrectMatches((prev) => {
+      const updated = { ...prev };
+      delete updated[moleculeId];
+      return updated;
+    });
+    setActiveMoleculeId(moleculeId);
+    setFeedback(null);
   };
 
   // Full Game Reset
@@ -662,6 +732,7 @@ export default function HybridizationMatchPuzzleGamePage({
     setBoxesUnlocked(false);
     setStep1Collapsed(false);
     setMatchedMolecules({});
+    setIncorrectMatches({});
     setActiveMoleculeId('BeCl2');
     setFeedback(null);
     setShowSuccessModal(false);
@@ -736,16 +807,16 @@ export default function HybridizationMatchPuzzleGamePage({
     >
       {/* ── INTRO MISSION & INSTRUCTIONS VIEW OVERLAY (NO SCROLL AT HEIGHT 376) ── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-4 bg-white/80 backdrop-blur-md overflow-hidden">
+        <div className="absolute inset-0 z-30 flex flex-col justify-between p-1.5 sm:p-2.5 bg-white/95 backdrop-blur-md overflow-y-auto">
           {/* Top Header Bar: Exit Button Only */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
               type="button"
               onClick={() => (onExit ? onExit() : exitSimulation())}
-              className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 h-7 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[10px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
               title="Exit Simulation (Back to App)"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <ArrowLeft className="w-3 h-3 text-blue-600 shrink-0" />
               <span>EXIT</span>
             </button>
           </div>
@@ -754,14 +825,14 @@ export default function HybridizationMatchPuzzleGamePage({
           {introStep === 'mission' && (
             <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-4 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200">
               <div className="text-[#2563EB] text-[10px] sm:text-xs font-mono font-bold tracking-[0.2em] uppercase">
-                HYBRIDIZATION & ORBITAL OVERLAP
+                HYBRIDIZATION &amp; ORBITAL OVERLAP
               </div>
 
-              <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
-                <span className="text-[#2563EB]">MISSION:</span> Match Hybridization Boxes & 3D Molecular Geometries
+              <h1 className="text-xl sm:text-2xl md:text-4xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
+                <span className="text-[#2563EB]">MISSION:</span> Match Hybridization Boxes &amp; 3D Molecular Geometries
               </h1>
 
-              <div className="pt-2 sm:pt-3">
+              <div className="pt-1.5 sm:pt-2">
                 <button
                   type="button"
                   onClick={() => setIntroStep('instructions')}
@@ -776,23 +847,38 @@ export default function HybridizationMatchPuzzleGamePage({
 
           {/* STEP 2: INSTRUCTIONS SCREEN (WITH IMAGES, NO SUBTITLE TEXT, FULLY VISIBLE AT HEIGHT 376) */}
           {introStep === 'instructions' && (
-            <div className="max-w-xl mx-auto my-auto text-center space-y-1.5 sm:space-y-2 z-10 px-2 sm:px-3 py-0.5 animate-in fade-in duration-200 w-full">
-              <div className="text-[#1E293B] text-sm sm:text-base font-black tracking-wide">
-                Instructions
+            <div className="max-w-3xl mx-auto my-auto flex flex-col justify-between z-10 px-2 sm:px-3 py-0.5 animate-in fade-in duration-200 w-full flex-1">
+              {/* Header Title */}
+              <div className="text-center pt-0.5 pb-1 sm:pb-1.5">
+                <h2 className="text-[#1E293B] text-xs sm:text-sm md:text-base font-black tracking-wide uppercase">
+                  INSTRUCTIONS TO PLAY
+                </h2>
               </div>
 
-              <div className="space-y-1.5 text-left max-w-xl mx-auto">
+              {/* Horizontal Instruction Cards Grid - side-by-side in landscape */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 landscape:grid-cols-2 gap-2 sm:gap-3.5 w-full mx-auto my-auto items-stretch">
                 {/* 1. Unlock boxes */}
-                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
-                      1
+                <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                        1
+                      </div>
+                      <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                        Unlock Boxes
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                    <div className="mt-1">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                        Hybridization Types
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
                       Select the correct hybridization to unlock the hybridization boxes.
                     </p>
                   </div>
-                  <div className="w-16 sm:w-20 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+
+                  <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
                     <img
                       src="/images/hybridization/l3_step1_unlock_boxes.svg"
                       alt="Step 1: Unlock boxes"
@@ -802,16 +888,27 @@ export default function HybridizationMatchPuzzleGamePage({
                 </div>
 
                 {/* 2. Match molecules */}
-                <div className="bg-white/95 backdrop-blur-md rounded-xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <div className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
-                      2
+                <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                        2
+                      </div>
+                      <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                        Match Molecules
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                    <div className="mt-1">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                        Drop in Box
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
                       Tap or drag each molecule to drop it into its matching hybridization box.
                     </p>
                   </div>
-                  <div className="w-16 sm:w-20 h-7 sm:h-8 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+
+                  <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
                     <img
                       src="/images/hybridization/l3_step2_drop_molecules.svg"
                       alt="Step 2: Drop molecules"
@@ -821,12 +918,12 @@ export default function HybridizationMatchPuzzleGamePage({
                 </div>
               </div>
 
-              {/* Action Buttons: Back and Play (Guaranteed visible at height 376) */}
-              <div className="pt-1.5 sm:pt-2 flex items-center justify-center gap-3 shrink-0">
+              {/* Action Buttons: Back and Play */}
+              <div className="pt-1.5 sm:pt-2 pb-0.5 flex items-center justify-center gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIntroStep('mission')}
-                  className="px-5 sm:px-6 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                  className="px-5 sm:px-6 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1 cursor-pointer transition-all active:scale-95"
                 >
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
                   <span>BACK</span>
@@ -835,7 +932,7 @@ export default function HybridizationMatchPuzzleGamePage({
                 <button
                   type="button"
                   onClick={() => setGameStarted(true)}
-                  className="px-6 sm:px-8 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                  className="px-6 sm:px-8 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
                 >
                   <Play className="w-3.5 h-3.5 fill-white" />
                   <span>PLAY</span>
@@ -910,50 +1007,51 @@ export default function HybridizationMatchPuzzleGamePage({
       {/* ── MAIN GAMEPLAY AREA ── */}
       {!boxesUnlocked ? (
         /* ── PHASE 1: STEP 1 UNLOCK THE HYBRIDIZATION BOXES (5 ORBITAL CARDS GRID) ── */
-        <section className="flex-1 w-full bg-white border border-slate-200 rounded-2xl p-2 sm:p-3 shadow-sm flex flex-col justify-between min-h-0 overflow-hidden">
+        <section className="flex-1 w-full bg-white border border-slate-200 rounded-2xl p-1.5 sm:p-2.5 shadow-sm flex flex-col justify-between min-h-0 overflow-y-auto overflow-x-hidden">
           {/* Header Row */}
-          <div className="flex items-center gap-2 mb-1 pb-1 border-b border-slate-100 shrink-0">
-            <div className="w-5 h-5 rounded-full bg-blue-600 text-white font-extrabold text-[10px] flex items-center justify-center shrink-0">
+          <div className="flex items-center gap-1.5 mb-0.5 pb-0.5 border-b border-slate-100 shrink-0">
+            <div className="w-4 h-4 rounded-full bg-blue-600 text-white font-extrabold text-[9px] flex items-center justify-center shrink-0">
               1
             </div>
             <div>
-              <h2 className="text-xs sm:text-sm font-extrabold text-[#1E293B]">
+              <h2 className="text-[11px] sm:text-xs font-extrabold text-[#1E293B] leading-tight">
                 Unlock the Hybridization Boxes
               </h2>
-              <p className="text-[10px] sm:text-[11px] text-[#64748B] font-medium">
+              <p className="text-[8.5px] sm:text-[9.5px] text-[#64748B] font-medium leading-tight">
                 Match the number of hybrid orbitals to the correct hybridization.
               </p>
             </div>
           </div>
 
           {/* 5 Orbital Cards Grid */}
-          <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 flex-1 min-h-0 items-stretch py-1">
+          <div className="grid grid-cols-5 gap-1 sm:gap-2 flex-1 min-h-0 items-stretch py-0.5">
             {[2, 3, 4, 5, 6].map((count) => {
               const assigned = clueAnswers[count];
               const targets: Record<number, string> = { 2: 'sp', 3: 'sp²', 4: 'sp³', 5: 'sp³d', 6: 'sp³d²' };
               const isCorrect = assigned === targets[count];
+              const isIncorrect = !!assigned && assigned !== targets[count];
 
               return (
                 <div
                   key={count}
-                  className={`bg-slate-50 border rounded-xl p-1.5 sm:p-2 flex flex-col items-center justify-between text-center transition-all ${
+                  className={`border rounded-xl p-1 sm:p-1.5 flex flex-col items-center justify-between text-center transition-all min-h-0 overflow-hidden h-full ${
                     isCorrect
                       ? 'border-emerald-400 bg-emerald-50/60 shadow-xs'
-                      : assigned
-                        ? 'border-blue-300'
-                        : 'border-slate-200 hover:border-blue-300'
+                      : isIncorrect
+                        ? 'border-red-400 bg-red-50/60 shadow-xs'
+                        : 'border-slate-200 bg-slate-50 hover:border-blue-300'
                   }`}
                 >
                   {/* 3D Mini Canvas Lobe */}
-                  <div className="w-full flex-1 min-h-[70px] rounded-lg bg-white border border-slate-200 overflow-hidden relative shadow-inner pointer-events-none">
-                    <Canvas camera={{ position: [0, 0, 3.2], fov: 45 }}>
+                  <div className="w-full flex-1 min-h-[40px] sm:min-h-[50px] rounded-lg bg-white border border-slate-200 overflow-hidden relative shadow-inner pointer-events-none">
+                    <Canvas camera={{ position: [0, 0, 3.4], fov: 45 }}>
                       <ambientLight intensity={1.1} />
                       <directionalLight position={[3, 4, 2]} intensity={1.5} />
                       <OrbitalClueLobe3D count={count} />
                     </Canvas>
                   </div>
 
-                  <span className="text-[10px] sm:text-xs font-extrabold text-[#1E293B] mt-1 shrink-0">
+                  <span className="text-[9px] sm:text-[10.5px] font-extrabold text-[#1E293B] mt-0.5 shrink-0 leading-tight">
                     {count} hybrid orbitals
                   </span>
 
@@ -962,11 +1060,11 @@ export default function HybridizationMatchPuzzleGamePage({
                     disabled={boxesUnlocked}
                     value={assigned || ''}
                     onChange={(e) => handleAssignClue(count, e.target.value)}
-                    className={`mt-1 w-full text-[10px] sm:text-xs font-mono font-bold rounded-lg px-1.5 py-1 text-center border focus:outline-none transition-all cursor-pointer ${
+                    className={`mt-0.5 w-full text-[9px] sm:text-[10.5px] font-mono font-bold rounded-lg px-1 py-0.5 text-center border focus:outline-none transition-all cursor-pointer shrink-0 ${
                       isCorrect
                         ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
-                        : assigned
-                          ? 'bg-blue-50 border-blue-300 text-blue-900'
+                        : isIncorrect
+                          ? 'bg-red-50 border-red-400 text-red-700'
                           : 'bg-white border-slate-200 text-[#1E293B] hover:border-blue-300'
                     }`}
                   >
@@ -977,6 +1075,17 @@ export default function HybridizationMatchPuzzleGamePage({
                     <option value="sp³d">sp³d</option>
                     <option value="sp³d²">sp³d²</option>
                   </select>
+
+                  {isIncorrect && (
+                    <span className="text-[7.5px] sm:text-[8px] font-bold text-red-600 mt-0.5 leading-none shrink-0 truncate max-w-full">
+                      ✕ Incorrect
+                    </span>
+                  )}
+                  {isCorrect && (
+                    <span className="text-[7.5px] sm:text-[8px] font-bold text-emerald-600 mt-0.5 leading-none shrink-0 truncate max-w-full">
+                      ✓ Correct
+                    </span>
+                  )}
                 </div>
               );
             })}
@@ -1005,22 +1114,25 @@ export default function HybridizationMatchPuzzleGamePage({
               <div className="grid grid-cols-2 gap-1 p-0.5 flex-1 min-h-0 auto-rows-fr">
                 {MOLECULES.map((mol) => {
                   const isMatched = !!matchedMolecules[mol.id];
+                  const isIncorrect = !!incorrectMatches[mol.id];
                   const isSelected = activeMoleculeId === mol.id;
                   const cardStyle = MOLECULE_CARD_STYLES[mol.id] || MOLECULE_CARD_STYLES.BeCl2;
 
                   return (
                     <div
                       key={mol.id}
-                      draggable={!isMatched}
+                      draggable={!isMatched && !isIncorrect}
                       onDragStart={(e) => handleMoleculeDragStart(e, mol.id)}
-                      onTouchStart={(e) => handleTouchStart(e, mol.id)}
+                      onTouchStart={(e) => !isIncorrect && handleTouchStart(e, mol.id)}
                       onClick={() => setActiveMoleculeId(mol.id)}
                       className={`border-2 rounded-xl p-1 flex flex-col items-center justify-between text-center cursor-pointer transition-all relative h-full w-full min-h-0 ${cardStyle.bg} ${
                         isMatched
                           ? 'border-emerald-400 bg-emerald-50/50'
-                          : isSelected
-                            ? `${cardStyle.glow} scale-[1.01]`
-                            : `${cardStyle.border} ${cardStyle.hover}`
+                          : isIncorrect
+                            ? 'border-red-300 bg-red-50/40 opacity-75'
+                            : isSelected
+                              ? `${cardStyle.glow} scale-[1.01]`
+                              : `${cardStyle.border} ${cardStyle.hover}`
                       }`}
                     >
                       <Move className="w-2.5 h-2.5 text-slate-400 opacity-60 absolute top-1 right-1 pointer-events-none" />
@@ -1031,11 +1143,18 @@ export default function HybridizationMatchPuzzleGamePage({
                         </div>
                       )}
 
+                      {isIncorrect && (
+                        <div className="absolute top-1 right-1 w-3 h-3 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center text-[8px] shadow-sm z-10" title="Placed incorrectly">
+                          ✕
+                        </div>
+                      )}
+
                       <div className="w-full flex-1 min-h-[28px] rounded-lg bg-white border border-slate-200 overflow-hidden relative shadow-inner">
-                        <Canvas camera={{ position: [0, 0, 4.2], fov: 45 }}>
-                          <ambientLight intensity={1.1} />
-                          <directionalLight position={[4, 5, 3]} intensity={1.3} />
-                          <Molecule3DRenderer code={mol.id} autoRotate={!isMatched} showLabels={false} />
+                        <Canvas camera={{ position: [0, 0, 4.8], fov: 45 }}>
+                          <ambientLight intensity={0.85} />
+                          <directionalLight position={[6, 9, 7]} intensity={1.8} />
+                          <pointLight position={[0, 2, 5]} intensity={0.9} color="#ffffff" />
+                          <Molecule3DRenderer code={mol.id} autoRotate={!isMatched && !isIncorrect} showLabels={false} />
                         </Canvas>
                       </div>
 
@@ -1072,34 +1191,71 @@ export default function HybridizationMatchPuzzleGamePage({
                   );
                   const matchedMol = MOLECULES.find((m) => m.id === matchedMolId);
 
+                  const incorrectMolId = Object.keys(incorrectMatches).find(
+                    (mId) => incorrectMatches[mId] === boxKey
+                  );
+                  const incorrectMol = MOLECULES.find((m) => m.id === incorrectMolId);
+
                   return (
                     <div
                       key={boxKey}
                       data-box-key={boxKey}
                       onDrop={(e) => handleBoxDrop(e, boxKey)}
                       onDragOver={handleDragOver}
-                      onClick={() => handleMatchToBox(activeMoleculeId, boxKey)}
-                      className={`bg-slate-50 border-2 rounded-xl p-1 flex flex-col items-center justify-between transition-all cursor-pointer h-full w-full min-h-0 ${
+                      onClick={() => !matchedMol && !incorrectMol && handleMatchToBox(activeMoleculeId, boxKey)}
+                      className={`border-2 rounded-xl p-1 flex flex-col items-center justify-between transition-all h-full w-full min-h-0 ${
                         matchedMol
                           ? 'border-emerald-400 bg-emerald-50/50 shadow-sm cursor-default'
-                          : 'border-blue-200 bg-blue-50/30 hover:border-blue-400 hover:scale-[1.01]'
+                          : incorrectMol
+                            ? 'border-red-400 bg-red-50/70 shadow-sm cursor-default'
+                            : 'bg-slate-50 border-blue-200 bg-blue-50/30 hover:border-blue-400 hover:scale-[1.01] cursor-pointer'
                       }`}
                     >
                       <div className="text-center shrink-0">
                         <div className="text-xs sm:text-sm font-extrabold text-[#1E293B] leading-none">{boxKey}</div>
-                        <div className="text-[9px] sm:text-[10px] font-mono font-bold text-blue-700 mt-0.5">{info.hybridization}</div>
+                        <div className={`text-[9px] sm:text-[10px] font-mono font-bold mt-0.5 ${
+                          matchedMol
+                            ? 'text-emerald-700'
+                            : incorrectMol
+                              ? 'text-red-600'
+                              : 'text-blue-700'
+                        }`}>
+                          {info.hybridization}
+                        </div>
                       </div>
 
                       {/* Drop Zone Box */}
-                      <div className={`w-full mt-0.5 flex-1 min-h-[24px] rounded-lg border-2 border-dashed flex flex-col items-center justify-center transition-all ${
+                      <div className={`w-full mt-0.5 flex-1 min-h-[24px] rounded-lg border-2 border-dashed flex flex-col items-center justify-center transition-all p-0.5 ${
                         matchedMol
                           ? 'border-emerald-300 bg-white text-emerald-800 font-extrabold text-xs'
-                          : 'border-slate-300 bg-white text-[#64748B]'
+                          : incorrectMol
+                            ? 'border-red-300 bg-white text-red-800 font-extrabold'
+                            : 'border-slate-300 bg-white text-[#64748B]'
                       }`}>
                         {matchedMol ? (
                           <div className="flex flex-col items-center gap-0.5">
                             <span className="text-[9.5px] font-extrabold text-emerald-800">{matchedMol.formula}</span>
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 text-white text-[7.5px] flex items-center justify-center font-extrabold">✓</span>
+                          </div>
+                        ) : incorrectMol ? (
+                          <div className="flex flex-col items-center gap-0.5 w-full text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              <span className="text-[9.5px] font-extrabold text-red-700 leading-tight">{incorrectMol.formula}</span>
+                              <span className="w-2.5 h-2.5 rounded-full bg-red-500 text-white text-[7.5px] flex items-center justify-center font-extrabold shrink-0">✕</span>
+                            </div>
+                            <span className="text-[7.5px] font-bold text-red-600 leading-none">Incorrect Match</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRevert(incorrectMol.id);
+                              }}
+                              className="mt-0.5 px-1.5 py-0.5 rounded bg-red-100 hover:bg-red-200 text-red-700 border border-red-300 text-[8px] font-bold flex items-center gap-0.5 cursor-pointer transition-all active:scale-95 shadow-xs leading-none"
+                              title="Revert molecule"
+                            >
+                              <RotateCcw className="w-2 h-2 shrink-0" />
+                              <span>Revert</span>
+                            </button>
                           </div>
                         ) : (
                           <span className="text-[8px] font-mono font-bold text-[#64748B]">DROP</span>
@@ -1134,12 +1290,14 @@ export default function HybridizationMatchPuzzleGamePage({
             </div>
 
             {/* 3D Canvas View Container */}
-            <div className="relative bg-slate-50 border border-slate-200 rounded-xl overflow-hidden flex-1 min-h-[120px] flex items-center justify-center shadow-inner my-0.5">
-              <Canvas camera={{ position: [0, 0, 5.2 / zoomLevel], fov: 45 }}>
-                <ambientLight intensity={1.1} />
-                <directionalLight position={[5, 6, 4]} intensity={1.4} />
-                <directionalLight position={[-5, -4, -3]} intensity={0.4} />
-                <Molecule3DRenderer code={activeMolecule.id} isHighlighted={true} autoRotate={autoRotate} showLabels={false} />
+            <div className="relative bg-[#f8fafc] border border-slate-200 rounded-xl overflow-hidden flex-1 min-h-[120px] flex items-center justify-center shadow-inner my-0.5">
+              <Canvas camera={{ position: [0, 0, 6.2 / zoomLevel], fov: 45 }}>
+                <ambientLight intensity={0.85} />
+                <directionalLight position={[6, 9, 7]} intensity={1.8} />
+                <directionalLight position={[-6, -4, 4]} intensity={0.6} color="#818cf8" />
+                <pointLight position={[0, 2, 5]} intensity={0.9} color="#ffffff" />
+                <Sparkles count={24} scale={4} size={2} speed={0.4} color="#38bdf8" />
+                <Molecule3DRenderer code={activeMolecule.id} isHighlighted={true} autoRotate={autoRotate} showLabels={true} />
                 <OrbitControls ref={controlsRef} enableZoom={true} />
               </Canvas>
 

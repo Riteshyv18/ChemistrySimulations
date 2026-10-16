@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 150" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+    <linearGradient id="sphereGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FCA5A5" />
+      <stop offset="40%" stop-color="#EF4444" />
+      <stop offset="85%" stop-color="#991B1B" />
+      <stop offset="100%" stop-color="#450A0A" />
+    </linearGradient>
+    <filter id="glowBlue" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#38BDF8" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- Dark container background matching simulator theme -->
+  <rect x="2" y="2" width="276" height="146" rx="14" fill="url(#bgGrad1)" stroke="#334155" stroke-width="1.5" />
+
+  <!-- LEFT: Selected Molecule Card in Tray -->
+  <g transform="translate(16, 26)" filter="url(#glowBlue)">
+    <rect x="0" y="0" width="88" height="96" rx="12" fill="#1E293B" stroke="#38BDF8" stroke-width="2.5" />
+    
+    <!-- Active Selected Badge -->
+    <rect x="18" y="-9" width="52" height="18" rx="9" fill="#0284C7" />
+    <text x="44" y="3.5" font-family="system-ui, sans-serif" font-weight="900" font-size="8.5" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">SELECTED</text>
+
+    <!-- 3D Molecule Graphic (O2) -->
+    <g transform="translate(44, 40)">
+      <!-- Left O sphere -->
+      <circle cx="-16" cy="0" r="14" fill="url(#sphereGrad)" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.5))" />
+      <circle cx="-19" cy="-4" r="4" fill="#FFFFFF" opacity="0.6" />
+      <text x="-16" y="4" font-family="system-ui, sans-serif" font-weight="900" font-size="11" fill="#FFFFFF" text-anchor="middle">O</text>
+
+      <!-- Double bonds -->
+      <line x1="-2" y1="-3" x2="2" y2="-3" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="-2" y1="3" x2="2" y2="3" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" />
+
+      <!-- Right O sphere -->
+      <circle cx="16" cy="0" r="14" fill="url(#sphereGrad)" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.5))" />
+      <circle cx="13" cy="-4" r="4" fill="#FFFFFF" opacity="0.6" />
+      <text x="16" y="4" font-family="system-ui, sans-serif" font-weight="900" font-size="11" fill="#FFFFFF" text-anchor="middle">O</text>
+    </g>
+
+    <!-- Formula Label -->
+    <text x="44" y="78" font-family="system-ui, sans-serif" font-weight="900" font-size="14" fill="#F8FAFC" text-anchor="middle">O₂</text>
+  </g>
+
+  <!-- Tap indicator ripple on selected molecule -->
+  <g transform="translate(90, 106)">
+    <circle cx="0" cy="0" r="14" fill="#38BDF8" opacity="0.25" />
+    <circle cx="0" cy="0" r="7" fill="#38BDF8" />
+  </g>
+
+  <!-- Animated curved arrow pointing from tray to slot -->
+  <path d="M 112 75 C 132 50, 148 50, 166 68" fill="none" stroke="#38BDF8" stroke-width="3" stroke-dasharray="5,4" stroke-linecap="round" />
+  <polygon points="163,60 174,74 158,74" fill="#38BDF8" transform="rotate(40 166 68)" />
+
+  <!-- RIGHT: Target Empty Slot Box -->
+  <g transform="translate(176, 26)">
+    <rect x="0" y="0" width="88" height="96" rx="12" fill="#0B132B" stroke="#60A5FA" stroke-width="2" stroke-dasharray="6,4" />
+    
+    <!-- Slot header -->
+    <text x="44" y="24" font-family="system-ui, sans-serif" font-weight="800" font-size="10" fill="#94A3B8" text-anchor="middle">TARGET SLOT</text>
+    
+    <!-- Slot Number circle -->
+    <circle cx="44" cy="52" r="16" fill="#1E293B" stroke="#3B82F6" stroke-width="1.5" />
+    <text x="44" y="58" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#60A5FA" text-anchor="middle">1</text>
+    
+    <!-- Action text -->
+    <rect x="16" y="76" width="56" height="15" rx="7.5" fill="#1E3A8A" />
+    <text x="44" y="87" font-family="system-ui, sans-serif" font-weight="800" font-size="8.5" fill="#93C5FD" text-anchor="middle">TAP TO PLACE</text>
+  </g>
+</svg>

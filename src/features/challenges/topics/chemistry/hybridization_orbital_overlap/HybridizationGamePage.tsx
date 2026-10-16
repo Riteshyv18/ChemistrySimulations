@@ -548,16 +548,16 @@ export default function HybridizationGamePage({
       
       {/* ── SCREEN 1: INTRO MISSION & INSTRUCTIONS OVERLAY VIEW (BLURRED BACKGROUND) ───── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-between p-2 sm:p-6 bg-white/40 backdrop-blur-md overflow-y-auto">
+        <div className="absolute inset-0 z-30 flex flex-col justify-between p-1.5 sm:p-2.5 bg-white/95 backdrop-blur-md overflow-y-auto">
           {/* Top Header Bar */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
               type="button"
               onClick={() => (onExit ? onExit() : exitSimulation())}
-              className="flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 h-7 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[10px] sm:text-xs shadow-sm transition-all cursor-pointer active:scale-95"
               title="Exit Simulation"
             >
-              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 shrink-0" />
+              <ArrowLeft className="w-3 h-3 text-blue-600 shrink-0" />
               <span>EXIT</span>
             </button>
           </div>
@@ -588,23 +588,38 @@ export default function HybridizationGamePage({
 
           {/* STEP 2: INSTRUCTIONS TO PLAY */}
           {introStep === 'instructions' && (
-            <div className="max-w-2xl mx-auto my-auto text-center space-y-2 sm:space-y-3 z-10 px-2 sm:px-4 py-1 w-full animate-in fade-in duration-200">
-              <div className="text-black text-base sm:text-lg md:text-xl font-black tracking-wide">
-                Instructions
+            <div className="max-w-xl mx-auto my-auto flex flex-col justify-between z-10 px-2 sm:px-3 py-0.5 w-full animate-in fade-in duration-200 flex-1">
+              {/* Header Title */}
+              <div className="text-center pt-0.5 pb-1 sm:pb-1.5">
+                <h2 className="text-[#1E293B] text-xs sm:text-sm md:text-base font-black tracking-wide uppercase">
+                  INSTRUCTIONS TO PLAY
+                </h2>
               </div>
 
-              {/* 1 Instruction Point as requested by user */}
-              <div className="space-y-1.5 sm:space-y-2 text-left max-w-xl mx-auto w-full">
-                <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-3 py-2.5 sm:py-3 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2.5 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] sm:text-xs shrink-0 shadow-sm">
-                      1
+              {/* Instruction Card */}
+              <div className="w-full max-w-md mx-auto my-auto">
+                <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                        1
+                      </div>
+                      <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                        Select Orbitals
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[12px] sm:text-sm text-[#1E293B] leading-tight">
+                    <div className="mt-1">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                        Hybridization View
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
                       Tap on the s, p, and d orbitals to see the shape and Hybridization.
                     </p>
                   </div>
-                  <div className="w-16 sm:w-24 md:w-28 h-9 sm:h-11 md:h-12 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
+
+                  {/* Big Visible Image Box - sized to fit 370px height comfortably */}
+                  <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
                     <img
                       src="/images/hybridization/l1_step1_tap_orbitals.svg"
                       alt="Tap orbitals instruction"
@@ -615,18 +630,20 @@ export default function HybridizationGamePage({
               </div>
 
               {/* Action Buttons: Back and Play */}
-              <div className="pt-2 sm:pt-3 flex items-center justify-center gap-3">
+              <div className="pt-1.5 sm:pt-2 pb-0.5 flex items-center justify-center gap-3 shrink-0">
                 <button
+                  type="button"
                   onClick={() => setIntroStep('mission')}
-                  className="px-5 sm:px-7 py-1.5 sm:py-2 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
+                  className="px-5 sm:px-6 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1 cursor-pointer transition-all active:scale-95"
                 >
                   <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
                   <span>BACK</span>
                 </button>
 
                 <button
+                  type="button"
                   onClick={() => setGameStarted(true)}
-                  className="px-7 sm:px-9 py-1.5 sm:py-2 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-2 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                  className="px-6 sm:px-8 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
                 >
                   <Play className="w-3.5 h-3.5 fill-white" />
                   <span>PLAY</span>

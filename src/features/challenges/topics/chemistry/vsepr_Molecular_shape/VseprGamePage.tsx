@@ -1773,10 +1773,10 @@ function Level3UI({
   const allFilled = slots.every(s => s !== null);
 
   const slotBadgeStyles = [
-    'bg-[#059669] text-white shadow-md shadow-emerald-600/30',
-    'bg-[#4F46E5] text-white shadow-md shadow-indigo-600/30',
-    'bg-[#2563EB] text-white shadow-md shadow-blue-600/30',
-    'bg-[#E11D48] text-white shadow-md shadow-rose-600/30',
+    'bg-black text-white shadow-md shadow-black/20',
+    'bg-black text-white shadow-md shadow-black/20',
+    'bg-black text-white shadow-md shadow-black/20',
+    'bg-black text-white shadow-md shadow-black/20',
   ];
 
   return (
@@ -2245,7 +2245,7 @@ export default function VseprGamePage({
       `}</style>
       {/* ── INTRO MISSION TARGET & INSTRUCTIONS OVERLAY VIEW (COVERS FULL PAGE CONTAINER WITH BLUR) ───── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-30 flex flex-col justify-between p-1 sm:px-3 sm:py-1.5 md:p-6 bg-white/40 backdrop-blur-md overflow-y-auto">
+        <div className="absolute inset-0 z-30 flex flex-col justify-between p-1 sm:px-3 sm:py-1.5 md:p-6 bg-white/95 backdrop-blur-md overflow-y-auto">
           {/* Top Header Bar */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
@@ -2263,7 +2263,7 @@ export default function VseprGamePage({
           {introStep === 'mission' && (
             <div className="max-w-3xl mx-auto my-auto text-center space-y-2 sm:space-y-4 z-10 px-2 sm:px-4 py-2 w-full">
               <div className="text-[#2563EB] text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
-                VSEPR THEORY & MOLECULAR GEOMETRIES
+                VSEPR THEORY &amp; MOLECULAR GEOMETRIES
               </div>
 
               <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold text-[#1E293B] tracking-tight leading-tight drop-shadow-sm">
@@ -2285,161 +2285,266 @@ export default function VseprGamePage({
             </div>
           )}
 
-          {/* STEP 2: INSTRUCTIONS TO PLAY (WITH BACK AND PLAY BUTTONS) */}
+          {/* STEP 2: INSTRUCTIONS TO PLAY */}
           {introStep === 'instructions' && (
-            <div className="max-w-2xl mx-auto my-auto text-center space-y-1 sm:space-y-2 z-10 px-2 sm:px-4 py-0.5 w-full animate-in fade-in duration-200">
-              <div className="text-black text-base sm:text-lg md:text-xl font-black tracking-wide">
-                Instructions
-              </div>
-
-              {/* Level 1: 3 Instruction Points */}
+            <>
+              {/* Level 1: 3 Instruction Cards Side-by-Side in Landscape Mode */}
               {currentLevel === 1 && (
-                <div className="space-y-1 sm:space-y-1.5 text-left max-w-xl mx-auto w-full">
-                  {/* Point 1 */}
-                  <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2 sm:gap-2.5 transition-all hover:border-blue-300">
-                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0 shadow-sm">
-                        1
+                <div className="max-w-4xl mx-auto my-auto flex flex-col justify-between z-10 px-2 sm:px-3 py-0.5 w-full animate-in fade-in duration-200 flex-1">
+                  {/* Header Title */}
+                  <div className="text-center pt-0.5 pb-1 sm:pb-1.5">
+                    <h2 className="text-[#1E293B] text-xs sm:text-sm md:text-base font-black tracking-wide uppercase">
+                      INSTRUCTIONS TO PLAY
+                    </h2>
+                  </div>
+
+                  {/* 3 Instructions Side-by-Side in Landscape Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 landscape:grid-cols-3 gap-2 sm:gap-3 w-full mx-auto my-auto items-stretch">
+                    {/* 1. Tap atoms */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                            1
+                          </div>
+                          <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                            Place Atoms
+                          </h3>
+                        </div>
+                        <div className="mt-1">
+                          <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                            Atom Placement
+                          </span>
+                        </div>
+                        <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
+                          Tap the atoms (at the bottom) to create molecule.
+                        </p>
                       </div>
-                      <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
-                        Tap the atoms (at the bottom) to create molecule
-                      </p>
+
+                      <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
+                        <img
+                          src="/images/vsepr/step1_tap_atoms.svg"
+                          alt="Step 1: Tap atoms preview"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                     </div>
-                    <div className="w-14 sm:w-20 md:w-24 h-7 sm:h-8 md:h-9 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
-                      <img
-                        src="/images/vsepr/step1_tap_atoms.svg"
-                        alt="Step 1: Tap atoms preview"
-                        className="w-full h-full object-contain"
-                      />
+
+                    {/* 2. Create bonds */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                            2
+                          </div>
+                          <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                            Create Bonds
+                          </h3>
+                        </div>
+                        <div className="mt-1">
+                          <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                            Connect Bonds
+                          </span>
+                        </div>
+                        <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
+                          Tap two atoms and click bond type to create bonds.
+                        </p>
+                      </div>
+
+                      <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
+                        <img
+                          src="/images/vsepr/step2_create_bonds.svg"
+                          alt="Step 2: Create bonds preview"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
+
+                    {/* 3. Set bond angle */}
+                    <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                            3
+                          </div>
+                          <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                            Set Bond Angle
+                          </h3>
+                        </div>
+                        <div className="mt-1">
+                          <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                            Adjust Geometry
+                          </span>
+                        </div>
+                        <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
+                          Tap on two bonds and enter the angle to align.
+                        </p>
+                      </div>
+
+                      <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
+                        <img
+                          src="/images/vsepr/step3_set_angle.svg"
+                          alt="Step 3: Set angle preview"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Point 2 */}
-                  <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2 sm:gap-2.5 transition-all hover:border-blue-300">
-                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0 shadow-sm">
-                        2
-                      </div>
-                      <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
-                        Tap two atoms and click bond type to create bonds.
-                      </p>
-                    </div>
-                    <div className="w-14 sm:w-20 md:w-24 h-7 sm:h-8 md:h-9 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
-                      <img
-                        src="/images/vsepr/step2_create_bonds.svg"
-                        alt="Step 2: Create bonds preview"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  </div>
+                  {/* Action Buttons: Back and Play */}
+                  <div className="pt-1.5 sm:pt-2 pb-0.5 flex items-center justify-center gap-3 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setIntroStep('mission')}
+                      className="px-5 sm:px-6 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+                      <span>BACK</span>
+                    </button>
 
-                  {/* Point 3 */}
-                  <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-2.5 py-1 sm:py-1.5 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2 sm:gap-2.5 transition-all hover:border-blue-300">
-                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0 shadow-sm">
-                        3
-                      </div>
-                      <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
-                        Tap on two bonds and enter the angle to align
-                      </p>
-                    </div>
-                    <div className="w-14 sm:w-20 md:w-24 h-7 sm:h-8 md:h-9 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
-                      <img
-                        src="/images/vsepr/step3_set_angle.svg"
-                        alt="Step 3: Set angle preview"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setGameStarted(true)}
+                      className="px-6 sm:px-8 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-white" />
+                      <span>PLAY</span>
+                    </button>
                   </div>
                 </div>
               )}
 
-              {/* Level 2: 2 Instruction Points */}
+              {/* Level 2: 1 Instruction Card in Landscape Mode */}
               {currentLevel === 2 && (
-                <div className="space-y-1.5 sm:space-y-2 text-left max-w-xl mx-auto w-full">
-                  {/* Point 1 */}
-                  <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-2.5 py-1.5 sm:py-2 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2 sm:gap-2.5 transition-all hover:border-blue-300">
-                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0 shadow-sm">
-                        1
+                <div className="max-w-xl mx-auto my-auto flex flex-col justify-between z-10 px-2 sm:px-3 py-0.5 w-full animate-in fade-in duration-200 flex-1">
+                  {/* Header Title */}
+                  <div className="text-center pt-0.5 pb-1 sm:pb-1.5">
+                    <h2 className="text-[#1E293B] text-xs sm:text-sm md:text-base font-black tracking-wide uppercase">
+                      INSTRUCTIONS TO PLAY
+                    </h2>
+                  </div>
+
+                  {/* 1 Instruction Card */}
+                  <div className="w-full max-w-md mx-auto my-auto">
+                    <div className="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-2.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                            1
+                          </div>
+                          <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                            Place Atoms &amp; Pairs
+                          </h3>
+                        </div>
+                        <div className="mt-1">
+                          <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                            Target Holes
+                          </span>
+                        </div>
+                        <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-0.5 sm:mt-1">
+                          Tap on Hydrogen atoms (H) and Lone Pairs (LP) to their matching target holes.
+                        </p>
                       </div>
-                      <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
-                        Tap on Hydrogen atoms (H) and Lone Pairs (LP) to their matching target holes.
-                      </p>
-                    </div>
-                    <div className="w-16 sm:w-24 md:w-28 h-8 sm:h-10 md:h-11 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
-                      <img
-                        src="/images/vsepr/l2_step1_drag_holes.svg"
-                        alt="Step 1: Drag to holes preview"
-                        className="w-full h-full object-contain"
-                      />
+
+                      <div className="w-full h-18 sm:h-22 md:h-24 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-1 mt-1 sm:mt-1.5">
+                        <img
+                          src="/images/vsepr/l2_step1_drag_holes.svg"
+                          alt="Step 1: Drag to holes preview"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Point 2 */}
-                  <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-2.5 py-1.5 sm:py-2 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2 sm:gap-2.5 transition-all hover:border-blue-300">
-                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0 shadow-sm">
-                        2
-                      </div>
-                      <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
-                        Fill all target holes correctly to unlock the molecular geometry, bond angles, and properties.
-                      </p>
-                    </div>
-                    <div className="w-16 sm:w-24 md:w-28 h-8 sm:h-10 md:h-11 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
-                      <img
-                        src="/images/vsepr/l2_step2_unlock_properties.svg"
-                        alt="Step 2: Unlock properties preview"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
+                  {/* Action Buttons: Back and Play */}
+                  <div className="pt-1.5 sm:pt-2 pb-0.5 flex items-center justify-center gap-3 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setIntroStep('mission')}
+                      className="px-5 sm:px-6 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+                      <span>BACK</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setGameStarted(true)}
+                      className="px-6 sm:px-8 py-1 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                    >
+                      <Play className="w-3.5 h-3.5 fill-white" />
+                      <span>PLAY</span>
+                    </button>
                   </div>
                 </div>
               )}
 
-              {/* Level 3: 1 Instruction Point */}
+              {/* Level 3: Portrait Mode Instruction Card (Like Topic 3 Level 2 and Level 3) */}
               {currentLevel === 3 && (
-                <div className="space-y-1.5 sm:space-y-2 text-left max-w-xl mx-auto w-full">
-                  {/* Point 1 */}
-                  <div className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl px-2.5 py-1.5 sm:py-2 shadow-sm border border-slate-200/90 flex items-center justify-between gap-2 sm:gap-2.5 transition-all hover:border-blue-300">
-                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[10px] sm:text-xs shrink-0 shadow-sm">
-                        1
+                <div className="max-w-md mx-auto my-auto flex flex-col justify-between z-10 px-3 sm:px-4 py-2 w-full animate-in fade-in duration-200 flex-1">
+                  {/* Header Title */}
+                  <div className="text-center pt-1 pb-3">
+                    <h2 className="text-[#1E293B] text-base sm:text-lg md:text-xl font-black tracking-wide uppercase">
+                      INSTRUCTIONS TO PLAY
+                    </h2>
+                  </div>
+
+                  {/* Portrait Mode Instruction Card (Like Topic 3 Level 2 and Level 3) */}
+                  <div className="w-full mx-auto my-auto">
+                    <div className="bg-white rounded-2xl p-3.5 sm:p-4 shadow-xl border border-slate-200 flex flex-col justify-between transition-all hover:shadow-2xl">
+                      <div>
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-sm shrink-0 shadow-sm">
+                            1
+                          </div>
+                          <h3 className="font-extrabold text-sm sm:text-base text-slate-800 leading-tight">
+                            Arrange Molecules
+                          </h3>
+                        </div>
+                        <div className="mt-2">
+                          <span className="inline-block px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px] sm:text-[11px] tracking-wide">
+                            Bond Angle Order
+                          </span>
+                        </div>
+                        <p className="text-slate-600 font-medium text-xs sm:text-sm leading-snug mt-1.5">
+                          Tap the molecules to place them in the correct slots in order of decreasing bond angle.
+                        </p>
                       </div>
-                      <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
-                        Tap the molecules to place them in the correct slots in order of decreasing bond angle.
-                      </p>
+
+                      {/* Big Visible Image Box (Like Topic 3 Level 2 & 3 in Portrait Mode) */}
+                      <div className="w-full h-36 sm:h-44 md:h-48 rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-2 mt-3">
+                        <img
+                          src="/images/vsepr/l3_step1_order_molecules.svg"
+                          alt="Step 1: Order molecules preview"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                     </div>
-                    <div className="w-16 sm:w-24 md:w-28 h-8 sm:h-10 md:h-11 rounded-lg overflow-hidden border border-slate-200/90 bg-slate-50/80 shadow-inner shrink-0 flex items-center justify-center">
-                      <img
-                        src="/images/vsepr/l3_step1_order_molecules.svg"
-                        alt="Step 1: Order molecules preview"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
+                  </div>
+
+                  {/* Action Buttons: Back and Play */}
+                  <div className="pt-3 sm:pt-4 pb-1 flex items-center justify-center gap-3 sm:gap-4 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setIntroStep('mission')}
+                      className="px-6 sm:px-8 py-2 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
+                    >
+                      <ChevronLeft className="w-4 h-4 text-slate-400" />
+                      <span>BACK</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setGameStarted(true)}
+                      className="px-7 sm:px-9 py-2 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-2 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                    >
+                      <Play className="w-4 h-4 fill-white" />
+                      <span>PLAY</span>
+                    </button>
                   </div>
                 </div>
               )}
-
-              {/* Action Buttons: Back and Play */}
-              <div className="pt-1 sm:pt-1.5 flex items-center justify-center gap-3">
-                <button
-                  onClick={() => setIntroStep('mission')}
-                  className="px-5 sm:px-7 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
-                  <span>BACK</span>
-                </button>
-
-                <button
-                  onClick={() => setGameStarted(true)}
-                  className="px-7 sm:px-9 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-2 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
-                >
-                  <Play className="w-3.5 h-3.5 fill-white" />
-                  <span>PLAY</span>
-                </button>
-              </div>
-            </div>
+            </>
           )}
 
           {/* Bottom Footer Note (Only on mission step to preserve space) */}

@@ -172,7 +172,7 @@ export default function MotMediumGamePage({
       
       {/* ── INTRO MISSION & INSTRUCTIONS VIEW OVERLAY ────────────────────────── */}
       {!gameStarted && (
-        <div className="absolute inset-0 z-40 flex flex-col justify-between p-2 sm:p-4 bg-white/95 backdrop-blur-md overflow-hidden">
+        <div className="absolute inset-0 z-40 flex flex-col justify-between p-2 sm:p-4 bg-white/95 backdrop-blur-md overflow-y-auto">
           {/* Top Header Bar: Exit Button Only */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
@@ -212,23 +212,39 @@ export default function MotMediumGamePage({
 
           {/* STEP 2: INSTRUCTIONS SCREEN */}
           {introStep === 'instructions' && (
-            <div className="max-w-xl mx-auto my-auto text-center space-y-2 z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200 w-full">
-              <div className="text-[#1E293B] text-base sm:text-lg font-black tracking-wide">
-                Instructions
+            <div className="max-w-4xl mx-auto my-auto flex flex-col justify-between z-10 px-2 sm:px-4 py-1 animate-in fade-in duration-200 w-full flex-1">
+              {/* Header Title */}
+              <div className="text-center pt-1 pb-3">
+                <h2 className="text-[#1E293B] text-base sm:text-lg md:text-xl font-black tracking-wide uppercase">
+                  INSTRUCTIONS TO PLAY
+                </h2>
               </div>
 
-              <div className="space-y-2 text-left max-w-lg mx-auto">
+              {/* Horizontal Instruction Cards Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 landscape:grid-cols-2 gap-3.5 sm:gap-5 w-full mx-auto my-auto items-stretch">
                 {/* 1. Tap empty orbital */}
-                <div className="bg-white rounded-xl p-2 sm:p-2.5 shadow-sm border border-slate-200 flex items-center justify-between gap-3 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
-                      1
+                <div className="bg-white rounded-2xl p-3.5 sm:p-4 shadow-xl border border-slate-200 flex flex-col justify-between transition-all hover:shadow-2xl">
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-sm shrink-0 shadow-sm">
+                        1
+                      </div>
+                      <h3 className="font-extrabold text-sm sm:text-base text-slate-800 leading-tight">
+                        Fill Empty Orbital
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                    <div className="mt-2">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px] sm:text-[11px] tracking-wide">
+                        Orbital Diagram
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-xs sm:text-sm leading-snug mt-1.5">
                       Tap the empty orbital to fill the electron.
                     </p>
                   </div>
-                  <div className="w-24 sm:w-32 h-12 sm:h-14 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-xs shrink-0 flex items-center justify-center p-0.5">
+
+                  {/* Big Visible Image Box */}
+                  <div className="w-full h-32 sm:h-40 md:h-44 rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-2 mt-3">
                     <img
                       src="/images/mot/l2_step1_fill_orbital.svg"
                       alt="Step 1: Fill orbital"
@@ -238,16 +254,28 @@ export default function MotMediumGamePage({
                 </div>
 
                 {/* 2. Tap revert button */}
-                <div className="bg-white rounded-xl p-2 sm:p-2.5 shadow-sm border border-slate-200 flex items-center justify-between gap-3 transition-all hover:border-blue-300">
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[10px] shrink-0 shadow-sm">
-                      2
+                <div className="bg-white rounded-2xl p-3.5 sm:p-4 shadow-xl border border-slate-200 flex flex-col justify-between transition-all hover:shadow-2xl">
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-sm shrink-0 shadow-sm">
+                        2
+                      </div>
+                      <h3 className="font-extrabold text-sm sm:text-base text-slate-800 leading-tight">
+                        Revert Last Step
+                      </h3>
                     </div>
-                    <p className="font-extrabold text-[11px] sm:text-xs text-[#1E293B] leading-tight">
+                    <div className="mt-2">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px] sm:text-[11px] tracking-wide">
+                        Undo Action
+                      </span>
+                    </div>
+                    <p className="text-slate-600 font-medium text-xs sm:text-sm leading-snug mt-1.5">
                       Tap the Revert button to go step back.
                     </p>
                   </div>
-                  <div className="w-24 sm:w-32 h-12 sm:h-14 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-xs shrink-0 flex items-center justify-center p-0.5">
+
+                  {/* Big Visible Image Box */}
+                  <div className="w-full h-32 sm:h-40 md:h-44 rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center p-2 mt-3">
                     <img
                       src="/images/mot/l2_step2_revert.svg"
                       alt="Step 2: Tap revert"
@@ -258,22 +286,22 @@ export default function MotMediumGamePage({
               </div>
 
               {/* Action Buttons: Back and Play */}
-              <div className="pt-2 sm:pt-3 flex items-center justify-center gap-3 shrink-0">
+              <div className="pt-3 sm:pt-4 pb-1 flex items-center justify-center gap-3 sm:gap-4 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIntroStep('mission')}
-                  className="px-5 sm:px-6 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-sm flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                  className="px-6 sm:px-8 py-2 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+                  <ChevronLeft className="w-4 h-4 text-slate-400" />
                   <span>BACK</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setGameStarted(true)}
-                  className="px-6 sm:px-8 py-1.5 rounded-full font-extrabold text-[11px] sm:text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+                  className="px-7 sm:px-9 py-2 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-2 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
                 >
-                  <Play className="w-3.5 h-3.5 fill-white" />
+                  <Play className="w-4 h-4 fill-white" />
                   <span>PLAY</span>
                 </button>
               </div>

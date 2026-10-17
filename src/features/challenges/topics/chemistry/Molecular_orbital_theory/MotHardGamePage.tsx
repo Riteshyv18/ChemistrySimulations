@@ -124,28 +124,44 @@ export default function MotHardGamePage({
 
   const [activeDragMol, setActiveDragMol] = useState<string | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [history, setHistory] = useState<Array<{
+    bondOrder: (string | null)[];
+    bondLength: (string | null)[];
+    bondStrength: (string | null)[];
+  }>>([]);
 
-  const CORRECT_ORDER = ['O2-', 'O2', 'O2+'];
+  const CORRECT_ORDER_DEFAULT = ['O2-', 'O2', 'O2+'];
+  const CORRECT_ORDER_BOND_LENGTH = ['O2+', 'O2', 'O2-'];
 
-  const isRowComplete = (row: (string | null)[]) => {
+  const isRowComplete = (
+    row: (string | null)[],
+    rowKey: 'bondOrder' | 'bondLength' | 'bondStrength'
+  ) => {
+    const expected = rowKey === 'bondLength' ? CORRECT_ORDER_BOND_LENGTH : CORRECT_ORDER_DEFAULT;
     return (
-      row[0] === CORRECT_ORDER[0] &&
-      row[1] === CORRECT_ORDER[1] &&
-      row[2] === CORRECT_ORDER[2]
+      row[0] === expected[0] &&
+      row[1] === expected[1] &&
+      row[2] === expected[2]
     );
   };
 
   const isCompleted =
-    isRowComplete(rowPlacements.bondOrder) &&
-    isRowComplete(rowPlacements.bondLength) &&
-    isRowComplete(rowPlacements.bondStrength);
+    isRowComplete(rowPlacements.bondOrder, 'bondOrder') &&
+    isRowComplete(rowPlacements.bondLength, 'bondLength') &&
+    isRowComplete(rowPlacements.bondStrength, 'bondStrength');
 
   const handleDropMolecule = (
     rowKey: 'bondOrder' | 'bondLength' | 'bondStrength',
     slotIndex: number,
     molId: string
   ) => {
-    const expectedMol = CORRECT_ORDER[slotIndex];
+    const expectedMol =
+      rowKey === 'bondLength'
+        ? CORRECT_ORDER_BOND_LENGTH[slotIndex]
+        : CORRECT_ORDER_DEFAULT[slotIndex];
+
+    // Record previous state in history for step-by-step revert
+    setHistory((prev) => [...prev, rowPlacements]);
 
     // Always place the molecule in the slot (droppable even if incorrect)
     setRowPlacements((prev) => {
@@ -163,9 +179,9 @@ export default function MotHardGamePage({
       setTimeout(() => {
         setRowPlacements((latest) => {
           if (
-            isRowComplete(latest.bondOrder) &&
-            isRowComplete(latest.bondLength) &&
-            isRowComplete(latest.bondStrength)
+            isRowComplete(latest.bondOrder, 'bondOrder') &&
+            isRowComplete(latest.bondLength, 'bondLength') &&
+            isRowComplete(latest.bondStrength, 'bondStrength')
           ) {
             setScore(100);
             setShowCompletionModal(true);
@@ -181,12 +197,44 @@ export default function MotHardGamePage({
     }
   };
 
-  const handleReset = () => {
+  const handleRevert = () => {
+    setDragFeedback(null);
+    setHistory((prevHistory) => {
+      if (prevHistory.length > 0) {
+        const lastState = prevHistory[prevHistory.length - 1];
+        setRowPlacements(lastState);
+        return prevHistory.slice(0, prevHistory.length - 1);
+      }
+
+      // Fallback: If history stack is empty but slots are filled, clear only the latest placed slot
+      setRowPlacements((current) => {
+        const rows: ('bondStrength' | 'bondLength' | 'bondOrder')[] = [
+          'bondStrength',
+          'bondLength',
+          'bondOrder'
+        ];
+        for (const r of rows) {
+          for (let i = 2; i >= 0; i--) {
+            if (current[r][i] !== null) {
+              const updatedRow = [...current[r]];
+              updatedRow[i] = null;
+              return { ...current, [r]: updatedRow };
+            }
+          }
+        }
+        return current;
+      });
+      return prevHistory;
+    });
+  };
+
+  const handleResetAll = () => {
     setRowPlacements({
       bondOrder: [null, null, null],
       bondLength: [null, null, null],
       bondStrength: [null, null, null]
     });
+    setHistory([]);
     setDragFeedback(null);
   };
 
@@ -372,9 +420,9 @@ export default function MotHardGamePage({
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
-              onClick={handleReset}
+              onClick={handleRevert}
               className="h-8 px-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 flex items-center gap-1 text-rose-700 text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95 shrink-0"
-              title="Revert all placements"
+              title="Revert previous step"
             >
               <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
               <span>Revert</span>
@@ -421,7 +469,7 @@ export default function MotHardGamePage({
                 <div className="grid grid-cols-3 gap-2 flex-1 pt-0.5">
                   {[0, 1, 2].map((idx) => {
                     const placedMol = rowPlacements.bondOrder[idx];
-                    const isCorrectSlot = placedMol === CORRECT_ORDER[idx];
+                    const isCorrectSlot = placedMol === CORRECT_ORDER_DEFAULT[idx];
 
                     return (
                       <div
@@ -442,6 +490,7 @@ export default function MotHardGamePage({
                             handleDropMolecule('bondOrder', idx, activeDragMol);
                             setActiveDragMol(null);
                           } else if (placedMol) {
+                            setHistory((prev) => [...prev, rowPlacements]);
                             setRowPlacements((prev) => {
                               const newRow = [...prev.bondOrder];
                               newRow[idx] = null;
@@ -490,21 +539,21 @@ export default function MotHardGamePage({
                     </div>
                     <div>
                       <div className="text-xs font-black text-[#22C55E]">Bond Length</div>
-                      <div className="text-[9.5px] text-[#64748B]">Arrange from longest to shortest bond length.</div>
+                      <div className="text-[9.5px] text-[#64748B]">Arrange from shortest to longest bond length.</div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-1 text-[9.5px] font-extrabold text-[#22C55E] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    <span>Longest</span>
-                    <ArrowRight className="w-3 h-3" />
                     <span>Shortest</span>
+                    <ArrowRight className="w-3 h-3" />
+                    <span>Longest</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 flex-1 pt-0.5">
                   {[0, 1, 2].map((idx) => {
                     const placedMol = rowPlacements.bondLength[idx];
-                    const isCorrectSlot = placedMol === CORRECT_ORDER[idx];
+                    const isCorrectSlot = placedMol === CORRECT_ORDER_BOND_LENGTH[idx];
 
                     return (
                       <div
@@ -525,6 +574,7 @@ export default function MotHardGamePage({
                             handleDropMolecule('bondLength', idx, activeDragMol);
                             setActiveDragMol(null);
                           } else if (placedMol) {
+                            setHistory((prev) => [...prev, rowPlacements]);
                             setRowPlacements((prev) => {
                               const newRow = [...prev.bondLength];
                               newRow[idx] = null;
@@ -584,7 +634,7 @@ export default function MotHardGamePage({
                 <div className="grid grid-cols-3 gap-2 flex-1 pt-0.5">
                   {[0, 1, 2].map((idx) => {
                     const placedMol = rowPlacements.bondStrength[idx];
-                    const isCorrectSlot = placedMol === CORRECT_ORDER[idx];
+                    const isCorrectSlot = placedMol === CORRECT_ORDER_DEFAULT[idx];
 
                     return (
                       <div
@@ -605,6 +655,7 @@ export default function MotHardGamePage({
                             handleDropMolecule('bondStrength', idx, activeDragMol);
                             setActiveDragMol(null);
                           } else if (placedMol) {
+                            setHistory((prev) => [...prev, rowPlacements]);
                             setRowPlacements((prev) => {
                               const newRow = [...prev.bondStrength];
                               newRow[idx] = null;
@@ -726,7 +777,7 @@ export default function MotHardGamePage({
               <button
                 onClick={() => {
                   setShowCompletionModal(false);
-                  handleReset();
+                  handleResetAll();
                 }}
                 className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-[#1E293B] font-bold text-xs rounded-xl border border-slate-200 transition-all cursor-pointer"
               >
@@ -859,7 +910,7 @@ export default function MotHardGamePage({
                   <strong>Experimentally Determined Values:</strong> O₂⁺ (~112 pm) &lt; O₂ (~121 pm) &lt; O₂⁻ (~128 pm).
                 </li>
                 <li>
-                  <strong>Ordering (Longest to Shortest):</strong> O₂⁻ (longest, ~128 pm) &gt; O₂ (~121 pm) &gt; O₂⁺ (shortest, ~112 pm).
+                  <strong>Ordering (Shortest to Longest):</strong> O₂⁺ (shortest, ~112 pm) &lt; O₂ (~121 pm) &lt; O₂⁻ (longest, ~128 pm).
                 </li>
               </ul>
             </div>

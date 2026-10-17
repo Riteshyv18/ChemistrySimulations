@@ -445,9 +445,9 @@ export default function MotHardGamePage({
           <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col justify-between gap-2.5 pb-1">
             
             {/* 3 ORDERING ROWS CARD */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 shadow-sm flex-1 flex flex-col justify-between gap-2">
+            <div className="bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 shadow-sm flex-1 min-h-0 flex flex-col justify-between gap-2.5">
               {/* ── ROW 1: BOND ORDER ── */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 sm:p-2.5 flex-1 flex flex-col justify-between">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 sm:p-2.5 flex-1 min-h-0 flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-1.5">
                     <div className="w-6 h-6 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-[#2563EB]">
@@ -466,7 +466,7 @@ export default function MotHardGamePage({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 flex-1 pt-0.5">
+                <div className="grid grid-cols-3 gap-2 flex-1 items-center pt-0.5">
                   {[0, 1, 2].map((idx) => {
                     const placedMol = rowPlacements.bondOrder[idx];
                     const isCorrectSlot = placedMol === CORRECT_ORDER_DEFAULT[idx];
@@ -499,7 +499,7 @@ export default function MotHardGamePage({
                             setDragFeedback(null);
                           }
                         }}
-                        className={`h-20 sm:h-22 rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer relative p-1 ${
+                        className={`h-[120px] sm:h-[126px] rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer relative p-1 ${
                           isCorrectSlot
                             ? 'border-[#22C55E] bg-emerald-50 text-emerald-800 shadow-sm'
                             : placedMol
@@ -520,7 +520,7 @@ export default function MotHardGamePage({
                             </div>
                           </div>
                         ) : (
-                          <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 text-[#2563EB] border border-slate-200 text-xs sm:text-sm font-black font-mono flex items-center justify-center shadow-inner">
+                          <span className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full bg-slate-100 text-[#2563EB] border border-slate-200 text-xs sm:text-sm font-black font-mono flex items-center justify-center shadow-inner">
                             {idx + 1}
                           </span>
                         )}
@@ -531,7 +531,7 @@ export default function MotHardGamePage({
               </div>
 
               {/* ── ROW 2: BOND LENGTH ── */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 sm:p-2.5 flex-1 flex flex-col justify-between">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 sm:p-2.5 flex-1 min-h-0 flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-1.5">
                     <div className="w-6 h-6 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center text-[#22C55E]">
@@ -550,7 +550,7 @@ export default function MotHardGamePage({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 flex-1 pt-0.5">
+                <div className="grid grid-cols-3 gap-2 flex-1 items-center pt-0.5">
                   {[0, 1, 2].map((idx) => {
                     const placedMol = rowPlacements.bondLength[idx];
                     const isCorrectSlot = placedMol === CORRECT_ORDER_BOND_LENGTH[idx];
@@ -583,7 +583,7 @@ export default function MotHardGamePage({
                             setDragFeedback(null);
                           }
                         }}
-                        className={`h-20 sm:h-22 rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer relative p-1 ${
+                        className={`h-[120px] sm:h-[126px] rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer relative p-1 ${
                           isCorrectSlot
                             ? 'border-[#22C55E] bg-emerald-50 text-emerald-800 shadow-sm'
                             : placedMol
@@ -601,7 +601,7 @@ export default function MotHardGamePage({
                             </div>
                           </div>
                         ) : (
-                          <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 text-[#22C55E] border border-slate-200 text-xs sm:text-sm font-black font-mono flex items-center justify-center shadow-inner">
+                          <span className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full bg-slate-100 text-[#22C55E] border border-slate-200 text-xs sm:text-sm font-black font-mono flex items-center justify-center shadow-inner">
                             {idx + 1}
                           </span>
                         )}
@@ -612,7 +612,7 @@ export default function MotHardGamePage({
               </div>
 
               {/* ── ROW 3: BOND STRENGTH ── */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 sm:p-2.5 flex-1 flex flex-col justify-between">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 sm:p-2.5 flex-1 min-h-0 flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-1.5">
                     <div className="w-6 h-6 rounded-lg bg-rose-100 border border-rose-200 flex items-center justify-center text-rose-600">
@@ -631,7 +631,7 @@ export default function MotHardGamePage({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 flex-1 pt-0.5">
+                <div className="grid grid-cols-3 gap-2 flex-1 items-center pt-0.5">
                   {[0, 1, 2].map((idx) => {
                     const placedMol = rowPlacements.bondStrength[idx];
                     const isCorrectSlot = placedMol === CORRECT_ORDER_DEFAULT[idx];
@@ -664,7 +664,7 @@ export default function MotHardGamePage({
                             setDragFeedback(null);
                           }
                         }}
-                        className={`h-20 sm:h-22 rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer relative p-1 ${
+                        className={`h-[120px] sm:h-[126px] rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer relative p-1 ${
                           isCorrectSlot
                             ? 'border-[#22C55E] bg-emerald-50 text-emerald-800 shadow-sm'
                             : placedMol
@@ -682,7 +682,7 @@ export default function MotHardGamePage({
                             </div>
                           </div>
                         ) : (
-                          <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 text-rose-600 border border-slate-200 text-xs sm:text-sm font-black font-mono flex items-center justify-center shadow-inner">
+                          <span className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-full bg-slate-100 text-rose-600 border border-slate-200 text-xs sm:text-sm font-black font-mono flex items-center justify-center shadow-inner">
                             {idx + 1}
                           </span>
                         )}
@@ -729,7 +729,7 @@ export default function MotHardGamePage({
                         setActiveDragMol(mol.id);
                       }}
                       onClick={() => setActiveDragMol(mol.id)}
-                      className={`h-22 sm:h-24 py-2 px-1 rounded-xl border flex flex-col items-center justify-center transition-all cursor-grab active:cursor-grabbing hover:scale-[1.02] shadow-sm select-none ${
+                      className={`h-24 sm:h-26 py-2 px-1 rounded-xl border flex flex-col items-center justify-center transition-all cursor-grab active:cursor-grabbing hover:scale-[1.02] shadow-sm select-none ${
                         isSelected
                           ? 'ring-2 ring-[#2563EB] border-[#2563EB] bg-blue-50'
                           : 'bg-slate-50 border-slate-200 hover:border-slate-300'

@@ -70,6 +70,8 @@ export function findTopic(
       if (norm.includes("hybrid") && (t.slug.includes("hybrid") || t.topicId === "2")) return true;
       if (norm.includes("mot") && (t.slug.includes("molecular-orbital") || t.topicId === "3")) return true;
       if (norm === "molecular-orbital-theory" && t.topicId === "3") return true;
+      if (norm.includes("bohr") && (t.slug.includes("bohr") || t.topicId === "4")) return true;
+      if ((norm === "bohr-model" || norm === "bohr-model-hydrogen-spectrum") && t.topicId === "4") return true;
       return false;
     }) || mod.topics[0];
 

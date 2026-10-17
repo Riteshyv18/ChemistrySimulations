@@ -118,6 +118,14 @@ const MotHardGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   { ssr: false, loading: LoadingFallback }
 );
 
+const BohrModelLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/bohr_model_spectrum/BohrModelLevel1GamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -148,13 +156,20 @@ export function ChallengeDispatcher({
     normDifficulty === "advanced" ||
     normDifficulty === "3";
 
+  const isBohr =
+    normTopic === "4" ||
+    normTopic.includes("bohr") ||
+    normTopic.includes("hydrogen-spectrum");
+
   const isMot =
-    normTopic === "3" ||
-    normTopic.includes("mot") ||
-    normTopic.includes("molecular-orbital") ||
-    normTopic.includes("molecular_orbital");
+    !isBohr &&
+    (normTopic === "3" ||
+      normTopic.includes("mot") ||
+      normTopic.includes("molecular-orbital") ||
+      normTopic.includes("molecular_orbital"));
 
   const isHybridization =
+    !isBohr &&
     !isMot &&
     (normTopic === "2" ||
       normTopic.includes("hybridization") ||
@@ -162,6 +177,7 @@ export function ChallengeDispatcher({
       normTopic.includes("orbital_overlap"));
 
   const isVsepr =
+    !isBohr &&
     !isMot &&
     !isHybridization &&
     (normTopic === "1" ||
@@ -171,7 +187,9 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isMot) {
+  if (isBohr) {
+    content = <BohrModelLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isMot) {
     if (isLevel2) {
       content = <MotMediumGamePage difficulty={normDifficulty} onExit={onExit} />;
     } else if (isLevel3) {
@@ -205,7 +223,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isBohr && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

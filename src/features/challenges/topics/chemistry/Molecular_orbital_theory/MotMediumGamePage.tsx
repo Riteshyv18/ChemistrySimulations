@@ -359,8 +359,8 @@ export default function MotMediumGamePage({
           </header>
 
           {/* ── 2. CENTER STAGE: MO ENERGY DIAGRAM (PORTRAIT-FIT) ───────────────── */}
-          <main className="flex-1 w-full flex items-center justify-center p-1 sm:p-2 overflow-hidden relative">
-            <div className="w-full max-w-md h-full max-h-[500px] bg-slate-50/90 border border-slate-200 rounded-2xl p-2 sm:p-3 shadow-inner flex items-center justify-center gap-3 sm:gap-6 relative">
+          <main className="flex-1 min-h-0 w-full flex items-center justify-center p-1 sm:p-2 overflow-hidden relative">
+            <div className="w-full max-w-md h-full max-h-[720px] bg-slate-50/90 border border-slate-200 rounded-2xl p-2 sm:p-3 shadow-inner flex items-center justify-center gap-3 sm:gap-6 relative">
               
               {/* Energy Axis Vector on Left */}
               <div className="flex flex-col items-center justify-between h-full py-2 shrink-0 select-none">
@@ -378,7 +378,7 @@ export default function MotMediumGamePage({
               </div>
 
               {/* Stack of 8 MO Energy Levels */}
-              <div className="flex-1 h-full flex flex-col justify-between py-1 max-w-[280px] sm:max-w-[320px]">
+              <div className="flex-1 h-full flex flex-col justify-between py-1.5 max-w-[290px] sm:max-w-[320px]">
                 {[
                   { id: 'sigma_star_2p', label: 'σ*2p', type: 'single' },
                   { id: 'pi_star_2p', label: 'π*2pₓ, π*2pᵧ', type: 'double', ids: ['pi_star_2px', 'pi_star_2py'] },
@@ -407,7 +407,7 @@ export default function MotMediumGamePage({
                             e.preventDefault();
                             handleAddElectron(mo.id);
                           }}
-                          className={`w-24 sm:w-32 h-10 sm:h-11 rounded-2xl border-2 flex items-center justify-center gap-1.5 font-black text-lg sm:text-xl transition-all cursor-pointer shadow-xs ${
+                          className={`w-26 sm:w-32 h-10.5 sm:h-11 rounded-2xl border-2 flex items-center justify-center gap-1.5 font-black text-lg sm:text-xl transition-all cursor-pointer shadow-xs ${
                             isError
                               ? 'border-rose-500 bg-rose-100 text-rose-700 animate-bounce'
                               : mo.electrons.length > 0
@@ -450,7 +450,7 @@ export default function MotMediumGamePage({
                             e.preventDefault();
                             handleAddElectron(mo1.id);
                           }}
-                          className={`w-14 sm:w-18 h-10 sm:h-11 rounded-2xl border-2 flex items-center justify-center gap-1 font-black text-lg sm:text-xl transition-all cursor-pointer shadow-xs ${
+                          className={`w-15 sm:w-18 h-10.5 sm:h-11 rounded-2xl border-2 flex items-center justify-center gap-1 font-black text-lg sm:text-xl transition-all cursor-pointer shadow-xs ${
                             isError1
                               ? 'border-rose-500 bg-rose-100 text-rose-700 animate-bounce'
                               : mo1.electrons.length > 0
@@ -478,7 +478,7 @@ export default function MotMediumGamePage({
                             e.preventDefault();
                             handleAddElectron(mo2.id);
                           }}
-                          className={`w-14 sm:w-18 h-10 sm:h-11 rounded-2xl border-2 flex items-center justify-center gap-1 font-black text-lg sm:text-xl transition-all cursor-pointer shadow-xs ${
+                          className={`w-15 sm:w-18 h-10.5 sm:h-11 rounded-2xl border-2 flex items-center justify-center gap-1 font-black text-lg sm:text-xl transition-all cursor-pointer shadow-xs ${
                             isError2
                               ? 'border-rose-500 bg-rose-100 text-rose-700 animate-bounce'
                               : mo2.electrons.length > 0

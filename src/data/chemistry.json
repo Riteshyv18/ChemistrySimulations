@@ -2337,16 +2337,16 @@
         },
         {
           "topicId": "5",
-          "topicName": "Quantum Numbers & Electronic Configuration",
-          "coreConcept": "Principal, Azimuthal, Magnetic, and Spin Quantum Numbers",
+          "topicName": "Atomic Orbitals",
+          "coreConcept": "Spatial shapes, orientations, and quantum numbers of s, p, and d atomic orbitals",
           "theory": {
             "basics": "Every electron in an atom is described by four quantum numbers:\n1. **Principal Quantum Number (n = 1, 2, 3...):** Determines size and energy level of shell.\n2. **Azimuthal / Angular Momentum (l = 0 to n-1):** Determines orbital subshell shape (0=s, 1=p, 2=d, 3=f).\n3. **Magnetic Quantum Number (m_l = -l to +l):** Determines spatial orientation.\n4. **Spin Quantum Number (m_s = +½, -½):** Determines intrinsic spin direction.\n\n### Rules for Electron Filling:\n- **Aufbau Principle:** Electrons fill lowest available energy subshells first (1s < 2s < 2p < 3s < 3p < 4s < 3d).\n- **Pauli Exclusion Principle:** No two electrons in the same atom can have the identical set of all four quantum numbers.\n- **Hund's Rule of Maximum Multiplicity:** Electrons occupy degenerate orbitals singly with parallel spins before pairing up.",
             "fullConcept": "## Anomalous Electronic Configurations (Cr and Cu)\n\nChromium (Z=24) and Copper (Z=29) exhibit exceptional configurations due to the enhanced stability of half-filled and fully-filled d-subshells:\n- **Chromium (Cr):** [Ar] 4s¹ 3d⁵ (instead of 4s² 3d⁴) due to 5 parallel spins maximizing exchange energy.\n- **Copper (Cu):** [Ar] 4s¹ 3d¹⁰ (instead of 4s² 3d⁹) due to complete spherical symmetry and high exchange energy."
           },
           "challenges": {
             "easy": {
-              "title": "Orbital Sorter",
-              "description": "Drag electrons into 1s, 2s, 2p orbital boxes following Aufbau and Hund's rules for Carbon, Nitrogen, and Oxygen."
+              "title": "Match the Orbitals",
+              "description": "Inspect 3D quantum representations and match s, p, and d orbitals into their designated subshell drop slots."
             },
             "medium": {
               "title": "Quantum Rule Checker",

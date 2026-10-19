@@ -126,6 +126,14 @@ const BohrModelLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => vo
   { ssr: false, loading: LoadingFallback }
 );
 
+const AtomicOrbitalsGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/atomic_orbitals/AtomicOrbitalsGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -161,8 +169,21 @@ export function ChallengeDispatcher({
     normTopic.includes("bohr") ||
     normTopic.includes("hydrogen-spectrum");
 
+  const isAtomicOrbitals =
+    !isBohr &&
+    (normTopic === "5" ||
+      normTopic.includes("atomic-orbital") ||
+      normTopic.includes("atomic_orbital") ||
+      normTopic.includes("atomic-orbitals") ||
+      normTopic.includes("atomic_orbitals") ||
+      normTopic.includes("quantum-number") ||
+      normTopic.includes("quantum_number") ||
+      normTopic.includes("electronic-configuration") ||
+      (normTopic.includes("orbital") && !normTopic.includes("molecular") && !normTopic.includes("overlap")));
+
   const isMot =
     !isBohr &&
+    !isAtomicOrbitals &&
     (normTopic === "3" ||
       normTopic.includes("mot") ||
       normTopic.includes("molecular-orbital") ||
@@ -170,6 +191,7 @@ export function ChallengeDispatcher({
 
   const isHybridization =
     !isBohr &&
+    !isAtomicOrbitals &&
     !isMot &&
     (normTopic === "2" ||
       normTopic.includes("hybridization") ||
@@ -178,6 +200,7 @@ export function ChallengeDispatcher({
 
   const isVsepr =
     !isBohr &&
+    !isAtomicOrbitals &&
     !isMot &&
     !isHybridization &&
     (normTopic === "1" ||
@@ -189,6 +212,8 @@ export function ChallengeDispatcher({
 
   if (isBohr) {
     content = <BohrModelLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isAtomicOrbitals) {
+    content = <AtomicOrbitalsGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isMot) {
     if (isLevel2) {
       content = <MotMediumGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -223,7 +248,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isBohr && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isAtomicOrbitals && !isBohr && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

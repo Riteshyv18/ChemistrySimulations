@@ -72,6 +72,14 @@ export function findTopic(
       if (norm === "molecular-orbital-theory" && t.topicId === "3") return true;
       if (norm.includes("bohr") && (t.slug.includes("bohr") || t.topicId === "4")) return true;
       if ((norm === "bohr-model" || norm === "bohr-model-hydrogen-spectrum") && t.topicId === "4") return true;
+      if (
+        (norm.includes("atomic-orbital") ||
+          norm.includes("quantum") ||
+          norm.includes("orbital") ||
+          norm === "atomic-orbitals") &&
+        t.topicId === "5"
+      )
+        return true;
       return false;
     }) || mod.topics[0];
 

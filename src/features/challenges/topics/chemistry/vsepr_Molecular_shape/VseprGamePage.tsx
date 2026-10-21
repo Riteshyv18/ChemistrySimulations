@@ -16,6 +16,7 @@ import { getAtomMaterial } from './materials';
 import { getTetrahedralVertices, getTrigonalPlanarVertices } from './helpers';
 import { vseprLevel1, vseprLevel2, vseprLevel3, type Level1Question, type Level2Question, type Level3Question } from './vsepr-questions';
 import { exitSimulation } from '@/lib/mobileBridge';
+import VseprLevel3SingleCanvas from './VseprLevel3SingleCanvas';
 
 const Atom3D = ({
   position,
@@ -2205,6 +2206,15 @@ export default function VseprGamePage({
     setScores({ 1: 0, 2: 0, 3: 0 });
   };
 
+  if (currentLevel === 3) {
+    return (
+      <VseprLevel3SingleCanvas
+        onExit={onExit ? onExit : exitSimulation}
+        difficulty={difficulty}
+      />
+    );
+  }
+
   return (
     <div className="vsepr-page-container w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xl flex flex-col p-1.5 sm:p-4 gap-1 sm:gap-2.5">
       <style>{`
@@ -2480,7 +2490,7 @@ export default function VseprGamePage({
               )}
 
               {/* Level 3: Portrait Mode Instruction Card (Like Topic 3 Level 2 and Level 3) */}
-              {currentLevel === 3 && (
+              {(currentLevel as number) === 3 && (
                 <div className="max-w-md mx-auto my-auto flex flex-col justify-between z-10 px-3 sm:px-4 py-2 w-full animate-in fade-in duration-200 flex-1">
                   {/* Header Title */}
                   <div className="text-center pt-1 pb-3">
@@ -2589,7 +2599,7 @@ export default function VseprGamePage({
       <div className="flex-1 w-full min-h-0 flex flex-col relative">
         {gameStatus === 'playing' && currentLevel === 1 && renderLevel1UI()}
         {gameStatus === 'playing' && currentLevel === 2 && renderLevel2UI()}
-        {gameStatus === 'playing' && currentLevel === 3 && renderLevel3UI()}
+        {gameStatus === 'playing' && (currentLevel as number) === 3 && renderLevel3UI()}
 
         {gameStatus === 'level-complete' && (
           <div className="flex flex-col items-center justify-center h-full text-center max-w-lg mx-auto py-6 sm:py-12 animate-in zoom-in-95 duration-500">
@@ -2642,7 +2652,7 @@ export default function VseprGamePage({
 
       {/* ── THEORY / EXPLANATION PAGE (FULL CANVAS / WHOLE SCREEN) ── */}
       {showExplanationModal && (() => {
-        const isL3Theory = currentLevel === 3;
+        const isL3Theory = (currentLevel as number) === 3;
         return (
           <div className="absolute inset-0 z-50 bg-white flex flex-col overflow-hidden text-black animate-in fade-in duration-200 select-text">
             {/* Header Bar */}

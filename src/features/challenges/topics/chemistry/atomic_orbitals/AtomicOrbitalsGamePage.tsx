@@ -166,7 +166,7 @@ export default function AtomicOrbitalsGamePage({
   };
 
   return (
-    <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-1.5 sm:p-2.5 max-w-[440px] mx-auto">
+    <div className="w-full h-full min-h-0 bg-white text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-2 sm:p-2.5 max-w-[440px] mx-auto">
 
       {/* ── INTRO MISSION & INSTRUCTIONS VIEW OVERLAY ────────────────────────── */}
       {!gameStarted && (
@@ -356,22 +356,8 @@ export default function AtomicOrbitalsGamePage({
               <span>Match the Orbitals</span>
             </div> */}
 
-            {/* Top Right: Revert & Explanation Buttons */}
+            {/* Top Right: Explanation Button */}
             <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                type="button"
-                onClick={handleRevert}
-                disabled={history.length === 0}
-                className={`h-7 sm:h-8 px-2 sm:px-2.5 rounded-xl border flex items-center gap-1 text-xs font-bold transition-all shadow-sm ${history.length > 0
-                  ? 'bg-rose-50 hover:bg-rose-100 border-rose-200 text-rose-700 cursor-pointer active:scale-95'
-                  : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-50'
-                  }`}
-                title="Revert previous placement"
-              >
-                <RotateCcw className="w-3 h-3 text-rose-600" />
-                <span>Revert</span>
-              </button>
-
               <button
                 type="button"
                 onClick={() => setShowExplanationModal(true)}
@@ -488,50 +474,39 @@ export default function AtomicOrbitalsGamePage({
             </div>
           )}
 
-          {/* ── 3. CENTER / BOTTOM: CURRENT 3D ORBITAL CARD (COVERS 60% OF SCREEN) ── */}
-          <div className="w-full flex-1 min-h-0 flex flex-col justify-between px-0.5 pt-0.5 pb-0.5 relative">
+          {/* ── 3. CENTER / BOTTOM: CURRENT 3D ORBITAL AREA (INSIDE SINGLE CANVAS) ── */}
+          <div className="w-full flex-1 min-h-0 flex flex-col justify-between pt-1 relative">
             {activeOrbital ? (
               <div
                 draggable="true"
                 onDragStart={handleDragStart}
-                className={`w-full flex-1 min-h-0 rounded-2xl p-2 sm:p-2.5 bg-white shadow-xl flex flex-col justify-between relative transition-all duration-300 ${isSliding
+                className={`w-full flex-1 min-h-0 flex flex-col justify-between relative transition-all duration-300 ${isSliding
                   ? 'transform -translate-x-[110%] opacity-0 scale-95'
                   : 'transform translate-x-0 opacity-100 scale-100 animate-in slide-in-from-right duration-300'
                   }`}
-                style={{
-                  border: '3px solid transparent',
-                  backgroundImage:
-                    'linear-gradient(white, white), linear-gradient(135deg, #38BDF8, #F43F5E, #FBBF24, #10B981)',
-                  backgroundOrigin: 'border-box',
-                  backgroundClip: 'padding-box, border-box',
-                }}
               >
                 {/* 3D WebGL Canvas */}
-                <div className="w-full flex-1 min-h-0 relative rounded-xl overflow-hidden bg-white cursor-grab active:cursor-grabbing">
+                <div className="w-full flex-1 min-h-0 relative overflow-hidden bg-white cursor-grab active:cursor-grabbing">
                   <Canvas camera={{ position: [1.15, 0.45, 4.5], fov: 38 }}>
                     <Orbital3DCanvas orbitalId={activeOrbital.id} autoRotate={false} />
                   </Canvas>
                 </div>
 
-                {/* Gradient Pill Button: Place in Drop Box */}
-                <div className="pt-1 flex flex-col items-center shrink-0">
+                {/* Bottom Action: Revert Button */}
+                <div className="pt-1.5 pb-0.5 flex flex-col items-center shrink-0">
                   <button
                     type="button"
-                    onClick={() => {
-                      setSelectedForPlacement((prev) => !prev);
-                      if (!selectedForPlacement) {
-                        setFeedback({
-                          type: 'info',
-                          message: `Tap the highlighted ${activeOrbital.name} box above to place it!`,
-                        });
-                      }
-                    }}
-                    className={`w-full max-w-[270px] py-2 rounded-full font-bold text-xs text-white shadow-md transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 ${selectedForPlacement
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 ring-2 ring-emerald-300'
-                      : 'bg-gradient-to-r from-[#0284C7] to-[#F97316] hover:brightness-105'
-                      }`}
+                    onClick={handleRevert}
+                    disabled={history.length === 0}
+                    className={`w-full max-w-[260px] py-2 px-4 rounded-full font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 ${
+                      history.length > 0
+                        ? 'bg-gradient-to-r from-rose-500 to-red-600 text-white hover:brightness-105 transform hover:scale-[1.02] active:scale-95 cursor-pointer'
+                        : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60 shadow-none'
+                    }`}
+                    title="Revert previous orbital placement"
                   >
-                    <span>{selectedForPlacement ? 'Select Box Above ↑' : 'Place in Drop Box'}</span>
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Revert</span>
                   </button>
                 </div>
               </div>

@@ -458,7 +458,7 @@ export default function BohrModelLevel1GamePage({
   };
 
   return (
-    <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-1.5 sm:p-2.5">
+    <div className="w-full h-full min-h-0 bg-white text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-2 sm:p-2.5 max-w-[440px] mx-auto">
       
       {/* ── INTRO MISSION & INSTRUCTIONS VIEW OVERLAY ────────────────────────── */}
       {!gameStarted && (
@@ -732,11 +732,11 @@ export default function BohrModelLevel1GamePage({
             </div>
           </header>
 
-          {/* ── 2. CENTER STAGE: 3D BOHR ATOM (CLEAN WHITE CARD) ── */}
-          <main className="bg-white border border-slate-200 rounded-2xl p-2 sm:p-2.5 shadow-sm flex-1 min-h-0 flex flex-col justify-between overflow-hidden relative mb-2">
+          {/* ── 2. CENTER STAGE: 3D BOHR ATOM (INSIDE SINGLE CANVAS) ── */}
+          <div className="flex-1 w-full min-h-0 flex flex-col justify-between overflow-hidden relative mb-1">
             
             {/* 3D WebGL Canvas (Pure White Background, Fixed Top-Down Geometry) */}
-            <div className="flex-1 w-full min-h-0 relative rounded-xl overflow-hidden bg-white">
+            <div className="flex-1 w-full min-h-0 relative overflow-hidden bg-white">
               <Canvas camera={{ position: [0, 10.4, 0.001], fov: 46 }}>
                 <AdaptiveBohrCamera />
                 <color attach="background" args={['#FFFFFF']} />
@@ -844,10 +844,10 @@ export default function BohrModelLevel1GamePage({
                 )}
               </div>
             )}
-          </main>
+          </div>
 
-          {/* ── 3. BOTTOM PHOTON TRAY / EMISSION ACTION (MATCHING IMAGE 3) ──────── */}
-          <footer className="bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 shadow-sm shrink-0">
+          {/* ── 3. BOTTOM PHOTON TRAY / EMISSION ACTION (INSIDE SINGLE CANVAS) ──── */}
+          <div className="w-full pt-1.5 pb-0.5 shrink-0">
             {!isExcited ? (
               <div>
                 <div className="flex items-center gap-1.5 mb-2">
@@ -911,7 +911,7 @@ export default function BohrModelLevel1GamePage({
                 </button>
               </div>
             )}
-          </footer>
+          </div>
         </div>
       )}
 

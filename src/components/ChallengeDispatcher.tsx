@@ -134,6 +134,14 @@ const AtomicOrbitalsGamePage = dynamic<{ difficulty?: string; onExit?: () => voi
   { ssr: false, loading: LoadingFallback }
 );
 
+const ExchangeStabilityLevel3GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/atomic_orbitals/ExchangeStabilityLevel3GamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -169,8 +177,16 @@ export function ChallengeDispatcher({
     normTopic.includes("bohr") ||
     normTopic.includes("hydrogen-spectrum");
 
+  const isElectronicConfig =
+    normTopic === "6" ||
+    normTopic.includes("electronic-configuration") ||
+    normTopic.includes("electronic-configurations") ||
+    normTopic.includes("electronic_configuration") ||
+    normTopic.includes("electronic_configurations");
+
   const isAtomicOrbitals =
     !isBohr &&
+    !isElectronicConfig &&
     (normTopic === "5" ||
       normTopic.includes("atomic-orbital") ||
       normTopic.includes("atomic_orbital") ||
@@ -178,11 +194,11 @@ export function ChallengeDispatcher({
       normTopic.includes("atomic_orbitals") ||
       normTopic.includes("quantum-number") ||
       normTopic.includes("quantum_number") ||
-      normTopic.includes("electronic-configuration") ||
       (normTopic.includes("orbital") && !normTopic.includes("molecular") && !normTopic.includes("overlap")));
 
   const isMot =
     !isBohr &&
+    !isElectronicConfig &&
     !isAtomicOrbitals &&
     (normTopic === "3" ||
       normTopic.includes("mot") ||
@@ -191,6 +207,7 @@ export function ChallengeDispatcher({
 
   const isHybridization =
     !isBohr &&
+    !isElectronicConfig &&
     !isAtomicOrbitals &&
     !isMot &&
     (normTopic === "2" ||
@@ -200,6 +217,7 @@ export function ChallengeDispatcher({
 
   const isVsepr =
     !isBohr &&
+    !isElectronicConfig &&
     !isAtomicOrbitals &&
     !isMot &&
     !isHybridization &&
@@ -212,8 +230,19 @@ export function ChallengeDispatcher({
 
   if (isBohr) {
     content = <BohrModelLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isElectronicConfig) {
+    // Put Quantum Anomalies & Exchange Stability inside the Medium Level Challenge (Level 2)
+    if (isLevel2 || isLevel3) {
+      content = <ExchangeStabilityLevel3GamePage difficulty={normDifficulty} onExit={onExit} />;
+    } else {
+      content = <ExchangeStabilityLevel3GamePage difficulty={normDifficulty} onExit={onExit} />;
+    }
   } else if (isAtomicOrbitals) {
-    content = <AtomicOrbitalsGamePage difficulty={normDifficulty} onExit={onExit} />;
+    if (isLevel3) {
+      content = <ExchangeStabilityLevel3GamePage difficulty={normDifficulty} onExit={onExit} />;
+    } else {
+      content = <AtomicOrbitalsGamePage difficulty={normDifficulty} onExit={onExit} />;
+    }
   } else if (isMot) {
     if (isLevel2) {
       content = <MotMediumGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -248,7 +277,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isAtomicOrbitals && !isBohr && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

@@ -2353,8 +2353,8 @@
               "description": "Identify which quantum number sets are physically valid and which violate Pauli or Azimuthal constraints."
             },
             "advanced": {
-              "title": "Exchange Energy Maximizer",
-              "description": "Calculate the total exchange energy pairs K for d⁴, d⁵, d⁹, and d¹⁰ configurations."
+              "title": "Quantum Anomalies & Exchange Stability",
+              "description": "Stabilize Chromium and Copper by transferring 4s electrons to half-filled and fully-filled 3d subshells to maximize exchange energy (K) and spherical symmetry."
             }
           },
           "practiceTests": {
@@ -2539,6 +2539,73 @@
                 "question": "What is the number of radial nodes in a 3p atomic orbital (n - l - 1)?",
                 "correctValue": 1,
                 "explanation": "Radial nodes = n - l - 1 = 3 - 1 - 1 = 1."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "6",
+          "topicName": "Electronic Configurations",
+          "coreConcept": "Aufbau principle, Pauli exclusion, Hund's rule, and exchange stability anomalies",
+          "keyFormulas": [
+            {
+              "formula": "Total Exchange Pairs K = n(n - 1) / 2",
+              "label": "Exchange Energy"
+            },
+            {
+              "formula": "Energy Order: 1s < 2s < 2p < 3s < 3p < 4s < 3d",
+              "label": "Aufbau Sequence"
+            },
+            {
+              "formula": "Chromium: [Ar] 4s¹ 3d⁵ | Copper: [Ar] 4s¹ 3d¹⁰",
+              "label": "Anomalous Ground States"
+            }
+          ],
+          "theory": {
+            "basics": "Electronic configuration describes the distribution of electrons in an atom's atomic orbitals.\n\n### Key Rules:\n1. **Aufbau Principle:** Electrons occupy the lowest available energy orbital first (1s < 2s < 2p < 3s < 3p < 4s < 3d).\n2. **Pauli Exclusion Principle:** An orbital can hold a maximum of 2 electrons, and they must have opposite spins (↑↓).\n3. **Hund's Rule:** Orbitals of equal energy (degenerate orbitals) are singly occupied with parallel spins before any pairing occurs.",
+            "fullConcept": "## Anomalous Stability & Exchange Energy\n\nChromium (Z=24) and Copper (Z=29) deviate from the standard Aufbau sequence:\n- **Chromium:** Expected [Ar] 4s² 3d⁴, observed [Ar] 4s¹ 3d⁵ (half-filled d-subshell with 10 exchange pairs vs 6).\n- **Copper:** Expected [Ar] 4s² 3d⁹, observed [Ar] 4s¹ 3d¹⁰ (completely filled d-subshell with 20 exchange pairs vs 16, plus spherical symmetry)."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Aufbau & Hund Rule Builder",
+              "description": "Construct ground-state configurations for light elements by applying orbital energy order and Hund's rule."
+            },
+            "medium": {
+              "title": "Quantum Anomalies & Exchange Stability",
+              "description": "Stabilize Chromium and Copper by transferring 4s electrons to 3d to maximize exchange energy (K) and unlock the stability shield."
+            },
+            "advanced": {
+              "title": "Exchange Energy Mastery",
+              "description": "Calculate and master exchange stabilization energy across 3d transition metal configurations."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the correct ground-state electronic configuration of Chromium (Z=24)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "[Ar] 4s² 3d⁴"
+                  },
+                  {
+                    "id": "B",
+                    "label": "[Ar] 4s¹ 3d⁵"
+                  },
+                  {
+                    "id": "C",
+                    "label": "[Ar] 3d⁶"
+                  },
+                  {
+                    "id": "D",
+                    "label": "[Ar] 4s² 3d³ 4p¹"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Due to the extra stability of a half-filled 3d⁵ subshell and high exchange energy (K=10), Chromium has the ground-state configuration [Ar] 4s¹ 3d⁵."
               }
             ]
           }

@@ -80,6 +80,13 @@ export function findTopic(
         t.topicId === "5"
       )
         return true;
+      if (
+        (norm.includes("electronic") ||
+          norm.includes("config") ||
+          norm === "electronic-configurations") &&
+        t.topicId === "6"
+      )
+        return true;
       return false;
     }) || mod.topics[0];
 

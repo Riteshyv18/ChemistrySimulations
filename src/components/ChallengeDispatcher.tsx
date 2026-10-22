@@ -142,6 +142,14 @@ const ExchangeStabilityLevel3GamePage = dynamic<{ difficulty?: string; onExit?: 
   { ssr: false, loading: LoadingFallback }
 );
 
+const AufbauSodiumLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/atomic_orbitals/AufbauSodiumLevel1GamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -231,11 +239,12 @@ export function ChallengeDispatcher({
   if (isBohr) {
     content = <BohrModelLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isElectronicConfig) {
-    // Put Quantum Anomalies & Exchange Stability inside the Medium Level Challenge (Level 2)
+    // Put Quantum Anomalies & Exchange Stability inside Level 2 & 3
     if (isLevel2 || isLevel3) {
       content = <ExchangeStabilityLevel3GamePage difficulty={normDifficulty} onExit={onExit} />;
     } else {
-      content = <ExchangeStabilityLevel3GamePage difficulty={normDifficulty} onExit={onExit} />;
+      // Level 1 (Easy): Aufbau & Hund Rule Builder for Sodium (Na, Z=11)
+      content = <AufbauSodiumLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
     }
   } else if (isAtomicOrbitals) {
     if (isLevel3) {

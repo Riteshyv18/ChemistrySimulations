@@ -782,8 +782,8 @@ export default function ExchangeStabilityLevel3GamePage({
 
           {/* ── 3. BOTTOM SECTION: 2-ROW DRAG AND DROP BOXES (LARGER SIZES) ── */}
           <div className="w-full shrink-0 flex flex-col gap-2.5 pt-1.5 pb-2 px-1 bg-white border-t border-slate-100/80">
-            {/* ROW 1: 4s Orbital Box & Transfer Button */}
-            <div className="flex items-center justify-between w-full max-w-[430px] mx-auto px-1">
+            {/* ROW 1: 4s Orbital Box (Centered, with draggable 4s electron) */}
+            <div className="flex items-center justify-center w-full max-w-[430px] mx-auto px-1">
               <div className="flex items-center gap-2.5">
                 <span className="text-xs sm:text-sm font-mono font-black text-slate-700 uppercase tracking-tight">
                   4s Orbital:
@@ -805,7 +805,11 @@ export default function ExchangeStabilityLevel3GamePage({
                     <button
                       type="button"
                       draggable
-                      onDragStart={() => setIsElectronSelected(true)}
+                      onDragStart={(e) => {
+                        setIsElectronSelected(true);
+                        e.dataTransfer.setData('text/plain', '4s2');
+                        e.dataTransfer.effectAllowed = 'move';
+                      }}
                       onClick={() => {
                         setIsElectronSelected(!isElectronSelected);
                       }}
@@ -813,7 +817,7 @@ export default function ExchangeStabilityLevel3GamePage({
                         ? 'bg-amber-100 border-amber-500 text-amber-800 ring-2 ring-amber-400 animate-pulse'
                         : 'bg-amber-50 border-amber-400 text-amber-700 hover:bg-amber-100'
                         }`}
-                      title="Drag or click to transfer this 4s electron"
+                      title="Drag this 4s electron and drop it into a 3d orbital"
                     >
                       <span className="text-[9px] font-mono font-bold text-amber-700 leading-none">4s₂</span>
                       <span className="leading-none text-xl sm:text-2xl font-black text-amber-700 my-auto">↓</span>
@@ -829,21 +833,6 @@ export default function ExchangeStabilityLevel3GamePage({
                   )}
                 </div>
               </div>
-
-              {/* Transfer Action Button */}
-              <button
-                type="button"
-                disabled={sElectrons <= 1}
-                onClick={handleTransferToD}
-                className={`h-12 sm:h-14 px-5 rounded-2xl flex items-center gap-2 font-black text-xs sm:text-sm uppercase tracking-wider border transition-all shadow-sm ${sElectrons === 2
-                  ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 cursor-pointer shadow-blue-500/20 active:scale-95 animate-pulse'
-                  : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                  }`}
-                title="Transfer 4s electron to 3d vacancy"
-              >
-                <span>TRANSFER</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
             </div>
 
             {/* ROW 2: Five 3d Subshell Boxes (Below 4s, Larger Boxes across full width) */}

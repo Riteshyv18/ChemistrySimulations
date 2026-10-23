@@ -150,6 +150,14 @@ const AufbauSodiumLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () =>
   { ssr: false, loading: LoadingFallback }
 );
 
+const DualNatureLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/dual_nature_matter/DualNatureLevel1GamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -180,10 +188,18 @@ export function ChallengeDispatcher({
     normDifficulty === "advanced" ||
     normDifficulty === "3";
 
+  const isDualNature =
+    normTopic === "7" ||
+    normTopic.includes("dual-nature") ||
+    normTopic.includes("matter-wave") ||
+    normTopic.includes("de-broglie") ||
+    normTopic.includes("double-slit");
+
   const isBohr =
-    normTopic === "4" ||
-    normTopic.includes("bohr") ||
-    normTopic.includes("hydrogen-spectrum");
+    !isDualNature &&
+    (normTopic === "4" ||
+      normTopic.includes("bohr") ||
+      normTopic.includes("hydrogen-spectrum"));
 
   const isElectronicConfig =
     normTopic === "6" ||
@@ -236,7 +252,9 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isBohr) {
+  if (isDualNature) {
+    content = <DualNatureLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isBohr) {
     content = <BohrModelLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isElectronicConfig) {
     // Put Quantum Anomalies & Exchange Stability inside Level 2 & 3
@@ -286,7 +304,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

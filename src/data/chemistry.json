@@ -2609,6 +2609,73 @@
               }
             ]
           }
+        },
+        {
+          "topicId": "7",
+          "topicName": "Dual Nature of Matter",
+          "coreConcept": "de Broglie wavelength, wave-particle duality, and electron double-slit interference",
+          "keyFormulas": [
+            {
+              "formula": "λ = h / p = h / (m * v)",
+              "label": "de Broglie Wavelength"
+            },
+            {
+              "formula": "λ = h / √(2mE) = 1.227 / √V nm",
+              "label": "Electron de Broglie Wavelength"
+            },
+            {
+              "formula": "Δx * Δp ≥ h / (4π)",
+              "label": "Heisenberg Uncertainty Principle"
+            }
+          ],
+          "theory": {
+            "basics": "In 1924, Louis de Broglie proposed that matter, like light, exhibits wave-particle duality. Any moving material particle with mass m and velocity v possesses an associated wave of wavelength λ = h/p = h/(mv).\n\nWhile macroscopic objects have imperceptibly small wavelengths, subatomic particles like electrons exhibit pronounced wave properties, such as diffraction and interference through double slits.",
+            "fullConcept": "## The Electron Double-Slit Experiment\n\nWhen electrons are emitted individually toward a double-slit barrier:\n1. Each electron arrives at the detector screen as a localized, discrete dot (particle behavior).\n2. Over time, as hundreds of electrons accumulate, an alternating bright and dark fringe pattern emerges (wave interference).\n3. Even when electrons travel one at a time, each electron interferes with itself as a probability amplitude wave (Ψ), proving that matter fundamentally exhibits wave-particle duality."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Double-Slit Lab & Quantum Wave Mystery",
+              "description": "Explore the electron source, double-slit barrier, and detector screen. Predict and reveal the quantum interference pattern."
+            },
+            "medium": {
+              "title": "de Broglie Wavelength Calculator",
+              "description": "Calculate relativistic and non-relativistic matter wavelengths for accelerated electrons and moving particles."
+            },
+            "advanced": {
+              "title": "Heisenberg Uncertainty & Wavepacket Dynamics",
+              "description": "Analyze position-momentum uncertainty and wavepacket broadening in quantum tunneling."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What happens when single electrons are fired one-by-one through a double slit over an extended period?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "They produce two sharp localized lines directly behind the two slits"
+                  },
+                  {
+                    "id": "B",
+                    "label": "They build up an interference pattern of alternating bright and dark fringes"
+                  },
+                  {
+                    "id": "C",
+                    "label": "They bounce off randomly with no recognizable pattern"
+                  },
+                  {
+                    "id": "D",
+                    "label": "They annihilate each other upon reaching the barrier"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Even when fired one at a time, each electron's quantum probability wave passes through both slits and interferes with itself, accumulating an interference pattern."
+              }
+            ]
+          }
         }
       ]
     }

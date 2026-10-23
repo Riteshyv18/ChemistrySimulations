@@ -87,6 +87,15 @@ export function findTopic(
         t.topicId === "6"
       )
         return true;
+      if (
+        (norm.includes("dual-nature") ||
+          norm.includes("matter-wave") ||
+          norm.includes("de-broglie") ||
+          norm.includes("double-slit") ||
+          norm === "dual-nature-of-matter") &&
+        t.topicId === "7"
+      )
+        return true;
       return false;
     }) || mod.topics[0];
 

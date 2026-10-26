@@ -74,9 +74,8 @@ export function findTopic(
       if ((norm === "bohr-model" || norm === "bohr-model-hydrogen-spectrum") && t.topicId === "4") return true;
       if (
         (norm.includes("atomic-orbital") ||
-          norm.includes("quantum") ||
-          norm.includes("orbital") ||
-          norm === "atomic-orbitals") &&
+          norm === "atomic-orbitals" ||
+          (norm.includes("orbital") && !norm.includes("quantum"))) &&
         t.topicId === "5"
       )
         return true;
@@ -94,6 +93,15 @@ export function findTopic(
           norm.includes("double-slit") ||
           norm === "dual-nature-of-matter") &&
         t.topicId === "7"
+      )
+        return true;
+      if (
+        (norm.includes("quantum-number") ||
+          norm.includes("quantum_number") ||
+          norm.includes("quantum") ||
+          norm === "quantum-numbers" ||
+          norm === "quantum-number") &&
+        t.topicId === "8"
       )
         return true;
       return false;

@@ -142,6 +142,14 @@ const ExchangeStabilityLevel3GamePage = dynamic<{ difficulty?: string; onExit?: 
   { ssr: false, loading: LoadingFallback }
 );
 
+const QuantumNumbersLevel2GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/atomic_orbitals/QuantumNumbersLevel2GamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 const AufbauSodiumLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
@@ -208,17 +216,23 @@ export function ChallengeDispatcher({
     normTopic.includes("electronic_configuration") ||
     normTopic.includes("electronic_configurations");
 
+  const isQuantumNumbers =
+    normTopic === "8" ||
+    normTopic.includes("quantum-number") ||
+    normTopic.includes("quantum_number") ||
+    normTopic.includes("quantum-numbers") ||
+    normTopic.includes("orbital-architect");
+
   const isAtomicOrbitals =
     !isBohr &&
     !isElectronicConfig &&
+    !isQuantumNumbers &&
     (normTopic === "5" ||
       normTopic.includes("atomic-orbital") ||
       normTopic.includes("atomic_orbital") ||
       normTopic.includes("atomic-orbitals") ||
       normTopic.includes("atomic_orbitals") ||
-      normTopic.includes("quantum-number") ||
-      normTopic.includes("quantum_number") ||
-      (normTopic.includes("orbital") && !normTopic.includes("molecular") && !normTopic.includes("overlap")));
+      (normTopic.includes("orbital") && !normTopic.includes("molecular") && !normTopic.includes("overlap") && !normTopic.includes("quantum")));
 
   const isMot =
     !isBohr &&
@@ -264,9 +278,13 @@ export function ChallengeDispatcher({
       // Level 1 (Easy): Aufbau & Hund Rule Builder for Sodium (Na, Z=11)
       content = <AufbauSodiumLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
     }
+  } else if (isQuantumNumbers) {
+    content = <QuantumNumbersLevel2GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isAtomicOrbitals) {
     if (isLevel3) {
       content = <ExchangeStabilityLevel3GamePage difficulty={normDifficulty} onExit={onExit} />;
+    } else if (isLevel2) {
+      content = <QuantumNumbersLevel2GamePage difficulty={normDifficulty} onExit={onExit} />;
     } else {
       content = <AtomicOrbitalsGamePage difficulty={normDifficulty} onExit={onExit} />;
     }
@@ -304,7 +322,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

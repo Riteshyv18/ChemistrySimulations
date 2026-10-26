@@ -11,6 +11,7 @@ const PHASE_BLUE = '#2563EB'; // Negative (-) lobe / Torus
 
 interface OrbitalProps {
   autoRotate?: boolean;
+  hideLabels?: boolean;
 }
 
 // ── 3D COORDINATE AXES (x, -x, y, -y, z, -z matching Image 3) ───────────────
@@ -92,39 +93,39 @@ export function CoordinateAxes3D({ hideLabels = false }: { hideLabels?: boolean 
       {!hideLabels && (
         <>
           {/* +z label (Up) */}
-          <Html position={[0, AXIS_LEN + 0.16, 0]} center style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+          <Html position={[0, AXIS_LEN + 0.16, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
             <div style={{ whiteSpace: 'nowrap' }} className="font-mono font-black text-xs text-slate-900 bg-white/95 px-1.5 py-0.5 rounded shadow-sm border border-slate-300 select-none">
               z
             </div>
           </Html>
           {/* -z label (Down) */}
-          <Html position={[0, -AXIS_LEN - 0.16, 0]} center style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+          <Html position={[0, -AXIS_LEN - 0.16, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
             <div style={{ whiteSpace: 'nowrap' }} className="font-mono font-bold text-[11px] text-slate-700 bg-white/95 px-1 py-0.5 rounded shadow-sm border border-slate-300 select-none">
               -z
             </div>
           </Html>
 
           {/* +y label (Right) */}
-          <Html position={[AXIS_LEN + 0.16, 0, 0]} center style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+          <Html position={[AXIS_LEN + 0.16, 0, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
             <div style={{ whiteSpace: 'nowrap' }} className="font-mono font-black text-xs text-slate-900 bg-white/95 px-1.5 py-0.5 rounded shadow-sm border border-slate-300 select-none">
               y
             </div>
           </Html>
           {/* -y label (Left) */}
-          <Html position={[-AXIS_LEN - 0.16, 0, 0]} center style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+          <Html position={[-AXIS_LEN - 0.16, 0, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
             <div style={{ whiteSpace: 'nowrap' }} className="font-mono font-bold text-[11px] text-slate-700 bg-white/95 px-1 py-0.5 rounded shadow-sm border border-slate-300 select-none">
               -y
             </div>
           </Html>
 
           {/* +x label (Forward) */}
-          <Html position={[0, 0, AXIS_LEN + 0.16]} center style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+          <Html position={[0, 0, AXIS_LEN + 0.16]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
             <div style={{ whiteSpace: 'nowrap' }} className="font-mono font-black text-xs text-slate-900 bg-white/95 px-1.5 py-0.5 rounded shadow-sm border border-slate-300 select-none">
               x
             </div>
           </Html>
           {/* -x label (Backward) */}
-          <Html position={[0, 0, -AXIS_LEN - 0.16]} center style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+          <Html position={[0, 0, -AXIS_LEN - 0.16]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}>
             <div style={{ whiteSpace: 'nowrap' }} className="font-mono font-bold text-[11px] text-slate-700 bg-white/95 px-1 py-0.5 rounded shadow-sm border border-slate-300 select-none">
               -x
             </div>
@@ -169,7 +170,7 @@ function TeardropLobe({
 }
 
 // ── 1. s Orbital (l = 0, m = 0) ──────────────────────────────────────────────
-export function OrbitalSMesh({ autoRotate = false }: OrbitalProps) {
+export function OrbitalSMesh({ autoRotate = false, hideLabels = false }: OrbitalProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -181,7 +182,7 @@ export function OrbitalSMesh({ autoRotate = false }: OrbitalProps) {
   return (
     <group ref={groupRef} scale={0.7}>
       {/* 3D Coordinate Axes */}
-      <CoordinateAxes3D />
+      <CoordinateAxes3D hideLabels={hideLabels} />
 
       {/* Outer translucent spherical cloud */}
       <mesh>
@@ -216,7 +217,7 @@ export function OrbitalSMesh({ autoRotate = false }: OrbitalProps) {
 }
 
 // ── 2. p_x Orbital (Along X axis: Forward +x Red, Backward -x Blue) ──────────
-export function OrbitalPxMesh({ autoRotate = false }: OrbitalProps) {
+export function OrbitalPxMesh({ autoRotate = false, hideLabels = false }: OrbitalProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -227,7 +228,7 @@ export function OrbitalPxMesh({ autoRotate = false }: OrbitalProps) {
 
   return (
     <group ref={groupRef} scale={0.7}>
-      <CoordinateAxes3D />
+      <CoordinateAxes3D hideLabels={hideLabels} />
 
       {/* +x Lobe (Red, Forward along X axis) */}
       <TeardropLobe color={PHASE_RED} direction={[0, 0, 1]} scale={0.88} />
@@ -244,7 +245,7 @@ export function OrbitalPxMesh({ autoRotate = false }: OrbitalProps) {
 }
 
 // ── 3. p_y Orbital (Along Y axis: Right +y Red, Left -y Blue) ────────────────
-export function OrbitalPyMesh({ autoRotate = false }: OrbitalProps) {
+export function OrbitalPyMesh({ autoRotate = false, hideLabels = false }: OrbitalProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -255,7 +256,7 @@ export function OrbitalPyMesh({ autoRotate = false }: OrbitalProps) {
 
   return (
     <group ref={groupRef} scale={0.7}>
-      <CoordinateAxes3D />
+      <CoordinateAxes3D hideLabels={hideLabels} />
 
       {/* +y Lobe (Red, Right along Y axis) */}
       <TeardropLobe color={PHASE_RED} direction={[1, 0, 0]} scale={0.88} />
@@ -272,7 +273,7 @@ export function OrbitalPyMesh({ autoRotate = false }: OrbitalProps) {
 }
 
 // ── 4. p_z Orbital (Along Z axis: Up +z Red, Down -z Blue) ───────────────────
-export function OrbitalPzMesh({ autoRotate = false }: OrbitalProps) {
+export function OrbitalPzMesh({ autoRotate = false, hideLabels = false }: OrbitalProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -283,7 +284,7 @@ export function OrbitalPzMesh({ autoRotate = false }: OrbitalProps) {
 
   return (
     <group ref={groupRef} scale={0.7}>
-      <CoordinateAxes3D />
+      <CoordinateAxes3D hideLabels={hideLabels} />
 
       {/* +z Lobe (Red, Up along Z axis) */}
       <TeardropLobe color={PHASE_RED} direction={[0, 1, 0]} scale={0.88} />
@@ -300,7 +301,7 @@ export function OrbitalPzMesh({ autoRotate = false }: OrbitalProps) {
 }
 
 // ── 5. d_xy Orbital (Cloverleaf in XY plane between X and Y axes) ─────────────
-export function OrbitalDxyMesh({ autoRotate = false }: OrbitalProps) {
+export function OrbitalDxyMesh({ autoRotate = false, hideLabels = false }: OrbitalProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -313,7 +314,7 @@ export function OrbitalDxyMesh({ autoRotate = false }: OrbitalProps) {
 
   return (
     <group ref={groupRef} scale={0.7}>
-      <CoordinateAxes3D />
+      <CoordinateAxes3D hideLabels={hideLabels} />
 
       {/* Four lobes in horizontal XY plane at 45° between X and Y axes */}
       <TeardropLobe color={PHASE_RED} direction={[d, 0, d]} scale={0.84} />
@@ -331,7 +332,7 @@ export function OrbitalDxyMesh({ autoRotate = false }: OrbitalProps) {
 }
 
 // ── 6. d_yz Orbital (Cloverleaf in YZ plane between Y and Z axes, Image 3) ───
-export function OrbitalDyzMesh({ autoRotate = false }: OrbitalProps) {
+export function OrbitalDyzMesh({ autoRotate = false, hideLabels = false }: OrbitalProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -344,7 +345,7 @@ export function OrbitalDyzMesh({ autoRotate = false }: OrbitalProps) {
 
   return (
     <group ref={groupRef} scale={0.7}>
-      <CoordinateAxes3D />
+      <CoordinateAxes3D hideLabels={hideLabels} />
 
       {/* Four lobes in vertical YZ plane at 45° between Y (right) and Z (up) */}
       <TeardropLobe color={PHASE_RED} direction={[d, d, 0]} scale={0.84} />
@@ -362,7 +363,7 @@ export function OrbitalDyzMesh({ autoRotate = false }: OrbitalProps) {
 }
 
 // ── 7. d_zx Orbital (Cloverleaf in XZ plane between X and Z axes, Image 3) ───
-export function OrbitalDzxMesh({ autoRotate = false }: OrbitalProps) {
+export function OrbitalDzxMesh({ autoRotate = false, hideLabels = false }: OrbitalProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -375,7 +376,7 @@ export function OrbitalDzxMesh({ autoRotate = false }: OrbitalProps) {
 
   return (
     <group ref={groupRef} scale={0.7}>
-      <CoordinateAxes3D />
+      <CoordinateAxes3D hideLabels={hideLabels} />
 
       {/* Four lobes in vertical XZ plane at 45° between X (forward) and Z (up) */}
       <TeardropLobe color={PHASE_RED} direction={[0, d, d]} scale={0.84} />
@@ -393,7 +394,7 @@ export function OrbitalDzxMesh({ autoRotate = false }: OrbitalProps) {
 }
 
 // ── 8. d_x2-y2 Orbital (Cloverleaf along X and Y axes) ─────────────────────────
-export function OrbitalDx2y2Mesh({ autoRotate = false }: OrbitalProps) {
+export function OrbitalDx2y2Mesh({ autoRotate = false, hideLabels = false }: OrbitalProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -404,7 +405,7 @@ export function OrbitalDx2y2Mesh({ autoRotate = false }: OrbitalProps) {
 
   return (
     <group ref={groupRef} scale={0.7}>
-      <CoordinateAxes3D />
+      <CoordinateAxes3D hideLabels={hideLabels} />
 
       {/* Lobes along X axis (Forward/Back, Red + phase) */}
       <TeardropLobe color={PHASE_RED} direction={[0, 0, 1]} scale={0.84} />
@@ -424,7 +425,7 @@ export function OrbitalDx2y2Mesh({ autoRotate = false }: OrbitalProps) {
 }
 
 // ── 9. d_z2 Orbital (Vertical Z Lobes + Toroidal Doughnut Ring, Image 3) ───────
-export function OrbitalDz2Mesh({ autoRotate = false }: OrbitalProps) {
+export function OrbitalDz2Mesh({ autoRotate = false, hideLabels = false }: OrbitalProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -435,7 +436,7 @@ export function OrbitalDz2Mesh({ autoRotate = false }: OrbitalProps) {
 
   return (
     <group ref={groupRef} scale={0.7}>
-      <CoordinateAxes3D />
+      <CoordinateAxes3D hideLabels={hideLabels} />
 
       {/* Vertical Upper Lobe (+z, Red) */}
       <TeardropLobe color={PHASE_RED} direction={[0, 1, 0]} scale={0.92} />
@@ -468,30 +469,32 @@ export function OrbitalDz2Mesh({ autoRotate = false }: OrbitalProps) {
 export function OrbitalRenderer({
   orbitalId,
   autoRotate = false,
+  hideLabels = false,
 }: {
   orbitalId: string;
   autoRotate?: boolean;
+  hideLabels?: boolean;
 }) {
   switch (orbitalId) {
     case 's':
-      return <OrbitalSMesh autoRotate={autoRotate} />;
+      return <OrbitalSMesh autoRotate={autoRotate} hideLabels={hideLabels} />;
     case 'px':
-      return <OrbitalPxMesh autoRotate={autoRotate} />;
+      return <OrbitalPxMesh autoRotate={autoRotate} hideLabels={hideLabels} />;
     case 'py':
-      return <OrbitalPyMesh autoRotate={autoRotate} />;
+      return <OrbitalPyMesh autoRotate={autoRotate} hideLabels={hideLabels} />;
     case 'pz':
-      return <OrbitalPzMesh autoRotate={autoRotate} />;
+      return <OrbitalPzMesh autoRotate={autoRotate} hideLabels={hideLabels} />;
     case 'dxy':
-      return <OrbitalDxyMesh autoRotate={autoRotate} />;
+      return <OrbitalDxyMesh autoRotate={autoRotate} hideLabels={hideLabels} />;
     case 'dyz':
-      return <OrbitalDyzMesh autoRotate={autoRotate} />;
+      return <OrbitalDyzMesh autoRotate={autoRotate} hideLabels={hideLabels} />;
     case 'dzx':
-      return <OrbitalDzxMesh autoRotate={autoRotate} />;
+      return <OrbitalDzxMesh autoRotate={autoRotate} hideLabels={hideLabels} />;
     case 'dx2y2':
-      return <OrbitalDx2y2Mesh autoRotate={autoRotate} />;
+      return <OrbitalDx2y2Mesh autoRotate={autoRotate} hideLabels={hideLabels} />;
     case 'dz2':
     default:
-      return <OrbitalDz2Mesh autoRotate={autoRotate} />;
+      return <OrbitalDz2Mesh autoRotate={autoRotate} hideLabels={hideLabels} />;
   }
 }
 

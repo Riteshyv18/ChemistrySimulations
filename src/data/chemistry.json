@@ -2676,6 +2676,63 @@
               }
             ]
           }
+        },
+        {
+          "topicId": "8",
+          "topicName": "Quantum Numbers",
+          "coreConcept": "Principal, azimuthal, magnetic, and spin quantum numbers (n, l, ml, ms) and orbital states",
+          "keyFormulas": [
+            {
+              "formula": "l = 0, 1, ..., (n - 1)",
+              "label": "Azimuthal Allowed Values"
+            },
+            {
+              "formula": "m_l = -l, ..., +l (2l + 1 states)",
+              "label": "Magnetic Quantum States"
+            },
+            {
+              "formula": "m_s = +½, -½",
+              "label": "Electron Spin States"
+            },
+            {
+              "formula": "Max e⁻ per shell = 2n²",
+              "label": "Shell Capacity"
+            }
+          ],
+          "theory": {
+            "basics": "Every electron in an atom is described by four quantum numbers:\n1. **Principal Quantum Number (n = 1, 2, 3...):** Determines size and energy level of shell.\n2. **Azimuthal / Angular Momentum (l = 0 to n-1):** Determines orbital subshell shape (0=s, 1=p, 2=d, 3=f).\n3. **Magnetic Quantum Number (m_l = -l to +l):** Determines spatial orientation.\n4. **Spin Quantum Number (m_s = +½, -½):** Determines intrinsic spin direction.\n\n### Rules for Electron Filling:\n- **Aufbau Principle:** Electrons fill lowest available energy subshells first (1s < 2s < 2p < 3s < 3p < 4s < 3d).\n- **Pauli Exclusion Principle:** No two electrons in the same atom can have the identical set of all four quantum numbers.\n- **Hund's Rule of Maximum Multiplicity:** Electrons occupy degenerate orbitals singly with parallel spins before pairing up.",
+            "fullConcept": "## The Four Quantum Numbers & Wavefunction ψ\n\nIn wave mechanics, the spatial distribution and energy of an electron in an atom are completely specified by four quantum numbers:\n- **n (Principal):** Shell radius and main energy level (K=1, L=2, M=3, N=4).\n- **l (Azimuthal):** Angular shape of the orbital (s=0 sphere, p=1 dumbbell, d=2 cloverleaf, f=3 complex).\n- **m_l (Magnetic):** (2l + 1) allowed spatial orientations under an external magnetic field.\n- **m_s (Spin):** Intrinsic magnetic moment and spin direction (+½ ↑ or -½ ↓)."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Orbital Architect — Level 1",
+              "description": "Explore principal shells (n), angular subshells (l), and 3D orbital clouds."
+            },
+            "medium": {
+              "title": "Orbital Architect — Level 2",
+              "description": "Build and validate quantum numbers n, l, ml, ms step by step across 6 interactive missions."
+            },
+            "advanced": {
+              "title": "Quantum Rule Validator",
+              "description": "Master Pauli exclusion and quantum state rules."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the maximum number of electrons that can be accommodated in a principal shell with n = 3?",
+                "options": [
+                  { "id": "A", "label": "8" },
+                  { "id": "B", "label": "18" },
+                  { "id": "C", "label": "32" },
+                  { "id": "D", "label": "10" }
+                ],
+                "correctOptionIds": ["B"],
+                "explanation": "Maximum number of electrons in shell n is 2n² = 2 * (3²) = 2 * 9 = 18."
+              }
+            ]
+          }
         }
       ]
     }

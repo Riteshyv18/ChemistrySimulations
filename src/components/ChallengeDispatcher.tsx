@@ -166,6 +166,22 @@ const DualNatureLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => v
   { ssr: false, loading: LoadingFallback }
 );
 
+const SolutionsWorkshopGamePage = dynamic<{ module?: string; topic?: string; difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/solutions/SolutionsWorkshopGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const ConcentrationTermsLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/solutions/concentration_terms/ConcentrationTermsLevel1GamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -175,11 +191,13 @@ export interface ChallengeDispatcherProps {
 }
 
 export function ChallengeDispatcher({
+  module,
   topic,
   difficulty = "level1",
   showExitButton = true,
   onExit,
 }: ChallengeDispatcherProps) {
+  const normModule = (module || "").toLowerCase().replace(/_/g, "-");
   const normTopic = topic.toLowerCase().replace(/_/g, "-");
   const normDifficulty = (difficulty || "level1").toLowerCase();
 
@@ -195,6 +213,21 @@ export function ChallengeDispatcher({
     normDifficulty === "hard" ||
     normDifficulty === "advanced" ||
     normDifficulty === "3";
+
+  const isConcentrationTerms =
+    normTopic === "9" ||
+    normTopic.includes("concentration");
+
+  const isSolutions =
+    !isConcentrationTerms &&
+    (normModule.includes("solution") ||
+      normTopic === "10" ||
+      normTopic === "11" ||
+      normTopic === "12" ||
+      normTopic.includes("raoult") ||
+      normTopic.includes("colligative") ||
+      normTopic.includes("osmotic") ||
+      normTopic.includes("osmosis"));
 
   const isDualNature =
     normTopic === "7" ||
@@ -266,7 +299,11 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isDualNature) {
+  if (isConcentrationTerms) {
+    content = <ConcentrationTermsLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isSolutions) {
+    content = <SolutionsWorkshopGamePage module={module} topic={topic} difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isDualNature) {
     content = <DualNatureLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isBohr) {
     content = <BohrModelLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -322,7 +359,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isConcentrationTerms && !isSolutions && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

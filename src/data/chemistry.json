@@ -2735,6 +2735,232 @@
           }
         }
       ]
+    },
+    {
+      "moduleId": "M3",
+      "moduleName": "Solutions",
+      "topics": [
+        {
+          "topicId": "9",
+          "topicName": "Concentration Terms",
+          "coreConcept": "Quantitative expressions of solution composition: Molarity, Molality, Mole Fraction, ppm, and Mass percentage.",
+          "keyFormulas": [
+            {
+              "formula": "M = (Moles of Solute) / (Volume of Solution in Liters)",
+              "label": "Molarity (M)"
+            },
+            {
+              "formula": "m = (Moles of Solute) / (Mass of Solvent in kg)",
+              "label": "Molality (m)"
+            },
+            {
+              "formula": "x_A = n_A / (n_A + n_B)",
+              "label": "Mole Fraction (x)"
+            },
+            {
+              "formula": "ppm = (Mass of Solute / Total Mass of Solution) * 10⁶",
+              "label": "Parts Per Million (ppm)"
+            }
+          ],
+          "theory": {
+            "basics": "A solution is a homogeneous mixture of two or more substances. Concentration describes the quantity of solute dissolved in a specific quantity of solvent or solution.\n\n- **Molarity (M):** Moles of solute per liter of solution. Molarity is temperature-dependent because liquid volume expands upon heating.\n- **Molality (m):** Moles of solute per kilogram of solvent. Molality is temperature-independent because mass is invariant with temperature.\n- **Mole Fraction (x):** Ratio of moles of a single component to total moles in the mixture.\n- **Parts Per Million (ppm):** Useful for expressing trace concentrations (e.g., water contaminants).",
+            "fullConcept": "## Temperature Dependence & Interconversions\n\nBecause molarity involves volume (V), it changes with temperature due to thermal expansion. Molality and mole fraction rely solely on mass and remain strictly constant regardless of temperature fluctuations."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Molarity & Mass Mixer — Level 1",
+              "description": "Calculate molarity, prepare standard solutions, and observe dissolution in real-time."
+            },
+            "medium": {
+              "title": "Dilution & Molality Balancer — Level 2",
+              "description": "Perform M1V1 = M2V2 dilutions and convert between molarity and molality using density."
+            },
+            "advanced": {
+              "title": "Complex Solution Formulator — Level 3",
+              "description": "Solve multi-component mole fraction, volume contraction, and ppm formulations."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which of the following concentration terms is independent of temperature?",
+                "options": [
+                  { "id": "A", "label": "Molarity" },
+                  { "id": "B", "label": "Molality" },
+                  { "id": "C", "label": "Normality" },
+                  { "id": "D", "label": "Formality" }
+                ],
+                "correctOptionIds": ["B"],
+                "explanation": "Molality is defined per kilogram of solvent (mass). Because mass does not change with temperature, molality is temperature-independent."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "10",
+          "topicName": "Raoult's Law",
+          "coreConcept": "Vapor pressure of volatile liquids, ideal vs. non-ideal solutions, and deviations from ideality.",
+          "keyFormulas": [
+            {
+              "formula": "P_A = x_A * P_A°",
+              "label": "Raoult's Law for Component A"
+            },
+            {
+              "formula": "P_total = P_A + P_B = x_A * P_A° + x_B * P_B°",
+              "label": "Total Vapor Pressure"
+            },
+            {
+              "formula": "y_A = P_A / P_total",
+              "label": "Vapor Phase Mole Fraction"
+            }
+          ],
+          "theory": {
+            "basics": "Raoult's Law states that for a solution of volatile liquids, the partial vapor pressure of each component is directly proportional to its mole fraction in the liquid phase.\n\n- **Ideal Solutions:** Obey Raoult's law at all concentrations (ΔH_mix = 0, ΔV_mix = 0), e.g., Benzene + Toluene.\n- **Positive Deviation:** A-B intermolecular forces are weaker than A-A and B-B (e.g., Ethanol + Acetone). Shows minimum-boiling azeotropes.\n- **Negative Deviation:** A-B intermolecular forces are stronger than A-A and B-B (e.g., Chloroform + Acetone). Shows maximum-boiling azeotropes.",
+            "fullConcept": "## Vapor-Liquid Equilibrium & Azeotropes\n\nAzeotropes are binary mixtures having identical composition in both liquid and vapor phases and boil at a constant temperature without fractional distillation separation."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Raoult's Law Explorer — Level 1",
+              "description": "Adjust component mole fractions and measure equilibrium vapor pressure in closed vessels."
+            },
+            "medium": {
+              "title": "Deviation & Intermolecular Forces — Level 2",
+              "description": "Explore hydrogen bonding deviations and plot positive vs. negative P-x curves."
+            },
+            "advanced": {
+              "title": "Azeotropic Distillation Simulator — Level 3",
+              "description": "Navigate boiling point diagrams and fractional distillation limits for azeotropic pairs."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "For an ideal binary solution, what is the enthalpy of mixing (ΔH_mix)?",
+                "options": [
+                  { "id": "A", "label": "ΔH_mix > 0" },
+                  { "id": "B", "label": "ΔH_mix < 0" },
+                  { "id": "C", "label": "ΔH_mix = 0" },
+                  { "id": "D", "label": "ΔH_mix = ΔS_mix" }
+                ],
+                "correctOptionIds": ["C"],
+                "explanation": "In an ideal solution, the intermolecular attractions between A-A, B-B, and A-B are identical, meaning no heat is evolved or absorbed upon mixing (ΔH_mix = 0)."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "11",
+          "topicName": "Colligative Properties",
+          "coreConcept": "Properties depending solely on solute particle count: Boiling Point Elevation and Freezing Point Depression.",
+          "keyFormulas": [
+            {
+              "formula": "ΔP / P° = (P° - P) / P° = i * x_solute",
+              "label": "Relative Lowering of Vapor Pressure"
+            },
+            {
+              "formula": "ΔT_b = i * K_b * m",
+              "label": "Elevation in Boiling Point"
+            },
+            {
+              "formula": "ΔT_f = i * K_f * m",
+              "label": "Depression in Freezing Point"
+            },
+            {
+              "formula": "i = 1 + (n - 1) * α",
+              "label": "van 't Hoff Factor (Dissociation)"
+            }
+          ],
+          "theory": {
+            "basics": "Colligative properties depend exclusively on the total number of solute particles in solution, regardless of their chemical identity.\n\n1. **Relative Lowering of Vapor Pressure (RLVP):** Solute molecules on the surface lower the escaping tendency of solvent.\n2. **Boiling Point Elevation (ΔT_b):** Because vapor pressure is lowered, higher thermal energy is required to reach atmospheric pressure.\n3. **Freezing Point Depression (ΔT_f):** Solute particles disrupt crystal lattice formation, lowering the solidification temperature.\n4. **van 't Hoff Factor (i):** Ratio of observed colligative effect to theoretical effect for non-electrolytes.",
+            "fullConcept": "## Molecular Mass Determination & Cryoscopy\n\nCryoscopic ($K_f$) and Ebullioscopic ($K_b$) constants depend solely on solvent thermodynamic properties: $K_b = \\frac{R \\cdot M \\cdot T_b^2}{1000 \\cdot \\Delta H_{vap}}$."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Cryoscopy & Ebullioscopy Lab — Level 1",
+              "description": "Add electrolytes and non-electrolytes to water and observe shifts in boiling and freezing points."
+            },
+            "medium": {
+              "title": "van 't Hoff Factor & Ionization — Level 2",
+              "description": "Calculate degree of dissociation α from experimental colligative property measurements."
+            },
+            "advanced": {
+              "title": "Molar Mass Determination — Level 3",
+              "description": "Determine unknown polymer and peptide molecular weights using freezing point depression."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which of the following aqueous solutions will exhibit the highest boiling point elevation?",
+                "options": [
+                  { "id": "A", "label": "0.1 M Glucose" },
+                  { "id": "B", "label": "0.1 M NaCl" },
+                  { "id": "C", "label": "0.1 M CaCl2" },
+                  { "id": "D", "label": "0.1 M Urea" }
+                ],
+                "correctOptionIds": ["C"],
+                "explanation": "CaCl2 dissociates into 3 ions (Ca²⁺ + 2Cl⁻), yielding van 't Hoff factor i ≈ 3. Total effective particle concentration = 3 * 0.1 = 0.3 M, yielding the highest boiling point elevation."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "12",
+          "topicName": "Osmotic Pressure",
+          "coreConcept": "Membrane transport, van 't Hoff osmotic equation, isotonicity, and reverse osmosis.",
+          "keyFormulas": [
+            {
+              "formula": "Π = i * C * R * T",
+              "label": "van 't Hoff Osmotic Pressure Equation"
+            },
+            {
+              "formula": "M_2 = (w_2 * R * T) / (Π * V)",
+              "label": "Molar Mass from Osmotic Pressure"
+            },
+            {
+              "formula": "P_applied > Π",
+              "label": "Condition for Reverse Osmosis"
+            }
+          ],
+          "theory": {
+            "basics": "Osmosis is the spontaneous migration of solvent molecules through a semi-permeable membrane (SPM) into a region of higher solute concentration.\n\n- **Osmotic Pressure (Π):** The minimum pressure applied to the solution to stop the inward osmosis of solvent.\n- **Isotonic Solutions:** Solutions with identical osmotic pressures across a membrane (no net fluid shift).\n- **Reverse Osmosis (RO):** Applying external pressure exceeding osmotic pressure forces pure solvent out through the SPM, leaving concentrated brine behind.",
+            "fullConcept": "## Biomolecular Weight Measurement via Osmometry\n\nOsmotic pressure is the premier colligative technique for determining high molecular weights (proteins, polymers, synthetic macromolecules) because measurable pressures develop even at extremely low molar concentrations where ΔT_f and ΔT_b are too minuscule to detect."
+          },
+          "challenges": {
+            "easy": {
+              "title": "U-Tube Osmometer — Level 1",
+              "description": "Observe solvent flow across a semi-permeable membrane and measure equilibrium height."
+            },
+            "medium": {
+              "title": "Isotonicity & Cell Transport — Level 2",
+              "description": "Balance osmotic pressures in red blood cells to prevent crenation and hemolysis."
+            },
+            "advanced": {
+              "title": "Reverse Osmosis Desalination — Level 3",
+              "description": "Apply high hydrostatic pressure to seawater to drive water purification through polyamide membranes."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What happens to a red blood cell when placed in a hypertonic salt solution?",
+                "options": [
+                  { "id": "A", "label": "It swells and bursts (hemolysis)" },
+                  { "id": "B", "label": "It shrinks due to water loss (crenation)" },
+                  { "id": "C", "label": "It maintains normal volume" },
+                  { "id": "D", "label": "It absorbs salt ions actively" }
+                ],
+                "correctOptionIds": ["B"],
+                "explanation": "In a hypertonic solution (higher external osmotic pressure), water moves out of the red blood cell across the membrane via osmosis, causing it to shrink (crenation / plasmolysis)."
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }

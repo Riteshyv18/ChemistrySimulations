@@ -46,14 +46,14 @@ export default async function TopicPage({ params }: PageProps) {
 
       <PageHeader
         accent="emerald"
-        badge={`Topic 0${topic.topicId}`}
+        badge={`Topic ${topic.topicId.length === 1 ? `0${topic.topicId}` : topic.topicId}`}
         badgeIcon={Sparkles}
         title={topic.topicName}
         description={topic.coreConcept}
         actions={
           <div className="glass-panel px-4 py-2 rounded-xl border border-white/10 text-xs font-semibold text-slate-300">
             <span className="text-emerald-400">Topic mastery: </span>
-            <span className="text-white font-bold">100%</span>
+            <span className="text-white font-bold">{mod.moduleId === 'M3' ? '0%' : '100%'}</span>
           </div>
         }
       />

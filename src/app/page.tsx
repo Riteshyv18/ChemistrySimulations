@@ -63,7 +63,8 @@ export default function ModulesPage() {
           {modules.map((mod, index) => {
             const theme = THEMES[index % THEMES.length];
             const isM1 = mod.moduleId === "M1";
-            const progressPct = isM1 ? 100 : 40;
+            const isM2 = mod.moduleId === "M2";
+            const progressPct = isM1 ? 100 : isM2 ? 40 : 0;
             const targetUrl = `/challenge/${mod.slug}`;
 
             return (
@@ -112,7 +113,9 @@ export default function ModulesPage() {
                   <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-6">
                     {isM1
                       ? "Interactive 3D VSEPR shapes, orbital hybridization workshops, and molecular orbital energy diagrams."
-                      : "Fundamental atomic structure, quantum numbers, and subatomic orbital configurations."}
+                      : isM2
+                      ? "Fundamental atomic structure, quantum numbers, and subatomic orbital configurations."
+                      : "Thermodynamics of liquid solutions, concentration terms, Raoult's law vapor pressure, colligative properties, and osmotic pressure."}
                   </p>
                 </div>
 

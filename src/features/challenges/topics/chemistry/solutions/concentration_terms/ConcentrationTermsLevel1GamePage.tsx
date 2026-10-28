@@ -72,16 +72,17 @@ const BeakerCamera = () => {
   const { camera, size } = useThree();
 
   useEffect(() => {
-    // Fits the beaker comfortably in the middle view area with extra margin
+    // Fits the beaker prominently and comfortably in the upper viewport above the bottom controls
     const aspect = size.width / Math.max(1, size.height);
-    const targetWidth = 2.80; // Slightly reduced beaker size with comfortable margins
     const fov = 38;
     const fovRad = (fov * Math.PI) / 180;
-    const requiredDist = targetWidth / (2 * Math.tan(fovRad / 2) * aspect);
-    const finalDist = Math.max(4.9, requiredDist);
+    // Target world width ~ 3.10 so the glass beaker appears comfortably bigger and clearer
+    const requiredDistByWidth = 3.10 / (2 * Math.tan(fovRad / 2) * aspect);
+    const finalDist = Math.max(6.2, requiredDistByWidth);
 
-    camera.position.set(0, 0.10, finalDist);
-    camera.lookAt(0, 0, 0);
+    // Looking at y = -0.55 centers the enlarged beaker cleanly between header and controls
+    camera.position.set(0, -0.55, finalDist);
+    camera.lookAt(0, -0.55, 0);
     camera.updateProjectionMatrix();
   }, [size.width, size.height, camera]);
 
@@ -157,13 +158,15 @@ const GlassBeaker3D = ({
   moles,
   isPouringSalt,
   isAddingWater,
-  isDraining
+  isDraining,
+  targetMolarity
 }: {
   volume: number; // 0.2 to 1.0 L
   moles: number;
   isPouringSalt: boolean;
   isAddingWater: boolean;
   isDraining: boolean;
+  targetMolarity?: number;
 }) => {
   const beakerRadius = 1.15;
   const beakerHeight = 2.85;
@@ -271,7 +274,7 @@ const GlassBeaker3D = ({
   });
 
   return (
-    <group position={[0, 0, 0]}>
+    <group position={[0, -0.18, 0]}>
       {/* ── 1. 3D Dynamic Fluid Solution (Crystal Clear Light Aqua Water matching Image 2) ── */}
       <group position={[0, fluidY, 0]} renderOrder={1}>
         <Cylinder args={[beakerRadius * 0.97, beakerRadius * 0.97, fluidHeight, 48]}>
@@ -454,6 +457,25 @@ const GlassBeaker3D = ({
         <meshStandardMaterial color="#FFFFFF" roughness={0.08} metalness={0.08} />
       </mesh>
 
+      {/* ── Floating Target Badge over Glass Top Rim (User Request) ── */}
+      {targetMolarity !== undefined && (
+        <Html
+          position={[0, beakerHeight / 2 + 0.56, 0]}
+          center
+          zIndexRange={[20, 0]}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#0F172A] text-white border border-slate-700/90 shadow-xl select-none whitespace-nowrap">
+            <span className="text-[11px] sm:text-xs font-black tracking-wider text-emerald-400 uppercase">
+              TARGET:
+            </span>
+            <span className="text-xs sm:text-sm font-mono font-black text-white">
+              {targetMolarity.toFixed(2)} M
+            </span>
+          </div>
+        </Html>
+      )}
+
       {/* ── Printed Graduation Marks (0.2L, 0.4L, 0.6L, 0.8L, 1.0L) ── */}
       {[0.2, 0.4, 0.6, 0.8, 1.0].map((v) => {
         const markY = -beakerHeight / 2 + (v / maxVolume) * 2.25;
@@ -474,7 +496,7 @@ const GlassBeaker3D = ({
           <Cylinder args={[0.06, 0.08, 1.0, 16]}>
             <meshPhysicalMaterial color="#38BDF8" transmission={0.9} transparent opacity={0.7} />
           </Cylinder>
-          <Html position={[0, 0.7, 0]} center>
+          <Html position={[0, 0.7, 0]} center zIndexRange={[20, 0]}>
             <div className="text-[10px] font-bold text-sky-600 bg-sky-50 border border-sky-300 px-2 py-0.5 rounded-full shadow-xs animate-bounce">
               + Water Flow
             </div>
@@ -491,7 +513,7 @@ const GlassBeaker3D = ({
               <meshStandardMaterial color="#FFFFFF" emissive="#A855F7" emissiveIntensity={0.4} />
             </mesh>
           ))}
-          <Html position={[0.3, 0.35, 0]} center>
+          <Html position={[0.3, 0.35, 0]} center zIndexRange={[20, 0]}>
             <div className="text-[10px] font-bold text-purple-700 bg-purple-50 border border-purple-300 px-2 py-0.5 rounded-full shadow-xs">
               + Salt NaCl
             </div>
@@ -718,27 +740,27 @@ export default function ConcentrationTermsLevel1GamePage({
             {/* Card 1: Solute */}
             <div className="bg-white rounded-2xl p-3 shadow-md border border-slate-200 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                    1
+                <div className="flex items-center justify-between gap-1.5 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      1
+                    </div>
+                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                      Dispense Salt Solute (Moles, n)
+                    </h3>
                   </div>
-                  <h3 className="font-extrabold text-sm text-slate-800 leading-tight">
-                    Dispense Salt Solute (Moles, n)
-                  </h3>
-                </div>
-                <div className="mt-1">
-                  <span className="inline-block px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 font-bold text-[10px]">
+                  <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 font-bold text-[10px] whitespace-nowrap shrink-0">
                     Solute Amount
                   </span>
                 </div>
-                <p className="text-slate-600 font-medium text-xs leading-snug mt-1">
+                <p className="text-slate-600 font-medium text-xs leading-snug mt-1.5">
                   Slide the solute bar to the right to increase the amount of salt until it reaches the required value.
                 </p>
               </div>
 
               {/* Visual Preview: Solute Slider */}
               <div className="rounded-xl bg-purple-50/70 border border-purple-200 p-2 sm:p-2.5 mt-2 shadow-2xs">
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center justify-between mb-1">
                   <span className="text-[11px] font-black uppercase text-purple-700 flex items-center gap-1.5 tracking-wide">
                     <span className="w-2 h-2 rounded-full bg-purple-600 shrink-0" />
                     Solute (Salt)
@@ -747,38 +769,33 @@ export default function ConcentrationTermsLevel1GamePage({
                 <div className="relative w-full h-2 bg-purple-200 rounded-full overflow-hidden flex items-center">
                   <div className="h-full bg-purple-600 rounded-full w-[35%]" />
                 </div>
-                <div className="flex justify-between text-[10px] font-mono text-slate-700 mt-1 font-extrabold">
-                  <span>0.10 mol</span>
-                  <span>1.00 mol</span>
-                  <span>2.00 mol</span>
-                </div>
               </div>
             </div>
 
             {/* Card 2: Solvent */}
             <div className="bg-white rounded-2xl p-3 shadow-md border border-slate-200 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                    2
+                <div className="flex items-center justify-between gap-1.5 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      2
+                    </div>
+                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                      Adjust Water Volume (Liters, V)
+                    </h3>
                   </div>
-                  <h3 className="font-extrabold text-sm text-slate-800 leading-tight">
-                    Adjust Water Volume (Liters, V)
-                  </h3>
-                </div>
-                <div className="mt-1">
-                  <span className="inline-block px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 font-bold text-[10px]">
+                  <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 font-bold text-[10px] whitespace-nowrap shrink-0">
                     Solvent Volume
                   </span>
                 </div>
-                <p className="text-slate-600 font-medium text-xs leading-snug mt-1">
+                <p className="text-slate-600 font-medium text-xs leading-snug mt-1.5">
                   Slide the solvent bar to the right to adjust the amount of water and achieve a concentration.
                 </p>
               </div>
 
               {/* Visual Preview: Solvent Slider */}
               <div className="rounded-xl bg-sky-50/70 border border-sky-200 p-2 sm:p-2.5 mt-2 shadow-2xs">
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center justify-between mb-1">
                   <span className="text-[11px] font-black uppercase text-sky-700 flex items-center gap-1.5 tracking-wide">
                     <Droplets className="w-3.5 h-3.5 text-sky-600 shrink-0" />
                     Solvent (Water)
@@ -787,31 +804,26 @@ export default function ConcentrationTermsLevel1GamePage({
                 <div className="relative w-full h-2 bg-sky-200 rounded-full overflow-hidden flex items-center">
                   <div className="h-full bg-sky-600 rounded-full w-[80%]" />
                 </div>
-                <div className="flex justify-between text-[10px] font-mono text-slate-700 mt-1 font-extrabold">
-                  <span>0.20 L</span>
-                  <span>0.60 L</span>
-                  <span>1.00 L</span>
-                </div>
               </div>
             </div>
 
             {/* Card 3: Target Match */}
             <div className="bg-white rounded-2xl p-3 shadow-md border border-slate-200 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                    3
+                <div className="flex items-center justify-between gap-1.5 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      3
+                    </div>
+                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                      Match Target Molarity
+                    </h3>
                   </div>
-                  <h3 className="font-extrabold text-sm text-slate-800 leading-tight">
-                    Match Target Molarity
-                  </h3>
-                </div>
-                <div className="mt-1">
-                  <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] whitespace-nowrap shrink-0">
                     Concentration Goal
                   </span>
                 </div>
-                <p className="text-slate-600 font-medium text-xs leading-snug mt-1">
+                <p className="text-slate-600 font-medium text-xs leading-snug mt-1.5">
                   Once both bars are set to the correct values, click the Submit Answer button to check your result.
                 </p>
               </div>
@@ -848,29 +860,54 @@ export default function ConcentrationTermsLevel1GamePage({
         </div>
       )}
 
-      {/* ── STEP 3: 3D GAMEPLAY SCREEN (SINGLE UNIFIED VIEW WITH Y-AXIS ROTATION) ── */}
-      {/* ── Top Header (Exit on left, Target in center, Explanation on right) ── */}
-      <header className="w-full z-20 shrink-0 p-2.5 sm:p-3 flex items-center justify-between pointer-events-auto">
+      {/* ── STEP 3: 3D FULL-SCREEN CANVAS ── */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <Canvas camera={{ fov: 38 }} className="w-full h-full touch-none cursor-grab active:cursor-grabbing">
+          <color attach="background" args={['#FFFFFF']} />
+          <BeakerCamera />
+          <OrbitControls
+            makeDefault
+            enableZoom={false}
+            enablePan={false}
+            minPolarAngle={Math.PI / 2.14}
+            maxPolarAngle={Math.PI / 1.88}
+            rotateSpeed={1.1}
+            enableDamping
+            dampingFactor={0.06}
+            target={[0, -0.55, 0]}
+          />
+          <ambientLight intensity={1.45} />
+          <directionalLight position={[-4, 6, 4]} intensity={2.0} color="#FFFFFF" />
+          <directionalLight position={[4, 4, 3]} intensity={1.3} color="#E0F2FE" />
+          <pointLight position={[0, 0.8, 3.0]} intensity={1.2} color="#BAE6FD" />
+
+          <GlassBeaker3D
+            volume={volume}
+            moles={moles}
+            isPouringSalt={isPouringSalt}
+            isAddingWater={isAddingWater}
+            isDraining={isDraining}
+            targetMolarity={currentStage.targetMolarity}
+          />
+        </Canvas>
+      </div>
+
+      {/* ── Top Floating Header (Exit on left, Explanation on right; Target moved over Glass Top) ── */}
+      <header className="absolute top-0 left-0 right-0 z-20 p-2.5 sm:p-3 flex items-center justify-between pointer-events-none">
         <button
           type="button"
           onClick={handleExit}
-          className="flex items-center gap-1 px-3.5 sm:px-4 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-900 text-white border border-slate-700 shadow-md transition-all cursor-pointer active:scale-95"
+          className="pointer-events-auto flex items-center gap-1 px-3.5 sm:px-4 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-900 text-white border border-slate-700 shadow-md transition-all cursor-pointer active:scale-95"
           title="Exit Simulation"
         >
           <ChevronLeft className="w-4 h-4 text-slate-300 shrink-0" />
           <span>EXIT</span>
         </button>
 
-        {/* Target Badge */}
-        <div className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full bg-slate-900 text-white border border-slate-700 shadow-md">
-          <span className="text-[10px] sm:text-xs font-black tracking-wider text-emerald-400 uppercase">TARGET:</span>
-          <span className="text-xs sm:text-sm font-mono font-black text-white">{currentStage.targetMolarity.toFixed(2)} M</span>
-        </div>
-
         <button
           type="button"
           onClick={() => setShowExplanation(true)}
-          className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer active:scale-95"
+          className="pointer-events-auto flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer active:scale-95"
           title="View Explanation"
         >
           <BookOpen className="w-4 h-4 text-white shrink-0" />
@@ -878,103 +915,101 @@ export default function ConcentrationTermsLevel1GamePage({
         </button>
       </header>
 
-      {/* ── Center Area with 3D Canvas (Bounded cleanly between Header and Footer!) ── */}
-      <div className="flex-1 w-full min-h-0 relative overflow-hidden">
-        {/* 3D Full-View Interactive Beaker Canvas */}
-        <div className="absolute inset-0 w-full h-full">
-          <Canvas camera={{ fov: 38 }} className="w-full h-full touch-none cursor-grab active:cursor-grabbing">
-            <color attach="background" args={['#FFFFFF']} />
-            <BeakerCamera />
-            <OrbitControls
-              makeDefault
-              enableZoom={false}
-              enablePan={false}
-              minPolarAngle={Math.PI / 2.14}
-              maxPolarAngle={Math.PI / 1.88}
-              rotateSpeed={1.1}
-              enableDamping
-              dampingFactor={0.06}
-              target={[0, 0, 0]}
-            />
-            <ambientLight intensity={1.45} />
-            <directionalLight position={[-4, 6, 4]} intensity={2.0} color="#FFFFFF" />
-            <directionalLight position={[4, 4, 3]} intensity={1.3} color="#E0F2FE" />
-            <pointLight position={[0, 0.8, 3.0]} intensity={1.2} color="#BAE6FD" />
-
-            <GlassBeaker3D
-              volume={volume}
-              moles={moles}
-              isPouringSalt={isPouringSalt}
-              isAddingWater={isAddingWater}
-              isDraining={isDraining}
-            />
-          </Canvas>
-        </div>
-
-        {/* Subtle Axis Rotation Hint */}
-        <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/40 backdrop-blur-xs text-white text-[9px] font-mono pointer-events-none select-none flex items-center gap-1 shadow-2xs z-10">
-          <span>Drag to rotate on axis ↺</span>
-        </div>
-
-        {/* Stage Completion Banner Overlay */}
-        {isStageCompleted && (
-          <div className="pointer-events-auto bg-slate-900/60 backdrop-blur-xs absolute inset-0 flex items-center justify-center p-4 z-20 animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-white rounded-2xl p-4 text-center max-w-xs shadow-2xl border border-emerald-300">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
-                <Trophy className="w-6 h-6" />
-              </div>
-              <h3 className="text-base font-black text-slate-800 mb-1">
-                Target Achieved!
-              </h3>
-              <p className="text-xs text-slate-600 mb-3 leading-snug">
-                {currentStage.explanation}
-              </p>
-              <div className="flex items-center gap-2">
-                {currentStageIdx < STAGES.length - 1 ? (
-                  <button
-                    type="button"
-                    onClick={() => handleStageSelect(currentStageIdx + 1)}
-                    className="w-full py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-extrabold text-xs rounded-xl shadow-md hover:brightness-105 active:scale-95 cursor-pointer"
-                  >
-                    Next Stage (S{currentStageIdx + 2}) &gt;
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handleStageSelect(0)}
-                    className="w-full py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-extrabold text-xs rounded-xl shadow-md hover:brightness-105 active:scale-95 cursor-pointer"
-                  >
-                    Replay Lab ↺
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+      {/* Subtle Axis Rotation Hint */}
+      <div className="absolute bottom-[240px] sm:bottom-[250px] right-2.5 px-2 py-0.5 rounded-full bg-slate-900/40 backdrop-blur-xs text-white text-[9px] font-mono pointer-events-none select-none flex items-center gap-1 shadow-2xs z-10">
+        <span>Drag to rotate on axis ↺</span>
       </div>
 
-      {/* ── Bottom Controls: Two Sliders (Solute & Solvent) + Submit Button ────── */}
-      <footer className="w-full shrink-0 flex flex-col gap-2 p-2.5 sm:p-3 z-20 pointer-events-auto bg-gradient-to-t from-white via-white/98 to-white/80 backdrop-blur-md border-t border-slate-100">
-        {/* Dynamic Submit Feedback (Shown only upon manual submit) */}
-        {submitResult && (
-          <div
-            className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-2 animate-in fade-in duration-200 ${submitResult.isCorrect
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
-              : 'bg-amber-50 border-amber-300 text-amber-800'
-              }`}
-          >
-            {submitResult.isCorrect ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            ) : (
-              <Info className="w-4 h-4 text-amber-600 shrink-0" />
-            )}
-            <span className="flex-1 leading-snug">{submitResult.message}</span>
+      {/* Stage Completion Banner Overlay */}
+      {isStageCompleted && (
+        <div className="pointer-events-auto bg-slate-900/60 backdrop-blur-xs absolute inset-0 flex items-center justify-center p-4 z-40 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl p-4 text-center max-w-xs shadow-2xl border border-emerald-300">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
+              <Trophy className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-black text-slate-800 mb-1">
+              Target Achieved!
+            </h3>
+            <p className="text-xs text-slate-600 mb-3 leading-snug">
+              {currentStage.explanation}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowExplanation(true)}
+                className="flex-1 py-2.5 px-3 bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs rounded-xl shadow-md shadow-sky-600/30 active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 transition-all"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-white" />
+                <span>Explanation</span>
+              </button>
+
+              {currentStageIdx < STAGES.length - 1 ? (
+                <button
+                  type="button"
+                  onClick={() => handleStageSelect(currentStageIdx + 1)}
+                  className="flex-1 py-2.5 px-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-extrabold text-xs rounded-xl shadow-md hover:brightness-105 active:scale-95 cursor-pointer flex items-center justify-center gap-1"
+                >
+                  <span>Next Stage &gt;</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleStageSelect(0)}
+                  className="flex-1 py-2.5 px-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-extrabold text-xs rounded-xl shadow-md hover:brightness-105 active:scale-95 cursor-pointer flex items-center justify-center gap-1"
+                >
+                  <span>Replay Lab ↺</span>
+                </button>
+              )}
+            </div>
           </div>
-        )}
+        </div>
+      )}
+
+      {/* ── Incorrect Submission Dialog Box Overlay (Matching Winning Dialog) ── */}
+      {submitResult && !submitResult.isCorrect && (
+        <div className="pointer-events-auto bg-slate-900/60 backdrop-blur-xs absolute inset-0 flex items-center justify-center p-4 z-40 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl p-5 text-center max-w-xs w-full shadow-2xl border border-rose-200">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-2.5 shadow-inner">
+              <RotateCcw className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-black text-slate-800 mb-1">
+              Incorrect Concentration
+            </h3>
+            <p className="text-xs text-slate-600 mb-4 leading-snug">
+              Current Molarity is <span className="font-bold font-mono text-rose-600">{submitResult.calculatedMolarity.toFixed(2)} M</span>.<br />
+              Target is <span className="font-bold font-mono text-emerald-600">{currentStage.targetMolarity.toFixed(2)} M</span>.
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSubmitResult(null)}
+                className="flex-1 py-2.5 px-3 bg-gradient-to-r from-slate-800 to-slate-900 hover:bg-slate-950 text-white font-extrabold text-xs rounded-xl shadow-md active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 transition-all"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Retry</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSubmitResult(null);
+                  setShowExplanation(true);
+                }}
+                className="flex-1 py-2.5 px-3 bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs rounded-xl shadow-md shadow-sky-600/30 active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 transition-all"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-white" />
+                <span>Explanation</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Bottom Controls: Two Sliders (Solute & Solvent) + Submit Button inside Canvas Bottom Area ────── */}
+      <footer className="absolute bottom-0 left-0 right-0 z-20 pointer-events-auto flex flex-col gap-2 p-2.5 sm:p-3 bg-gradient-to-t from-white via-white/95 to-transparent pt-6">
 
         {/* 1. Long Slider for Solute (Salt, n in mol) */}
-        <div className="bg-white/95 rounded-xl border border-slate-200 p-3 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl border border-slate-200 p-2.5 sm:p-3 shadow-md">
+          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
             <span className="text-xs sm:text-sm font-black uppercase text-purple-700 flex items-center gap-1.5 tracking-wide">
               <span className="w-2.5 h-2.5 rounded-full bg-purple-600 shrink-0" />
               Solute (Salt)
@@ -995,16 +1030,11 @@ export default function ConcentrationTermsLevel1GamePage({
             }}
             className="w-full h-2.5 bg-purple-100 rounded-lg appearance-none cursor-pointer accent-purple-600"
           />
-          <div className="flex justify-between text-xs sm:text-sm font-mono text-slate-800 mt-1.5 font-extrabold">
-            <span>0.10 mol</span>
-            <span>1.00 mol</span>
-            <span>2.00 mol</span>
-          </div>
         </div>
 
         {/* 2. Long Slider for Solvent (Water, V in L) */}
-        <div className="bg-white/95 rounded-xl border border-slate-200 p-3 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl border border-slate-200 p-2.5 sm:p-3 shadow-md">
+          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
             <span className="text-xs sm:text-sm font-black uppercase text-sky-700 flex items-center gap-1.5 tracking-wide">
               <Droplets className="w-4 h-4 text-sky-600 shrink-0" />
               Solvent (Water)
@@ -1025,19 +1055,17 @@ export default function ConcentrationTermsLevel1GamePage({
             }}
             className="w-full h-2.5 bg-sky-100 rounded-lg appearance-none cursor-pointer accent-sky-600"
           />
-          <div className="flex justify-between text-xs sm:text-sm font-mono text-slate-800 mt-1.5 font-extrabold">
-            <span>0.20 L</span>
-            <span>0.60 L</span>
-            <span>1.00 L</span>
-          </div>
         </div>
 
-        {/* 3. Submit Button (Only 'Submit Answer') */}
+        {/* 3. Submit Button (Matching User Image 3 with N badge and Submit Answer) */}
         <button
           type="button"
           onClick={handleSubmit}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white font-extrabold text-sm sm:text-base shadow-md transition-all flex items-center justify-center cursor-pointer tracking-wide"
+          className="w-full py-2.5 sm:py-3 rounded-2xl bg-[#3B50FF] hover:bg-[#3141DE] active:scale-[0.98] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer tracking-wide"
         >
+          <div className="w-6 h-6 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center font-black text-xs text-white shadow-xs">
+            N
+          </div>
           <span>Submit Answer</span>
         </button>
       </footer>

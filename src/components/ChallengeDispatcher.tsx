@@ -182,6 +182,14 @@ const ConcentrationTermsLevel1GamePage = dynamic<{ difficulty?: string; onExit?:
   { ssr: false, loading: LoadingFallback }
 );
 
+const RaoultsLawLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/solutions/raoults_law/RaoultsLawLevel1GamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -218,13 +226,16 @@ export function ChallengeDispatcher({
     normTopic === "9" ||
     normTopic.includes("concentration");
 
+  const isRaoultsLaw =
+    normTopic === "10" ||
+    normTopic.includes("raoult");
+
   const isSolutions =
     !isConcentrationTerms &&
+    !isRaoultsLaw &&
     (normModule.includes("solution") ||
-      normTopic === "10" ||
       normTopic === "11" ||
       normTopic === "12" ||
-      normTopic.includes("raoult") ||
       normTopic.includes("colligative") ||
       normTopic.includes("osmotic") ||
       normTopic.includes("osmosis"));
@@ -301,6 +312,8 @@ export function ChallengeDispatcher({
 
   if (isConcentrationTerms) {
     content = <ConcentrationTermsLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isRaoultsLaw) {
+    content = <RaoultsLawLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isSolutions) {
     content = <SolutionsWorkshopGamePage module={module} topic={topic} difficulty={normDifficulty} onExit={onExit} />;
   } else if (isDualNature) {
@@ -359,7 +372,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isConcentrationTerms && !isSolutions && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isConcentrationTerms && !isRaoultsLaw && !isSolutions && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

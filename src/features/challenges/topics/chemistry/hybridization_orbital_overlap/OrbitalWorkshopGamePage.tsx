@@ -610,7 +610,11 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
   };
 
   return (
-    <div className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col p-1.5 sm:p-2.5 gap-1.5 sm:gap-2">
+    <div
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+      className="w-full h-full min-h-0 bg-[#F8FAFC] text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl"
+    >
       {/* ── INTRO MISSION TARGET & INSTRUCTIONS VIEW OVERLAY (NO SCROLL AT HEIGHT 376) ── */}
       {!gameStarted && (
         <div className="absolute inset-0 z-30 flex flex-col justify-between p-1.5 sm:p-2.5 bg-white/95 backdrop-blur-md overflow-y-auto">
@@ -786,9 +790,32 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
         </div>
       )}
 
-      {/* ── TOP TOOLBAR HEADER (ONLY EXIT AND EXPLANATION, NO MIDDLE LONG BUTTON) ── */}
-      <div className="w-full flex items-center justify-between z-20 shrink-0">
-        {/* Top Left: Exit Button Only */}
+      {/* ── 3D WORKSHOP CANVAS (FULL VIEWPORT) ── */}
+      <div className="w-full h-full absolute inset-0 z-0">
+        <Canvas camera={{ position: [0, 0.1, 9.8], fov: 45 }} style={{ width: '100%', height: '100%' }}>
+          <ambientLight intensity={0.85} />
+          <directionalLight position={[6, 9, 7]} intensity={1.8} />
+          <directionalLight position={[-6, -4, 4]} intensity={0.6} color="#818cf8" />
+          <pointLight position={[0, 2, 5]} intensity={0.9} color="#ffffff" />
+
+          <WorkshopScene
+            placedCarbons={placedCarbons}
+            placedHydrogens={placedHydrogens}
+            placedSp2Count={placedSp2Count}
+            placedH1sCount={placedH1sCount}
+            placedPCount={placedPCount}
+            ccSigmaFormed={ccSigmaFormed}
+            chSigmaFormed={chSigmaFormed}
+            piFormed={piFormed}
+            hideHtml={showCompletionModal}
+          />
+
+          <OrbitControls target={[0, 0, 0]} enablePan={true} enableZoom={true} minDistance={4} maxDistance={20} />
+        </Canvas>
+      </div>
+
+      {/* ── TOP LEFT: EXIT BUTTON ── */}
+      <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-20">
         <button
           type="button"
           onClick={() => (onExit ? onExit() : exitSimulation())}
@@ -798,8 +825,10 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
           <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
           <span>EXIT</span>
         </button>
+      </div>
 
-        {/* Top Right: Explanation Button Only */}
+      {/* ── TOP RIGHT: EXPLANATION BUTTON ── */}
+      <div className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 z-20">
         <button
           type="button"
           onClick={() => setShowCompletionModal(true)}
@@ -811,152 +840,122 @@ export default function OrbitalWorkshopGamePage({ onExit }: OrbitalWorkshopGameP
         </button>
       </div>
 
-      {/* ── MAIN 3D WORKSHOP CANVAS ────────────────────────────────────── */}
-      <main
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        className="flex-1 w-full relative bg-[#F8FAFC] border border-slate-200 rounded-2xl overflow-hidden shadow-inner z-10 min-h-[190px]"
-      >
-        <div className="w-full h-full">
-          <Canvas camera={{ position: [0, 0.1, 9.8], fov: 45 }} style={{ width: '100%', height: '100%' }}>
-            <ambientLight intensity={0.85} />
-            <directionalLight position={[6, 9, 7]} intensity={1.8} />
-            <directionalLight position={[-6, -4, 4]} intensity={0.6} color="#818cf8" />
-            <pointLight position={[0, 2, 5]} intensity={0.9} color="#ffffff" />
+      {/* Error Toast Banner */}
+      {errorMessage && (
+        <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-30 bg-rose-50 border border-rose-200 text-rose-800 text-xs px-3.5 py-1.5 rounded-xl shadow-lg backdrop-blur-md flex items-center gap-1.5 animate-shake font-medium">
+          <span className="font-bold">{errorMessage}</span>
+        </div>
+      )}
 
-            <WorkshopScene
-              placedCarbons={placedCarbons}
-              placedHydrogens={placedHydrogens}
-              placedSp2Count={placedSp2Count}
-              placedH1sCount={placedH1sCount}
-              placedPCount={placedPCount}
-              ccSigmaFormed={ccSigmaFormed}
-              chSigmaFormed={chSigmaFormed}
-              piFormed={piFormed}
-              hideHtml={showCompletionModal}
-            />
-
-            <OrbitControls target={[0, 0, 0]} enablePan={true} enableZoom={true} minDistance={4} maxDistance={20} />
-          </Canvas>
+      {/* ── VERTICAL STEPS TRACKER (RIGHT SIDE UNDER EXPLANATION) ── */}
+      <div className="absolute right-2.5 sm:right-3 top-12 sm:top-13 z-20 bg-white/95 border border-slate-200/90 rounded-xl p-1.5 sm:p-2 shadow-md backdrop-blur-md flex flex-col gap-1 w-32 sm:w-36 md:w-40 select-none animate-in fade-in slide-in-from-right-2 duration-300">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-0.5 px-0.5">
+          <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">
+            Steps
+          </span>
+          <span className="text-[8.5px] font-mono font-bold bg-blue-50 text-blue-700 px-1 py-0.2 rounded border border-blue-200">
+            {step}/4
+          </span>
         </div>
 
-        {/* Error Toast Banner */}
-        {errorMessage && (
-          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-30 bg-rose-50 border border-rose-200 text-rose-800 text-xs px-3.5 py-1.5 rounded-xl shadow-lg backdrop-blur-md flex items-center gap-1.5 animate-shake font-medium">
-            <span className="font-bold">{errorMessage}</span>
-          </div>
-        )}
-
-        {/* ── VERTICAL STEPS TRACKER (COMPACT WITH GENEROUS BOTTOM MARGIN) ── */}
-        <div className="absolute right-2 sm:right-3 top-2 sm:top-2.5 z-20 bg-white/95 border border-slate-200/90 rounded-xl p-1.5 sm:p-2 shadow-md backdrop-blur-md flex flex-col gap-1 w-32 sm:w-36 md:w-40 select-none animate-in fade-in slide-in-from-right-2 duration-300">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-0.5 px-0.5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">
-              Steps
-            </span>
-            <span className="text-[8.5px] font-mono font-bold bg-blue-50 text-blue-700 px-1 py-0.2 rounded border border-blue-200">
-              {step}/4
-            </span>
-          </div>
-
-          {/* Step 1: Atoms */}
-          <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
-            step > 1 ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
-            step === 1 ? 'bg-blue-50 text-blue-900 border border-blue-300 shadow-xs ring-1 ring-blue-300/40' :
-            'bg-slate-50 text-slate-400 border border-slate-200'
+        {/* Step 1: Atoms */}
+        <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
+          step > 1 ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+          step === 1 ? 'bg-blue-50 text-blue-900 border border-blue-300 shadow-xs ring-1 ring-blue-300/40' :
+          'bg-slate-50 text-slate-400 border border-slate-200'
+        }`}>
+          <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+            step > 1 ? 'bg-emerald-600 text-white' :
+            step === 1 ? 'bg-blue-600 text-white animate-pulse' :
+            'bg-slate-300 text-slate-600'
           }`}>
-            <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
-              step > 1 ? 'bg-emerald-600 text-white' :
-              step === 1 ? 'bg-blue-600 text-white animate-pulse' :
-              'bg-slate-300 text-slate-600'
-            }`}>
-              {step > 1 ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '1'}
-            </div>
-            <div className="min-w-0 text-left">
-              <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">1. Atoms</div>
-              <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">2 C & 4 H</div>
-            </div>
+            {step > 1 ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '1'}
           </div>
-
-          {/* Step 2: C-C Sigma */}
-          <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
-            step > 2 || ccSigmaFormed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
-            step === 2 ? 'bg-purple-50 text-purple-900 border border-purple-300 shadow-xs ring-1 ring-purple-300/40' :
-            'bg-slate-50 text-slate-400 border border-slate-200'
-          }`}>
-            <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
-              step > 2 || ccSigmaFormed ? 'bg-emerald-600 text-white' :
-              step === 2 ? 'bg-purple-600 text-white animate-pulse' :
-              'bg-slate-300 text-slate-600'
-            }`}>
-              {step > 2 || ccSigmaFormed ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '2'}
-            </div>
-            <div className="min-w-0 text-left">
-              <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">2. C–C σ</div>
-              <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">sp²–sp²</div>
-            </div>
-          </div>
-
-          {/* Step 3: C-H Sigma */}
-          <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
-            step > 3 || chSigmaFormed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
-            step === 3 ? 'bg-sky-50 text-sky-900 border border-sky-300 shadow-xs ring-1 ring-sky-300/40' :
-            'bg-slate-50 text-slate-400 border border-slate-200'
-          }`}>
-            <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
-              step > 3 || chSigmaFormed ? 'bg-emerald-600 text-white' :
-              step === 3 ? 'bg-sky-600 text-white animate-pulse' :
-              'bg-slate-300 text-slate-600'
-            }`}>
-              {step > 3 || chSigmaFormed ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '3'}
-            </div>
-            <div className="min-w-0 text-left">
-              <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">3. C–H σ</div>
-              <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">4× (sp²–1s)</div>
-            </div>
-          </div>
-
-          {/* Step 4: C-C Pi */}
-          <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
-            piFormed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
-            step === 4 ? 'bg-rose-50 text-rose-900 border border-rose-300 shadow-xs ring-1 ring-rose-300/40' :
-            'bg-slate-50 text-slate-400 border border-slate-200'
-          }`}>
-            <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
-              piFormed ? 'bg-emerald-600 text-white' :
-              step === 4 ? 'bg-rose-600 text-white animate-pulse' :
-              'bg-slate-300 text-slate-600'
-            }`}>
-              {piFormed ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '4'}
-            </div>
-            <div className="min-w-0 text-left">
-              <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">4. C=C π</div>
-              <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">p–p sidewise</div>
-            </div>
+          <div className="min-w-0 text-left">
+            <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">1. Atoms</div>
+            <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">2 C & 4 H</div>
           </div>
         </div>
 
-        {/* Target Completed Rectangle Box (Centered when completed) */}
-        {isBondFormed && piFormed && (
-          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 animate-in fade-in slide-in-from-bottom-2 duration-300 pointer-events-none">
-            <div className="bg-emerald-600/85 border border-emerald-400/60 backdrop-blur-md text-white px-3.5 py-1.5 rounded-xl shadow-lg flex items-center gap-2 select-none">
-              <div className="w-4 h-4 rounded-md bg-white/20 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-3 h-3 text-white" />
+        {/* Step 2: C-C Sigma */}
+        <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
+          step > 2 || ccSigmaFormed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+          step === 2 ? 'bg-purple-50 text-purple-900 border border-purple-300 shadow-xs ring-1 ring-purple-300/40' :
+          'bg-slate-50 text-slate-400 border border-slate-200'
+        }`}>
+          <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+            step > 2 || ccSigmaFormed ? 'bg-emerald-600 text-white' :
+            step === 2 ? 'bg-purple-600 text-white animate-pulse' :
+            'bg-slate-300 text-slate-600'
+          }`}>
+            {step > 2 || ccSigmaFormed ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '2'}
+          </div>
+          <div className="min-w-0 text-left">
+            <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">2. C–C σ</div>
+            <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">sp²–sp²</div>
+          </div>
+        </div>
+
+        {/* Step 3: C-H Sigma */}
+        <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
+          step > 3 || chSigmaFormed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+          step === 3 ? 'bg-sky-50 text-sky-900 border border-sky-300 shadow-xs ring-1 ring-sky-300/40' :
+          'bg-slate-50 text-slate-400 border border-slate-200'
+        }`}>
+          <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+            step > 3 || chSigmaFormed ? 'bg-emerald-600 text-white' :
+            step === 3 ? 'bg-sky-600 text-white animate-pulse' :
+            'bg-slate-300 text-slate-600'
+          }`}>
+            {step > 3 || chSigmaFormed ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '3'}
+          </div>
+          <div className="min-w-0 text-left">
+            <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">3. C–H σ</div>
+            <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">4× (sp²–1s)</div>
+          </div>
+        </div>
+
+        {/* Step 4: C-C Pi */}
+        <div className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-lg transition-all ${
+          piFormed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+          step === 4 ? 'bg-rose-50 text-rose-900 border border-rose-300 shadow-xs ring-1 ring-rose-300/40' :
+          'bg-slate-50 text-slate-400 border border-slate-200'
+        }`}>
+          <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+            piFormed ? 'bg-emerald-600 text-white' :
+            step === 4 ? 'bg-rose-600 text-white animate-pulse' :
+            'bg-slate-300 text-slate-600'
+          }`}>
+            {piFormed ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : '4'}
+          </div>
+          <div className="min-w-0 text-left">
+            <div className="text-[9.5px] sm:text-[10px] font-extrabold leading-tight truncate">4. C=C π</div>
+            <div className="text-[7.5px] sm:text-[8px] text-slate-500 leading-tight">p–p sidewise</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Target Completed Rectangle Box (Centered above bottom dock when completed) */}
+      {isBondFormed && piFormed && (
+        <div className="absolute bottom-16 sm:bottom-18 left-1/2 -translate-x-1/2 z-20 animate-in fade-in slide-in-from-bottom-2 duration-300 pointer-events-none">
+          <div className="bg-emerald-600/85 border border-emerald-400/60 backdrop-blur-md text-white px-3.5 py-1.5 rounded-xl shadow-lg flex items-center gap-2 select-none">
+            <div className="w-4 h-4 rounded-md bg-white/20 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-3 h-3 text-white" />
+            </div>
+            <div className="text-left">
+              <div className="text-[10px] font-black uppercase tracking-wider text-emerald-100 leading-tight">
+                Target Completed (100%)
               </div>
-              <div className="text-left">
-                <div className="text-[10px] font-black uppercase tracking-wider text-emerald-100 leading-tight">
-                  Target Completed (100%)
-                </div>
-                <div className="text-[9px] font-medium text-white/95 leading-tight">
-                  C₂H₄ Ethylene Molecule Assembled (5σ + 1π Bonds)!
-                </div>
+              <div className="text-[9px] font-medium text-white/95 leading-tight">
+                C₂H₄ Ethylene Molecule Assembled (5σ + 1π Bonds)!
               </div>
             </div>
           </div>
-        )}
-      </main>
+        </div>
+      )}
 
       {/* ── BOTTOM DOCK (CENTERED ATOMS & ORBITALS, NO "ELEMENTS & ORBITALS" TEXT) ── */}
-      <footer className="w-full bg-white/95 border border-slate-200 rounded-2xl p-1.5 sm:p-2 shadow-md flex items-center justify-center gap-1.5 sm:gap-2.5 backdrop-blur-xl shrink-0 z-20 select-none flex-wrap">
+      <footer className="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 max-w-[95%] bg-white/95 border border-slate-200 rounded-2xl p-1.5 sm:p-2 shadow-md flex items-center justify-center gap-1.5 sm:gap-2.5 backdrop-blur-xl shrink-0 z-20 select-none flex-wrap">
         {/* Carbon Atom */}
         <div
           draggable={step === 1 && placedCarbons < 2}

@@ -190,6 +190,14 @@ const RaoultsLawLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => v
   { ssr: false, loading: LoadingFallback }
 );
 
+const ColligativePropertiesLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/solutions/colligative_properties/ColligativePropertiesLevel1GamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -230,9 +238,14 @@ export function ChallengeDispatcher({
     normTopic === "10" ||
     normTopic.includes("raoult");
 
+  const isColligativeProperties =
+    normTopic === "11" ||
+    normTopic.includes("colligative");
+
   const isSolutions =
     !isConcentrationTerms &&
     !isRaoultsLaw &&
+    !isColligativeProperties &&
     (normModule.includes("solution") ||
       normTopic === "11" ||
       normTopic === "12" ||
@@ -314,6 +327,8 @@ export function ChallengeDispatcher({
     content = <ConcentrationTermsLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isRaoultsLaw) {
     content = <RaoultsLawLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isColligativeProperties) {
+    content = <ColligativePropertiesLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isSolutions) {
     content = <SolutionsWorkshopGamePage module={module} topic={topic} difficulty={normDifficulty} onExit={onExit} />;
   } else if (isDualNature) {
@@ -372,7 +387,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isConcentrationTerms && !isRaoultsLaw && !isSolutions && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isSolutions && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

@@ -183,6 +183,111 @@ const SemipermeableMembrane3D = ({ position }: { position: [number, number, numb
   );
 };
 
+// ── U-Tube Parametric Centerline Curves ───────────────────────────────────────
+class UTubeCurve extends THREE.Curve<THREE.Vector3> {
+  yTop: number;
+  yBend: number;
+  bendRadius: number;
+
+  constructor(yTop = 0.95, yBend = -0.60, bendRadius = 0.85) {
+    super();
+    this.yTop = yTop;
+    this.yBend = yBend;
+    this.bendRadius = bendRadius;
+  }
+
+  getPoint(t: number, optionalTarget = new THREE.Vector3()) {
+    const point = optionalTarget;
+    const legLen = this.yTop - this.yBend;
+    const arcLen = Math.PI * this.bendRadius;
+    const totalLen = 2 * legLen + arcLen;
+    const s = t * totalLen;
+
+    if (s <= legLen) {
+      const u = s / legLen;
+      return point.set(-this.bendRadius, this.yTop - u * legLen, 0);
+    } else if (s <= legLen + arcLen) {
+      const arcS = s - legLen;
+      const angle = Math.PI - (arcS / arcLen) * Math.PI;
+      return point.set(
+        this.bendRadius * Math.cos(angle),
+        this.yBend - this.bendRadius * Math.sin(angle),
+        0
+      );
+    } else {
+      const u = (s - legLen - arcLen) / legLen;
+      return point.set(this.bendRadius, this.yBend + u * legLen, 0);
+    }
+  }
+}
+
+class LeftLiquidCurve extends THREE.Curve<THREE.Vector3> {
+  yLevel: number;
+  yBend: number;
+  bendRadius: number;
+
+  constructor(yLevel = 0.0, yBend = -0.60, bendRadius = 0.85) {
+    super();
+    this.yLevel = yLevel;
+    this.yBend = yBend;
+    this.bendRadius = bendRadius;
+  }
+
+  getPoint(t: number, optionalTarget = new THREE.Vector3()) {
+    const point = optionalTarget;
+    const legLen = Math.max(0.01, this.yLevel - this.yBend);
+    const halfArcLen = (Math.PI / 2) * this.bendRadius;
+    const totalLen = legLen + halfArcLen;
+    const s = t * totalLen;
+
+    if (s <= legLen) {
+      const u = s / legLen;
+      return point.set(-this.bendRadius, this.yLevel - u * legLen, 0);
+    } else {
+      const arcS = s - legLen;
+      const angle = Math.PI - (arcS / halfArcLen) * (Math.PI / 2);
+      return point.set(
+        this.bendRadius * Math.cos(angle),
+        this.yBend - this.bendRadius * Math.sin(angle),
+        0
+      );
+    }
+  }
+}
+
+class RightLiquidCurve extends THREE.Curve<THREE.Vector3> {
+  yLevel: number;
+  yBend: number;
+  bendRadius: number;
+
+  constructor(yLevel = 0.0, yBend = -0.60, bendRadius = 0.85) {
+    super();
+    this.yLevel = yLevel;
+    this.yBend = yBend;
+    this.bendRadius = bendRadius;
+  }
+
+  getPoint(t: number, optionalTarget = new THREE.Vector3()) {
+    const point = optionalTarget;
+    const halfArcLen = (Math.PI / 2) * this.bendRadius;
+    const legLen = Math.max(0.01, this.yLevel - this.yBend);
+    const totalLen = halfArcLen + legLen;
+    const s = t * totalLen;
+
+    if (s <= halfArcLen) {
+      const angle = (Math.PI / 2) - (s / halfArcLen) * (Math.PI / 2);
+      return point.set(
+        this.bendRadius * Math.cos(angle),
+        this.yBend - this.bendRadius * Math.sin(angle),
+        0
+      );
+    } else {
+      const u = (s - halfArcLen) / legLen;
+      return point.set(this.bendRadius, this.yBend + u * legLen, 0);
+    }
+  }
+}
+
 // ── 3D U-Tube Osmosis Apparatus ───────────────────────────────────────────────
 const OsmosisChamber3D = ({
   molarity,
@@ -212,6 +317,19 @@ const OsmosisChamber3D = ({
 
   const leftLevel = 0.00 - heightOffset;
   const rightLevel = 0.00 + heightOffset;
+
+  // Seamless curved glass U-tube and dynamic liquid geometries
+  const glassGeo = useMemo(() => {
+    return new THREE.TubeGeometry(new UTubeCurve(0.95, -0.60, 0.85), 64, 0.38, 32, false);
+  }, []);
+
+  const leftLiquidGeo = useMemo(() => {
+    return new THREE.TubeGeometry(new LeftLiquidCurve(leftLevel, -0.60, 0.85), 44, 0.366, 28, false);
+  }, [leftLevel]);
+
+  const rightLiquidGeo = useMemo(() => {
+    return new THREE.TubeGeometry(new RightLiquidCurve(rightLevel, -0.60, 0.85), 44, 0.366, 28, false);
+  }, [rightLevel]);
 
   // Translucent micro-bubbles rising gently in left pure solvent
   const leftBubbles = useMemo(() => {
@@ -254,14 +372,14 @@ const OsmosisChamber3D = ({
     return list;
   }, []);
 
-  // Animated flow particles across membrane
+  // Animated flow particles across membrane at bottom of U-tube
   const flowDots = useMemo(() => {
     const dots: { x: number; y: number; z: number; speed: number }[] = [];
     for (let i = 0; i < 8; i++) {
       dots.push({
-        x: -0.45 + i * 0.12,
-        y: -1.35 + (Math.random() - 0.5) * 0.12,
-        z: (Math.random() - 0.5) * 0.15,
+        x: -0.40 + i * 0.10,
+        y: -1.45 + (Math.random() - 0.5) * 0.08,
+        z: (Math.random() - 0.5) * 0.12,
         speed: 0.008 + Math.random() * 0.006
       });
     }
@@ -308,8 +426,8 @@ const OsmosisChamber3D = ({
         if (!isEquilibrium) {
           const dir = isReverseOsmosis ? -1 : 1;
           child.position.x += dir * flowDots[idx].speed;
-          if (child.position.x > 0.55) child.position.x = -0.55;
-          if (child.position.x < -0.55) child.position.x = 0.55;
+          if (child.position.x > 0.45) child.position.x = -0.45;
+          if (child.position.x < -0.45) child.position.x = 0.45;
         }
       });
     }
@@ -345,10 +463,8 @@ const OsmosisChamber3D = ({
         </div>
       </Html>
 
-      {/* ── BOROSILICATE GLASS U-TUBE APPARATUS ───────────────────────────── */}
-      {/* Left Glass Column */}
-      <mesh position={[-0.85, -0.2, 0]}>
-        <cylinderGeometry args={[0.38, 0.38, 2.3, 36, 1, true]} />
+      {/* ── SEAMLESS BOROSILICATE GLASS U-TUBE (CURVED BOTTOM) ─────────────── */}
+      <mesh geometry={glassGeo}>
         <meshPhysicalMaterial
           color="#FFFFFF"
           transparent
@@ -363,6 +479,7 @@ const OsmosisChamber3D = ({
           depthWrite={false}
         />
       </mesh>
+
       {/* Left Top Glass Lip Rim */}
       <mesh position={[-0.85, 0.95, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.38, 0.016, 16, 36]} />
@@ -376,23 +493,6 @@ const OsmosisChamber3D = ({
         />
       </mesh>
 
-      {/* Right Glass Column */}
-      <mesh position={[0.85, -0.2, 0]}>
-        <cylinderGeometry args={[0.38, 0.38, 2.3, 36, 1, true]} />
-        <meshPhysicalMaterial
-          color="#FFFFFF"
-          transparent
-          opacity={0.18}
-          roughness={0.03}
-          transmission={0.95}
-          thickness={0.5}
-          ior={1.52}
-          clearcoat={1.0}
-          clearcoatRoughness={0.04}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
-      </mesh>
       {/* Right Top Glass Lip Rim */}
       <mesh position={[0.85, 0.95, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.38, 0.016, 16, 36]} />
@@ -406,33 +506,17 @@ const OsmosisChamber3D = ({
         />
       </mesh>
 
-      {/* Bottom Horizontal Connecting Tube */}
-      <mesh position={[0, -1.35, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.32, 0.32, 1.70, 28, 1, true]} />
-        <meshPhysicalMaterial
-          color="#FFFFFF"
-          transparent
-          opacity={0.18}
-          roughness={0.04}
-          transmission={0.95}
-          thickness={0.45}
-          ior={1.52}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
-      </mesh>
-
-      {/* ── SEMIPERMEABLE MEMBRANE (SPM) AT CENTER ────────────────────────── */}
-      <SemipermeableMembrane3D position={[0, -1.35, 0]} />
-      <Html position={[0, -0.96, 0.35]} center distanceFactor={14}>
+      {/* ── SEMIPERMEABLE MEMBRANE (SPM) AT BOTTOM CENTER OF U-TUBE ────────── */}
+      <SemipermeableMembrane3D position={[0, -1.45, 0]} />
+      <Html position={[0, -0.99, 0.35]} center distanceFactor={14}>
         <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-slate-950/40 border border-emerald-400/50 backdrop-blur-md select-none pointer-events-none whitespace-nowrap shadow-xs">
           <span className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
           <span className="text-[5.5px] font-black uppercase tracking-wider text-emerald-200">SPM</span>
         </div>
       </Html>
 
-      {/* ── CONDITION & EQUILIBRIUM TAB (SHIFTED DOWN & COMPACT) ─────────── */}
-      <Html position={[0, -1.98, 0.35]} center distanceFactor={12.5}>
+      {/* ── CONDITION & EQUILIBRIUM TAB (BELOW CURVED BOTTOM) ──────────────── */}
+      <Html position={[0, -2.12, 0.35]} center distanceFactor={12.5}>
         <div
           className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full backdrop-blur-md select-none pointer-events-none whitespace-nowrap shadow-sm border ${
             isEquilibrium
@@ -461,10 +545,9 @@ const OsmosisChamber3D = ({
         </div>
       </Html>
 
-      {/* ── REALISTIC LIQUID VOLUMES ───────────────────────────────────────── */}
-      {/* Left Column: Pure Solvent (Water) - Aqueous, Crystal Clear */}
-      <mesh position={[-0.85, -1.35 + (1.35 + leftLevel) / 2, 0]}>
-        <cylinderGeometry args={[0.366, 0.366, 1.35 + leftLevel, 36]} />
+      {/* ── REALISTIC LIQUID VOLUMES IN CURVED U-TUBE ──────────────────────── */}
+      {/* Left Column + Left Bend: Pure Solvent (Water) */}
+      <mesh geometry={leftLiquidGeo}>
         <meshPhysicalMaterial
           color="#38BDF8"
           transparent
@@ -500,9 +583,8 @@ const OsmosisChamber3D = ({
         />
       </mesh>
 
-      {/* Right Column: Solution - Tinted Color Deepening with Molarity */}
-      <mesh position={[0.85, -1.35 + (1.35 + rightLevel) / 2, 0]}>
-        <cylinderGeometry args={[0.366, 0.366, 1.35 + rightLevel, 36]} />
+      {/* Right Column + Right Bend: Solution */}
+      <mesh geometry={rightLiquidGeo}>
         <meshPhysicalMaterial
           color={molarity > 0.35 ? '#4338CA' : '#4F46E5'}
           transparent
@@ -534,19 +616,6 @@ const OsmosisChamber3D = ({
           transparent
           opacity={0.65}
           roughness={0.1}
-          depthWrite={false}
-        />
-      </mesh>
-
-      {/* Horizontal Liquid in Connecting Base Tube */}
-      <mesh position={[0, -1.35, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.30, 0.30, 1.66, 24]} />
-        <meshPhysicalMaterial
-          color="#38BDF8"
-          transparent
-          opacity={0.42}
-          roughness={0.08}
-          transmission={0.85}
           depthWrite={false}
         />
       </mesh>
@@ -1234,24 +1303,47 @@ export default function OsmoticPressureLevel1GamePage({
             <div className="h-px bg-slate-200 w-full" />
 
             {/* 3. Applying in the Simulation Lab */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">
                 3. Applying This in the Simulation Lab
               </h3>
-              <div className="space-y-2.5 text-xs sm:text-sm text-slate-700">
-                <div>
-                  <strong className="text-sky-800 block">🎯 Stage 1: Stop Osmosis at c = 0.22 M</strong>
-                  <div className="font-mono pl-2 text-slate-800 space-y-0.5">
-                    <div>π = 1.0 × 0.22 M × 0.0821 × 298 K ≈ <strong>5.40 atm</strong></div>
-                    <div className="text-slate-500 text-xs">Recipe: Apply P = 5.40 atm to achieve zero net flow.</div>
+              <div className="space-y-3 text-xs sm:text-sm text-slate-700">
+                {/* Stage 1 */}
+                <div className="p-3 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1.5">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <strong className="text-purple-900 font-extrabold">
+                      🎯 Stage 1: Find Osmotic Pressure (P = π)
+                    </strong>
+                    <span className="px-2 py-0.5 rounded-full bg-purple-200/80 text-purple-900 text-[10px] font-bold">
+                      Concentration Locked: 0.22 M 🔒
+                    </span>
                   </div>
+                  <div className="font-mono text-xs text-purple-950 font-bold bg-white/80 p-2 rounded-lg border border-purple-100 space-y-0.5">
+                    <div>π = i · c · R · T</div>
+                    <div>π = 1.0 × 0.22 M × 0.0821 × 298 K = <strong>5.40 atm</strong></div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    <strong>How to solve:</strong> Slide <strong>Applied Pressure (P)</strong> to <strong>5.40 atm</strong> to balance the natural osmotic pressure and reach <strong>Equilibrium (P = π)</strong>!
+                  </p>
                 </div>
-                <div>
-                  <strong className="text-purple-800 block">🎯 Stage 2: Target Concentration at π = 7.34 atm</strong>
-                  <div className="font-mono pl-2 text-slate-800 space-y-0.5">
-                    <div>c = 7.34 / (1.0 × 0.0821 × 298) ≈ <strong>0.30 M</strong></div>
-                    <div className="text-slate-500 text-xs">Recipe: Slide concentration to 0.30 M to balance the 7.34 atm piston.</div>
+
+                {/* Stage 2 */}
+                <div className="p-3 rounded-xl bg-sky-50/70 border border-sky-200 space-y-1.5">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <strong className="text-sky-900 font-extrabold">
+                      🎯 Stage 2: Find Required Concentration (c = ?)
+                    </strong>
+                    <span className="px-2 py-0.5 rounded-full bg-sky-200/80 text-sky-900 text-[10px] font-bold">
+                      Pressure Locked: 7.34 atm 🔒
+                    </span>
                   </div>
+                  <div className="font-mono text-xs text-sky-950 font-bold bg-white/80 p-2 rounded-lg border border-sky-100 space-y-0.5">
+                    <div>c = π / (i · R · T)</div>
+                    <div>c = 7.34 / (1.0 × 0.0821 × 298) = <strong>0.30 M</strong></div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    <strong>How to solve:</strong> Slide <strong>Solute Concentration (c)</strong> to <strong>0.30 M</strong> so the solution generates matching osmotic pressure to balance the 7.34 atm piston!
+                  </p>
                 </div>
               </div>
             </div>

@@ -6,6 +6,20 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { getModules } from "@/lib/content";
 
+const MODULE_DESCRIPTIONS: Record<string, string> = {
+  M1: "Interactive 3D VSEPR shapes, orbital hybridization workshops, and molecular orbital energy diagrams.",
+  M2: "Fundamental atomic structure, quantum numbers, and subatomic orbital configurations.",
+  M3: "Thermodynamics of liquid solutions, concentration terms, Raoult's law vapor pressure, colligative properties, and osmotic pressure.",
+  M4: "Galvanic and electrolytic cells, electrode potentials, Nernst equation, and Faraday's laws of electrolysis.",
+  M5: "Collision theory, factors influencing reaction rates, activation energy, catalysts, and rate laws.",
+  M6: "Dynamic chemical equilibrium, equilibrium constants, Le Chatelier's principle, ionic equilibrium, and pH.",
+  M7: "Laws of thermodynamics, enthalpy, Hess's law, entropy, and Gibbs free energy spontaneity.",
+  M8: "Extraction and refining of metals, metallurgy principles, roasting, calcination, and reduction processes.",
+  M9: "Crystalline and amorphous solids, unit cell lattices, packing efficiency, coordination number, and crystal density.",
+  M10: "Structure, nomenclature, physical properties, and characteristic reaction mechanisms of hydrocarbons.",
+  M11: "Carbonyl chemistry, nucleophilic additions, aldol and Cannizzaro reactions, and carboxylic acid derivatives.",
+};
+
 const THEMES = [
   {
     glow: "glass-card-glow-green",
@@ -111,11 +125,7 @@ export default function ModulesPage() {
                   </h3>
 
                   <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-6">
-                    {isM1
-                      ? "Interactive 3D VSEPR shapes, orbital hybridization workshops, and molecular orbital energy diagrams."
-                      : isM2
-                      ? "Fundamental atomic structure, quantum numbers, and subatomic orbital configurations."
-                      : "Thermodynamics of liquid solutions, concentration terms, Raoult's law vapor pressure, colligative properties, and osmotic pressure."}
+                    {MODULE_DESCRIPTIONS[mod.moduleId] || "Interactive 3D chemistry simulations, concepts, formulas, and progressive challenge mastery."}
                   </p>
                 </div>
 

@@ -2723,12 +2723,26 @@
                 "type": "single-correct",
                 "question": "What is the maximum number of electrons that can be accommodated in a principal shell with n = 3?",
                 "options": [
-                  { "id": "A", "label": "8" },
-                  { "id": "B", "label": "18" },
-                  { "id": "C", "label": "32" },
-                  { "id": "D", "label": "10" }
+                  {
+                    "id": "A",
+                    "label": "8"
+                  },
+                  {
+                    "id": "B",
+                    "label": "18"
+                  },
+                  {
+                    "id": "C",
+                    "label": "32"
+                  },
+                  {
+                    "id": "D",
+                    "label": "10"
+                  }
                 ],
-                "correctOptionIds": ["B"],
+                "correctOptionIds": [
+                  "B"
+                ],
                 "explanation": "Maximum number of electrons in shell n is 2n² = 2 * (3²) = 2 * 9 = 18."
               }
             ]
@@ -2786,12 +2800,26 @@
                 "type": "single-correct",
                 "question": "Which of the following concentration terms is independent of temperature?",
                 "options": [
-                  { "id": "A", "label": "Molarity" },
-                  { "id": "B", "label": "Molality" },
-                  { "id": "C", "label": "Normality" },
-                  { "id": "D", "label": "Formality" }
+                  {
+                    "id": "A",
+                    "label": "Molarity"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Molality"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Normality"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Formality"
+                  }
                 ],
-                "correctOptionIds": ["B"],
+                "correctOptionIds": [
+                  "B"
+                ],
                 "explanation": "Molality is defined per kilogram of solvent (mass). Because mass does not change with temperature, molality is temperature-independent."
               }
             ]
@@ -2839,12 +2867,26 @@
                 "type": "single-correct",
                 "question": "For an ideal binary solution, what is the enthalpy of mixing (ΔH_mix)?",
                 "options": [
-                  { "id": "A", "label": "ΔH_mix > 0" },
-                  { "id": "B", "label": "ΔH_mix < 0" },
-                  { "id": "C", "label": "ΔH_mix = 0" },
-                  { "id": "D", "label": "ΔH_mix = ΔS_mix" }
+                  {
+                    "id": "A",
+                    "label": "ΔH_mix > 0"
+                  },
+                  {
+                    "id": "B",
+                    "label": "ΔH_mix < 0"
+                  },
+                  {
+                    "id": "C",
+                    "label": "ΔH_mix = 0"
+                  },
+                  {
+                    "id": "D",
+                    "label": "ΔH_mix = ΔS_mix"
+                  }
                 ],
-                "correctOptionIds": ["C"],
+                "correctOptionIds": [
+                  "C"
+                ],
                 "explanation": "In an ideal solution, the intermolecular attractions between A-A, B-B, and A-B are identical, meaning no heat is evolved or absorbed upon mixing (ΔH_mix = 0)."
               }
             ]
@@ -2896,12 +2938,26 @@
                 "type": "single-correct",
                 "question": "Which of the following aqueous solutions will exhibit the highest boiling point elevation?",
                 "options": [
-                  { "id": "A", "label": "0.1 M Glucose" },
-                  { "id": "B", "label": "0.1 M NaCl" },
-                  { "id": "C", "label": "0.1 M CaCl2" },
-                  { "id": "D", "label": "0.1 M Urea" }
+                  {
+                    "id": "A",
+                    "label": "0.1 M Glucose"
+                  },
+                  {
+                    "id": "B",
+                    "label": "0.1 M NaCl"
+                  },
+                  {
+                    "id": "C",
+                    "label": "0.1 M CaCl2"
+                  },
+                  {
+                    "id": "D",
+                    "label": "0.1 M Urea"
+                  }
                 ],
-                "correctOptionIds": ["C"],
+                "correctOptionIds": [
+                  "C"
+                ],
                 "explanation": "CaCl2 dissociates into 3 ions (Ca²⁺ + 2Cl⁻), yielding van 't Hoff factor i ≈ 3. Total effective particle concentration = 3 * 0.1 = 0.3 M, yielding the highest boiling point elevation."
               }
             ]
@@ -2949,13 +3005,2376 @@
                 "type": "single-correct",
                 "question": "What happens to a red blood cell when placed in a hypertonic salt solution?",
                 "options": [
-                  { "id": "A", "label": "It swells and bursts (hemolysis)" },
-                  { "id": "B", "label": "It shrinks due to water loss (crenation)" },
-                  { "id": "C", "label": "It maintains normal volume" },
-                  { "id": "D", "label": "It absorbs salt ions actively" }
+                  {
+                    "id": "A",
+                    "label": "It swells and bursts (hemolysis)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "It shrinks due to water loss (crenation)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "It maintains normal volume"
+                  },
+                  {
+                    "id": "D",
+                    "label": "It absorbs salt ions actively"
+                  }
                 ],
-                "correctOptionIds": ["B"],
+                "correctOptionIds": [
+                  "B"
+                ],
                 "explanation": "In a hypertonic solution (higher external osmotic pressure), water moves out of the red blood cell across the membrane via osmosis, causing it to shrink (crenation / plasmolysis)."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "moduleId": "M4",
+      "moduleName": "Electrochemistry",
+      "topics": [
+        {
+          "topicId": "13",
+          "topicName": "Galvanic Cells & Cell Components",
+          "coreConcept": "Electrochemical conversion of chemical energy into electrical energy using spontaneous redox half-reactions separated by a salt bridge.",
+          "keyFormulas": [
+            {
+              "formula": "Zn(s) + Cu²⁺(aq) → Zn²⁺(aq) + Cu(s)",
+              "label": "Daniell Cell Overall Reaction"
+            },
+            {
+              "formula": "Zn(s) | Zn²⁺(aq) || Cu²⁺(aq) | Cu(s)",
+              "label": "Cell Diagram Notation"
+            }
+          ],
+          "theory": {
+            "basics": "A Galvanic (or Voltaic) cell is an electrochemical device that harnesses the energy of a spontaneous oxidation-reduction reaction to generate electrical energy.\n\n- **Half-Cells:** Consist of an electrode immersed in an electrolyte containing its ions. Oxidation occurs in one half-cell (anode) and reduction occurs in the other (cathode).\n- **Salt Bridge:** An inverted U-tube containing an inert electrolyte (e.g., KCl, KNO₃ in agar-agar gel). It completes the internal electrical circuit and prevents liquid junction potential by preserving electrical neutrality in both half-cells.",
+            "fullConcept": "## Cell Architecture and Salt Bridge Mechanics\n\nAs electrons flow externally from the anode to the cathode, excess positive charges (cations) accumulate in the anode compartment and excess negative charges (anions) accumulate in the cathode compartment. The salt bridge delivers anions to the anode and cations to the cathode to maintain local charge neutrality, enabling steady current flow."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Galvanic Cell Assembly — Level 1",
+              "description": "Assemble the Daniell cell half-cells, electrodes, and salt bridge to establish an electric current."
+            },
+            "medium": {
+              "title": "Salt Bridge Ion Flow — Level 2",
+              "description": "Balance charge neutrality and monitor real-time ion migration across the agar salt bridge."
+            },
+            "advanced": {
+              "title": "Electrochemical Circuit Simulator — Level 3",
+              "description": "Configure non-standard galvanic cells and evaluate voltage output under varying load conditions."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the primary role of the salt bridge in a galvanic cell?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "To allow rapid bulk mixing of the two electrolytes"
+                  },
+                  {
+                    "id": "B",
+                    "label": "To maintain electrical neutrality and complete the circuit"
+                  },
+                  {
+                    "id": "C",
+                    "label": "To directly deliver electrons through the wire"
+                  },
+                  {
+                    "id": "D",
+                    "label": "To prevent any ion migration whatsoever"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "The salt bridge maintains electrical neutrality in each half-cell through the controlled migration of ions, thereby completing the internal circuit without intermixing the solutions."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "14",
+          "topicName": "Anode, Cathode & Electron/Ion Flow",
+          "coreConcept": "Oxidation at the anode, reduction at the cathode, electron flow through the external circuit, and counter ion migration through the internal electrolyte.",
+          "keyFormulas": [
+            {
+              "formula": "Anode: M(s) → Mⁿ⁺(aq) + ne⁻ (Oxidation)",
+              "label": "Anodic Half-Reaction"
+            },
+            {
+              "formula": "Cathode: Mⁿ⁺(aq) + ne⁻ → M(s) (Reduction)",
+              "label": "Cathodic Half-Reaction"
+            },
+            {
+              "formula": "Conventional Current = Opposite to Electron Direction",
+              "label": "Directional Convention"
+            }
+          ],
+          "theory": {
+            "basics": "In all electrochemical systems:\n\n- **Anode (AN OX):** Electrode where oxidation occurs. In galvanic cells, it has negative polarity due to electron generation.\n- **Cathode (RED CAT):** Electrode where reduction occurs. In galvanic cells, it has positive polarity due to electron consumption.\n- **Electron Flow:** Electrons always travel from the anode to the cathode via the external metallic circuit. Cations in solution migrate toward the cathode, while anions migrate toward the anode.",
+            "fullConcept": "## Electrochemical Polarity Principles\n\nWhile galvanic cells have a negative anode and positive cathode, in an electrolytic cell the polarities reverse because an external power supply drives non-spontaneous reactions. However, the fundamental chemical rule is invariant: oxidation always takes place at the anode, and reduction always takes place at the cathode."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Electrode Identifier — Level 1",
+              "description": "Identify oxidation and reduction half-cells and trace directional electron flow in the wire."
+            },
+            "medium": {
+              "title": "Charge Balance Tracer — Level 2",
+              "description": "Trace cation and anion migration paths in both electrolytes during continuous cell discharge."
+            },
+            "advanced": {
+              "title": "Polarity Reversal Simulator — Level 3",
+              "description": "Analyze electrode transitions and compute potential shifts under driven vs. spontaneous conditions."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "In a functioning galvanic cell, in which direction do electrons travel through the external wire?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "From cathode to anode"
+                  },
+                  {
+                    "id": "B",
+                    "label": "From anode to cathode"
+                  },
+                  {
+                    "id": "C",
+                    "label": "From salt bridge to anode"
+                  },
+                  {
+                    "id": "D",
+                    "label": "From salt bridge to cathode"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Oxidation at the anode releases electrons, creating a negative charge that drives electrons through the external circuit toward the cathode where reduction consumes them."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "15",
+          "topicName": "Electrode Potential & Cell EMF",
+          "coreConcept": "Standard reduction potentials, the standard hydrogen electrode reference, and electromotive force calculation via the Nernst equation.",
+          "keyFormulas": [
+            {
+              "formula": "E°_cell = E°_cathode - E°_anode",
+              "label": "Standard Cell EMF"
+            },
+            {
+              "formula": "E_cell = E°_cell - (0.0591 / n) * log₁₀(Q)",
+              "label": "Nernst Equation (at 298 K)"
+            },
+            {
+              "formula": "ΔG° = -n * F * E°_cell",
+              "label": "Gibbs Free Energy & Cell Potential"
+            }
+          ],
+          "theory": {
+            "basics": "Electrode potential is the electric potential difference that develops at the interface between a metal electrode and its surrounding solution containing its ions.\n\n- **Standard Hydrogen Electrode (SHE):** The universal reference electrode assigned a potential of exactly 0.00 V at 298 K, 1 bar H₂ pressure, and 1 M H⁺.\n- **Standard Reduction Potential (E°):** A higher positive standard reduction potential indicates a stronger tendency to undergo reduction (stronger oxidizing agent).\n- **Nernst Equation:** Quantifies how cell EMF deviates from standard conditions as reactant and product concentrations vary.",
+            "fullConcept": "## Concentration Cells and Thermodynamic Linkages\n\nA concentration cell generates an electrical potential difference solely from a difference in concentration between two identical half-cells (where E°_cell = 0). When any galvanic cell reaches chemical equilibrium, E_cell = 0 and Q = K_eq, directly yielding log₁₀(K_eq) = n * E°_cell / 0.0591."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Standard EMF Calculator — Level 1",
+              "description": "Pair standard reduction electrodes and compute the net cell EMF."
+            },
+            "medium": {
+              "title": "Nernst Concentration Tuner — Level 2",
+              "description": "Adjust ionic concentrations in real time and watch voltage departures from standard E°."
+            },
+            "advanced": {
+              "title": "Concentration Cell Master — Level 3",
+              "description": "Design concentration cells and calculate equilibrium constants and Gibbs free energies."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Given E°(Zn²⁺/Zn) = -0.76 V and E°(Cu²⁺/Cu) = +0.34 V, what is the standard EMF of the Daniell cell?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "+0.42 V"
+                  },
+                  {
+                    "id": "B",
+                    "label": "-1.10 V"
+                  },
+                  {
+                    "id": "C",
+                    "label": "+1.10 V"
+                  },
+                  {
+                    "id": "D",
+                    "label": "-0.42 V"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "E°_cell = E°_cathode - E°_anode = +0.34 V - (-0.76 V) = +1.10 V."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "16",
+          "topicName": "Electrolysis & Faraday's Laws",
+          "coreConcept": "Non-spontaneous chemical reactions driven by an external electrical supply, and quantitative mass deposition governed by Faraday's laws.",
+          "keyFormulas": [
+            {
+              "formula": "m = Z * I * t = (M / (n * F)) * I * t",
+              "label": "Faraday's 1st Law"
+            },
+            {
+              "formula": "m₁ / E₁ = m₂ / E₂",
+              "label": "Faraday's 2nd Law"
+            },
+            {
+              "formula": "1 Faraday (F) = 96485 C/mol e⁻",
+              "label": "Faraday's Constant"
+            }
+          ],
+          "theory": {
+            "basics": "Electrolysis is the process of using electrical energy to force a non-spontaneous redox reaction to occur.\n\n- **Faraday's 1st Law:** The mass of any substance deposited or liberated at an electrode is directly proportional to the quantity of electricity (charge Q = I * t) passed through the electrolyte.\n- **Faraday's 2nd Law:** When the same quantity of charge is passed through several electrolytes connected in series, the masses of substances liberated are directly proportional to their equivalent weights (E = M / n-factor).\n- **Electrochemical Equivalent (Z):** Mass liberated by 1 Coulomb of electric charge, equal to E / F.",
+            "fullConcept": "## Preferential Discharge & Overvoltage\n\nWhen multiple species can be oxidized or reduced in an aqueous solution, the species with the more favorable reduction or oxidation potential generally discharges first. However, kinetic barriers known as overpotentials (e.g., oxygen overpotential on platinum) allow chlorine gas to discharge preferentially over oxygen during the electrolysis of brine (concentrated aqueous NaCl)."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Electrodeposition Counter — Level 1",
+              "description": "Control current and run time to deposit precise masses of copper and nickel onto cathodes."
+            },
+            "medium": {
+              "title": "Faraday Law Validator — Level 2",
+              "description": "Connect series electrolytic cells and verify stoichiometric deposition ratios."
+            },
+            "advanced": {
+              "title": "Competitive Aqueous Electrolysis — Level 3",
+              "description": "Predict discharge outcomes in aqueous mixtures incorporating overpotential effects."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "How many Faradays of charge are needed to deposit 1 mole of aluminum from molten Al³⁺?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "1 F"
+                  },
+                  {
+                    "id": "B",
+                    "label": "2 F"
+                  },
+                  {
+                    "id": "C",
+                    "label": "3 F"
+                  },
+                  {
+                    "id": "D",
+                    "label": "6 F"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "The half-reaction is Al³⁺ + 3e⁻ → Al(s). Depositing 1 mole of Al requires 3 moles of electrons, which equals 3 Faradays of charge."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "moduleId": "M5",
+      "moduleName": "Chemical Kinetics",
+      "topics": [
+        {
+          "topicId": "17",
+          "topicName": "Collision Theory & Effective Collisions",
+          "coreConcept": "Microscopic molecular collision theory, steric orientations, activation energy barriers, and the Maxwell-Boltzmann energy distribution.",
+          "keyFormulas": [
+            {
+              "formula": "Rate = Z_AB * ρ * exp(-E_a / (R * T))",
+              "label": "Collision Theory Rate Expression"
+            },
+            {
+              "formula": "Fraction of Effective Collisions = exp(-E_a / (R * T))",
+              "label": "Boltzmann Fraction"
+            }
+          ],
+          "theory": {
+            "basics": "According to collision theory, chemical reactions occur when reactant particles collide with sufficient energy and proper orientation.\n\n- **Effective Collisions:** Only a tiny fraction of total collisions lead to product formation. To be effective, colliding molecules must have kinetic energy equal to or greater than the threshold energy (E_threshold = E_reactants + E_a).\n- **Steric Factor (ρ):** Molecules must also collide in a geometric orientation that allows existing bonds to break and new bonds to form.",
+            "fullConcept": "## Maxwell-Boltzmann Energy Distribution\n\nThe Maxwell-Boltzmann distribution plots molecular speed/kinetic energy against the fraction of molecules. As temperature rises, the curve broadens and shifts to higher energies, significantly increasing the area under the curve beyond the activation energy barrier (E_a), explaining the steep exponential increase in reaction rate."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Collision Chamber — Level 1",
+              "description": "Adjust collision angles and molecular velocities to produce effective reaction encounters."
+            },
+            "medium": {
+              "title": "Boltzmann Distribution Plotter — Level 2",
+              "description": "Heat and cool gas mixtures and quantify the fraction of molecules surpassing the threshold barrier."
+            },
+            "advanced": {
+              "title": "Steric Factor Analyzer — Level 3",
+              "description": "Simulate complex polyatomic collisions and determine the steric factor (ρ) for non-spherical reactants."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "For a collision to result in a chemical reaction, colliding molecules must possess at least what minimum energy?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Bond energy"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Threshold energy"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Internal thermal energy"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Zero-point vibrational energy"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Threshold energy is the minimum total kinetic energy that colliding reactant molecules must have for a collision to be chemically effective."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "18",
+          "topicName": "Factors Affecting Reaction Rate",
+          "coreConcept": "Kinetic dependence on reactant concentration, physical state, surface area, temperature, pressure, and the presence of catalysts.",
+          "keyFormulas": [
+            {
+              "formula": "Temperature Coefficient: Rate(T + 10°C) / Rate(T) ≈ 2 to 3",
+              "label": "Temperature Coefficient Rule"
+            },
+            {
+              "formula": "Surface Area Ratio: A_powdered / A_bulk >> 1",
+              "label": "Surface Area Impact"
+            }
+          ],
+          "theory": {
+            "basics": "Several macroscopic and microscopic variables govern reaction speed:\n\n- **Concentration:** Higher reactant concentration increases collision frequency per unit volume, speeding up the reaction.\n- **Surface Area:** For heterogeneous reactions, pulverizing a solid reactant exposes vastly more reactive surface sites.\n- **Temperature:** A 10 °C rise in temperature generally doubles or triples reaction rate due to the exponential increase in molecules surpassing E_a.\n- **Physical State & Nature:** Homogeneous aqueous/gas reactions proceed faster than heterogeneous solid reactions due to unrestricted mobility.",
+            "fullConcept": "## Kinetic Influence of Solvent and Phase Boundaries\n\nIn liquid-phase kinetics, dielectric properties and solvent polarity can stabilize transition states relative to ground states, accelerating or decelerating specific reaction mechanisms like S_N1 vs S_N2 substitutions."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Surface Area Accelerator — Level 1",
+              "description": "Grind solid marble chips into fine powder and observe effervescence rate changes with acid."
+            },
+            "medium": {
+              "title": "Temperature-Rate Tracker — Level 2",
+              "description": "Heat reaction chambers in 10-degree increments and calculate the temperature coefficient."
+            },
+            "advanced": {
+              "title": "Multi-Variable Rate Optimizer — Level 3",
+              "description": "Balance concentration, pressure, and temperature to optimize space-time yield in industrial reactors."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Why does powdered calcium carbonate react much faster with hydrochloric acid than an equal mass of marble chips?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Powder has lower activation energy"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Powder provides a significantly larger exposed surface area"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Powder changes the reaction mechanism"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Powder increases the temperature of the acid"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Greater surface area allows a vastly higher number of reactant collisions per second with acid molecules, markedly increasing the initial rate of reaction."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "19",
+          "topicName": "Activation Energy & Catalysts",
+          "coreConcept": "Arrhenius equation, potential energy reaction profiles, activated complexes, and catalytic lowering of activation energy.",
+          "keyFormulas": [
+            {
+              "formula": "k = A * exp(-E_a / (R * T))",
+              "label": "Arrhenius Equation"
+            },
+            {
+              "formula": "ln(k₂ / k₁) = (E_a / R) * (1/T₁ - 1/T₂)",
+              "label": "Two-Temperature Arrhenius Form"
+            },
+            {
+              "formula": "ΔH_rxn = E_a(forward) - E_a(reverse)",
+              "label": "Enthalpy from Activation Energies"
+            }
+          ],
+          "theory": {
+            "basics": "Activation energy (E_a) is the energy barrier that reactants must overcome to reach the transition state (activated complex) and form products.\n\n- **Catalyst Function:** A catalyst speeds up a reaction by providing an alternative reaction pathway with a lower activation energy.\n- **Equilibrium State:** A catalyst accelerates both forward and reverse reactions equally; it does NOT alter the position of chemical equilibrium (K_eq) or the enthalpy change (ΔH).\n- **Arrhenius Plot:** Plotting ln(k) vs 1/T yields a straight line with slope = -E_a / R and y-intercept = ln(A).",
+            "fullConcept": "## Transition State Theory & Reaction Profiles\n\nEyring transition state theory models the activated complex as a quasi-equilibrium thermodynamic species characterized by Gibbs free energy of activation (ΔG^‡). Catalysts lower ΔG^‡, thereby accelerating the rate constant exponentially."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Catalytic Energy Reducer — Level 1",
+              "description": "Deploy homogeneous and heterogeneous catalysts to lower the reaction barrier."
+            },
+            "medium": {
+              "title": "Arrhenius Slope Solver — Level 2",
+              "description": "Collect k values at varying temperatures, generate an Arrhenius plot, and compute E_a."
+            },
+            "advanced": {
+              "title": "Enzyme Kinetics Simulator — Level 3",
+              "description": "Model Michaelis-Menten enzyme-substrate saturation kinetics and competitive inhibition."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "How does the addition of a positive catalyst accelerate a chemical reaction?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "By increasing the total enthalpy change (ΔH)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "By lowering the activation energy barrier"
+                  },
+                  {
+                    "id": "C",
+                    "label": "By shifting the equilibrium constant in favor of products"
+                  },
+                  {
+                    "id": "D",
+                    "label": "By increasing the average kinetic energy of the reactants"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "A positive catalyst provides an alternative reaction pathway with a lower activation energy, allowing a greater fraction of collisions to be effective at a given temperature."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "20",
+          "topicName": "Rate Law, Reaction Order & Half-Life",
+          "coreConcept": "Differential and integrated rate laws, determination of reaction order, molecularity vs order, and half-life characteristics.",
+          "keyFormulas": [
+            {
+              "formula": "Rate = k * [A]^m * [B]^n (Order = m + n)",
+              "label": "Differential Rate Law"
+            },
+            {
+              "formula": "[A]_t = [A]₀ - k * t  |  t₁/₂ = [A]₀ / (2k)",
+              "label": "Zero-Order Integrated Law & Half-Life"
+            },
+            {
+              "formula": "ln[A]_t = ln[A]₀ - k * t  |  t₁/₂ = 0.693 / k",
+              "label": "First-Order Integrated Law & Half-Life"
+            },
+            {
+              "formula": "1/[A]_t = 1/[A]₀ + k * t  |  t₁/₂ = 1 / (k * [A]₀)",
+              "label": "Second-Order Integrated Law & Half-Life"
+            }
+          ],
+          "theory": {
+            "basics": "The rate law mathematically connects reaction rate to instantaneous concentrations of reactants:\n\n- **Order of Reaction:** Sum of powers of concentration terms in the experimentally determined rate law. Can be zero, fractional, or integer.\n- **Molecularity:** Number of reacting species participating in an elementary step. Always a positive integer (1, 2, or 3).\n- **First-Order Half-Life:** t₁/₂ = ln(2)/k ≈ 0.693/k. It is uniquely independent of the initial concentration [A]₀.",
+            "fullConcept": "## Pseudo-First Order Reactions and Initial Rates Method\n\nWhen one reactant is present in large excess (e.g., acid hydrolysis of ethyl acetate in water), its concentration remains virtually unchanged throughout the reaction, simplifying higher-order kinetics to pseudo-first-order kinetics with k' = k[H₂O]."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Initial Rates Decoder — Level 1",
+              "description": "Deduce reaction orders m and n from concentration-doubling rate experiments."
+            },
+            "medium": {
+              "title": "Half-Life Curve Tracer — Level 2",
+              "description": "Differentiate between zero-order, first-order, and second-order concentration decay plots."
+            },
+            "advanced": {
+              "title": "Multi-Step Mechanism Solver — Level 3",
+              "description": "Derive composite rate laws from multi-step mechanisms using the steady-state approximation."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "For a first-order chemical reaction, what happens to the half-life if the initial reactant concentration is doubled?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "It doubles"
+                  },
+                  {
+                    "id": "B",
+                    "label": "It is halved"
+                  },
+                  {
+                    "id": "C",
+                    "label": "It remains unchanged"
+                  },
+                  {
+                    "id": "D",
+                    "label": "It quadruples"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "For a first-order reaction, t₁/₂ = 0.693 / k, which is strictly independent of the initial reactant concentration."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "moduleId": "M6",
+      "moduleName": "Equilibrium",
+      "topics": [
+        {
+          "topicId": "21",
+          "topicName": "Chemical Equilibrium",
+          "coreConcept": "Dynamic nature of chemical equilibrium, equality of forward and reverse reaction rates, and macroscopic constancy.",
+          "keyFormulas": [
+            {
+              "formula": "Rate_forward = Rate_reverse",
+              "label": "Condition for Dynamic Equilibrium"
+            },
+            {
+              "formula": "Q_c = K_c (at equilibrium)",
+              "label": "Reaction Quotient Criterion"
+            }
+          ],
+          "theory": {
+            "basics": "Chemical equilibrium is a dynamic state achieved in a closed system when the rate of the forward reaction equals the rate of the backward reaction.\n\n- **Dynamic State:** The reactions do not stop; both forward and reverse transformations continue at identical rates.\n- **Constant Concentrations:** Macroscopic properties such as color, pressure, temperature, and concentrations of reactants and products remain invariant over time.\n- **Attainability:** Equilibrium can be approached from either direction (starting purely with reactants or purely with products).",
+            "fullConcept": "## Reversibility and Gibbs Free Energy Criterion\n\nThermodynamically, dynamic equilibrium corresponds to the minimum in Gibbs free energy (G) for the system, where (dG/dξ) = 0 at constant temperature and pressure."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Equilibrium Balance Chamber — Level 1",
+              "description": "Observe forward and backward reaction rates converge to equal values in real time."
+            },
+            "medium": {
+              "title": "Dynamic Equilibrium Tracker — Level 2",
+              "description": "Introduce radioactive isotope tracers into an equilibrium mixture to observe molecular exchange."
+            },
+            "advanced": {
+              "title": "Gibbs Minimum Locator — Level 3",
+              "description": "Plot system Gibbs free energy versus reaction extent (ξ) to locate equilibrium states."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which statement is strictly true when a reversible reaction reaches dynamic equilibrium?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "The forward and reverse reaction rates are equal"
+                  },
+                  {
+                    "id": "B",
+                    "label": "The concentrations of reactants and products must be equal"
+                  },
+                  {
+                    "id": "C",
+                    "label": "All molecular motion and reactions cease"
+                  },
+                  {
+                    "id": "D",
+                    "label": "The reaction has gone to 100% completion"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "Dynamic equilibrium is defined by the equality of forward and reverse reaction rates, while concentrations remain constant (though not necessarily equal to each other)."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "22",
+          "topicName": "Equilibrium Constant",
+          "coreConcept": "Law of mass action, expressions for Kc and Kp, relationship Kp = Kc(RT)^Δn, and predicting the direction of reaction using Qc.",
+          "keyFormulas": [
+            {
+              "formula": "K_c = [C]^c * [D]^d / ([A]^a * [B]^b)",
+              "label": "Equilibrium Constant in Concentration"
+            },
+            {
+              "formula": "K_p = K_c * (R * T)^Δn_g",
+              "label": "Kp to Kc Relationship"
+            },
+            {
+              "formula": "ΔG° = -R * T * ln(K_p)",
+              "label": "Standard Free Energy & Equilibrium Constant"
+            }
+          ],
+          "theory": {
+            "basics": "The equilibrium constant (K) quantifies the ratio of product concentrations to reactant concentrations at equilibrium at a specified temperature.\n\n- **Law of Mass Action:** For aA + bB ⇌ cC + dD, K_c = [C]^c[D]^d / [A]^a[B]^b. Pure solids and pure liquids are omitted because their activity equals 1.\n- **Reaction Quotient (Q):** Calculated using non-equilibrium concentrations. If Q < K, reaction moves forward; if Q > K, reaction shifts backward; if Q = K, system is at equilibrium.\n- **Temperature Exclusivity:** For a given balanced equation, K changes ONLY when temperature changes.",
+            "fullConcept": "## Van 't Hoff Equation for Temperature Sensitivity\n\nThe temperature dependence of K is governed by the van 't Hoff equation: d(ln K)/dT = ΔH° / (R T²). For endothermic reactions (ΔH° > 0), K increases with temperature; for exothermic reactions (ΔH° < 0), K decreases with temperature."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Kc & Kp Calculator — Level 1",
+              "description": "Compute Kc and convert to Kp using ideal gas laws and Δng stoichiometry."
+            },
+            "medium": {
+              "title": "Q vs K Direction Finder — Level 2",
+              "description": "Sample instantaneous concentrations and predict whether the system shifts forward or backward."
+            },
+            "advanced": {
+              "title": "Van 't Hoff Temperature Master — Level 3",
+              "description": "Determine standard enthalpy (ΔH°) from slopes of ln(K) versus 1/T."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Under what condition is Kp numerically equal to Kc for a gaseous reaction?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "When Δn_g = 0"
+                  },
+                  {
+                    "id": "B",
+                    "label": "When Δn_g = 1"
+                  },
+                  {
+                    "id": "C",
+                    "label": "When temperature is 0 °C"
+                  },
+                  {
+                    "id": "D",
+                    "label": "When pressure is 1 atm"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "Since Kp = Kc * (RT)^Δn_g, when Δn_g = 0 (equal moles of gaseous products and reactants), (RT)⁰ = 1, making Kp = Kc."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "23",
+          "topicName": "Le Chatelier's Principle",
+          "coreConcept": "Predicting equilibrium shifts in response to perturbations in concentration, temperature, pressure, volume, and inert gas additions.",
+          "keyFormulas": [
+            {
+              "formula": "Exothermic (ΔH < 0): Heat is a product (T↑ shifts Left)",
+              "label": "Temperature Perturbation Rule"
+            },
+            {
+              "formula": "Pressure Increase (P↑): Shifts to fewer gas moles",
+              "label": "Pressure / Volume Perturbation Rule"
+            }
+          ],
+          "theory": {
+            "basics": "Le Chatelier's Principle states that if a dynamic equilibrium system is subjected to a disturbance in concentration, temperature, or pressure, the system counteracts that disturbance to establish a new equilibrium state.\n\n- **Concentration:** Adding reactants shifts equilibrium to the right; removing products also shifts it to the right.\n- **Pressure/Volume:** Increasing pressure (decreasing volume) drives the system toward the side with fewer moles of gas.\n- **Temperature:** Increasing temperature favors the endothermic direction, while decreasing temperature favors the exothermic direction.\n- **Catalyst & Inert Gas:** Catalysts do not alter equilibrium position. Adding inert gas at constant volume has no effect; adding at constant pressure shifts toward more gas moles.",
+            "fullConcept": "## Industrial Synthesis Optimization (Haber-Bosch Process)\n\nIn ammonia synthesis N₂(g) + 3H₂(g) ⇌ 2NH₃(g) (ΔH = -92.4 kJ/mol), high pressure (200 atm) maximizes yield (4 gas moles → 2 gas moles), while a compromise temperature (450 °C) with an iron catalyst balances acceptable yield and viable reaction kinetics."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Stress & Shift Chamber — Level 1",
+              "description": "Inject reactants, change volume, and observe color changes in NO₂/N₂O₄ equilibrium."
+            },
+            "medium": {
+              "title": "Haber Process Optimizer — Level 2",
+              "description": "Balance temperature and pressure to maximize ammonia yield without sacrificing reaction rate."
+            },
+            "advanced": {
+              "title": "Inert Gas Dilemma — Level 3",
+              "description": "Differentiate inert gas injection consequences under constant volume versus constant pressure."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "For the exothermic reaction N₂(g) + 3H₂(g) ⇌ 2NH₃(g), which condition will increase the equilibrium yield of NH₃?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Increasing temperature"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Decreasing total pressure"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Increasing total pressure"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Removing N₂ gas"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Increasing pressure shifts equilibrium toward the side with fewer gas moles (from 4 moles on the left to 2 moles on the right), favoring ammonia formation."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "24",
+          "topicName": "Ionic Equilibrium & pH",
+          "coreConcept": "Ionization of weak acids and bases, auto-ionization of water, pH and pOH calculations, buffer solutions, and Henderson-Hasselbalch equation.",
+          "keyFormulas": [
+            {
+              "formula": "pH = -log₁₀[H⁺]  |  pH + pOH = 14 (at 298 K)",
+              "label": "pH Definition & Ion Product"
+            },
+            {
+              "formula": "[H⁺] = √(K_a * C)  (Ostwald's Dilution Law for weak acid)",
+              "label": "Weak Acid Dissociation"
+            },
+            {
+              "formula": "pH = pK_a + log₁₀([Conjugate Base] / [Acid])",
+              "label": "Henderson-Hasselbalch Equation"
+            }
+          ],
+          "theory": {
+            "basics": "Ionic equilibrium deals with equilibria involving ions in solution, especially weak acids, weak bases, and sparingly soluble salts.\n\n- **Auto-ionization of Water:** H₂O ⇌ H⁺ + OH⁻ with K_w = [H⁺][OH⁻] = 1.0 × 10⁻¹⁴ at 25 °C.\n- **pH Scale:** Defined as pH = -log₁₀[H⁺]. Acidic solutions have pH < 7, neutral have pH = 7, and basic have pH > 7 at 298 K.\n- **Buffer Solutions:** Mixtures of a weak acid and its conjugate base (or weak base and conjugate acid) that resist changes in pH upon addition of small amounts of strong acid or base.",
+            "fullConcept": "## Buffer Capacity and Polyprotic Acid Ionization\n\nBuffer capacity is maximal when [Conjugate Base] = [Acid], meaning pH = pK_a. Polyprotic acids (like H₃PO₄) ionize in sequential steps with K_a1 >> K_a2 >> K_a3 because removing a proton from an increasingly negative ion requires progressively more work."
+          },
+          "challenges": {
+            "easy": {
+              "title": "pH Probe Simulator — Level 1",
+              "description": "Calculate pH across solutions of strong acids, strong bases, and pure water."
+            },
+            "medium": {
+              "title": "Buffer Solution Crafter — Level 2",
+              "description": "Formulate acetate buffers and test pH resistance against additions of HCl and NaOH."
+            },
+            "advanced": {
+              "title": "Polyprotic Titration Curves — Level 3",
+              "description": "Simulate phosphoric acid titration and identify multiple equivalence and buffer points."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the pH of a 0.001 M HCl solution at 25 °C?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "1"
+                  },
+                  {
+                    "id": "B",
+                    "label": "2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "3"
+                  },
+                  {
+                    "id": "D",
+                    "label": "11"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "HCl is a strong acid, so [H⁺] = 0.001 M = 10⁻³ M. pH = -log₁₀(10⁻³) = 3."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "25",
+          "topicName": "Solubility Product & Common Ion Effect",
+          "coreConcept": "Solubility product constant (Ksp), relationship between solubility (s) and Ksp, precipitation criteria, and solubility suppression via common ions.",
+          "keyFormulas": [
+            {
+              "formula": "A_x B_y(s) ⇌ x Aʸ⁺(aq) + y Bˣ⁻(aq)  |  K_sp = [Aʸ⁺]^x [Bˣ⁻]^y",
+              "label": "Solubility Product Expression"
+            },
+            {
+              "formula": "Q_sp > K_sp ⇒ Precipitation Occurs",
+              "label": "Precipitation Criterion"
+            },
+            {
+              "formula": "For AB₂ salt: K_sp = s * (2s)² = 4s³",
+              "label": "Ksp to Molar Solubility (s)"
+            }
+          ],
+          "theory": {
+            "basics": "Solubility product (K_sp) is the equilibrium constant for a sparingly soluble ionic solid dissolving in water to form a saturated solution.\n\n- **Ionic Product (Q_sp):** Product of actual ionic concentrations raised to stoichiometric powers. If Q_sp < K_sp, solution is unsaturated; if Q_sp = K_sp, saturated; if Q_sp > K_sp, precipitation occurs.\n- **Common Ion Effect:** The solubility of a sparingly soluble salt is dramatically decreased when a soluble salt containing a common ion is added to the solution (Le Chatelier shift).",
+            "fullConcept": "## Selective Precipitation and Qualitative Analysis\n\nIn qualitative inorganic group analysis, selective precipitation isolates metal cations based on differing K_sp values. For example, Group II cations (e.g., Cu²⁺, Pb²⁺) precipitate as sulfides in acidic medium (low S²⁻ concentration due to common ion H⁺), whereas Group IV cations (e.g., Ni²⁺, Zn²⁺) require basic medium (high S²⁻ concentration)."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Ksp & Solubility Solver — Level 1",
+              "description": "Convert between molar solubility (s) and Ksp for AgCl, BaSO₄, and CaF₂."
+            },
+            "medium": {
+              "title": "Common Ion Suppressor — Level 2",
+              "description": "Add NaCl to saturated AgCl solution and measure the drop in silver ion concentration."
+            },
+            "advanced": {
+              "title": "Selective Precipitation Separator — Level 3",
+              "description": "Control pH and sulfide concentration to precipitate selective metal ions from mixed solutions."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "If a sparingly soluble salt has the formula MX₂ with molar solubility 's', what is its K_sp?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "s²"
+                  },
+                  {
+                    "id": "B",
+                    "label": "2s²"
+                  },
+                  {
+                    "id": "C",
+                    "label": "4s³"
+                  },
+                  {
+                    "id": "D",
+                    "label": "27s⁴"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Dissociation: MX₂(s) ⇌ M²⁺ + 2X⁻. [M²⁺] = s and [X⁻] = 2s. K_sp = [M²⁺][X⁻]² = (s)(2s)² = 4s³."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "moduleId": "M7",
+      "moduleName": "Chemical Thermodynamics",
+      "topics": [
+        {
+          "topicId": "26",
+          "topicName": "First Law of Thermodynamics",
+          "coreConcept": "Conservation of energy, internal energy changes, heat, and work interactions in open, closed, and isolated systems.",
+          "keyFormulas": [
+            {
+              "formula": "ΔU = q + w",
+              "label": "First Law of Thermodynamics"
+            },
+            {
+              "formula": "w = -P_ext * ΔV (Irreversible Expansion)",
+              "label": "Pressure-Volume Work"
+            },
+            {
+              "formula": "w_rev = -2.303 * n * R * T * log₁₀(V₂ / V₁)",
+              "label": "Reversible Isothermal Work"
+            }
+          ],
+          "theory": {
+            "basics": "The First Law of Thermodynamics is the principle of conservation of energy: energy can neither be created nor destroyed, only transformed from one form into another.\n\n- **Internal Energy (U):** State function representing total microscopic kinetic and potential energies within the system.\n- **Sign Conventions (IUPAC):** Heat absorbed by system (+q), heat released (-q); work done on system (+w), work done by system (-w).\n- **Isothermal vs Adiabatic:** In isothermal processes (constant T), ΔU = 0 for an ideal gas; in adiabatic processes (q = 0), ΔU = w.",
+            "fullConcept": "## Reversible vs. Irreversible Thermodynamic Paths\n\nReversible processes occur through an infinite sequence of quasi-static equilibrium states, delivering maximum expansion work from the system. Irreversible processes involve finite driving force gradients, resulting in entropy production and reduced useful work."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Piston Work Visualizer — Level 1",
+              "description": "Calculate pressure-volume work during gas expansion against constant external pressure."
+            },
+            "medium": {
+              "title": "Thermodynamic Path Explorer — Level 2",
+              "description": "Compare isothermal, adiabatic, isobaric, and isochoric pathways on P-V diagrams."
+            },
+            "advanced": {
+              "title": "Carnot Engine Efficiency — Level 3",
+              "description": "Construct a complete cyclic process and evaluate net work output and thermal efficiency."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "In an adiabatic expansion of an ideal gas, which of the following is strictly zero?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Work done (w)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Heat exchange (q)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Internal energy change (ΔU)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Temperature change (ΔT)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "An adiabatic process is defined as one that occurs without any heat transfer between the system and its surroundings (q = 0)."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "27",
+          "topicName": "Enthalpy & Heat Capacity",
+          "coreConcept": "Enthalpy state function, constant pressure vs constant volume heat capacity, and Mayer's relation Cp - Cv = R.",
+          "keyFormulas": [
+            {
+              "formula": "H = U + P * V  |  ΔH = q_p",
+              "label": "Enthalpy Definition"
+            },
+            {
+              "formula": "ΔH = ΔU + Δn_g * R * T",
+              "label": "Enthalpy & Internal Energy for Gases"
+            },
+            {
+              "formula": "C_p - C_v = R  (for 1 mole of ideal gas)",
+              "label": "Mayer's Relation"
+            }
+          ],
+          "theory": {
+            "basics": "Enthalpy (H) is the total heat content of a system at constant pressure:\n\n- **Constant Pressure (q_p):** The heat absorbed or released at constant pressure equals the enthalpy change (ΔH).\n- **Constant Volume (q_v):** The heat absorbed or released at constant volume equals the change in internal energy (ΔU).\n- **Heat Capacity:** Molar heat capacity is the heat required to raise the temperature of 1 mole of substance by 1 K. At constant pressure, C_p exceeds C_v because gas does work expanding against atmospheric pressure.",
+            "fullConcept": "## Kirchhoff's Law and Temperature Dependence\n\nKirchhoff's equation relates the enthalpy of reaction at two different temperatures to the difference in heat capacities between products and reactants: ΔH(T₂) = ΔH(T₁) + ∫ ΔC_p dT."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Bomb Calorimeter Simulator — Level 1",
+              "description": "Measure combustion heat release at constant volume and compute ΔU and ΔH."
+            },
+            "medium": {
+              "title": "Cp vs Cv Explorer — Level 2",
+              "description": "Evaluate Mayer's relation and compute heat capacity ratios (γ = Cp/Cv) for monoatomic and diatomic gases."
+            },
+            "advanced": {
+              "title": "Kirchhoff Enthalpy Predictor — Level 3",
+              "description": "Extrapolate high-temperature industrial reaction enthalpies using Kirchhoff integrals."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "For a gaseous reaction where Δn_g = -1 at temperature T, what is the relationship between ΔH and ΔU?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "ΔH = ΔU + RT"
+                  },
+                  {
+                    "id": "B",
+                    "label": "ΔH = ΔU - RT"
+                  },
+                  {
+                    "id": "C",
+                    "label": "ΔH = ΔU"
+                  },
+                  {
+                    "id": "D",
+                    "label": "ΔH = RT - ΔU"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Using ΔH = ΔU + Δn_g * RT, substituting Δn_g = -1 gives ΔH = ΔU - RT."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "28",
+          "topicName": "Hess's Law",
+          "coreConcept": "Hess's law of constant heat summation, standard enthalpies of formation and combustion, and bond enthalpy calculations.",
+          "keyFormulas": [
+            {
+              "formula": "ΔH°_rxn = Σ ΔH°_f(products) - Σ ΔH°_f(reactants)",
+              "label": "Enthalpy from Standard Formations"
+            },
+            {
+              "formula": "ΔH°_rxn = Σ Bond Energies(broken) - Σ Bond Energies(formed)",
+              "label": "Enthalpy from Bond Dissociation Energies"
+            }
+          ],
+          "theory": {
+            "basics": "Hess's Law states that the total enthalpy change for a chemical reaction is identical whether the reaction takes place in one step or in a series of steps.\n\n- **State Function Property:** Because enthalpy is a state function, ΔH depends only on the initial and final states, not on the reaction pathway.\n- **Standard Enthalpy of Formation (ΔH°_f):** Enthalpy change when 1 mole of a compound is formed from its elements in their standard states. For elements in standard states (e.g., O₂(g), C(graphite)), ΔH°_f = 0.",
+            "fullConcept": "## Born-Haber Cycles for Ionic Lattice Enthalpy\n\nThe Born-Haber cycle applies Hess's law to determine ionic crystal lattice energies (U) from sublimation enthalpy, ionization energy, dissociation enthalpy, and electron gain enthalpy."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Hess's Puzzle Builder — Level 1",
+              "description": "Rearrange, flip, and scale intermediate thermochemical equations to determine net reaction ΔH."
+            },
+            "medium": {
+              "title": "Bond Enthalpy Calculator — Level 2",
+              "description": "Break and form covalent bonds across gas-phase reactants to predict reaction enthalpy."
+            },
+            "advanced": {
+              "title": "Born-Haber Cycle Architect — Level 3",
+              "description": "Construct a complete Born-Haber energetic cycle for NaCl and MgO to calculate lattice energy."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "By convention, what is the standard enthalpy of formation (ΔH°_f) for pure elements in their most stable reference states at 298 K?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "1.0 kJ/mol"
+                  },
+                  {
+                    "id": "B",
+                    "label": "0.0 kJ/mol"
+                  },
+                  {
+                    "id": "C",
+                    "label": "-1.0 kJ/mol"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Dependent on molecular weight"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "The standard enthalpy of formation of every element in its most stable allotropic and physical state at 298 K and 1 bar is assigned as 0.0 kJ/mol by thermodynamic convention."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "29",
+          "topicName": "Entropy",
+          "coreConcept": "Second law of thermodynamics, statistical and thermal entropy, spontaneity criteria, and entropy changes in physical and chemical changes.",
+          "keyFormulas": [
+            {
+              "formula": "ΔS = q_rev / T",
+              "label": "Thermodynamic Entropy Definition"
+            },
+            {
+              "formula": "S = k_B * ln(W)",
+              "label": "Boltzmann's Statistical Entropy Formula"
+            },
+            {
+              "formula": "ΔS_universe = ΔS_system + ΔS_surroundings > 0 (Spontaneous)",
+              "label": "Second Law of Thermodynamics"
+            }
+          ],
+          "theory": {
+            "basics": "Entropy (S) is a state function that measures the degree of molecular disorder or energy dispersion in a system.\n\n- **Second Law:** For any spontaneous (irreversible) process, the total entropy of the universe increases (ΔS_univ > 0).\n- **Third Law of Thermodynamics:** The entropy of a perfectly crystalline substance at absolute zero (0 K) is exactly zero.\n- **Phase Transitions:** Solid → Liquid → Gas represents a major progressive increase in entropy due to rotational and translational freedom.",
+            "fullConcept": "## Microscopic States and Energy Dispersion\n\nBoltzmann's formula S = k_B ln(W) connects macroscopic entropy to the number of accessible microstates (W). An irreversible expansion increases available volume coordinates, exponentially multiplying microstates without changing total thermal energy."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Entropy State Comparator — Level 1",
+              "description": "Predict sign of ΔS for melting, vaporization, dissolving salts, and synthesis reactions."
+            },
+            "medium": {
+              "title": "Universe Entropy Balancer — Level 2",
+              "description": "Compute ΔS_sys and ΔS_surr to verify net positive entropy creation in spontaneous heat flow."
+            },
+            "advanced": {
+              "title": "Microstate Statistical Simulator — Level 3",
+              "description": "Simulate particle distributions in partitioned chambers and calculate entropy using W microstates."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which of the following processes results in an increase in entropy (ΔS > 0)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Freezing of liquid water to ice"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Condensation of water vapor into liquid"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Sublimation of solid dry ice into carbon dioxide gas"
+                  },
+                  {
+                    "id": "D",
+                    "label": "N₂(g) + 3H₂(g) → 2NH₃(g)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Sublimation transitions a highly ordered solid crystal lattice into a freely moving, disordered gas, resulting in a large positive entropy increase."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "30",
+          "topicName": "Gibbs Free Energy & Spontaneity",
+          "coreConcept": "Gibbs free energy definition, spontaneity criterion at constant T and P, temperature-driven spontaneity, and standard free energy.",
+          "keyFormulas": [
+            {
+              "formula": "ΔG = ΔH - T * ΔS",
+              "label": "Gibbs-Helmholtz Equation"
+            },
+            {
+              "formula": "ΔG < 0 (Spontaneous), ΔG = 0 (Equilibrium), ΔG > 0 (Non-spontaneous)",
+              "label": "Spontaneity Criteria"
+            },
+            {
+              "formula": "T_c = ΔH / ΔS",
+              "label": "Crossover Temperature for Spontaneity"
+            }
+          ],
+          "theory": {
+            "basics": "Gibbs free energy (G = H - TS) represents the net useful work obtainable from a closed system at constant temperature and pressure.\n\n- **Spontaneity Criterion:** A process is spontaneous at constant T and P if and only if ΔG < 0.\n- **Enthalpy vs Entropy Driven:**\n  - ΔH < 0, ΔS > 0: Spontaneous at all temperatures.\n  - ΔH > 0, ΔS < 0: Non-spontaneous at all temperatures.\n  - ΔH < 0, ΔS < 0: Spontaneous only at low temperatures (T < ΔH/ΔS).\n  - ΔH > 0, ΔS > 0: Spontaneous only at high temperatures (T > ΔH/ΔS).",
+            "fullConcept": "## Thermodynamic vs Kinetic Stability\n\nA reaction with a large negative ΔG is thermodynamically spontaneous, but may occur at an imperceptibly slow rate if its activation energy barrier is high (e.g., diamond transforming into graphite), illustrating the key distinction between thermodynamics and kinetics."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Spontaneity Matrix — Level 1",
+              "description": "Determine spontaneity across temperature regimes based on signs of ΔH and ΔS."
+            },
+            "medium": {
+              "title": "Crossover Temperature Solver — Level 2",
+              "description": "Calculate the exact temperature at which endothermic reactions become spontaneous."
+            },
+            "advanced": {
+              "title": "Coupled Reaction Engine — Level 3",
+              "description": "Couple non-spontaneous reactions (ΔG > 0) to ATP hydrolysis (ΔG < 0) to drive biological synthesis."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Under what thermodynamic conditions is a chemical reaction spontaneous at all temperatures?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "ΔH > 0 and ΔS > 0"
+                  },
+                  {
+                    "id": "B",
+                    "label": "ΔH < 0 and ΔS > 0"
+                  },
+                  {
+                    "id": "C",
+                    "label": "ΔH < 0 and ΔS < 0"
+                  },
+                  {
+                    "id": "D",
+                    "label": "ΔH > 0 and ΔS < 0"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "When ΔH < 0 (exothermic) and ΔS > 0 (entropy increase), ΔG = ΔH - TΔS is strictly negative at all absolute temperatures."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "moduleId": "M8",
+      "moduleName": "Chemical Metallurgy",
+      "topics": [
+        {
+          "topicId": "31",
+          "topicName": "Minerals, Ores & Concentration of Ores",
+          "coreConcept": "Distinction between minerals and ores, gangue removal, gravity separation, froth floatation, and chemical leaching.",
+          "keyFormulas": [
+            {
+              "formula": "Bauxite Leaching: Al₂O₃·2H₂O + 2NaOH → 2NaAlO₂ + 3H₂O",
+              "label": "Bayer's Process Leaching"
+            },
+            {
+              "formula": "Collectors: Potassium Ethyl Xanthate (Hydrophobic Coating)",
+              "label": "Froth Floatation Reagent"
+            }
+          ],
+          "theory": {
+            "basics": "Metals occur naturally in the earth's crust in native or combined forms.\n\n- **Mineral vs Ore:** Minerals are naturally occurring chemical substances in the earth's crust. Ores are minerals from which metals can be extracted conveniently and economically.\n- **Gangue / Matrix:** The unwanted earthy, rocky impurities (like sand and clay) associated with ore.\n- **Concentration Methods:**\n  - *Hydraulic Washing:* Based on density differences.\n  - *Magnetic Separation:* Exploits magnetic property differences (e.g., separating FeWO₄ from tin stone).\n  - *Froth Floatation:* Widely used for sulfide ores (like ZnS, PbS) using collectors (pine oil) and frothers.\n  - *Leaching:* Dissolution of the ore in a selective solvent (e.g., Bayer's process for bauxite, cyanide leaching for gold/silver).",
+            "fullConcept": "## Depressants in Differential Froth Floatation\n\nWhen multiple sulfide minerals are present together (e.g., galena PbS and zinc blende ZnS), depressants like NaCN selectively form soluble complexes with ZnS (Na₂[Zn(CN)₄]), preventing it from attaching to oil froths, thereby allowing pure PbS to float first."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Ore Sorting Lab — Level 1",
+              "description": "Classify ores by mineral composition and select appropriate separation techniques."
+            },
+            "medium": {
+              "title": "Froth Floatation Tuner — Level 2",
+              "description": "Optimize collector and frother concentrations to float copper pyrite away from silicate gangue."
+            },
+            "advanced": {
+              "title": "Bayer Leaching Reactor — Level 3",
+              "description": "Operate high-pressure digestion autoclaves to selectively leach alumina from crude bauxite."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which ore concentration method is most commonly utilized for concentrating sulfide ores like zinc blende (ZnS)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Hydraulic washing"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Froth floatation process"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Magnetic separation"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Liquation"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Froth floatation exploits the preferential wetting of sulfide ore particles by oil/pine collectors while gangue particles are wetted by water."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "32",
+          "topicName": "Crushing, Roasting & Calcination",
+          "coreConcept": "Comminution of ores, thermal conversion of carbonates to oxides (calcination), and conversion of sulfides to oxides in excess air (roasting).",
+          "keyFormulas": [
+            {
+              "formula": "Calcination: CaCO₃(s) —Δ→ CaO(s) + CO₂(g)",
+              "label": "Calcination of Carbonate Ore"
+            },
+            {
+              "formula": "Roasting: 2ZnS(s) + 3O₂(g) —Δ→ 2ZnO(s) + 2SO₂(g)",
+              "label": "Roasting of Sulfide Ore"
+            }
+          ],
+          "theory": {
+            "basics": "Before a metal can be reduced, concentrated ores are converted into metal oxides, which are much more readily reduced to free metals.\n\n- **Crushing & Grinding:** Mechanical pulverization using jaw crushers and ball mills to increase surface reactivity.\n- **Calcination:** Heating the concentrated ore strongly below its melting point in the absence of air (or in limited air). Used for carbonates and hydrated oxides, expelling moisture and volatile organics.\n- **Roasting:** Heating the ore strongly below its melting point in a continuous excess of air. Used primarily for sulfide ores, oxidizing them to metal oxides and releasing SO₂ gas.",
+            "fullConcept": "## Reverberatory Furnace Operation\n\nBoth calcination and roasting are carried out in a reverberatory furnace where fuel flame is baffled away from direct contact with the ore bed to ensure pure radiative and convective heating without contamination by coal ashes."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Furnace Thermal Chamber — Level 1",
+              "description": "Differentiate between calcination and roasting requirements for calamine and zinc blende."
+            },
+            "medium": {
+              "title": "Gas Effluent Scrubber — Level 2",
+              "description": "Control air flow during sulfide roasting to capture byproduct SO₂ for sulfuric acid synthesis."
+            },
+            "advanced": {
+              "title": "Thermal Dissociation Profiler — Level 3",
+              "description": "Compute decomposition temperatures and oxygen partial pressures for mixed metal carbonates."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the key difference between calcination and roasting in metallurgy?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Calcination uses excess air; roasting is done in absence of air"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Calcination is done in the absence or limited supply of air; roasting is done in excess air"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Roasting is only used for oxides"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Calcination melts the metal completely"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Calcination involves heating in the absence or limited supply of air (primarily for carbonates and hydrated oxides), whereas roasting requires excess air to oxidize sulfide ores."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "33",
+          "topicName": "Reduction & Extraction of Metals",
+          "coreConcept": "Pyrometallurgical reduction, Ellingham diagrams, smelting in blast furnaces, thermite reduction, and hydrometallurgical extraction.",
+          "keyFormulas": [
+            {
+              "formula": "Blast Furnace: Fe₂O₃ + 3CO → 2Fe + 3CO₂",
+              "label": "Iron Smelting Reaction"
+            },
+            {
+              "formula": "Thermite: Cr₂O₃ + 2Al → Al₂O₃ + 2Cr + Heat",
+              "label": "Aluminothermic Reduction"
+            },
+            {
+              "formula": "Slag Formation: CaO(basic flux) + SiO₂(acidic gangue) → CaSiO₃(slag)",
+              "label": "Flux and Slag Reaction"
+            }
+          ],
+          "theory": {
+            "basics": "Extraction of crude metal from roasted or calcinated oxide ore requires a suitable reducing agent.\n\n- **Ellingham Diagram:** Plots standard Gibbs free energy of formation of oxides (ΔG°) against temperature. A metal will reduce any oxide that lies ABOVE it on the Ellingham diagram at that temperature.\n- **Carbon / CO Reduction (Smelting):** Ore is mixed with carbon (coke) and a flux (limestone) and heated in a blast furnace.\n- **Flux & Slag:** Added substances that combine with infusible gangue to produce a fusible, low-density slag (e.g., calcium silicate) that floats over molten metal.",
+            "fullConcept": "## Thermodynamic Criterion of Ellingham Diagrams\n\nThe slope of lines on an Ellingham diagram represents -ΔS. Since oxidation of solids with gas (M + O₂ → MO₂) consumes gas, ΔS is negative and slope is positive. Uniquely, the line for 2C + O₂ → 2CO has a negative slope (ΔS > 0), meaning CO becomes an increasingly powerful reducing agent at higher temperatures."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Blast Furnace Operator — Level 1",
+              "description": "Control temperature zones in a blast furnace to reduce iron ore to pig iron."
+            },
+            "medium": {
+              "title": "Ellingham Diagram Navigator — Level 2",
+              "description": "Identify crossover temperatures on Ellingham lines where carbon reduces zinc oxide and magnesium."
+            },
+            "advanced": {
+              "title": "Thermite Energy Controller — Level 3",
+              "description": "Calculate adiabatic flame temperatures in aluminothermic welding reactions."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "On an Ellingham diagram, what does the crossover point of two metal oxide lines represent?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "The melting point of both metals"
+                  },
+                  {
+                    "id": "B",
+                    "label": "The temperature above which one metal can reduce the oxide of the other"
+                  },
+                  {
+                    "id": "C",
+                    "label": "The boiling point of oxygen"
+                  },
+                  {
+                    "id": "D",
+                    "label": "The point where reaction stops completely"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "At temperatures above the crossover point, the lower curve metal has a more negative ΔG° of oxide formation, allowing it to spontaneously reduce the oxide whose curve lies above it."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "34",
+          "topicName": "Refining of Metals",
+          "coreConcept": "Purification techniques: electrolytic refining, zone refining, vapor phase refining (Mond and van Arkel processes), and chromatographic refining.",
+          "keyFormulas": [
+            {
+              "formula": "Mond Process: Ni + 4CO (330-350 K) → Ni(CO)₄ —(450-470 K)→ Ni + 4CO",
+              "label": "Nickel Vapor Phase Refining"
+            },
+            {
+              "formula": "Van Arkel Process: Zr + 2I₂ (870 K) → ZrI₄ —(2075 K, W filament)→ Zr + 2I₂",
+              "label": "Zirconium Refining"
+            }
+          ],
+          "theory": {
+            "basics": "Crude metals obtained by reduction usually contain impurities that must be removed through refining:\n\n- **Electrolytic Refining:** Anode is impure metal; cathode is pure metal foil; electrolyte is soluble metal salt. Used for Cu, Zn, Ag, Au.\n- **Zone Refining:** Based on fractional crystallization; impurities are more soluble in the molten state than in the solid state. Used for producing semiconductors (Si, Ge, Ga) with ultra-high purity.\n- **Vapor Phase Refining:** Metal is converted into a volatile compound which is then decomposed to yield pure metal (Mond process for Ni, van Arkel for Zr, Ti).\n- **Liquation & Cupellation:** Used when melting point of metal is lower than impurities (liquation for Sn), or for separating noble metals from lead (cupellation).",
+            "fullConcept": "## Zone Refining Principles and Impurity Distribution Coefficient\n\nThe distribution coefficient k = C_solid / C_liquid governs impurity segregation during directional solidification. Passing circular heaters repeatedly in one direction sweeps impurities into the trailing end, which is cut off to yield semiconductor-grade purity (>99.9999%)."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Electrolytic Copper Refiner — Level 1",
+              "description": "Set up electrolytic copper refining and recover anode mud containing silver and gold."
+            },
+            "medium": {
+              "title": "Mond Process Chamber — Level 2",
+              "description": "Control temperature between carbonyl formation and thermal decomposition for pure nickel."
+            },
+            "advanced": {
+              "title": "Zone Refining Crystallizer — Level 3",
+              "description": "Move induction heating zones along germanium ingots to attain ultra-pure semiconductor quality."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which refining method is specially utilized to obtain ultra-pure semiconductor elements such as Germanium and Silicon?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Zone refining"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Liquation"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Poling"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Cupellation"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "Zone refining relies on the fact that impurities are significantly more soluble in the molten melt than in the solid phase, enabling ultra-purification of semiconductors."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "moduleId": "M9",
+      "moduleName": "Solid State",
+      "topics": [
+        {
+          "topicId": "35",
+          "topicName": "Classification of Solids (Crystalline & Amorphous)",
+          "coreConcept": "Long-range vs short-range order, anisotropy vs isotropy, sharp melting points vs softening ranges, and types of crystalline solids.",
+          "keyFormulas": [
+            {
+              "formula": "Anisotropy: Physical properties vary with measurement direction",
+              "label": "Anisotropic Criterion"
+            },
+            {
+              "formula": "Types: Molecular, Ionic, Metallic, and Covalent/Network Solids",
+              "label": "Solid Classification"
+            }
+          ],
+          "theory": {
+            "basics": "Solids maintain definite shape and volume due to strong intermolecular forces and fixed particle positions.\n\n- **Crystalline Solids:** Have regular long-range order of constituent particles, sharp melting points, clean cleavage when cut, and are **anisotropic** (directional dependence of electrical conductivity, refractive index).\n- **Amorphous Solids:** Lack long-range order (pseudo-solids or supercooled liquids like glass, plastics, rubber), soften over a temperature range, show irregular cleavage, and are **isotropic**.\n- **Types of Crystalline Solids:** Ionic (NaCl), Metallic (Cu, Fe), Covalent/Network (Diamond, Quartz), and Molecular (Ice, Solid CO₂).",
+            "fullConcept": "## Structural Basis of Anisotropy\n\nIn crystalline solids, the spatial arrangement of particles differs along different crystallographic directions. Consequently, physical measurements (such as electrical resistance, thermal expansion, and mechanical shear modulus) show distinct directional values."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Solid Classifier — Level 1",
+              "description": "Categorize materials as crystalline or amorphous and predict melting behavior."
+            },
+            "medium": {
+              "title": "Bonding Nature Explorer — Level 2",
+              "description": "Differentiate network covalent, ionic, metallic, and molecular crystal properties."
+            },
+            "advanced": {
+              "title": "Anisotropy Polarizer — Level 3",
+              "description": "Measure refractive indices along different crystal axes to quantify degree of anisotropy."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Why are crystalline solids classified as anisotropic?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "They possess identical physical properties in all spatial directions"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Their physical properties (like refractive index) vary along different directions"
+                  },
+                  {
+                    "id": "C",
+                    "label": "They melt gradually over a broad temperature range"
+                  },
+                  {
+                    "id": "D",
+                    "label": "They lack long-range repeating order"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Anisotropy arises because the periodic spatial arrangement of constituent particles differs along different crystallographic directions within the crystal lattice."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "36",
+          "topicName": "Unit Cells, Crystal Lattices & Types of Cubic Unit Cells",
+          "coreConcept": "Crystal lattice, unit cell definition, 14 Bravais lattices, and cubic cell geometries: Primitive (SC), Body-Centered (BCC), and Face-Centered (FCC).",
+          "keyFormulas": [
+            {
+              "formula": "Z(Simple Cubic) = 8 * (1/8) = 1 atom",
+              "label": "Atoms per SC Unit Cell"
+            },
+            {
+              "formula": "Z(BCC) = 8 * (1/8) + 1 = 2 atoms",
+              "label": "Atoms per BCC Unit Cell"
+            },
+            {
+              "formula": "Z(FCC) = 8 * (1/8) + 6 * (1/2) = 4 atoms",
+              "label": "Atoms per FCC Unit Cell"
+            }
+          ],
+          "theory": {
+            "basics": "A crystal lattice is a regular 3D array of points in space. The unit cell is the smallest repeating unit that generates the entire crystal lattice through translation.\n\n- **Bravais Lattices:** 14 distinct lattice types distributed across 7 crystal systems (Cubic, Tetragonal, Orthorhombic, Hexagonal, Rhombohedral, Monoclinic, Triclinic).\n- **Cubic Unit Cells:**\n  - *Simple Cubic (Primitive):* Atoms only at 8 corners. Contribution = 8 × (1/8) = 1.\n  - *Body-Centered Cubic (BCC):* 8 corners + 1 in body center. Total Z = 1 + 1 = 2.\n  - *Face-Centered Cubic (FCC):* 8 corners + 6 face centers. Total Z = 1 + 3 = 4.",
+            "fullConcept": "## Atomic Radius and Edge Length (a) Geometrical Relations\n\n- Primitive Cubic: a = 2r (atoms touch along edge).\n- Body-Centered Cubic: √3 * a = 4r (atoms touch along body diagonal).\n- Face-Centered Cubic: √2 * a = 4r (atoms touch along face diagonal)."
+          },
+          "challenges": {
+            "easy": {
+              "title": "3D Cubic Cell Builder — Level 1",
+              "description": "Place atoms at corners, face centers, and body center to verify effective atom counts (Z)."
+            },
+            "medium": {
+              "title": "Radius-Edge Length Relator — Level 2",
+              "description": "Calculate atomic radii from lattice constants (a) across SC, BCC, and FCC structures."
+            },
+            "advanced": {
+              "title": "Bravais Lattice Inspector — Level 3",
+              "description": "Manipulate axial lengths (a, b, c) and interaxial angles (α, β, γ) across all 7 crystal systems."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "How many total constituent atoms effectively belong to a Face-Centered Cubic (FCC) unit cell?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "1"
+                  },
+                  {
+                    "id": "B",
+                    "label": "2"
+                  },
+                  {
+                    "id": "C",
+                    "label": "4"
+                  },
+                  {
+                    "id": "D",
+                    "label": "6"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "In FCC, 8 corners contribute 8 * (1/8) = 1 atom, and 6 face centers contribute 6 * (1/2) = 3 atoms, giving a total of Z = 4 atoms."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "37",
+          "topicName": "Packing Efficiency, Coordination Number & Voids",
+          "coreConcept": "Packing fractions (52.4%, 68%, 74%), coordination numbers (6, 8, 12), tetrahedral and octahedral interstitial voids.",
+          "keyFormulas": [
+            {
+              "formula": "Packing Efficiency = (Z * (4/3) * π * r³ / a³) * 100%",
+              "label": "Packing Efficiency Equation"
+            },
+            {
+              "formula": "SC: 52.4%  |  BCC: 68%  |  FCC / CCP: 74%",
+              "label": "Cubic Packing Fractions"
+            },
+            {
+              "formula": "Number of Octahedral Voids = N  |  Tetrahedral Voids = 2N",
+              "label": "Void Proportions for N Atoms"
+            }
+          ],
+          "theory": {
+            "basics": "Packing efficiency is the percentage of total space filled by particles:\n\n- **Coordination Number:** Number of nearest neighboring particles touching a given sphere (SC = 6, BCC = 8, FCC/HCP = 12).\n- **Packing Efficiency Values:** Simple cubic packs loosely (52.4%), BCC is intermediate (68%), and FCC/CCP/HCP achieve maximum theoretical sphere packing (74%).\n- **Interstitial Voids:**\n  - *Tetrahedral Void:* Void surrounded by 4 spheres. Radius ratio r_void/R_sphere = 0.225.\n  - *Octahedral Void:* Void surrounded by 6 spheres. Radius ratio r_void/R_sphere = 0.414.",
+            "fullConcept": "## Radius Ratio Rules and Ionic Coordination\n\nIn ionic crystals, the ratio of cation to anion radius (r⁺/r⁻) predicts coordination geometry: 0.155–0.225 (Trigonal, CN=3), 0.225–0.414 (Tetrahedral, CN=4, ZnS), 0.414–0.732 (Octahedral, CN=6, NaCl), and 0.732–1.000 (Cubic, CN=8, CsCl)."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Void Locator & Slicer — Level 1",
+              "description": "Slice an FCC unit cell to locate the 8 tetrahedral voids and 4 octahedral voids."
+            },
+            "medium": {
+              "title": "Packing Efficiency Verifier — Level 2",
+              "description": "Derive and verify packing percentages for simple cubic, BCC, and FCC models."
+            },
+            "advanced": {
+              "title": "Ionic Radius Ratio Architect — Level 3",
+              "description": "Fit cations of varying sizes into voids to predict stability transitions from NaCl to CsCl."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "If a crystal lattice is composed of N close-packed atoms, how many tetrahedral voids are present?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "N/2"
+                  },
+                  {
+                    "id": "B",
+                    "label": "N"
+                  },
+                  {
+                    "id": "C",
+                    "label": "2N"
+                  },
+                  {
+                    "id": "D",
+                    "label": "4N"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "For any close-packed lattice containing N atoms, there are exactly N octahedral voids and 2N tetrahedral voids."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "38",
+          "topicName": "Density of Unit Cell & Numerical Problems",
+          "coreConcept": "Derivation of unit cell density, calculation of molar mass and Avogadro's number, and point defects (Schottky and Frenkel).",
+          "keyFormulas": [
+            {
+              "formula": "ρ = (Z * M) / (a³ * N_A)",
+              "label": "Density of Unit Cell Formula"
+            },
+            {
+              "formula": "Schottky Defect: Equal missing cation-anion pairs (Density decreases)",
+              "label": "Schottky Point Defect"
+            },
+            {
+              "formula": "Frenkel Defect: Ion shifted to interstitial site (Density unchanged)",
+              "label": "Frenkel Point Defect"
+            }
+          ],
+          "theory": {
+            "basics": "Unit cell density connects microscopic atomic parameters directly to measurable macroscopic mass density:\n\n- **Density Formula:** ρ = (Z * M) / (a³ * N_A), where Z = number of atoms per unit cell, M = molar mass, a = edge length, and N_A = Avogadro's constant.\n- **Point Defects in Crystals:**\n  - *Schottky Defect:* Equal number of cations and anions are missing from lattice positions. Decreases density; observed in NaCl, KCl, CsCl.\n  - *Frenkel Defect:* A smaller ion (usually cation) is dislocated from its normal site to an interstitial site. Density remains unchanged; observed in AgCl, ZnS.\n  - *AgBr Exception:* Displays BOTH Schottky and Frenkel defects.",
+            "fullConcept": "## Non-Stoichiometric and Electronic Defects\n\nMetal deficiency defects create metal-deficient lattices with cation vacancies balanced by higher oxidation state cations (e.g., Fe₀.₉₅O). Metal excess defects create anionic vacancies occupied by unpaired electrons called **F-centers**, which impart characteristic colors (e.g., yellow in NaCl vapor)."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Lattice Density Calculator — Level 1",
+              "description": "Solve for crystal density given edge length (a), atomic weight, and crystal structure."
+            },
+            "medium": {
+              "title": "Defect Chamber (Schottky vs Frenkel) — Level 2",
+              "description": "Create stoichiometric missing ion pairs and interstitial displacements and measure density shifts."
+            },
+            "advanced": {
+              "title": "F-Center Color Simulator — Level 3",
+              "description": "Introduce alkali metal vapors into halide lattices to simulate electron trapping in F-centers."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which stoichiometric point defect decreases the measured density of an ionic crystal?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Frenkel defect"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Schottky defect"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Interstitial defect"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Metal excess defect"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "In a Schottky defect, stoichiometric pairs of cations and anions leave the crystal lattice entirely, reducing overall mass while volume remains unchanged, thus lowering density."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "moduleId": "M10",
+      "moduleName": "Hydrocarbons",
+      "topics": [
+        {
+          "topicId": "39",
+          "topicName": "Alkanes & Their Reactions",
+          "coreConcept": "Saturated hydrocarbons, conformations of ethane (staggered and eclipsed), free-radical halogenation mechanism, and combustion.",
+          "keyFormulas": [
+            {
+              "formula": "C_n H_{2n+2}",
+              "label": "Alkane General Formula"
+            },
+            {
+              "formula": "Halogenation: Initiation (X₂ → 2X•) → Propagation → Termination",
+              "label": "Free Radical Mechanism"
+            },
+            {
+              "formula": "Wurtz Reaction: 2R-X + 2Na —dry ether→ R-R + 2NaX",
+              "label": "Alkane Coupling Synthesis"
+            }
+          ],
+          "theory": {
+            "basics": "Alkanes are saturated aliphatic hydrocarbons containing only single carbon-carbon and carbon-hydrogen bonds.\n\n- **Conformations:** Free rotation about the C-C single bond generates conformations. For ethane, the **staggered conformation** is more stable than the **eclipsed conformation** by ~12.5 kJ/mol due to minimal torsional strain.\n- **Chemical Reactivity:** Alkanes are relatively unreactive (paraffins) but undergo free radical substitution reactions.\n- **Halogenation:** Photochemical chlorination occurs via a three-step chain mechanism: initiation, propagation, and termination.",
+            "fullConcept": "## Free Radical Selectivity and Reactivity Principle\n\nHalogen reactivity follows F₂ > Cl₂ > Br₂ > I₂. Bromination is highly regioselective for tertiary C-H bonds (3° : 2° : 1° ≈ 1600 : 82 : 1) due to an endothermic hydrogen abstraction step that strongly resembles the hyperconjugation-stabilized tertiary alkyl radical."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Ethane Conformation Rotor — Level 1",
+              "description": "Rotate Newman and Sawhorse projections to plot potential energy vs dihedral angle."
+            },
+            "medium": {
+              "title": "Free Radical Chlorination Chain — Level 2",
+              "description": "Control UV initiation and balance propagation and termination radical steps."
+            },
+            "advanced": {
+              "title": "Halogenation Selectivity Predictor — Level 3",
+              "description": "Calculate product percentage distributions in isobutane bromination vs chlorination."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which conformation of ethane possesses the lowest potential energy and maximum stability?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Eclipsed conformation"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Staggered conformation"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Skew conformation"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Gauche conformation"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "In the staggered conformation, C-H bonds on adjacent carbons are positioned as far apart as possible (dihedral angle 60°), minimizing torsional strain and electron repulsion."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "40",
+          "topicName": "Alkenes & Addition Reactions",
+          "coreConcept": "sp² hybridization, geometric isomerism (cis-trans, E-Z), electrophilic addition, Markovnikov's rule, and Kharasch peroxide effect.",
+          "keyFormulas": [
+            {
+              "formula": "C_n H_{2n}",
+              "label": "Alkene General Formula"
+            },
+            {
+              "formula": "Markovnikov: H⁺ adds to carbon with more H's (via stable carbocation)",
+              "label": "Markovnikov's Addition Rule"
+            },
+            {
+              "formula": "Ozonolysis: R₂C=CR₂ + O₃ —(Zn/H₂O)→ 2 R₂C=O",
+              "label": "Reductive Ozonolysis"
+            }
+          ],
+          "theory": {
+            "basics": "Alkenes are unsaturated hydrocarbons containing at least one carbon-carbon double bond (one strong σ-bond and one weaker, reactive π-bond).\n\n- **Electrophilic Addition:** The loosely held π-electron cloud attacks electrophiles (e.g., HBr, Br₂), forming a cyclic halonium ion or carbocation intermediate.\n- **Markovnikov's Rule:** In the addition of unsymmetrical reagents (HX) to unsymmetrical alkenes, the positive part (H⁺) attaches to the double-bonded carbon having more hydrogen atoms, proceeding through the more stable carbocation.\n- **Anti-Markovnikov (Peroxide Effect):** In the presence of benzoyl peroxide, addition of HBr (only) proceeds via a free radical pathway to yield anti-Markovnikov products.",
+            "fullConcept": "## Mechanistic Basis of Kharasch Peroxide Selectivity\n\nThe peroxide effect occurs exclusively with HBr. For HCl, the H-Cl bond is too strong for the alkoxy radical to abstract H in propagation step 1; for HI, the iodine radical addition is endothermic and iodine radicals preferentially dimerize to I₂."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Cis-Trans & E/Z Identifier — Level 1",
+              "description": "Apply Cahn-Ingold-Prelog priority rules to assign E/Z configurations to substituted alkenes."
+            },
+            "medium": {
+              "title": "Markovnikov Carbocation Balancer — Level 2",
+              "description": "Trace carbocation intermediates and 1,2-hydride/methyl shifts during electrophilic addition."
+            },
+            "advanced": {
+              "title": "Ozonolysis Structure Decrypter — Level 3",
+              "description": "Deduce parent alkene structures by analyzing aldehyde and ketone cleavage products."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the major product obtained when propene reacts with HBr in the absence of peroxides?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "1-bromopropane"
+                  },
+                  {
+                    "id": "B",
+                    "label": "2-bromopropane"
+                  },
+                  {
+                    "id": "C",
+                    "label": "1,2-dibromopropane"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Propyl alcohol"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "According to Markovnikov's rule, protonation occurs on C1 to form the more stable secondary carbocation (CH₃-CH⁺-CH₃), which is subsequently attacked by Br⁻ to yield 2-bromopropane."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "41",
+          "topicName": "Alkynes & Their Reactions",
+          "coreConcept": "sp hybridization, acidity of terminal alkynes, nucleophilic substitution of acetylides, catalytic hydrogenation, and hydration.",
+          "keyFormulas": [
+            {
+              "formula": "C_n H_{2n-2}",
+              "label": "Alkyne General Formula"
+            },
+            {
+              "formula": "RC≡CH + NaNH₂ → RC≡C⁻ Na⁺ + 1/2 H₂",
+              "label": "Terminal Alkyne Acidity"
+            },
+            {
+              "formula": "Hydration: HC≡CH + H₂O —(HgSO₄/H₂SO₄)→ CH₃CHO",
+              "label": "Kucherov Reaction (Hydration)"
+            }
+          ],
+          "theory": {
+            "basics": "Alkynes are unsaturated hydrocarbons characterized by a carbon-carbon triple bond (one σ-bond and two mutually perpendicular π-bonds).\n\n- **Acidity of Terminal Alkynes:** sp-hybridized carbons have 50% s-character, making them strongly electronegative and holding valence electrons close to the nucleus. As a result, terminal protons (RC≡C-H) are acidic (pKa ≈ 25) and react with strong bases like NaNH₂.\n- **Hydrogenation Stereochemistry:**\n  - *Lindlar's Catalyst (Pd/CaCO₃/quinoline):* Yields cis (Z) alkenes via syn-addition.\n  - *Birch Reduction (Na in liquid NH₃):* Yields trans (E) alkenes via anti-addition.",
+            "fullConcept": "## Tautomerism in Alkyne Oxymercuration\n\nAcid-catalyzed hydration of alkynes using HgSO₄/H₂SO₄ initially forms an enol intermediate. The enol rapidly undergoes keto-enol tautomerism to produce the thermodynamically more stable carbonyl compound (acetaldehyde for ethyne, methyl ketones for terminal alkynes)."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Hydrogenation Stereoselector — Level 1",
+              "description": "Direct alkyne reduction to cis vs trans alkenes using Lindlar's catalyst or Birch reduction."
+            },
+            "medium": {
+              "title": "Terminal Acetylide Synthesizer — Level 2",
+              "description": "Deprotonate terminal alkynes and perform alkylation with primary halides to build longer carbon chains."
+            },
+            "advanced": {
+              "title": "Kucherov Hydration Reactor — Level 3",
+              "description": "Track enol-keto tautomerism in Hg²⁺-catalyzed hydration across internal and terminal alkynes."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What reagent selectively converts 2-butyne into cis-2-butene via syn-addition?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Sodium in liquid ammonia (Birch reduction)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Hydrogen in presence of Lindlar's catalyst"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Acidic potassium permanganate"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Concentrated sulfuric acid with HgSO₄"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "Lindlar's catalyst (partially deactivated palladium on calcium carbonate) catalyzes syn-addition of hydrogen across alkynes, yielding stereospecific cis-alkenes."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "42",
+          "topicName": "Aromatic Hydrocarbons & Electrophilic Substitution",
+          "coreConcept": "Hückel's (4n+2) π-electron aromaticity rule, structure of benzene, and electrophilic aromatic substitution mechanisms.",
+          "keyFormulas": [
+            {
+              "formula": "Hückel's Rule: (4n + 2) π-electrons (Planar, Cyclic, Conjugated)",
+              "label": "Aromaticity Criterion"
+            },
+            {
+              "formula": "Arenium Ion: [C₆H₆E]⁺ (Wheland / σ-complex resonance)",
+              "label": "Electrophilic Substitution Intermediate"
+            },
+            {
+              "formula": "Halogenation: C₆H₆ + Cl₂ —(FeCl₃)→ C₆H₅Cl + HCl",
+              "label": "Friedel-Crafts & Halogenation"
+            }
+          ],
+          "theory": {
+            "basics": "Aromatic hydrocarbons (arenes) possess exceptional thermodynamic resonance stability due to delocalized π-electron systems.\n\n- **Hückel's Rule:** A planar, fully conjugated cyclic system is aromatic if it contains (4n + 2) delocalized π-electrons (n = 0, 1, 2, 3...).\n- **Electrophilic Aromatic Substitution (EAS):** Benzene retains its stable aromatic system by undergoing substitution rather than addition.\n- **General EAS Mechanism:**\n  1. Generation of electrophile (E⁺).\n  2. Electrophile attacks benzene ring to form resonance-stabilized σ-complex (arenium ion / Wheland intermediate).\n  3. Rapid loss of proton to restore aromatic sextet.",
+            "fullConcept": "## Directing and Activating Effects of Substituents\n\nSubstituents already present on the benzene ring govern the rate and regiochemistry of subsequent electrophilic substitution:\n- **Activating Groups (-OH, -NH₂, -CH₃):** Donate electron density through resonance or hyperconjugation, stabilizing the ortho and para arenium ions (ortho/para-directing).\n- **Deactivating Groups (-NO₂, -CHO, -COOH):** Withdraw electron density via resonance (-M), destabilizing ortho/para positions and directing electrophiles to the meta position."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Hückel Rule Verifier — Level 1",
+              "description": "Classify rings as aromatic, antiaromatic (4n π), or non-aromatic based on planarity and conjugation."
+            },
+            "medium": {
+              "title": "EAS Arenium Ion Stabilizer — Level 2",
+              "description": "Draw resonance contributors of the Wheland intermediate for nitration, halogenation, and sulfonation."
+            },
+            "advanced": {
+              "title": "Directing Group Strategist — Level 3",
+              "description": "Design multi-step synthetic routes to produce meta-chloronitrobenzene vs ortho-chloronitrobenzene."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "According to Hückel's rule, which of the following planar cyclic systems is aromatic?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Cyclobutadiene (4 π-electrons)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Cyclooctatetraene (8 π-electrons)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Benzene (6 π-electrons)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Cyclopentadienyl cation (4 π-electrons)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Benzene has 6 delocalized π-electrons, satisfying Hückel's (4n + 2) rule with n = 1 in a planar conjugated ring."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "moduleId": "M11",
+      "moduleName": "Aldehydes, Ketones & Carboxylic Acids",
+      "topics": [
+        {
+          "topicId": "43",
+          "topicName": "Nomenclature & Structure",
+          "coreConcept": "Carbonyl group polarity, sp² hybridization, IUPAC nomenclature of aldehydes, ketones, and carboxylic acids, and physical properties.",
+          "keyFormulas": [
+            {
+              "formula": ">C=O: Electrophilic Carbon (δ+) and Nucleophilic Oxygen (δ-)",
+              "label": "Carbonyl Dipolar Structure"
+            },
+            {
+              "formula": "Boiling Point: Carboxylic Acid > Alcohol > Ketone/Aldehyde > Alkane",
+              "label": "Intermolecular Association Hierarchy"
+            }
+          ],
+          "theory": {
+            "basics": "Carbonyl compounds contain the carbon-oxygen double bond (>C=O):\n\n- **Carbonyl Structure:** The carbonyl carbon is sp²-hybridized and forms a planar arrangement with three attached groups at ~120° angles.\n- **Polarity:** Oxygen is significantly more electronegative than carbon, polarizing the π-electron cloud and endowing carbon with partial positive charge (δ+) as an electrophilic center.\n- **Carboxylic Acids:** The -COOH group exhibits intermolecular hydrogen bonding to form stable cyclic dimers in vapor phase and non-polar solvents, resulting in high boiling points.",
+            "fullConcept": "## Spectroscopic Signatures of Carbonyls\n\nIn infrared (IR) spectroscopy, the carbonyl group exhibits a sharp, intense absorption stretch between 1680–1750 cm⁻¹. Conjugation with double bonds or aromatic rings lowers the stretching frequency due to delocalization weakening the C=O double bond character."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Carbonyl IUPAC Builder — Level 1",
+              "description": "Construct structural formulas and assign IUPAC names to branched aldehydes and ketones."
+            },
+            "medium": {
+              "title": "Polarity & Dipole Vector — Level 2",
+              "description": "Map electrostatic potential surfaces around the carbonyl group and explain nucleophilic susceptibility."
+            },
+            "advanced": {
+              "title": "Carboxylic Dimer Modeler — Level 3",
+              "description": "Simulate dual hydrogen-bonded carboxylic acid dimers in non-polar solvents."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Why do carboxylic acids have higher boiling points than alcohols of comparable molecular weight?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Carboxylic acids form extensive cyclic hydrogen-bonded dimers"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Carboxylic acids are completely non-polar"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Carboxylic acids have only weak dispersion forces"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Carboxylic acids cannot undergo hydrogen bonding"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "Carboxylic acids form strong, stable cyclic dimers through pairs of intermolecular hydrogen bonds, requiring higher thermal energy to vaporize."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "44",
+          "topicName": "Preparation Methods",
+          "coreConcept": "Oxidation of alcohols (PCC, Jones), ozonolysis of alkenes, hydration of alkynes, Rosenmund reduction, and Stephen reaction.",
+          "keyFormulas": [
+            {
+              "formula": "Rosenmund: R-COCl + H₂ —(Pd/BaSO₄/quinoline)→ R-CHO + HCl",
+              "label": "Rosenmund Reduction"
+            },
+            {
+              "formula": "Stephen: R-CN + SnCl₂/HCl → R-CH=NH·HCl —(H₃O⁺)→ R-CHO",
+              "label": "Stephen Aldehyde Synthesis"
+            },
+            {
+              "formula": "Etard: C₆H₅-CH₃ + CrO₂Cl₂ —(CS₂)→ Brown Complex —(H₃O⁺)→ C₆H₅-CHO",
+              "label": "Etard Reaction"
+            }
+          ],
+          "theory": {
+            "basics": "Carbonyl compounds are synthesized through diverse controlled functional group transformations:\n\n- **Controlled Alcohol Oxidation:** Primary alcohols oxidized with Pyridinium Chlorochromate (PCC) cleanly yield aldehydes without over-oxidation to carboxylic acids; secondary alcohols yield ketones.\n- **Acid Chloride Reductions:** Rosenmund reduction converts acyl chlorides to aldehydes using poisoned Pd catalyst.\n- **Nitrile Reductions:** Stephen reduction and DIBAL-H reduce nitriles selectively to aldehydes.\n- **Aromatic Carbonyls:** Etard reaction oxidizes toluene to benzaldehyde using chromyl chloride (CrO₂Cl₂); Friedel-Crafts acylation prepares aromatic ketones.",
+            "fullConcept": "## DIBAL-H Chemoselectivity\n\nDiisobutylaluminum hydride (DIBAL-H) at low temperatures (-78 °C) selectively reduces esters and nitriles to aldehydes by forming a stable tetrahedral hemiacetal intermediate that only hydrolyzes to the aldehyde during aqueous workup."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Oxidation Path Selector — Level 1",
+              "description": "Select between PCC, KMnO₄, and CrO₃ to synthesize aldehydes vs carboxylic acids."
+            },
+            "medium": {
+              "title": "Name Preparation Matcher — Level 2",
+              "description": "Map starting materials and catalysts for Rosenmund, Stephen, Etard, and Gattermann-Koch reactions."
+            },
+            "advanced": {
+              "title": "Chemoselective DIBAL-H Reactor — Level 3",
+              "description": "Target ester groups in polyfunctional molecules for aldehyde conversion without reducing ketones."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which reagent is used to selectively oxidize a primary alcohol to an aldehyde without over-oxidizing it to a carboxylic acid?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Acidic potassium permanganate (KMnO₄)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Pyridinium chlorochromate (PCC)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Concentrated nitric acid"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Chromic acid in aqueous acetone"
+                  }
+                ],
+                "correctOptionIds": [
+                  "B"
+                ],
+                "explanation": "PCC (Pyridinium chlorochromate) in an anhydrous solvent like CH₂Cl₂ selectively oxidizes primary alcohols to aldehydes without continuing oxidation to carboxylic acids."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "45",
+          "topicName": "Nucleophilic Addition Reactions",
+          "coreConcept": "Mechanism of nucleophilic addition to carbonyls, reactivity order (aldehydes vs ketones), addition of HCN, NaHSO₃, Grignard reagents, and alcohols.",
+          "keyFormulas": [
+            {
+              "formula": "Reactivity: HCHO > RCHO > R₂C=O > Ar₂C=O",
+              "label": "Carbonyl Electrophilic Reactivity Order"
+            },
+            {
+              "formula": ">C=O + R'MgX —(dry ether)→ >C(OMgX)R' —(H₃O⁺)→ >C(OH)R'",
+              "label": "Grignard Addition to Alcohols"
+            },
+            {
+              "formula": "Hemiacetal: R-CHO + R'OH ⇌ R-CH(OH)(OR')",
+              "label": "Acetal Formation"
+            }
+          ],
+          "theory": {
+            "basics": "The characteristic reaction of carbonyl compounds is nucleophilic addition to the polarized >C=O bond.\n\n- **Reactivity Order:** Aldehydes are generally much more reactive toward nucleophiles than ketones due to:\n  1. *Electronic Factors:* Alkyl groups are electron-donating (+I), reducing the partial positive charge on carbonyl carbon.\n  2. *Steric Factors:* Ketones possess two bulky substituents that hinder nucleophilic trajectory.\n- **Grignard Addition:** Formaldehyde yields primary alcohols; other aldehydes yield secondary alcohols; ketones yield tertiary alcohols.\n- **Addition-Elimination:** Ammonia derivatives (NH₂-Z) react to form imines, oximes, hydrazones, and 2,4-DNP derivatives.",
+            "fullConcept": "## Acetal Protecting Group Mechanism\n\nAldehydes and ketones reversibly form cyclic acetals when treated with 1,2-diols (e.g., ethylene glycol) under acid catalysis. Acetals are inert to bases, nucleophiles, and reducing agents, serving as protecting groups for carbonyls during complex organic syntheses."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Reactivity Hierarchy Ranker — Level 1",
+              "description": "Rank aldehydes and ketones by nucleophilic addition rates based on electronic and steric factors."
+            },
+            "medium": {
+              "title": "Grignard Addition Architect — Level 2",
+              "description": "Select carbonyl and Grignard reagent pairs to synthesize targeted 1°, 2°, and 3° alcohols."
+            },
+            "advanced": {
+              "title": "Acetal Protection & Deprotection — Level 3",
+              "description": "Protect carbonyl functionalities during lithium aluminum hydride reduction of ester groups."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What type of alcohol is obtained from the reaction of acetone (a ketone) with methyl magnesium bromide followed by acid hydrolysis?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Primary alcohol"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Secondary alcohol"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Tertiary alcohol"
+                  },
+                  {
+                    "id": "D",
+                    "label": "No reaction occurs"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Nucleophilic attack of Grignard reagent (CH₃⁻) on the carbonyl carbon of a ketone introduces a third carbon substituent, yielding a tertiary alcohol (tert-butanol)."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "46",
+          "topicName": "Aldol Condensation & Cannizzaro Reaction",
+          "coreConcept": "Acidity of α-hydrogens, mechanism of self and cross aldol condensations, and Cannizzaro disproportionation of non-enolizable aldehydes.",
+          "keyFormulas": [
+            {
+              "formula": "Aldol: 2 CH₃CHO —(dil. NaOH)→ CH₃-CH(OH)-CH₂-CHO —(Δ)→ CH₃-CH=CH-CHO",
+              "label": "Aldol Condensation Scheme"
+            },
+            {
+              "formula": "Cannizzaro: 2 HCHO + conc. KOH → HCOOK (potassium formate) + CH₃OH (methanol)",
+              "label": "Cannizzaro Redox Disproportionation"
+            }
+          ],
+          "theory": {
+            "basics": "Carbonyl α-hydrogens are unusually acidic (pKa ≈ 19–20) because the resulting enolate carbanion is resonance-stabilized by delocalization into the electronegative oxygen atom.\n\n- **Aldol Condensation:** Aldehydes or ketones containing at least one α-hydrogen treated with dilute alkali undergo nucleophilic addition of enolate onto another carbonyl molecule, forming a β-hydroxyaldehyde (aldol), which eliminates water upon heating to give an α,β-unsaturated carbonyl.\n- **Cross-Aldol:** Reaction between two different carbonyls; yields clean single products when one partner lacks α-hydrogens (e.g., benzaldehyde + acetone).\n- **Cannizzaro Reaction:** Aldehydes lacking α-hydrogens (e.g., HCHO, C₆H₅CHO) treated with concentrated base undergo self-oxidation and reduction (disproportionation) to yield a carboxylate salt and an alcohol.",
+            "fullConcept": "## Hydride Shift Mechanism in Cannizzaro Reaction\n\nThe rate-determining step in the Cannizzaro reaction is the direct intramolecular or intermolecular transfer of a hydride ion (:H⁻) from the dianionic intermediate to a second molecule of aldehyde, demonstrating the strong reducing character of carbonyl hydrates under basic conditions."
+          },
+          "challenges": {
+            "easy": {
+              "title": "α-Hydrogen Scanner — Level 1",
+              "description": "Identify molecules that undergo Aldol vs Cannizzaro based on presence or absence of α-hydrogens."
+            },
+            "medium": {
+              "title": "Cross-Aldol Reaction Planner — Level 2",
+              "description": "Predict the major condensation product between benzaldehyde and acetophenone."
+            },
+            "advanced": {
+              "title": "Hydride Shift Mechanistic Chamber — Level 3",
+              "description": "Trace isotopic deuterium shifts in crossed Cannizzaro reactions between formaldehyde and benzaldehyde."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "Which of the following aldehydes undergoes the Cannizzaro reaction when treated with concentrated aqueous NaOH?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "Acetaldehyde (CH₃CHO)"
+                  },
+                  {
+                    "id": "B",
+                    "label": "Propionaldehyde (CH₃CH₂CHO)"
+                  },
+                  {
+                    "id": "C",
+                    "label": "Benzaldehyde (C₆H₅CHO)"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Acetone (CH₃COCH₃)"
+                  }
+                ],
+                "correctOptionIds": [
+                  "C"
+                ],
+                "explanation": "Benzaldehyde lacks α-hydrogens on the carbon adjacent to the carbonyl group, so it cannot form an enolate and instead undergoes the Cannizzaro disproportionation reaction."
+              }
+            ]
+          }
+        },
+        {
+          "topicId": "47",
+          "topicName": "Carboxylic Acid Reactions & Important Name Reactions",
+          "coreConcept": "Acidity of carboxylic acids, inductive and resonance effects, Hell-Volhard-Zelinsky (HVZ) reaction, decarboxylation, and esterification.",
+          "keyFormulas": [
+            {
+              "formula": "RCOOH + R'OH —(H⁺)⇌ RCOOR' + H₂O",
+              "label": "Fischer Esterification"
+            },
+            {
+              "formula": "HVZ: R-CH₂-COOH + X₂ —(Red P)→ R-CH(X)-COOH",
+              "label": "Hell-Volhard-Zelinsky Reaction"
+            },
+            {
+              "formula": "Decarboxylation: R-COONa + NaOH —(CaO, Δ)→ R-H + Na₂CO₃",
+              "label": "Soda-Lime Decarboxylation"
+            }
+          ],
+          "theory": {
+            "basics": "Carboxylic acids are significantly more acidic than alcohols and phenols because the carboxylate conjugate base (RCOO⁻) is resonance-stabilized by two equivalent electronegative oxygen atoms.\n\n- **Substituent Effects on Acidity:** Electron-withdrawing groups (-NO₂, -CF₃, -Cl) stabilize the carboxylate anion via negative inductive (-I) and resonance (-M) effects, increasing acidity (e.g., CCl₃COOH >> CH₃COOH). Electron-donating groups decrease acidity.\n- **Hell-Volhard-Zelinsky (HVZ) Reaction:** Carboxylic acids having α-hydrogens react with chlorine or bromine in the presence of red phosphorus to form α-halocarboxylic acids.\n- **Esterification:** Acid-catalyzed nucleophilic acyl substitution of carboxylic acids with alcohols yields fragrant esters.\n- **Decarboxylation:** Heating sodium salts of carboxylic acids with soda lime (NaOH + CaO) removes CO₂ to yield alkanes.",
+            "fullConcept": "## Ortho Effect in Aromatic Acids\n\nSubstituted benzoic acids having ortho substituents (whether electron-donating or electron-withdrawing) are almost invariably stronger acids than benzoic acid itself. The bulky ortho group twists the carboxyl group out of the aromatic plane, preventing resonance stabilization of the neutral acid while preserving resonance in the carboxylate anion."
+          },
+          "challenges": {
+            "easy": {
+              "title": "Carboxylic Acidity Ladder — Level 1",
+              "description": "Rank haloacetic acids by pKa based on the inductive effect (-I) and distance of halogen atoms."
+            },
+            "medium": {
+              "title": "HVZ Synthesis Lab — Level 2",
+              "description": "Synthesize α-amino acids from propanoic acid via HVZ bromination followed by amination."
+            },
+            "advanced": {
+              "title": "Esterification Kinetic Engine — Level 3",
+              "description": "Drive Fischer esterification to completion using Dean-Stark water traps and steric hindrance modeling."
+            }
+          },
+          "practiceTests": {
+            "easy": [
+              {
+                "type": "single-correct",
+                "question": "What is the primary product formed when propanoic acid is treated with Br₂ in the presence of red phosphorus (HVZ reaction)?",
+                "options": [
+                  {
+                    "id": "A",
+                    "label": "2-bromopropanoic acid"
+                  },
+                  {
+                    "id": "B",
+                    "label": "3-bromopropanoic acid"
+                  },
+                  {
+                    "id": "C",
+                    "label": "1-bromopropane"
+                  },
+                  {
+                    "id": "D",
+                    "label": "Propionyl bromide"
+                  }
+                ],
+                "correctOptionIds": [
+                  "A"
+                ],
+                "explanation": "The Hell-Volhard-Zelinsky (HVZ) reaction specifically substitutes a halogen atom at the α-position of a carboxylic acid, producing 2-bromopropanoic acid."
               }
             ]
           }

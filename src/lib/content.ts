@@ -109,6 +109,7 @@ export function findTopic(
       if ((norm.includes("colligative") || norm === "colligative-properties") && t.topicId === "11") return true;
       if ((norm.includes("osmotic") || norm.includes("osmosis") || norm === "osmotic-pressure") && t.topicId === "12") return true;
       if ((norm.includes("galvanic") || norm.includes("cell-component") || norm.includes("daniell") || norm === "galvanic-cells-cell-components") && (t.topicId === "13" || t.topicId === "1")) return true;
+      if ((norm.includes("anode") || norm.includes("electron-ion-flow") || norm.includes("electron-flow") || norm === "anode-cathode-electron-ion-flow") && (t.topicId === "14" || t.topicId === "2")) return true;
       return false;
     }) || mod.topics[0];
 

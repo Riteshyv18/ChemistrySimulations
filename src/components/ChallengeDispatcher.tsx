@@ -238,6 +238,14 @@ const ElectrodePotentialLevel1GamePage = dynamic<{ difficulty?: string; onExit?:
   { ssr: false, loading: LoadingFallback }
 );
 
+const CollisionTheoryLevel1GamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/chemical_kinetics/collision_theory/CollisionTheoryLevel1GamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -296,6 +304,12 @@ export function ChallengeDispatcher({
     normTopic.includes("cell-emf") ||
     normTopic.includes("electrode-potential") ||
     ((normModule.includes("electrochemistry") || normModule === "m4") && (normTopic === "3" || normTopic.includes("potential") || normTopic.includes("emf")));
+
+  const isCollisionTheory =
+    normTopic === "17" ||
+    normTopic.includes("collision") ||
+    normTopic.includes("effective-collision") ||
+    ((normModule.includes("kinetics") || normModule === "m5") && (normTopic === "1" || normTopic.includes("collision")));
 
   const isConcentrationTerms =
     normTopic === "9" ||
@@ -396,7 +410,9 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isElectrolysis) {
+  if (isCollisionTheory) {
+    content = <CollisionTheoryLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isElectrolysis) {
     content = <ElectrolysisLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else   if (isGalvanicCell) {
     content = <GalvanicCellLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -470,7 +486,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isCollisionTheory && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

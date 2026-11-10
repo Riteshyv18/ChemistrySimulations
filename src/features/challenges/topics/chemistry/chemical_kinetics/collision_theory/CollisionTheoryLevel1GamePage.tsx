@@ -1018,10 +1018,10 @@ export default function CollisionTheoryLevel1GamePage({
               </p>
               <div className="space-y-2 pl-3 border-l-2 border-slate-200 text-slate-600">
                 <div>
-                  <strong className="text-slate-800">Correct Orientation:</strong> Reactants A₂ and B₂ collide along their reactive axis so that atom A directly contacts atom B. Old bonds break and two new AB molecules are produced.
+                  <strong className="text-slate-800">Correct Orientation (90° and 270°):</strong> When both reactant molecules A₂ and B₂ are aligned vertically at <strong>90°</strong> (or <strong>270°</strong>), their reactive axes match directly. Upon collision, the existing bonds break and two new <strong>2AB</strong> product molecules are created!
                 </div>
                 <div>
-                  <strong className="text-slate-800">Incorrect Orientation:</strong> The molecules collide sideways or at a glancing angle. The reactive atoms never meet, and they simply bounce away without reacting.
+                  <strong className="text-slate-800">Incorrect Orientation (Any Other Angle):</strong> The molecules collide sideways or at a glancing angle. The reactive atoms never meet head-on, and they simply bounce away without reacting.
                 </div>
               </div>
             </div>
@@ -1035,7 +1035,7 @@ export default function CollisionTheoryLevel1GamePage({
                 A₂ (Red-Red) + B₂ (Blue-Blue) ⟶ 2 AB (Red-Blue Products)
               </div>
               <p className="text-slate-600 pt-1">
-                When both conditions (Energy ≥ Ea and Correct Orientation) are satisfied simultaneously, an activated complex is formed, and product molecules AB fly away!
+                When both conditions (Energy ≥ Ea and Orientation set to 90° or 270°) are satisfied simultaneously, an activated complex is formed, and product molecules <strong>2AB</strong> are successfully produced!
               </p>
             </div>
 
@@ -1044,11 +1044,11 @@ export default function CollisionTheoryLevel1GamePage({
               <h3 className="font-extrabold text-sm sm:text-base text-slate-900 border-b border-slate-100 pb-1 flex items-center gap-2">
                 <span className="text-[#0284C7]">5.</span> How to Win This Simulation
               </h3>
-              <ol className="list-decimal list-inside space-y-1 pl-2 text-slate-600">
-                <li>Set collision speed slider to supply enough kinetic energy to overcome the barrier.</li>
-                <li>Use the rotation buttons (↻ ↺) to align both reactant molecules properly.</li>
+              <ol className="list-decimal list-inside space-y-1.5 pl-2 text-slate-600">
+                <li>Set collision speed slider to exceed the Activation Energy barrier (Ea Threshold).</li>
+                <li>Use the rotation buttons (↻ ↺) to set both A₂ and B₂ angles to <strong>90°</strong> (or <strong>270°</strong>) so reactive atoms are vertically aligned.</li>
                 <li>Click <strong>LAUNCH</strong> to trigger the collision.</li>
-                <li>Once an effective collision occurs and 2AB products form, click <strong>SUBMIT</strong>!</li>
+                <li>When the bonds break and <strong>2AB</strong> products form, click <strong>SUBMIT</strong> to complete the challenge!</li>
               </ol>
             </div>
           </div>

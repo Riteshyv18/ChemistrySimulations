@@ -232,7 +232,7 @@ function ParticleSimulation({
   particleSize,
   onCollisionEvent,
 }: {
-  temperature: number; // 273 to 450 K
+  temperature: number;
   concentration: number; // 0.5 to 2.0 M
   pressure: number; // 1.0 to 3.0 atm
   particleSize: number; // 1 (Fine 1mm), 5 (Medium 5mm), 10 (Large 10mm)
@@ -701,9 +701,8 @@ export default function ReactionRateControlRoomGamePage({
                 Reaction Rate:
               </span>
               <span
-                className={`text-sm sm:text-base font-black tracking-tight font-mono ${
-                  hasReachedTarget ? "text-emerald-600" : "text-[#0284C7]"
-                }`}
+                className={`text-sm sm:text-base font-black tracking-tight font-mono ${hasReachedTarget ? "text-emerald-600" : "text-[#0284C7]"
+                  }`}
               >
                 {liveRate.toFixed(2)}×
               </span>
@@ -711,19 +710,17 @@ export default function ReactionRateControlRoomGamePage({
               {/* Sleek Horizontal Progress Bar */}
               <div className="w-24 sm:w-36 bg-slate-200 h-2 rounded-full overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-300 ${
-                    hasReachedTarget
+                  className={`h-full transition-all duration-300 ${hasReachedTarget
                       ? "bg-emerald-500 shadow-sm"
                       : "bg-gradient-to-r from-amber-400 to-sky-500"
-                  }`}
+                    }`}
                   style={{ width: `${Math.min((liveRate / 4.0) * 100, 100)}%` }}
                 />
               </div>
 
               <span
-                className={`text-[9.5px] font-extrabold ${
-                  hasReachedTarget ? "text-emerald-600" : "text-slate-400"
-                }`}
+                className={`text-[9.5px] font-extrabold ${hasReachedTarget ? "text-emerald-600" : "text-slate-400"
+                  }`}
               >
                 {hasReachedTarget ? "Goal Met (≥ 3.0×)" : "Goal: 3.0×"}
               </span>
@@ -791,11 +788,10 @@ export default function ReactionRateControlRoomGamePage({
                 <button
                   type="button"
                   onClick={() => setActiveFactor("temperature")}
-                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeFactor === "temperature"
+                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${activeFactor === "temperature"
                       ? "bg-white text-red-600 shadow-sm"
                       : "text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   <Thermometer className="w-3.5 h-3.5" />
                   <span>Temp</span>
@@ -803,11 +799,10 @@ export default function ReactionRateControlRoomGamePage({
                 <button
                   type="button"
                   onClick={() => setActiveFactor("concentration")}
-                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeFactor === "concentration"
+                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${activeFactor === "concentration"
                       ? "bg-white text-blue-600 shadow-sm"
                       : "text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   <Flame className="w-3.5 h-3.5" />
                   <span>Conc</span>
@@ -815,11 +810,10 @@ export default function ReactionRateControlRoomGamePage({
                 <button
                   type="button"
                   onClick={() => setActiveFactor("surfaceArea")}
-                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeFactor === "surfaceArea"
+                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${activeFactor === "surfaceArea"
                       ? "bg-white text-purple-600 shadow-sm"
                       : "text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
                   <span>Surface</span>
@@ -827,11 +821,10 @@ export default function ReactionRateControlRoomGamePage({
                 <button
                   type="button"
                   onClick={() => setActiveFactor("pressure")}
-                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeFactor === "pressure"
+                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${activeFactor === "pressure"
                       ? "bg-white text-emerald-600 shadow-sm"
                       : "text-slate-600 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   <Gauge className="w-3.5 h-3.5" />
                   <span>Pressure</span>

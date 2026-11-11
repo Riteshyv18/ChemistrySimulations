@@ -254,6 +254,14 @@ const ReactionRateControlRoomGamePage = dynamic<{ difficulty?: string; onExit?: 
   { ssr: false, loading: LoadingFallback }
 );
 
+const ActivationEnergyGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/chemical_kinetics/activation_energy/ActivationEnergyGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -325,6 +333,13 @@ export function ChallengeDispatcher({
     normTopic.includes("control-room") ||
     normTopic.includes("factors-affecting") ||
     ((normModule.includes("kinetics") || normModule === "m5") && (normTopic === "2" || normTopic.includes("rate") || normTopic.includes("control")));
+
+  const isActivationEnergy =
+    normTopic === "19" ||
+    normTopic.includes("activation-energy") ||
+    normTopic.includes("break-the-barrier") ||
+    normTopic.includes("catalyst") ||
+    ((normModule.includes("kinetics") || normModule === "m5") && (normTopic === "3" || normTopic.includes("barrier") || normTopic.includes("activation")));
 
   const isConcentrationTerms =
     normTopic === "9" ||
@@ -429,6 +444,8 @@ export function ChallengeDispatcher({
     content = <CollisionTheoryLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isReactionRateControl) {
     content = <ReactionRateControlRoomGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isActivationEnergy) {
+    content = <ActivationEnergyGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isElectrolysis) {
     content = <ElectrolysisLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else   if (isGalvanicCell) {
@@ -503,7 +520,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isCollisionTheory && !isReactionRateControl && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

@@ -262,6 +262,14 @@ const ActivationEnergyGamePage = dynamic<{ difficulty?: string; onExit?: () => v
   { ssr: false, loading: LoadingFallback }
 );
 
+const RateLawHalfLifeGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/chemical_kinetics/rate_law_half_life/RateLawHalfLifeGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -321,6 +329,13 @@ export function ChallengeDispatcher({
     normTopic.includes("electrode-potential") ||
     ((normModule.includes("electrochemistry") || normModule === "m4") && (normTopic === "3" || normTopic.includes("potential") || normTopic.includes("emf")));
 
+  const isRateLawHalfLife =
+    normTopic === "20" ||
+    normTopic.includes("rate-law") ||
+    normTopic.includes("reaction-order") ||
+    normTopic.includes("half-life") ||
+    ((normModule.includes("kinetics") || normModule === "m5") && (normTopic === "4" || normTopic.includes("order") || normTopic.includes("half")));
+
   const isCollisionTheory =
     normTopic === "17" ||
     normTopic.includes("collision") ||
@@ -328,11 +343,12 @@ export function ChallengeDispatcher({
     ((normModule.includes("kinetics") || normModule === "m5") && (normTopic === "1" || normTopic.includes("collision")));
 
   const isReactionRateControl =
-    normTopic === "18" ||
-    normTopic.includes("reaction-rate") ||
-    normTopic.includes("control-room") ||
-    normTopic.includes("factors-affecting") ||
-    ((normModule.includes("kinetics") || normModule === "m5") && (normTopic === "2" || normTopic.includes("rate") || normTopic.includes("control")));
+    !isRateLawHalfLife &&
+    (normTopic === "18" ||
+      normTopic.includes("control-room") ||
+      normTopic.includes("factors-affecting") ||
+      (normTopic.includes("reaction-rate") && !normTopic.includes("order")) ||
+      ((normModule.includes("kinetics") || normModule === "m5") && (normTopic === "2" || normTopic === "factors-affecting-reaction-rate" || normTopic.includes("control"))));
 
   const isActivationEnergy =
     normTopic === "19" ||
@@ -446,6 +462,8 @@ export function ChallengeDispatcher({
     content = <ReactionRateControlRoomGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isActivationEnergy) {
     content = <ActivationEnergyGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isRateLawHalfLife) {
+    content = <RateLawHalfLifeGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isElectrolysis) {
     content = <ElectrolysisLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else   if (isGalvanicCell) {
@@ -520,7 +538,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

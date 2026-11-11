@@ -111,6 +111,10 @@ export function findTopic(
       if ((norm.includes("galvanic") || norm.includes("cell-component") || norm.includes("daniell") || norm === "galvanic-cells-cell-components") && (t.topicId === "13" || t.topicId === "1")) return true;
       if ((norm.includes("anode") || norm.includes("electron-ion-flow") || norm.includes("electron-flow") || norm === "anode-cathode-electron-ion-flow") && (t.topicId === "14" || t.topicId === "2")) return true;
       if ((norm.includes("potential") || norm.includes("cell-emf") || norm.includes("electrode-potential") || norm === "electrode-potential-cell-emf") && (t.topicId === "15" || t.topicId === "3")) return true;
+      if ((norm.includes("collision") || norm.includes("effective-collision") || norm === "collision-theory-effective-collisions") && (t.topicId === "17" || t.topicId === "1")) return true;
+      if ((norm.includes("reaction-rate") || norm.includes("factors-affecting") || norm === "factors-affecting-reaction-rate") && (t.topicId === "18" || t.topicId === "2")) return true;
+      if ((norm.includes("activation") || norm.includes("catalyst") || norm === "activation-energy-catalysts") && (t.topicId === "19" || t.topicId === "3")) return true;
+      if ((norm.includes("rate-law") || norm.includes("reaction-order") || norm.includes("half-life") || norm === "rate-law-reaction-order-half-life") && (t.topicId === "20" || t.topicId === "4")) return true;
       return false;
     }) || mod.topics[0];
 

@@ -114,8 +114,8 @@ function SingleParticle({
   const posRef = useRef(def.initialPos.clone());
   const velRef = useRef(def.initialVel.clone());
 
-  const minX = -1.9;
-  const maxX = 1.9;
+  const minX = -2.55;
+  const maxX = 2.55;
   const minY = -0.85;
   const maxY = 0.95;
   const minZ = -0.65;
@@ -181,7 +181,7 @@ function ReactionChamberVisual() {
     <group position={[0, 0.05, 0]}>
       {/* Outer Chamber Glass Box */}
       <mesh>
-        <boxGeometry args={[4.0, 1.95, 1.5]} />
+        <boxGeometry args={[5.3, 1.95, 1.5]} />
         <meshPhysicalMaterial
           color="#38BDF8"
           transmission={0.92}
@@ -195,19 +195,19 @@ function ReactionChamberVisual() {
 
       {/* Frame Beams */}
       <lineSegments>
-        <edgesGeometry args={[new THREE.BoxGeometry(4.0, 1.95, 1.5)]} />
+        <edgesGeometry args={[new THREE.BoxGeometry(5.3, 1.95, 1.5)]} />
         <lineBasicMaterial color="#0284C7" linewidth={2} transparent opacity={0.65} />
       </lineSegments>
 
       {/* Chamber Floor Stand */}
       <mesh position={[0, -1.05, 0]}>
-        <boxGeometry args={[4.3, 0.14, 1.8]} />
+        <boxGeometry args={[5.6, 0.14, 1.8]} />
         <meshStandardMaterial color="#334155" roughness={0.4} metalness={0.6} />
       </mesh>
 
       {/* Top Pillar Caps */}
       <mesh position={[0, 1.02, 0]}>
-        <boxGeometry args={[4.2, 0.08, 1.7]} />
+        <boxGeometry args={[5.5, 0.08, 1.7]} />
         <meshStandardMaterial color="#475569" roughness={0.4} metalness={0.5} />
       </mesh>
     </group>
@@ -226,7 +226,7 @@ function ReactionScene({
   isRunning: boolean;
 }) {
   return (
-    <group position={[-0.45, 0.45, 0]} scale={[0.88, 0.88, 0.88]}>
+    <group position={[0, 0.45, 0]} scale={[0.88, 0.88, 0.88]}>
       <ReactionChamberVisual />
       {particleDefs.map((p, idx) => (
         <SingleParticle
@@ -286,7 +286,7 @@ export function RateLawHalfLifeGamePage({
   const particleDefs = useMemo(() => {
     const list: ParticleState[] = [];
     for (let i = 0; i < TOTAL_PARTICLES; i++) {
-      const x = (Math.random() - 0.5) * 3.4;
+      const x = (Math.random() - 0.5) * 4.6;
       const y = (Math.random() - 0.5) * 1.3;
       const z = (Math.random() - 0.5) * 1.1;
 
@@ -648,7 +648,7 @@ export function RateLawHalfLifeGamePage({
               <directionalLight position={[-5, 4, -3]} intensity={0.6} />
               <pointLight position={[0, 0.7, 0]} intensity={0.6} color="#38BDF8" />
 
-              <gridHelper args={[8, 16, "#E2E8F0", "#F1F5F9"]} position={[-0.45, -0.65, 0]} />
+              <gridHelper args={[10, 20, "#E2E8F0", "#F1F5F9"]} position={[0, -0.65, 0]} />
 
               <Suspense fallback={null}>
                 <ReactionScene
@@ -696,81 +696,174 @@ export function RateLawHalfLifeGamePage({
           </div>
 
           {/* ──────────────────────────────────────────────────────────────────
-              LAYER 2: THREE-COLUMN MID-HUD OVERLAY
+              LAYER 2: TOP-CENTER PARTICLE STATUS PILL
               ────────────────────────────────────────────────────────────────── */}
-          <div className="w-full flex-1 flex items-center justify-between px-4 sm:px-6 pointer-events-none z-20 my-auto">
-            {/* CENTRE: Unobstructed view with live particle legend (perfectly centered above the chamber) */}
-            <div className="flex flex-col items-center pointer-events-none mx-auto mb-auto pt-1">
-              <div className="flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md">
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#E11D48] shadow-xs" />
-                  <span className="text-[10px] font-bold text-slate-900">
-                    Reactant A: <strong className="text-rose-600 font-black">{reactantCount}</strong>
-                  </span>
-                </div>
-                <div className="h-2.5 w-[1px] bg-slate-300" />
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#0284C7] shadow-xs" />
-                  <span className="text-[10px] font-bold text-slate-900">
-                    Product B: <strong className="text-sky-600 font-black">{productCount}</strong>
-                  </span>
-                </div>
+          <div className="w-full flex justify-center px-4 sm:px-6 pointer-events-none z-20 pt-1">
+            <div className="flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md">
+              <div className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-[#E11D48] shadow-xs" />
+                <span className="text-[10px] font-bold text-slate-900">
+                  Reactant A: <strong className="text-rose-600 font-black">{reactantCount}</strong>
+                </span>
+              </div>
+              <div className="h-2.5 w-[1px] bg-slate-300" />
+              <div className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-[#0284C7] shadow-xs" />
+                <span className="text-[10px] font-bold text-slate-900">
+                  Product B: <strong className="text-sky-600 font-black">{productCount}</strong>
+                </span>
               </div>
             </div>
+          </div>
 
-            {/* AREA 3: RIGHT DOCK (Time Controls & Concentration Display - Vertically Centered) */}
-            <div className="w-60 bg-white/95 backdrop-blur-md rounded-2xl p-2.5 shadow-xl border border-slate-200/90 pointer-events-auto space-y-2 shrink-0">
-              {/* Live Reaction Clock & Concentration */}
-              <div className="grid grid-cols-2 gap-1.5">
-                <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 flex flex-col items-center justify-center">
-                  <div className="flex items-center gap-0.5 text-[9px] font-black text-slate-900 uppercase tracking-wider">
-                    <Clock className="w-2.5 h-2.5 text-sky-600" /> CLOCK
+          {/* Flexible spacer so chamber has full screen height & width */}
+          <div className="flex-1 pointer-events-none" />
+
+          {/* ──────────────────────────────────────────────────────────────────
+              LAYER 3: BOTTOM DOCK — LIVE DECAY GRAPH & INTEGRATED CONTROLS
+              ────────────────────────────────────────────────────────────────── */}
+          <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 pb-2 z-20">
+            <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
+              {/* Left / Main Card: Live Decay Curve Graph (Takes ~80% of width) */}
+              <div className="w-full sm:w-[80%] bg-white/95 backdrop-blur-md rounded-2xl p-2.5 shadow-xl border border-slate-200/90 flex flex-col justify-between">
+                <div className="flex items-center justify-between px-2 pb-1 border-b border-slate-200">
+                  <div className="flex items-center gap-1.5">
+                    <TrendingDown className="w-3.5 h-3.5 text-rose-600" />
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-950">
+                      LIVE DECAY CURVE: [A] VS. TIME
+                    </span>
                   </div>
-                  <div className="text-base font-black font-mono text-slate-950 tracking-tight">
-                    {currentTime.toFixed(1)} <span className="text-[10px] font-bold text-slate-700">s</span>
+                  <div className="flex items-center gap-2 text-[9px] font-black text-slate-900">
+                    <span>10s</span>
+                    <span>•</span>
+                    <span>20s</span>
+                    <span>•</span>
+                    <span>30s Checkpoint</span>
                   </div>
                 </div>
 
-                <div className="bg-slate-50 p-1.5 rounded-xl border border-slate-200 flex flex-col items-center justify-center">
-                  <div className="flex items-center gap-0.5 text-[9px] font-black text-slate-900 uppercase tracking-wider">
-                    <FlaskConical className="w-2.5 h-2.5 text-rose-600" /> [A] REM
-                  </div>
-                  <div className="text-base font-black font-mono text-rose-700 tracking-tight">
-                    {currentConc.toFixed(3)} <span className="text-[10px] font-bold text-slate-700">M</span>
-                  </div>
+                {/* SVG Live Graph */}
+                <div className="relative w-full h-[78px] mt-1">
+                  <svg viewBox={`0 0 ${graphWidth} ${graphHeight}`} className="w-full h-full overflow-visible">
+                    <line
+                      x1={graphPadding.left}
+                      y1={graphPadding.top}
+                      x2={graphPadding.left}
+                      y2={graphPadding.top + innerH}
+                      stroke="#475569"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1={graphPadding.left}
+                      y1={graphPadding.top + innerH}
+                      x2={graphPadding.left + innerW}
+                      y2={graphPadding.top + innerH}
+                      stroke="#475569"
+                      strokeWidth="1.5"
+                    />
+
+                    {/* Y-Axis Label - Only 1.0M, No 0.5M or 0.0M hints */}
+                    <text
+                      x={graphPadding.left - 5}
+                      y={graphPadding.top + 3}
+                      textAnchor="end"
+                      className="text-[8.5px] fill-slate-950 font-mono font-black"
+                    >
+                      1.0M
+                    </text>
+
+                    {/* Checkpoint Markers (Showing ONLY Time, No Concentration Hints) */}
+                    {CHECKPOINTS.map((cp, idx) => {
+                      const x = graphPadding.left + (cp.time / MAX_MISSION_TIME) * innerW;
+                      const isDone = completedCheckpoints[idx];
+
+                      return (
+                        <g key={idx}>
+                          <line
+                            x1={x}
+                            y1={graphPadding.top}
+                            x2={x}
+                            y2={graphPadding.top + innerH}
+                            stroke={isDone ? "#059669" : "#64748B"}
+                            strokeWidth="1.2"
+                            strokeDasharray="2 2"
+                          />
+                          <circle
+                            cx={x}
+                            cy={graphPadding.top + innerH - (cp.expectedConc / INITIAL_CONC) * innerH}
+                            r="3.5"
+                            fill={isDone ? "#059669" : "#334155"}
+                          />
+                          <text
+                            x={x}
+                            y={graphPadding.top + innerH + 13}
+                            textAnchor="middle"
+                            className={`text-[8.5px] font-mono font-black ${
+                              isDone ? "fill-emerald-800" : "fill-slate-950"
+                            }`}
+                          >
+                            {cp.time}s
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Live Curve Path */}
+                    {currentTime > 0 && (
+                      <path
+                        d={livePath}
+                        fill="none"
+                        stroke="#E11D48"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                      />
+                    )}
+
+                    {/* Live Scrubber Indicator */}
+                    {currentTime > 0 && (
+                      <g>
+                        <line
+                          x1={scrubberX}
+                          y1={graphPadding.top}
+                          x2={scrubberX}
+                          y2={graphPadding.top + innerH}
+                          stroke="#E11D48"
+                          strokeWidth="1"
+                          strokeDasharray="2 2"
+                        />
+                        <circle cx={scrubberX} cy={scrubberY} r="3.5" fill="#E11D48" />
+                        <circle cx={scrubberX} cy={scrubberY} r="6" fill="#E11D48" opacity="0.3" />
+                      </g>
+                    )}
+                  </svg>
                 </div>
               </div>
 
-              {/* Progress Gauge */}
-              <div className="space-y-0.5">
-                <div className="flex justify-between items-center text-[9px] font-black text-slate-900">
-                  <span>Reactant Remaining:</span>
-                  <span className="font-mono text-rose-700 font-black">{percentRemaining.toFixed(1)}%</span>
+              {/* Right Card: Next to Live Decay Curve — Clock, Speed & Long Start Button (Takes remaining ~20% of width, No Concentration hints) */}
+              <div className="w-full sm:w-[20%] bg-white/95 backdrop-blur-md rounded-2xl p-2.5 shadow-xl border border-slate-200/90 flex flex-col justify-between shrink-0">
+                {/* Clock Mini-Stat Only (Concentration removed to avoid giving hints) */}
+                <div className="bg-slate-50 px-2 py-1.5 rounded-xl border border-slate-200 flex items-center justify-between">
+                  <div className="flex items-center gap-1 text-[9px] font-black text-slate-700 uppercase">
+                    <Clock className="w-3 h-3 text-sky-600" /> CLOCK
+                  </div>
+                  <div className="text-xs font-black font-mono text-slate-950">
+                    {currentTime.toFixed(1)}<span className="text-[9.5px] text-slate-600 ml-0.5">s</span>
+                  </div>
                 </div>
-                <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden p-0.5">
-                  <div
-                    className="h-full bg-gradient-to-r from-emerald-500 via-sky-500 to-rose-500 rounded-full transition-all duration-200"
-                    style={{ width: `${percentRemaining}%` }}
-                  />
-                </div>
-              </div>
 
-              {/* Speed Multiplier & Action Controls */}
-              <div className="pt-1 border-t border-slate-200 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-wider text-slate-900">
-                    SPEED:
-                  </span>
-                  <div className="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                {/* Speed Multiplier */}
+                <div className="flex items-center justify-between py-1 px-1 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="text-[9px] font-black uppercase text-slate-700 tracking-wider">SPEED:</span>
+                  <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
                     {[1, 2, 4].map((spd) => (
                       <button
                         key={spd}
                         type="button"
                         onClick={() => setSpeedMultiplier(spd)}
-                        className={`px-1.5 py-0.5 rounded-md text-[9px] font-black transition-all cursor-pointer ${
+                        className={`px-2 py-0.5 rounded text-[9px] font-black transition-all cursor-pointer ${
                           speedMultiplier === spd
                             ? "bg-white text-sky-800 shadow-xs border border-slate-200"
-                            : "text-slate-900 hover:text-black"
+                            : "text-slate-700 hover:text-black"
                         }`}
                       >
                         {spd}×
@@ -779,158 +872,28 @@ export function RateLawHalfLifeGamePage({
                   </div>
                 </div>
 
-                {/* Start/Pause and Reset Buttons */}
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={handleTogglePlay}
-                    className={`flex-1 py-1.5 rounded-xl font-black text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 shadow-md transition-all cursor-pointer active:scale-95 ${
-                      isRunning
-                        ? "bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20"
-                        : "bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sky-600/30"
-                    }`}
-                  >
-                    {isRunning ? (
-                      <>
-                        <Pause className="w-3 h-3 fill-current" />
-                        <span>PAUSE</span>
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-3 h-3 fill-current" />
-                        <span>{currentTime >= MAX_MISSION_TIME ? "REPLAY" : "START REACTION"}</span>
-                      </>
-                    )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 flex items-center justify-center transition-all cursor-pointer active:scale-95 shrink-0"
-                    title="Reset Reaction"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ──────────────────────────────────────────────────────────────────
-              LAYER 3: AREA 4 — BOTTOM LIVE SYNCHRONIZED DECAY GRAPH
-              ────────────────────────────────────────────────────────────────── */}
-          <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 pb-2 z-20">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl p-2 shadow-xl border border-slate-200/90 flex flex-col justify-between">
-              <div className="flex items-center justify-between px-2 pb-1 border-b border-slate-200">
-                <div className="flex items-center gap-1.5">
-                  <TrendingDown className="w-3.5 h-3.5 text-rose-600" />
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-950">
-                    LIVE DECAY CURVE: [A] VS. TIME
-                  </span>
-                </div>
-                <div className="flex items-center gap-2.5 text-[9px] font-black text-slate-900">
-                  <span>10s Checkpoint</span>
-                  <span>•</span>
-                  <span>20s Checkpoint</span>
-                  <span>•</span>
-                  <span>30s Checkpoint</span>
-                </div>
-              </div>
-
-              {/* SVG Live Graph */}
-              <div className="relative w-full h-[82px] mt-1">
-                <svg viewBox={`0 0 ${graphWidth} ${graphHeight}`} className="w-full h-full overflow-visible">
-                  <line
-                    x1={graphPadding.left}
-                    y1={graphPadding.top}
-                    x2={graphPadding.left}
-                    y2={graphPadding.top + innerH}
-                    stroke="#475569"
-                    strokeWidth="1.5"
-                  />
-                  <line
-                    x1={graphPadding.left}
-                    y1={graphPadding.top + innerH}
-                    x2={graphPadding.left + innerW}
-                    y2={graphPadding.top + innerH}
-                    stroke="#475569"
-                    strokeWidth="1.5"
-                  />
-
-                  {/* Y-Axis Label - Only 1.0M, No 0.5M or 0.0M hints */}
-                  <text
-                    x={graphPadding.left - 5}
-                    y={graphPadding.top + 3}
-                    textAnchor="end"
-                    className="text-[8.5px] fill-slate-950 font-mono font-black"
-                  >
-                    1.0M
-                  </text>
-
-                  {/* Checkpoint Markers (Showing ONLY Time, No Concentration Hints) */}
-                  {CHECKPOINTS.map((cp, idx) => {
-                    const x = graphPadding.left + (cp.time / MAX_MISSION_TIME) * innerW;
-                    const isDone = completedCheckpoints[idx];
-
-                    return (
-                      <g key={idx}>
-                        <line
-                          x1={x}
-                          y1={graphPadding.top}
-                          x2={x}
-                          y2={graphPadding.top + innerH}
-                          stroke={isDone ? "#059669" : "#64748B"}
-                          strokeWidth="1.2"
-                          strokeDasharray="2 2"
-                        />
-                        <circle
-                          cx={x}
-                          cy={graphPadding.top + innerH - (cp.expectedConc / INITIAL_CONC) * innerH}
-                          r="3.5"
-                          fill={isDone ? "#059669" : "#334155"}
-                        />
-                        <text
-                          x={x}
-                          y={graphPadding.top + innerH + 13}
-                          textAnchor="middle"
-                          className={`text-[8.5px] font-mono font-black ${
-                            isDone ? "fill-emerald-800" : "fill-slate-950"
-                          }`}
-                        >
-                          {cp.time}s
-                        </text>
-                      </g>
-                    );
-                  })}
-
-                  {/* Live Curve Path */}
-                  {currentTime > 0 && (
-                    <path
-                      d={livePath}
-                      fill="none"
-                      stroke="#E11D48"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                    />
+                {/* Long Action Button: Start / Pause Reaction next to decay curve */}
+                <button
+                  type="button"
+                  onClick={handleTogglePlay}
+                  className={`w-full py-2.5 rounded-xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer active:scale-95 ${
+                    isRunning
+                      ? "bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20"
+                      : "bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sky-600/30"
+                  }`}
+                >
+                  {isRunning ? (
+                    <>
+                      <Pause className="w-3.5 h-3.5 fill-current" />
+                      <span>PAUSE</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <span>{currentTime >= MAX_MISSION_TIME ? "REPLAY" : "START REACTION"}</span>
+                    </>
                   )}
-
-                  {/* Live Scrubber Indicator */}
-                  {currentTime > 0 && (
-                    <g>
-                      <line
-                        x1={scrubberX}
-                        y1={graphPadding.top}
-                        x2={scrubberX}
-                        y2={graphPadding.top + innerH}
-                        stroke="#E11D48"
-                        strokeWidth="1"
-                        strokeDasharray="2 2"
-                      />
-                      <circle cx={scrubberX} cy={scrubberY} r="3.5" fill="#E11D48" />
-                      <circle cx={scrubberX} cy={scrubberY} r="6" fill="#E11D48" opacity="0.3" />
-                    </g>
-                  )}
-                </svg>
+                </button>
               </div>
             </div>
           </div>

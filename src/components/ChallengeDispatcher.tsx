@@ -270,6 +270,30 @@ const RateLawHalfLifeGamePage = dynamic<{ difficulty?: string; onExit?: () => vo
   { ssr: false, loading: LoadingFallback }
 );
 
+const ChemicalEquilibriumGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/equilibrium/chemical_equilibrium/ChemicalEquilibriumGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const EquilibriumConstantGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/equilibrium/equilibrium_constant/EquilibriumConstantGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const LeChatelierPrincipleGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/equilibrium/le_chatelier_principle/LeChatelierPrincipleGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -328,6 +352,31 @@ export function ChallengeDispatcher({
     normTopic.includes("cell-emf") ||
     normTopic.includes("electrode-potential") ||
     ((normModule.includes("electrochemistry") || normModule === "m4") && (normTopic === "3" || normTopic.includes("potential") || normTopic.includes("emf")));
+
+  const isChemicalEquilibrium =
+    normTopic === "21" ||
+    normTopic === "chemical-equilibrium" ||
+    ((normModule.includes("equilibrium") || normModule === "m6") &&
+      (normTopic === "1" ||
+        normTopic === "chemical-equilibrium" ||
+        normTopic.includes("chemical-equilibrium") ||
+        (normTopic.includes("equilibrium") && !normTopic.includes("constant") && !normTopic.includes("le-chatelier") && !normTopic.includes("ionic"))));
+
+  const isEquilibriumConstant =
+    normTopic === "22" ||
+    normTopic === "equilibrium-constant" ||
+    normTopic.includes("equilibrium-constant") ||
+    normTopic.includes("kc") ||
+    ((normModule.includes("equilibrium") || normModule === "m6") &&
+      (normTopic === "2" || normTopic.includes("constant")));
+
+  const isLeChatelier =
+    normTopic === "23" ||
+    normTopic === "le-chatelier" ||
+    normTopic.includes("le-chatelier") ||
+    normTopic.includes("lechatelier") ||
+    ((normModule.includes("equilibrium") || normModule === "m6") &&
+      (normTopic === "3" || normTopic.includes("chatelier")));
 
   const isRateLawHalfLife =
     normTopic === "20" ||
@@ -456,7 +505,13 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isCollisionTheory) {
+  if (isLeChatelier) {
+    content = <LeChatelierPrincipleGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isEquilibriumConstant) {
+    content = <EquilibriumConstantGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isChemicalEquilibrium) {
+    content = <ChemicalEquilibriumGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isCollisionTheory) {
     content = <CollisionTheoryLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isReactionRateControl) {
     content = <ReactionRateControlRoomGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -538,7 +593,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

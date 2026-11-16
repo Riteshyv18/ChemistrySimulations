@@ -70,7 +70,7 @@ const matCrystal = new THREE.MeshStandardMaterial({
   opacity: 0.95,
 });
 
-// Single Ion Renderer
+// Single Ion Renderer with Billboarding Text Label
 function IonMesh({ data }: { data: Ion3DData }) {
   const meshRef = useRef<THREE.Group>(null);
 
@@ -106,9 +106,37 @@ function IonMesh({ data }: { data: Ion3DData }) {
   return (
     <group ref={meshRef} position={data.pos}>
       {data.type === "Ag" ? (
-        <mesh geometry={sphereGeoAg} material={matAg} castShadow />
+        <>
+          <mesh geometry={sphereGeoAg} material={matAg} castShadow />
+          <Text
+            position={[0, 0, 0.28]}
+            fontSize={0.16}
+            color="#0F172A"
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.02}
+            outlineColor="#FFFFFF"
+            fontWeight="bold"
+          >
+            Ag⁺
+          </Text>
+        </>
       ) : (
-        <mesh geometry={sphereGeoCl} material={matCl} castShadow />
+        <>
+          <mesh geometry={sphereGeoCl} material={matCl} castShadow />
+          <Text
+            position={[0, 0, 0.37]}
+            fontSize={0.20}
+            color="#FFFFFF"
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.02}
+            outlineColor="#083344"
+            fontWeight="bold"
+          >
+            Cl⁻
+          </Text>
+        </>
       )}
     </group>
   );
@@ -519,7 +547,7 @@ export function SolubilityProductGamePage({
 
             <div className="max-w-2xl mx-auto my-auto text-center space-y-4 sm:space-y-6 z-10 px-4 py-2 animate-in fade-in duration-200">
               <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1E293B] tracking-tight leading-tight">
-                <span className="text-[#0284C7]">MISSION:</span> Control dissolution &amp; precipitation by adding Common Ions (NaCl / AgNO₃) to manipulate <span className="font-mono text-sky-800">Qsp</span> vs <span className="font-mono text-sky-800">Ksp</span>!
+                <span className="text-[#0284C7]">MISSION:</span> Add common ions (NaCl for Cl⁻ or AgNO₃ for Ag⁺) to push the ion product <span className="font-mono text-sky-800">Qsp</span> above <span className="font-mono text-sky-800">Ksp</span> and force solid AgCl to precipitate!
               </h1>
 
               <div className="pt-2">
@@ -780,8 +808,8 @@ export function SolubilityProductGamePage({
                 <div className="font-mono font-black text-sm sm:text-base text-amber-400 tracking-tight leading-tight">
                   {formatSci(currentQsp)}
                 </div>
-                <div className="text-[7.5px] sm:text-[8px] font-mono text-slate-400">
-                  Ksp = {formatSci(KSP)}
+                <div className="text-[10px] sm:text-[11px] font-mono font-bold text-sky-200 mt-0.5">
+                  <span className="text-slate-400 font-semibold">Ksp = </span>{formatSci(KSP)}
                 </div>
               </div>
 
@@ -997,117 +1025,168 @@ export function SolubilityProductGamePage({
             </div>
 
             {/* Modal Scrollable Body */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-8 sm:py-6 space-y-4 sm:space-y-5 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans w-full">
+            <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-10 sm:py-7 space-y-6 sm:space-y-8 text-sm sm:text-base text-slate-800 leading-relaxed font-sans w-full">
 
-              {/* Section 1: Solubility Equilibrium */}
-              <div className="space-y-2.5 bg-sky-50/70 p-4 sm:p-5 rounded-2xl border border-sky-100 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-200/60 px-2.5 py-0.5 rounded-full inline-block">
-                  1. DYNAMIC SOLUBILITY EQUILIBRIUM
-                </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
-                  Dissolution vs Recrystallization
-                </h3>
-                <p className="text-slate-600 text-xs sm:text-sm">
-                  When a sparingly soluble salt like <strong>Silver Chloride (AgCl)</strong> is added to water, a tiny fraction dissolves into hydrated ions until equilibrium is reached:
-                </p>
-                <div className="text-center font-mono font-black text-xs sm:text-sm text-sky-950 bg-white p-3 rounded-xl border border-sky-200 shadow-xs">
-                  AgCl (s) ⇌ Ag⁺ (aq) + Cl⁻ (aq)
+              {/* Section 1: The Basic Story: What is in the beaker? */}
+              <div className="space-y-3 border-b border-slate-200/80 pb-6">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#0284C7] inline-block" />
+                  <h3 className="font-black text-base sm:text-lg text-slate-900 tracking-tight">
+                    The Basic Story: What is in the beaker?
+                  </h3>
                 </div>
-                <ul className="space-y-1.5 text-slate-600 text-xs sm:text-sm list-disc list-inside pt-1">
-                  <li><strong>Forward Reaction (Dissolution):</strong> Solid AgCl lattice breaks apart into free mobile Ag⁺ and Cl⁻ ions.</li>
-                  <li><strong>Reverse Reaction (Precipitation):</strong> Dissolved ions collide and recrystallize back into solid AgCl.</li>
+                <p className="text-slate-700">
+                  Imagine you have a glass beaker with water and <strong>Silver Chloride (AgCl)</strong>. <strong>AgCl</strong> is <em>barely soluble</em> in water. That means almost all of it wants to stay as solid white powder/crystals at the bottom, and only a tiny handful dissolves into water as free-floating ions:
+                </p>
+                <div className="py-2 text-center font-mono font-black text-base sm:text-lg text-sky-900 tracking-wide">
+                  AgCl (s) ⇌ Ag⁺ + Cl⁻
+                </div>
+                <p className="text-slate-700">
+                  Water has a strict capacity limit for how many of these ions can float together. This limit is the <strong>Solubility Product (Ksp)</strong>:
+                </p>
+                <div className="py-2 text-center font-mono font-black text-base sm:text-lg text-sky-900 tracking-wide">
+                  Ion Product (Qsp) = [Ag⁺] × [Cl⁻]
+                </div>
+                <ul className="space-y-2 text-slate-700 list-disc list-inside pl-1 pt-1">
+                  <li><strong>If Ion Product = Ksp:</strong> The beaker is <strong>full / saturated</strong> (equilibrium).</li>
+                  <li><strong>If Ion Product &gt; Ksp:</strong> The water is <strong>overflowing with ions</strong>, so they combine and drop to the bottom as solid precipitate!</li>
+                  <li><strong>If Ion Product &lt; Ksp:</strong> The water has <strong>room for more</strong>, so solid crystals dissolve.</li>
                 </ul>
               </div>
 
-              {/* Section 2: Ksp and Qsp */}
-              <div className="space-y-2.5 bg-sky-50/70 p-4 sm:p-5 rounded-2xl border border-sky-100 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-200/60 px-2.5 py-0.5 rounded-full inline-block">
-                  2. Ksp vs Qsp (THE PRECIPITATION RULE)
-                </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
-                  Predicting Solution Behavior
-                </h3>
-                <p className="text-slate-600 text-xs sm:text-sm">
-                  The <strong>Solubility Product Constant (Ksp)</strong> is the equilibrium constant for the dissolution of a solid substance into an aqueous solution:
-                </p>
-                <div className="text-center font-mono font-black text-xs sm:text-sm text-sky-950 bg-white p-3 rounded-xl border border-sky-200 shadow-xs">
-                  Ksp = [Ag⁺] × [Cl⁻] = 1.8 × 10⁻¹⁰ (at 25 °C)
+              {/* Section 2: What each of the 4 buttons does */}
+              <div className="space-y-5 border-b border-slate-200/80 pb-6">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#0284C7] inline-block" />
+                  <h3 className="font-black text-base sm:text-lg text-slate-900 tracking-tight">
+                    What each of the 4 buttons does:
+                  </h3>
                 </div>
-                
-                {/* Clean Table of Conditions */}
-                <div className="overflow-x-auto rounded-xl border border-sky-200 bg-white mt-2">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-sky-100/60 text-sky-900 uppercase font-bold text-[10px]">
-                      <tr>
-                        <th className="px-3 py-2">Condition</th>
-                        <th className="px-3 py-2">State</th>
-                        <th className="px-3 py-2">Result</th>
+
+                {/* 1. NaCl */}
+                <div className="space-y-2 pl-2 sm:pl-4 border-l-2 border-blue-400">
+                  <h4 className="font-extrabold text-sm sm:text-base text-blue-900">
+                    1. + NaCl (Cl⁻) — Adds Common Chloride Ions
+                  </h4>
+                  <p className="text-slate-700">
+                    <strong>What is it?</strong> Normal table salt (NaCl). Unlike AgCl, normal salt dissolves 100% instantly into Na⁺ and Cl⁻.
+                  </p>
+                  <p className="text-slate-700">
+                    <strong>Why does it matter?</strong> The beaker already has Cl⁻ from the AgCl. Because Cl⁻ is shared (common to both salts), adding NaCl suddenly floods the water with extra Cl⁻.
+                  </p>
+                  <p className="font-bold text-slate-800">What happens in the beaker?</p>
+                  <ul className="list-disc list-inside space-y-1 text-slate-700 pl-2">
+                    <li>[Cl⁻] shoots up.</li>
+                    <li>The product [Ag⁺] × [Cl⁻] becomes greater than the limit (<strong>Qsp &gt; Ksp</strong>).</li>
+                    <li>The excess Cl⁻ grabs floating Ag⁺ ions and forces them to crash out of the water as solid white AgCl crystals at the bottom.</li>
+                  </ul>
+                  <p className="text-slate-900 font-semibold pt-1">
+                    👉 <strong>Result:</strong> Adding table salt actually makes the silver salt less soluble and fall out as solid! That is the <strong>Common Ion Effect</strong>.
+                  </p>
+                </div>
+
+                {/* 2. AgNO3 */}
+                <div className="space-y-2 pl-2 sm:pl-4 border-l-2 border-indigo-400">
+                  <h4 className="font-extrabold text-sm sm:text-base text-indigo-900">
+                    2. + AgNO₃ (Ag⁺) — Adds Common Silver Ions
+                  </h4>
+                  <p className="text-slate-700">
+                    <strong>What is it?</strong> Silver Nitrate (AgNO₃). It is a very soluble salt that dissolves 100% into Ag⁺ and NO₃⁻.
+                  </p>
+                  <p className="text-slate-700">
+                    <strong>Why does it matter?</strong> This time, we are adding extra Ag⁺, which is the other common ion.
+                  </p>
+                  <p className="font-bold text-slate-800">What happens in the beaker?</p>
+                  <ul className="list-disc list-inside space-y-1 text-slate-700 pl-2">
+                    <li>[Ag⁺] shoots up.</li>
+                    <li>The product [Ag⁺] × [Cl⁻] again exceeds the limit (<strong>Qsp &gt; Ksp</strong>).</li>
+                    <li>The excess Ag⁺ grabs floating Cl⁻ and precipitates out as solid AgCl.</li>
+                  </ul>
+                  <p className="text-slate-900 font-semibold pt-1">
+                    👉 <strong>Result:</strong> Just like NaCl, adding silver nitrate forces solid AgCl to precipitate out.
+                  </p>
+                </div>
+
+                {/* 3. AgCl Salt */}
+                <div className="space-y-2 pl-2 sm:pl-4 border-l-2 border-slate-400">
+                  <h4 className="font-extrabold text-sm sm:text-base text-slate-900">
+                    3. + AgCl Salt — Adds Pure Solid Salt
+                  </h4>
+                  <p className="text-slate-700">
+                    <strong>What is it?</strong> You are scooping raw solid AgCl powder straight into the beaker.
+                  </p>
+                  <p className="font-bold text-slate-800">What happens in the beaker?</p>
+                  <ul className="list-disc list-inside space-y-1 text-slate-700 pl-2">
+                    <li>If the water is already saturated (full), it cannot dissolve any more AgCl.</li>
+                    <li>So this added powder just falls directly to the bottom and sits there as more solid crystals.</li>
+                    <li>It does not change the dissolved ion concentration because the water is already at its saturation limit.</li>
+                  </ul>
+                </div>
+
+                {/* 4. Dilute */}
+                <div className="space-y-2 pl-2 sm:pl-4 border-l-2 border-sky-400">
+                  <h4 className="font-extrabold text-sm sm:text-base text-sky-900">
+                    4. Dilute (H₂O) — Adds Pure Water
+                  </h4>
+                  <p className="text-slate-700">
+                    <strong>What is it?</strong> Pouring clean water into the beaker (increasing volume from 100 mL up to 200 mL).
+                  </p>
+                  <p className="font-bold text-slate-800">What happens in the beaker?</p>
+                  <ul className="list-disc list-inside space-y-1 text-slate-700 pl-2">
+                    <li>More water gives the ions more room to spread out, so the concentrations [Ag⁺] and [Cl⁻] both drop (become diluted).</li>
+                    <li>Now, the ion product drops below the limit (<strong>Qsp &lt; Ksp</strong>) — the solution becomes unsaturated.</li>
+                    <li>Because the water now has room for more ions, the solid crystals on the bottom begin to dissolve back into floating ions until equilibrium is restored!</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Section 3: Quick Summary Table */}
+              <div className="space-y-3 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#0284C7] inline-block" />
+                  <h3 className="font-black text-base sm:text-lg text-slate-900 tracking-tight">
+                    Quick Summary Table
+                  </h3>
+                </div>
+
+                <div className="overflow-x-auto w-full pt-1">
+                  <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b-2 border-slate-300 text-slate-900 font-black">
+                        <th className="py-2.5 pr-4">Action Button</th>
+                        <th className="py-2.5 px-4">What You&apos;re Adding</th>
+                        <th className="py-2.5 px-4">What Happens to Ions</th>
+                        <th className="py-2.5 pl-4">Result in the Beaker</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-sky-100">
+                    <tbody className="divide-y divide-slate-200 text-slate-700">
                       <tr>
-                        <td className="px-3 py-2 font-mono font-bold text-sky-800">Qsp &lt; Ksp</td>
-                        <td className="px-3 py-2 text-sky-700 font-bold">Unsaturated</td>
-                        <td className="px-3 py-2 text-slate-600">No precipitate forms; added solid continues dissolving.</td>
+                        <td className="py-3 pr-4 font-bold text-blue-700 font-mono text-xs sm:text-sm">+ NaCl</td>
+                        <td className="py-3 px-4">Extra Cl⁻ (common ion)</td>
+                        <td className="py-3 px-4 font-mono font-bold text-purple-700">[Cl⁻] ↑ ➔ Qsp &gt; Ksp</td>
+                        <td className="py-3 pl-4">🌧️ <strong>Precipitation:</strong> Solid AgCl falls to the bottom.</td>
                       </tr>
-                      <tr className="bg-emerald-50/70">
-                        <td className="px-3 py-2 font-mono font-bold text-emerald-800">Qsp = Ksp</td>
-                        <td className="px-3 py-2 text-emerald-700 font-bold">Saturated Equilibrium</td>
-                        <td className="px-3 py-2 text-slate-600">Dynamic balance; maximum dissolved ions at standard temperature.</td>
+                      <tr>
+                        <td className="py-3 pr-4 font-bold text-indigo-700 font-mono text-xs sm:text-sm">+ AgNO₃</td>
+                        <td className="py-3 px-4">Extra Ag⁺ (common ion)</td>
+                        <td className="py-3 px-4 font-mono font-bold text-purple-700">[Ag⁺] ↑ ➔ Qsp &gt; Ksp</td>
+                        <td className="py-3 pl-4">🌧️ <strong>Precipitation:</strong> Solid AgCl falls to the bottom.</td>
                       </tr>
-                      <tr className="bg-purple-50/70">
-                        <td className="px-3 py-2 font-mono font-bold text-purple-800">Qsp &gt; Ksp</td>
-                        <td className="px-3 py-2 text-purple-700 font-bold">Supersaturated</td>
-                        <td className="px-3 py-2 text-slate-600">Precipitation occurs! Insoluble AgCl solid crashes out.</td>
+                      <tr>
+                        <td className="py-3 pr-4 font-bold text-slate-800 font-mono text-xs sm:text-sm">+ AgCl Salt</td>
+                        <td className="py-3 px-4">Insoluble solid powder</td>
+                        <td className="py-3 px-4 font-mono text-slate-600">Stays at equilibrium limit</td>
+                        <td className="py-3 pl-4">📦 Solid just piles up at the bottom without dissolving.</td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 pr-4 font-bold text-sky-700 font-mono text-xs sm:text-sm">Dilute (H₂O)</td>
+                        <td className="py-3 px-4">Pure water</td>
+                        <td className="py-3 px-4 font-mono font-bold text-sky-700">[Ag⁺] &amp; [Cl⁻] ↓ ➔ Qsp &lt; Ksp</td>
+                        <td className="py-3 pl-4">☀️ <strong>Dissolution:</strong> Solid crystals dissolve back into the water.</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-              </div>
-
-              {/* Section 3: The Common-Ion Effect */}
-              <div className="space-y-2.5 bg-sky-50/70 p-4 sm:p-5 rounded-2xl border border-sky-100 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-200/60 px-2.5 py-0.5 rounded-full inline-block">
-                  3. THE COMMON-ION EFFECT
-                </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
-                  Le Chatelier&apos;s Principle in Action
-                </h3>
-                <p className="text-slate-600 text-xs sm:text-sm">
-                  The <strong>Common-Ion Effect</strong> describes the decrease in the solubility of an ionic precipitate when a soluble compound containing one of the same ions is added to the solution:
-                </p>
-                <div className="text-center font-mono font-black text-xs sm:text-sm text-sky-950 bg-white p-3 rounded-xl border border-sky-200 shadow-xs">
-                  Adding NaCl ⟶ Dissolves into Na⁺ + Cl⁻ (Common Ion)
-                </div>
-                <ul className="space-y-1.5 text-slate-600 text-xs sm:text-sm list-disc list-inside pt-1">
-                  <li>Introducing extra <strong>Cl⁻</strong> increases the product <span className="font-mono font-bold">[Ag⁺][Cl⁻]</span> so that <span className="font-mono font-bold text-purple-700">Qsp &gt; Ksp</span>.</li>
-                  <li>By Le Chatelier&apos;s principle, the equilibrium shifts to the <strong>left</strong>: mobile Ag⁺ ions bind with Cl⁻ and precipitate as solid AgCl.</li>
-                  <li>Consequently, silver ions are removed from solution, drastically decreasing AgCl solubility!</li>
-                </ul>
-              </div>
-
-              {/* Section 4: Game Mechanics in the Lab */}
-              <div className="space-y-2.5 bg-sky-50/70 p-4 sm:p-5 rounded-2xl border border-sky-100 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-200/60 px-2.5 py-0.5 rounded-full inline-block">
-                  4. HOW THE LAB SIMULATION WORKS
-                </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
-                  Lab Controls &amp; Visuals
-                </h3>
-                <ul className="space-y-2 text-slate-600 text-xs sm:text-sm list-disc list-inside pt-1">
-                  <li>
-                    <strong>Initial Solution:</strong> Saturated 100 mL AgCl solution at dynamic equilibrium (<span className="font-mono font-bold">Qsp = Ksp = 1.8 × 10⁻¹⁰</span>).
-                  </li>
-                  <li>
-                    <strong>Adding NaCl (Cl⁻):</strong> Introduces common chloride ions. Watch the digital meter register <span className="font-mono font-bold text-amber-500">Qsp &gt; Ksp</span> as cloudy white AgCl crystals precipitate and deposit at the beaker floor.
-                  </li>
-                  <li>
-                    <strong>Adding AgNO₃ (Ag⁺):</strong> Introduces common silver ions, similarly inducing immediate precipitation.
-                  </li>
-                  <li>
-                    <strong>Diluting with H₂O:</strong> Increases beaker volume, lowering ion concentrations. As Qsp drops below Ksp, bottom crystals dissolve back into clear water.
-                  </li>
-                </ul>
               </div>
 
             </div>

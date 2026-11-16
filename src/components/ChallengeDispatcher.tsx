@@ -310,6 +310,14 @@ const SolubilityProductGamePage = dynamic<{ difficulty?: string; onExit?: () => 
   { ssr: false, loading: LoadingFallback }
 );
 
+const FirstLawThermodynamicsGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/thermodynamics/first_law/FirstLawThermodynamicsGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -411,6 +419,16 @@ export function ChallengeDispatcher({
     normTopic.includes("common-ion") ||
     ((normModule.includes("equilibrium") || normModule === "m6") &&
       (normTopic === "5" || normTopic.includes("solubility") || normTopic.includes("common")));
+
+  const isFirstLawThermodynamics =
+    normTopic === "26" ||
+    normTopic === "first-law" ||
+    normTopic.includes("first-law") ||
+    normTopic.includes("first_law") ||
+    normTopic.includes("internal-energy") ||
+    normTopic.includes("work-heat") ||
+    ((normModule.includes("thermodynamics") || normModule === "m7" || normModule.includes("thermo")) &&
+      (normTopic === "1" || normTopic.includes("first") || normTopic.includes("law")));
 
   const isRateLawHalfLife =
     normTopic === "20" ||
@@ -539,7 +557,9 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isSolubilityProduct) {
+  if (isFirstLawThermodynamics) {
+    content = <FirstLawThermodynamicsGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isSolubilityProduct) {
     content = <SolubilityProductGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isIonicEquilibrium) {
     content = <IonicEquilibriumPhGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -631,7 +651,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

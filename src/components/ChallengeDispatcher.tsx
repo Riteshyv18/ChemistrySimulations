@@ -326,6 +326,30 @@ const EnthalpyHeatCapacityGamePage = dynamic<{ difficulty?: string; onExit?: () 
   { ssr: false, loading: LoadingFallback }
 );
 
+const HesssLawGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/thermodynamics/hesss_law/HesssLawGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const EntropyGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/thermodynamics/entropy/EntropyGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const GibbsFreeEnergyGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/thermodynamics/gibbs_free_energy/GibbsFreeEnergyGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -448,7 +472,32 @@ export function ChallengeDispatcher({
     normTopic.includes("calorimetry") ||
     normTopic.includes("specific-heat") ||
     ((normModule.includes("thermodynamics") || normModule === "m7" || normModule.includes("thermo")) &&
-      (normTopic === "2" || normTopic.includes("enthalpy") || normTopic.includes("capacity")));
+      (normTopic === "2" || (normTopic.includes("enthalpy") && !normTopic.includes("hess")) || normTopic.includes("capacity")));
+
+  const isHesssLaw =
+    normTopic === "28" ||
+    normTopic === "hesss-law" ||
+    normTopic === "hess-law" ||
+    normTopic.includes("hess") ||
+    ((normModule.includes("thermodynamics") || normModule === "m7" || normModule.includes("thermo")) &&
+      (normTopic === "3" || normTopic.includes("hess")));
+
+  const isEntropy =
+    normTopic === "29" ||
+    normTopic === "entropy" ||
+    normTopic.includes("entropy") ||
+    ((normModule.includes("thermodynamics") || normModule === "m7" || normModule.includes("thermo")) &&
+      (normTopic === "4" || normTopic.includes("entropy") || normTopic.includes("disorder")));
+
+  const isGibbsFreeEnergy =
+    normTopic === "30" ||
+    normTopic === "gibbs" ||
+    normTopic === "gibbs-free-energy" ||
+    normTopic === "spontaneity" ||
+    normTopic.includes("gibbs") ||
+    normTopic.includes("spontaneity") ||
+    ((normModule.includes("thermodynamics") || normModule === "m7" || normModule.includes("thermo")) &&
+      (normTopic === "5" || normTopic.includes("gibbs") || normTopic.includes("spontan")));
 
   const isRateLawHalfLife =
     normTopic === "20" ||
@@ -577,7 +626,13 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isEnthalpyHeatCapacity) {
+  if (isGibbsFreeEnergy) {
+    content = <GibbsFreeEnergyGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isEntropy) {
+    content = <EntropyGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isHesssLaw) {
+    content = <HesssLawGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isEnthalpyHeatCapacity) {
     content = <EnthalpyHeatCapacityGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isFirstLawThermodynamics) {
     content = <FirstLawThermodynamicsGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -673,7 +728,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

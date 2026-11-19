@@ -248,13 +248,13 @@ export default function GibbsFreeEnergyGamePage({
       {/* SCREEN 3: INTERACTIVE LAB (Single Canvas Div: Exit + Content + All) */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {screen === "lab" && (
-        <div className="w-full h-full flex flex-col justify-between p-3.5 sm:p-5 text-slate-800 relative z-10 bg-white">
+        <div className="w-full h-full flex flex-col justify-between p-2 sm:p-2.5 text-slate-800 relative z-10 bg-white">
 
           {/* Top Bar: EXIT on Left, EXPLANATION on Right */}
-          <div className="w-full flex items-center justify-between mb-2 shrink-0">
+          <div className="w-full flex items-center justify-between mb-1 shrink-0">
             <button
               onClick={handleExit}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-sm cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-sm cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>EXIT</span>
@@ -262,7 +262,7 @@ export default function GibbsFreeEnergyGamePage({
 
             <button
               onClick={() => setShowExplanation(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-sm cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-sm cursor-pointer"
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>EXPLANATION</span>
@@ -270,22 +270,22 @@ export default function GibbsFreeEnergyGamePage({
           </div>
 
           {/* Main Content Area directly on the canvas without nested box */}
-          <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-5 items-stretch overflow-hidden">
+          <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch overflow-hidden">
 
             {/* ───────────────────────────────────────────────────────────── */}
             {/* LEFT 60%: Free Energy Reaction Coordinate Profile Graph       */}
             {/* ───────────────────────────────────────────────────────────── */}
-            <div className="flex-1 md:w-[60%] flex flex-col justify-between h-full pr-0 md:pr-4 md:border-r border-slate-100 min-h-0">
+            <div className="flex-1 md:w-[58%] flex flex-col justify-between h-full pr-0 md:pr-3 md:border-r border-slate-100 min-h-0">
 
               {/* Header inside Chart Area */}
-              <div className="flex items-center justify-between pb-1 shrink-0">
+              <div className="flex items-center justify-between pb-0.5 shrink-0">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+                  <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-800">
                     Reaction Free Energy Profile
                   </span>
                 </div>
-                <span className="font-mono text-[11px] font-bold text-slate-500">
+                <span className="font-mono text-[10px] sm:text-[11px] font-bold text-slate-500">
                   G° vs Reaction Coordinate
                 </span>
               </div>
@@ -498,17 +498,17 @@ export default function GibbsFreeEnergyGamePage({
             {/* ───────────────────────────────────────────────────────────── */}
             {/* RIGHT 40%: All Controls In The Same Single Main Screen        */}
             {/* ───────────────────────────────────────────────────────────── */}
-            <div className="w-full md:w-[40%] flex flex-col justify-between h-full pl-0 md:pl-2 gap-2.5">
+            <div className="w-full md:w-[42%] flex flex-col justify-between h-full pl-0 md:pl-1 gap-2.5 min-h-0">
 
               {/* Section 1: Temperature Slider Control */}
-              <div className="flex-1 flex flex-col justify-center gap-2.5 pb-2.5 border-b border-slate-100">
+              <div className="flex flex-col justify-center gap-2.5 pb-2.5 border-b border-slate-100 shrink-0">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-slate-900">
-                    <Flame className="w-4 h-4 text-amber-500" />
+                  <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900">
+                    <Flame className="w-3.5 h-3.5 text-amber-500" />
                     <span className="uppercase tracking-wider">Temperature (T)</span>
                   </div>
-                  <div className="flex items-center gap-1 px-3 py-1 rounded-xl bg-amber-50 border border-amber-200 font-mono font-black text-xs sm:text-sm text-amber-800 shadow-xs">
-                    <Thermometer className="w-4 h-4 text-amber-600" />
+                  <div className="flex items-center gap-1 px-3 py-1 rounded-xl bg-amber-50 border border-amber-200 font-mono font-black text-xs text-amber-800 shadow-xs">
+                    <Thermometer className="w-3.5 h-3.5 text-amber-600" />
                     <span>{temp} K</span>
                   </div>
                 </div>
@@ -525,7 +525,7 @@ export default function GibbsFreeEnergyGamePage({
                 />
 
                 {/* High Contrast Bold Milestone Labels */}
-                <div className="flex justify-between font-mono font-bold text-[11px] text-slate-900 px-0.5">
+                <div className="flex justify-between font-mono font-bold text-[10.5px] text-slate-900 px-0.5">
                   <button onClick={() => setTemp(100)} className="hover:text-blue-600 cursor-pointer">100K</button>
                   <button onClick={() => setTemp(200)} className="hover:text-blue-600 cursor-pointer">200K</button>
                   <button onClick={() => setTemp(267)} className="text-blue-600 font-black cursor-pointer underline decoration-blue-400">267K (T_eq)</button>
@@ -535,17 +535,17 @@ export default function GibbsFreeEnergyGamePage({
               </div>
 
               {/* Section 2: Live Gibbs Free Energy Calculation Meter */}
-              <div className="flex-1 flex flex-col justify-center gap-2 pb-2.5 border-b border-slate-100">
-                <div className="flex items-center justify-between text-xs sm:text-sm font-bold text-slate-700">
+              <div className="flex flex-col justify-center gap-2 pb-2.5 border-b border-slate-100 shrink-0">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700">
                   <span className="uppercase tracking-wider">Live Gibbs Energy (ΔG)</span>
-                  <span className="font-mono text-xs text-slate-500">ΔG = ΔH − T·ΔS</span>
+                  <span className="font-mono text-[11px] text-slate-500">ΔG = ΔH − T·ΔS</span>
                 </div>
 
                 <div className="bg-slate-900 text-white rounded-xl py-3 px-3.5 flex items-center justify-between font-mono shadow-sm">
-                  <div className="text-xs sm:text-sm text-slate-300">
+                  <div className="text-xs text-slate-300">
                     40.0 − ({temp} &times; 0.150) =
                   </div>
-                  <div className={`text-base sm:text-lg font-black tracking-wide ${deltaG < 0 ? "text-emerald-400" : deltaG === 0 ? "text-amber-400" : "text-rose-400"}`}>
+                  <div className={`text-base font-black tracking-wide ${deltaG < 0 ? "text-emerald-400" : deltaG === 0 ? "text-amber-400" : "text-rose-400"}`}>
                     {deltaG > 0 ? `+${deltaG.toFixed(1)}` : deltaG.toFixed(1)} kJ/mol
                   </div>
                 </div>
@@ -554,7 +554,7 @@ export default function GibbsFreeEnergyGamePage({
               {/* Section 3: Spontaneity Selection & Check Answer */}
               <div className="flex flex-col gap-2 pt-0.5 shrink-0">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-slate-800">
+                  <span className="text-[10.5px] font-black uppercase tracking-wider text-slate-800">
                     Is this reaction spontaneous?
                   </span>
                   <button
@@ -570,7 +570,7 @@ export default function GibbsFreeEnergyGamePage({
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => setUserSpontaneous(true)}
-                    className={`py-2 px-2 rounded-xl border text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${userSpontaneous === true
+                    className={`py-2 px-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${userSpontaneous === true
                         ? "bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/25 scale-[1.02]"
                         : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                       }`}
@@ -580,7 +580,7 @@ export default function GibbsFreeEnergyGamePage({
 
                   <button
                     onClick={() => setUserSpontaneous(false)}
-                    className={`py-2 px-2 rounded-xl border text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${userSpontaneous === false
+                    className={`py-2 px-2.5 rounded-xl border text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${userSpontaneous === false
                         ? "bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-500/25 scale-[1.02]"
                         : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                       }`}

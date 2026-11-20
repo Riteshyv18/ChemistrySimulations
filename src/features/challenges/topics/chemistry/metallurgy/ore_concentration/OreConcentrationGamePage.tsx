@@ -579,29 +579,29 @@ export default function OreConcentrationGamePage({
               </div>
             </div>
 
-            {/* Card 3: Controls - Re-run and Check Answer */}
+            {/* Card 3: Controls - Check Answer */}
             <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between text-left shadow-sm overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     3
                   </div>
-                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Run & Verify Answer</h3>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Run & Check Answer</h3>
                 </div>
 
                 <div className="inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase mb-1 w-fit">
                   TEST & ADVANCE LEVEL
                 </div>
                 <p className="text-[11px] text-slate-600 leading-snug mb-1.5">
-                  Run the plant, inspect particle separation, test different settings with <strong>Re-Run</strong>, and click <strong>Check Answer</strong> to unlock the next level!
+                  Run the plant, watch the particles separate, and click <strong>Check Answer</strong> to verify your choice and unlock the next level!
                 </p>
               </div>
 
-              {/* Image 3: Re-Run and Check Answer Buttons placed at the bottom */}
+              {/* Image 3: Check Answer Button placed at the bottom */}
               <div className="w-full h-24 sm:h-26 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-1 flex items-center justify-center mt-auto">
                 <img
                   src="/images/instructions_step3_controls.jpg"
-                  alt="Re-Run and Check Answer Controls"
+                  alt="Check Answer Controls"
                   className="w-full h-full object-contain"
                 />
               </div>
@@ -780,28 +780,20 @@ export default function OreConcentrationGamePage({
                     disabled={!selectedMethod || isSimulating}
                     className={`h-9 px-4 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md ${!selectedMethod || isSimulating
                       ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95"
+                      : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95 cursor-pointer"
                       }`}
                   >
                     <Play className="w-3.5 h-3.5 fill-white" />
                     <span>RUN SEPARATION</span>
                   </button>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleRunSimulation}
-                      className="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase transition active:scale-95"
-                    >
-                      RE-RUN
-                    </button>
-                    <button
-                      onClick={handleCheckResult}
-                      className="h-9 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider shadow-md transition flex items-center justify-center gap-1.5 active:scale-95"
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>CHECK ANSWER</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleCheckResult}
+                    className="h-9 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider shadow-md transition flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>CHECK ANSWER</span>
+                  </button>
                 )}
               </div>
             </div>

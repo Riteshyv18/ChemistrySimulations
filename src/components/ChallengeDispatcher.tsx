@@ -366,6 +366,14 @@ const CrushingRoastingCalcinationGamePage = dynamic<{ difficulty?: string; onExi
   { ssr: false, loading: LoadingFallback }
 );
 
+const ReductionExtractionGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/metallurgy/reduction_extraction/ReductionExtractionGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -515,20 +523,33 @@ export function ChallengeDispatcher({
     ((normModule.includes("thermodynamics") || normModule === "m7" || normModule.includes("thermo")) &&
       (normTopic === "5" || normTopic.includes("gibbs") || normTopic.includes("spontan")));
 
-  const isCrushingRoastingCalcination =
-    normTopic === "32" ||
-    normTopic === "crushing_roasting_calcination" ||
-    normTopic === "crushing-roasting-calcination" ||
-    normTopic.includes("crushing") ||
-    normTopic.includes("roasting") ||
-    normTopic.includes("calcination") ||
-    normTopic.includes("crush") ||
-    normTopic.includes("roast") ||
-    normTopic.includes("calcin") ||
+  const isReductionExtraction =
+    normTopic === "33" ||
+    normTopic === "reduction_extraction" ||
+    normTopic === "reduction-extraction" ||
+    normTopic === "reduction_and_extraction" ||
+    normTopic === "reduction-and-extraction" ||
+    normTopic.includes("reduction") ||
+    normTopic.includes("extraction") ||
     ((normModule.includes("metallurgy") || normModule === "m8") &&
-      (normTopic === "2" || normTopic.includes("roast") || normTopic.includes("calcin") || normTopic.includes("crush")));
+      (normTopic === "3" || normTopic.includes("reduct") || normTopic.includes("extract")));
+
+  const isCrushingRoastingCalcination =
+    !isReductionExtraction &&
+    (normTopic === "32" ||
+      normTopic === "crushing_roasting_calcination" ||
+      normTopic === "crushing-roasting-calcination" ||
+      normTopic.includes("crushing") ||
+      normTopic.includes("roasting") ||
+      normTopic.includes("calcination") ||
+      normTopic.includes("crush") ||
+      normTopic.includes("roast") ||
+      normTopic.includes("calcin") ||
+      ((normModule.includes("metallurgy") || normModule === "m8") &&
+        (normTopic === "2" || normTopic.includes("roast") || normTopic.includes("calcin") || normTopic.includes("crush"))));
 
   const isOreConcentration =
+    !isReductionExtraction &&
     !isCrushingRoastingCalcination &&
     (normTopic === "31" ||
       normTopic === "ore_concentration" ||
@@ -668,7 +689,9 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isCrushingRoastingCalcination) {
+  if (isReductionExtraction) {
+    content = <ReductionExtractionGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isCrushingRoastingCalcination) {
     content = <CrushingRoastingCalcinationGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isOreConcentration) {
     content = <OreConcentrationGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -774,7 +797,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

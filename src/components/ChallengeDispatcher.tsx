@@ -374,6 +374,14 @@ const ReductionExtractionGamePage = dynamic<{ difficulty?: string; onExit?: () =
   { ssr: false, loading: LoadingFallback }
 );
 
+const RefiningOfMetalsGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/metallurgy/refining_of_metals/RefiningOfMetalsGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -523,16 +531,26 @@ export function ChallengeDispatcher({
     ((normModule.includes("thermodynamics") || normModule === "m7" || normModule.includes("thermo")) &&
       (normTopic === "5" || normTopic.includes("gibbs") || normTopic.includes("spontan")));
 
-  const isReductionExtraction =
-    normTopic === "33" ||
-    normTopic === "reduction_extraction" ||
-    normTopic === "reduction-extraction" ||
-    normTopic === "reduction_and_extraction" ||
-    normTopic === "reduction-and-extraction" ||
-    normTopic.includes("reduction") ||
-    normTopic.includes("extraction") ||
+  const isRefiningOfMetals =
+    normTopic === "34" ||
+    normTopic === "refining_of_metals" ||
+    normTopic === "refining-of-metals" ||
+    normTopic === "refining" ||
+    normTopic.includes("refining") ||
     ((normModule.includes("metallurgy") || normModule === "m8") &&
-      (normTopic === "3" || normTopic.includes("reduct") || normTopic.includes("extract")));
+      (normTopic === "4" || normTopic.includes("refin")));
+
+  const isReductionExtraction =
+    !isRefiningOfMetals &&
+    (normTopic === "33" ||
+      normTopic === "reduction_extraction" ||
+      normTopic === "reduction-extraction" ||
+      normTopic === "reduction_and_extraction" ||
+      normTopic === "reduction-and-extraction" ||
+      normTopic.includes("reduction") ||
+      normTopic.includes("extraction") ||
+      ((normModule.includes("metallurgy") || normModule === "m8") &&
+        (normTopic === "3" || normTopic.includes("reduct") || normTopic.includes("extract"))));
 
   const isCrushingRoastingCalcination =
     !isReductionExtraction &&
@@ -689,7 +707,9 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isReductionExtraction) {
+  if (isRefiningOfMetals) {
+    content = <RefiningOfMetalsGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isReductionExtraction) {
     content = <ReductionExtractionGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isCrushingRoastingCalcination) {
     content = <CrushingRoastingCalcinationGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -797,7 +817,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

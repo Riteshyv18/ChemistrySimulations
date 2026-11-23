@@ -45,8 +45,8 @@ export default function RefiningPlant3D({
   const liquationDropletsRef = useRef<THREE.Points>(null);
   const electrolyteGlowRef = useRef<THREE.Mesh>(null);
 
-  // Active method directly reflects selection; null when nothing selected yet
-  const activeMethod = selectedMethod;
+  // Default apparatus shown on screen is electrolytic; user still must select a method in the dropdown
+  const activeMethod = selectedMethod || "electrolytic";
 
   // 1. Migrating metal ions between Anode and Cathode (Electrolytic mode)
   const ionCount = 42;
@@ -1107,9 +1107,9 @@ export default function RefiningPlant3D({
           </group>
 
           {/* ───────────────────────────────────────────────────────── */}
-          {/* 4. 3D BADGES (Positioned Cleanly With Compact Badges)     */}
+          {/* 4. 3D BADGES (Positioned Cleanly Below Header Bar)        */}
           {/* ───────────────────────────────────────────────────────── */}
-          <Html position={[-1.3, 1.25, 0]} center>
+          <Html position={[-1.3, 1.05, 0]} center>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-amber-500/60 text-amber-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>
@@ -1117,7 +1117,7 @@ export default function RefiningPlant3D({
               </div>
             </div>
           </Html>
-          <Html position={[0.05, 1.25, 0]} center>
+          <Html position={[0.05, 1.05, 0]} center>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-cyan-500/60 text-cyan-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"></span>
@@ -1125,7 +1125,7 @@ export default function RefiningPlant3D({
               </div>
             </div>
           </Html>
-          <Html position={[1.4, 1.25, 0]} center>
+          <Html position={[1.4, 1.05, 0]} center>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-emerald-500/60 text-emerald-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>

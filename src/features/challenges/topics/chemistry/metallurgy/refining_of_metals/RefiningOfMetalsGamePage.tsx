@@ -138,6 +138,7 @@ export default function RefiningOfMetalsGamePage({
 
   // Modals
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFinalCompletionModal, setShowFinalCompletionModal] = useState(false);
   const [showFailModal, setShowFailModal] = useState(false);
   const [failFeedback, setFailFeedback] = useState("");
@@ -150,7 +151,7 @@ export default function RefiningOfMetalsGamePage({
     }
   };
 
-  // Step 1: Start Refining Action
+  // Step 1: Start Refining Action - runs animation then immediately triggers pass/fail popup
   const handleStartRefining = () => {
     if (!selectedMethod) {
       setShowPromptTooltip("Choose a Refining Method First!");
@@ -158,49 +159,40 @@ export default function RefiningOfMetalsGamePage({
       return;
     }
     setStage("refining");
-    // Duration matches the smooth full single-pass sweep (3.6s for zone refining, 3.2s for others)
+    // Duration matches the smooth full single-pass sweep (3.6s for zone refining, 3.0s for others)
     const duration = selectedMethod === "zone" ? 3600 : 3000;
     setTimeout(() => {
       setStage("refined");
-    }, duration);
-  };
 
-  // Step 2: Check Answer
-  const handleCheckAnswer = () => {
-    if (!selectedMethod) {
-      setShowPromptTooltip("Select a Refining Method First!");
-      setTimeout(() => setShowPromptTooltip(null), 3200);
-      return;
-    }
-
-    if (stage === "idle") {
-      setShowPromptTooltip("Click '1. START REFINING' To Run Process!");
-      setTimeout(() => setShowPromptTooltip(null), 3200);
-      return;
-    }
-
-    if (selectedMethod === currentChallenge.correctMethod) {
-      setIsLevelPassed(true);
-    } else {
-      // Auto-reset so "START REFINING" reactivates and models reset
-      setStage("idle");
-      let feedback = "";
-      if (currentChallenge.correctMethod === "electrolytic") {
-        feedback = `${currentChallenge.metalName} contains both soluble basic impurities (Fe, Ni) and insoluble noble metals (Ag, Au). It requires Electrolytic Refining where pure metal plates onto the cathode while anode mud collects below.`;
-      } else if (currentChallenge.correctMethod === "distillation") {
-        feedback = `${currentChallenge.metalName} has a remarkably low boiling point compared to its impurities. It is refined via Distillation by vaporizing the volatile metal and condensing it in a receiver.`;
-      } else if (currentChallenge.correctMethod === "liquation") {
-        feedback = `${currentChallenge.metalName} has a very low melting point compared to infusible dross impurities. It requires Liquation on a sloping hearth where the metal melts and flows away.`;
+      // Verify answer upon animation completion
+      if (selectedMethod === currentChallenge.correctMethod) {
+        setIsLevelPassed(true);
+        if (levelIndex < REFINING_CHALLENGES.length - 1) {
+          setShowSuccessModal(true);
+        } else {
+          setShowFinalCompletionModal(true);
+        }
       } else {
-        feedback = `${currentChallenge.metalName} requires ultra-high purity (99.9999%) for semiconductors. It is purified by Zone Refining using fractional crystallization with a mobile induction heater.`;
+        // Prepare explanation feedback
+        let feedback = "";
+        if (currentChallenge.correctMethod === "electrolytic") {
+          feedback = `${currentChallenge.metalName} contains both soluble basic impurities (Fe, Ni) and insoluble noble metals (Ag, Au). It requires Electrolytic Refining where pure metal plates onto the cathode while anode mud collects below.`;
+        } else if (currentChallenge.correctMethod === "distillation") {
+          feedback = `${currentChallenge.metalName} has a remarkably low boiling point compared to its impurities. It is refined via Distillation by vaporizing the volatile metal and condensing it in a receiver.`;
+        } else if (currentChallenge.correctMethod === "liquation") {
+          feedback = `${currentChallenge.metalName} has a very low melting point compared to infusible dross impurities. It requires Liquation on a sloping hearth where the metal melts and flows away.`;
+        } else {
+          feedback = `${currentChallenge.metalName} requires ultra-high purity (99.9999%) for semiconductors. It is purified by Zone Refining using fractional crystallization with a mobile induction heater.`;
+        }
+        setFailFeedback(feedback);
+        setShowFailModal(true);
       }
-      setFailFeedback(feedback);
-      setShowFailModal(true);
-    }
+    }, duration);
   };
 
   // Advance to next level or show final modal
   const handleNextLevel = () => {
+    setShowSuccessModal(false);
     if (levelIndex < REFINING_CHALLENGES.length - 1) {
       setLevelIndex((prev) => prev + 1);
       setSelectedMethod(null);
@@ -209,6 +201,14 @@ export default function RefiningOfMetalsGamePage({
     } else {
       setShowFinalCompletionModal(true);
     }
+  };
+
+  // Replay current level from success modal
+  const handleReplayCurrentLevel = () => {
+    setShowSuccessModal(false);
+    setSelectedMethod(null);
+    setStage("idle");
+    setIsLevelPassed(false);
   };
 
   // Reset current challenge
@@ -394,49 +394,20 @@ export default function RefiningOfMetalsGamePage({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SCREEN 3: INTERACTIVE LAB GAMEPLAY (Single Landscape Div / Canvas)  */}
+      {/* SCREEN 3: INTERACTIVE LAB GAMEPLAY (Single Fullscreen Canvas)        */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {screen === "lab" && (
-        <div className="w-full h-full flex flex-col justify-between p-3 sm:p-4 relative z-10 bg-white overflow-hidden rounded-3xl sm:rounded-[32px]">
-          {/* Top Bar: Exit + Target Challenge Info + Explanation */}
-          <div className="flex items-center justify-between w-full pb-1 z-20 shrink-0 gap-2">
-            {/* Exit Button */}
-            <button
-              onClick={handleExit}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-sm cursor-pointer shrink-0"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>EXIT</span>
-            </button>
-
-            {/* Central Target Pill */}
-            <div className="flex items-center justify-center flex-1 min-w-0">
-              <span className="text-xs font-black text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 shadow-xs flex items-center gap-1.5 max-w-full overflow-hidden">
-                <span className="text-blue-600 shrink-0">Level {currentChallenge.level}:</span>
-                <span className="truncate">{currentChallenge.crudeName}</span>
-              </span>
-            </div>
-
-            {/* Explanation Button */}
-            <button
-              onClick={() => setShowExplanation(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-sm cursor-pointer shrink-0"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>EXPLANATION</span>
-            </button>
-          </div>
-
-          {/* Main 3D Simulation Canvas Area - Light clean background & zoomed in view */}
-          <div className="flex-1 w-full min-h-0 relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0] border border-slate-200 shadow-inner">
+        <div className="w-full h-full relative z-10 overflow-hidden rounded-3xl sm:rounded-[32px] bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0]">
+          {/* Main 3D Simulation Canvas Area - Covers entire screen */}
+          <div className="absolute inset-0 w-full h-full">
             <Canvas shadows gl={{ antialias: true, alpha: true }} className="w-full h-full">
-              {/* Balanced perspective: fov 31, camera at [0, 1.15, 3.6], looking right at [0, 0.25, 0] */}
-              <PerspectiveCamera makeDefault position={[0, 1.15, 3.6]} fov={31} />
+              {/* Zoomed out camera perspective: fov 35, camera at [0, 1.25, 4.35], looking right at [0, 0.15, 0] */}
+              <PerspectiveCamera makeDefault position={[0, 1.25, 4.35]} fov={35} />
               <OrbitControls
                 enablePan={false}
-                minDistance={2.2}
-                maxDistance={5.5}
-                target={[0, 0.25, 0]}
+                minDistance={2.5}
+                maxDistance={6.5}
+                target={[0, 0.15, 0]}
                 maxPolarAngle={Math.PI / 2.02}
               />
               <Suspense fallback={null}>
@@ -453,23 +424,52 @@ export default function RefiningOfMetalsGamePage({
             </Canvas>
           </div>
 
-          {/* Bottom Single-Row Control Bar: 4 Centered Buttons (Dropdown, Start, Reset, Check/Next) */}
-          <div className="w-full flex items-center justify-center gap-2 sm:gap-3 shrink-0 z-20 pt-1.5 pb-0.5 border-t border-slate-100 relative">
+          {/* Top Bar Overlay: Exit + Target Challenge Info + Explanation */}
+          <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 flex items-center justify-between z-20 pointer-events-none gap-2">
+            {/* Exit Button */}
+            <button
+              onClick={handleExit}
+              className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-900 text-white font-bold text-xs uppercase tracking-wider backdrop-blur-md transition active:scale-95 shadow-md border border-slate-700/50 cursor-pointer shrink-0"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>EXIT</span>
+            </button>
+
+            {/* Central Target Pill */}
+            <div className="pointer-events-auto flex items-center justify-center min-w-0 max-w-[60%]">
+              <span className="text-xs font-black text-slate-800 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-slate-200/80 shadow-md flex items-center gap-1.5 overflow-hidden">
+                <span className="text-blue-600 shrink-0">Level {currentChallenge.level}:</span>
+                <span className="truncate">{currentChallenge.crudeName}</span>
+              </span>
+            </div>
+
+            {/* Explanation Button */}
+            <button
+              onClick={() => setShowExplanation(true)}
+              className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-600/90 hover:bg-blue-600 text-white font-bold text-xs uppercase tracking-wider backdrop-blur-md transition active:scale-95 shadow-md border border-blue-400/40 cursor-pointer shrink-0"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>EXPLANATION</span>
+            </button>
+          </div>
+
+          {/* Bottom Control Bar Overlay: 4 Centered Buttons (Dropdown, Start, Reset, Check/Next) */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 flex items-center justify-center gap-2 sm:gap-3 z-20 pointer-events-none">
             {/* Action 1: Method Selector Dropdown Button */}
-            <div className="relative shrink-0">
+            <div className="relative shrink-0 pointer-events-auto">
               <button
                 onClick={() => setIsMethodDropdownOpen((prev) => !prev)}
                 disabled={stage === "refining"}
-                className={`py-1.5 px-3 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-xs ${
+                className={`py-2 px-3.5 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-md backdrop-blur-md ${
                   selectedMethod
                     ? selectedMethod === "electrolytic"
-                      ? "bg-cyan-600 text-white border-cyan-600 shadow-cyan-500/20"
+                      ? "bg-cyan-600 text-white border-cyan-600 shadow-cyan-500/25"
                       : selectedMethod === "distillation"
-                      ? "bg-amber-600 text-white border-amber-600 shadow-amber-500/20"
+                      ? "bg-amber-600 text-white border-amber-600 shadow-amber-500/25"
                       : selectedMethod === "liquation"
-                      ? "bg-orange-600 text-white border-orange-600 shadow-orange-500/20"
-                      : "bg-purple-600 text-white border-purple-600 shadow-purple-500/20"
-                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-300"
+                      ? "bg-orange-600 text-white border-orange-600 shadow-orange-500/25"
+                      : "bg-purple-600 text-white border-purple-600 shadow-purple-500/25"
+                    : "bg-white/95 hover:bg-white text-slate-800 border-slate-200"
                 }`}
               >
                 {selectedMethod === "electrolytic" && <Zap className="w-3.5 h-3.5 text-cyan-200" />}
@@ -500,7 +500,7 @@ export default function RefiningOfMetalsGamePage({
                     className="fixed inset-0 z-40"
                     onClick={() => setIsMethodDropdownOpen(false)}
                   />
-                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-2xl p-1.5 z-50 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white/95 backdrop-blur-md border border-slate-200 rounded-2xl shadow-2xl p-1.5 z-50 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-100">
                       Choose Method
                     </div>
@@ -589,56 +589,26 @@ export default function RefiningOfMetalsGamePage({
             </div>
 
             {/* Action 2: Start Refining Button */}
-            <button
-              onClick={handleStartRefining}
-              disabled={stage !== "idle"}
-              className={`py-1.5 px-3 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer shrink-0 ${
-                stage === "idle"
-                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 active:scale-95 shadow-md shadow-blue-500/20"
-                  : "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>START REFINING</span>
-            </button>
-
-            {/* Action 3: Reset Button */}
-            <button
-              onClick={handleReset}
-              className="py-1.5 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition cursor-pointer shadow-xs shrink-0"
-              title="Reset Setup"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>RESET</span>
-            </button>
-
-            {/* Action 4: Check Answer OR Next Level (When Passed) */}
-            <div className="relative shrink-0">
+            <div className="relative shrink-0 pointer-events-auto">
               {showPromptTooltip && (
-                <div className="absolute -top-11 right-0 px-3 py-1.5 rounded-xl bg-slate-900 text-white font-mono text-[10.5px] font-bold shadow-xl border border-slate-700 whitespace-nowrap z-50 flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute -top-11 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-xl bg-slate-900 text-white font-mono text-[10.5px] font-bold shadow-xl border border-slate-700 whitespace-nowrap z-50 flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
                   <span className="text-amber-400">⚠️</span>
                   <span>{showPromptTooltip}</span>
-                  <div className="absolute top-full right-8 border-4 border-transparent border-t-slate-900" />
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
                 </div>
               )}
-
-              {isLevelPassed ? (
-                <button
-                  onClick={handleNextLevel}
-                  className="py-1.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-md shadow-emerald-500/25 transition cursor-pointer animate-pulse"
-                >
-                  <span>{levelIndex === REFINING_CHALLENGES.length - 1 ? "FINISH" : "NEXT LEVEL"}</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              ) : (
-                <button
-                  onClick={handleCheckAnswer}
-                  className="py-1.5 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition cursor-pointer"
-                >
-                  <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>CHECK ANSWER</span>
-                </button>
-              )}
+              <button
+                onClick={handleStartRefining}
+                disabled={stage !== "idle"}
+                className={`py-2 px-4 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md backdrop-blur-md cursor-pointer shrink-0 ${
+                  stage === "idle"
+                    ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 active:scale-95 shadow-blue-500/25"
+                    : "bg-slate-100/90 text-slate-400 border-slate-200 cursor-not-allowed"
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>START REFINING</span>
+              </button>
             </div>
           </div>
         </div>
@@ -780,7 +750,47 @@ export default function RefiningOfMetalsGamePage({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* MODAL 2: FINAL CHALLENGE COMPLETED MODAL (At Last Level)            */}
+      {/* MODAL 2A: LEVEL PASSED MODAL (Next Level & Replay)                  */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {showSuccessModal && (
+        <div className="absolute inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-sm bg-white rounded-3xl p-5 shadow-2xl border border-emerald-100 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2.5">
+              <CheckCircle className="w-8 h-8" />
+            </div>
+
+            <h3 className="text-lg font-black text-slate-900 mb-1">
+              Refining Successful!
+            </h3>
+
+            <p className="text-xs text-slate-600 mb-4 leading-relaxed">
+              Correct purification method selected for {currentChallenge.metalName}! Pure metal successfully isolated.
+            </p>
+
+            {/* 2 Buttons: REPLAY and NEXT LEVEL */}
+            <div className="w-full flex items-center gap-2">
+              <button
+                onClick={handleReplayCurrentLevel}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-95 text-slate-700 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>REPLAY</span>
+              </button>
+
+              <button
+                onClick={handleNextLevel}
+                className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer shadow-md shadow-emerald-500/25 animate-pulse"
+              >
+                <span>NEXT LEVEL</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* MODAL 2B: FINAL CHALLENGE COMPLETED MODAL (At Last Level)           */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {showFinalCompletionModal && (
         <div className="absolute inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">

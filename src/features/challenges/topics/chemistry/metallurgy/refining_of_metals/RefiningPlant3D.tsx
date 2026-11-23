@@ -562,7 +562,7 @@ export default function RefiningPlant3D({
               <meshStandardMaterial color="#3B1E08" roughness={0.95} metalness={0.3} />
             </mesh>
             {/* Anode Mud Floating Identifier Tag */}
-            <Html position={[0, -0.06, 0.48]} center>
+            <Html position={[0, -0.06, 0.48]} center zIndexRange={[10, 0]}>
               <div style={{ transform: "scale(1.05)", transformOrigin: "center" }}>
                 <div className="px-2 py-0.5 rounded bg-amber-950/90 border border-amber-500/50 text-amber-300 font-mono text-[9.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
                   ANODE MUD (Ag, Au, Pt)
@@ -590,7 +590,7 @@ export default function RefiningPlant3D({
           {/* 3D BADGES (Positioned Outwards to Keep Wires Fully Visible) */}
           {/* ───────────────────────────────────────────────────────── */}
           {/* Anode Badge positioned outwards to the left */}
-          <Html position={[-1.38, 1.05, 0]} center>
+          <Html position={[-1.38, 1.05, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-rose-500/60 text-rose-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500 inline-block"></span>
@@ -600,7 +600,7 @@ export default function RefiningPlant3D({
           </Html>
 
           {/* Central Tank & Electrolyte Badge */}
-          <Html position={[0, 0.72, 0.76]} center>
+          <Html position={[0, 0.72, 0.76]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-cyan-500/60 text-cyan-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"></span>
@@ -610,7 +610,7 @@ export default function RefiningPlant3D({
           </Html>
 
           {/* Cathode Badge positioned outwards to the right */}
-          <Html position={[1.38, 1.05, 0]} center>
+          <Html position={[1.38, 1.05, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-emerald-500/60 text-emerald-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
@@ -835,7 +835,7 @@ export default function RefiningPlant3D({
           {/* ───────────────────────────────────────────────────────── */}
           {/* 3D BADGES (Positioned Cleanly on Distillation)            */}
           {/* ───────────────────────────────────────────────────────── */}
-          <Html position={[-1.6, 1.35, 0]} center>
+          <Html position={[-1.6, 1.35, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-amber-500/60 text-amber-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>
@@ -844,7 +844,7 @@ export default function RefiningPlant3D({
             </div>
           </Html>
 
-          <Html position={[-0.15, 1.35, 0]} center>
+          <Html position={[-0.15, 1.35, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-cyan-500/60 text-cyan-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"></span>
@@ -853,7 +853,7 @@ export default function RefiningPlant3D({
             </div>
           </Html>
 
-          <Html position={[1.2, 1.35, 0]} center>
+          <Html position={[1.2, 1.35, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-emerald-500/60 text-emerald-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
@@ -1109,7 +1109,7 @@ export default function RefiningPlant3D({
           {/* ───────────────────────────────────────────────────────── */}
           {/* 4. 3D BADGES (Positioned Cleanly Below Header Bar)        */}
           {/* ───────────────────────────────────────────────────────── */}
-          <Html position={[-1.3, 1.05, 0]} center>
+          <Html position={[-1.3, 1.05, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-amber-500/60 text-amber-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>
@@ -1117,7 +1117,7 @@ export default function RefiningPlant3D({
               </div>
             </div>
           </Html>
-          <Html position={[0.05, 1.05, 0]} center>
+          <Html position={[0.05, 1.05, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-cyan-500/60 text-cyan-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"></span>
@@ -1125,7 +1125,7 @@ export default function RefiningPlant3D({
               </div>
             </div>
           </Html>
-          <Html position={[1.4, 1.05, 0]} center>
+          <Html position={[1.4, 1.05, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-emerald-500/60 text-emerald-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
@@ -1344,7 +1344,7 @@ export default function RefiningPlant3D({
           {/* 5. 3D BADGES (Positioned Cleanly Without Overlapping)     */}
           {/* Lowered to y = 0.85 so they are completely visible below the top bar */}
           {/* ───────────────────────────────────────────────────────── */}
-          <Html position={[-1.25, 0.85, 0]} center>
+          <Html position={[-1.25, 0.85, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-cyan-500/60 text-cyan-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block"></span>
@@ -1352,7 +1352,7 @@ export default function RefiningPlant3D({
               </div>
             </div>
           </Html>
-          <Html position={[0.0, 0.85, 0]} center>
+          <Html position={[0.0, 0.85, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-amber-500/60 text-amber-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>
@@ -1360,7 +1360,7 @@ export default function RefiningPlant3D({
               </div>
             </div>
           </Html>
-          <Html position={[1.25, 0.85, 0]} center>
+          <Html position={[1.25, 0.85, 0]} center zIndexRange={[10, 0]}>
             <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
               <div className="px-2.5 py-1 rounded-lg bg-slate-900/95 border border-rose-500/60 text-rose-300 font-mono text-[10.5px] font-black tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500 inline-block"></span>

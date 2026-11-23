@@ -292,29 +292,29 @@ export default function RefiningOfMetalsGamePage({
 
           {/* 3 Step Cards - Compact Height & Clear Instructions */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3.5 my-auto max-w-5xl mx-auto w-full">
-            {/* Card 1: Inspect Sample & Plant Setup */}
+            {/* Card 1: Inspect Sample & Target Pill */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     1
                   </div>
-                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 1: Inspect Metal</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 1: Check Metal</h3>
                 </div>
                 <div className="inline-block px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  CHECK IMPURITIES &amp; SETUP
+                  INSPECT TARGET PILL
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
-                  Look at the crude metal and its impurities shown at the top pill, and inspect the 3D plant setup.
+                  Check the top pill to see the crude metal and level challenge before choosing a method.
                 </p>
               </div>
 
-              {/* Visual 1: 3D Refining Plant Setup */}
-              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-slate-900/10 relative flex items-center justify-center mt-auto">
+              {/* Visual 1: Target Level & Crude Metal Pill */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative flex items-center justify-center mt-auto p-2">
                 <img
-                  src="/instructions_refining_step1.jpg"
-                  alt="3D Refining Plant Setup"
-                  className="w-full h-full object-cover rounded-lg"
+                  src="/instructions_refining_step1.png"
+                  alt="Level and Crude Metal Pill"
+                  className="max-w-full max-h-full object-contain"
                 />
               </div>
             </div>
@@ -329,10 +329,10 @@ export default function RefiningOfMetalsGamePage({
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 2: Choose Method</h3>
                 </div>
                 <div className="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  PICK REFINING ROUTE
+                  SELECT FROM DROPDOWN
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
-                  Select the correct button: <strong>ELECTROLYTIC</strong>, <strong>DISTILLATION</strong>, <strong>LIQUATION</strong>, or <strong>ZONE REFINING</strong>.
+                  Open the dropdown and choose: <strong>ELECTROLYTIC</strong>, <strong>DISTILLATION</strong>, <strong>LIQUATION</strong>, or <strong>ZONE REFINING</strong>.
                 </p>
               </div>
 
@@ -346,29 +346,29 @@ export default function RefiningOfMetalsGamePage({
               </div>
             </div>
 
-            {/* Card 3: Start Refining & Check Answer */}
+            {/* Card 3: Start Refining & Automated Result */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     3
                   </div>
-                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 3: Start &amp; Verify</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 3: Start Refining</h3>
                 </div>
                 <div className="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  RUN &amp; CHECK ANSWER
+                  RUN &amp; VERIFY RESULT
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
-                  Click <strong>1. START REFINING</strong> to watch the purification. Then click <strong>CHECK ANSWER</strong> to verify!
+                  Click <strong>START REFINING</strong> to run the plant. A popup will instantly show if it succeeded or needs a retry!
                 </p>
               </div>
 
               {/* Visual 3: Action Controls */}
-              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative flex items-center justify-center mt-auto">
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative flex items-center justify-center mt-auto p-2">
                 <img
-                  src="/instructions_refining_step3.jpg"
-                  alt="Start Refining, Reset and Check Answer"
-                  className="w-full h-full object-contain"
+                  src="/instructions_refining_step3.png"
+                  alt="Start Refining Button"
+                  className="max-w-full max-h-full object-contain"
                 />
               </div>
             </div>
@@ -399,7 +399,7 @@ export default function RefiningOfMetalsGamePage({
       {screen === "lab" && (
         <div className="w-full h-full relative z-10 overflow-hidden rounded-3xl sm:rounded-[32px] bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0]">
           {/* Main 3D Simulation Canvas Area - Covers entire screen */}
-          <div className="absolute inset-0 w-full h-full">
+          <div className="absolute inset-0 w-full h-full z-0">
             <Canvas shadows gl={{ antialias: true, alpha: true }} className="w-full h-full">
               {/* Zoomed out camera perspective: fov 35, camera at [0, 1.25, 4.35], looking right at [0, 0.15, 0] */}
               <PerspectiveCamera makeDefault position={[0, 1.25, 4.35]} fov={35} />
@@ -453,8 +453,8 @@ export default function RefiningOfMetalsGamePage({
             </button>
           </div>
 
-          {/* Bottom Control Bar Overlay: 4 Centered Buttons (Dropdown, Start, Reset, Check/Next) */}
-          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 flex items-center justify-center gap-2 sm:gap-3 z-20 pointer-events-none">
+          {/* Bottom Control Bar Overlay: 2 Centered Buttons with High Z-Index Dropdown */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 flex items-center justify-center gap-2 sm:gap-3 z-30 pointer-events-none">
             {/* Action 1: Method Selector Dropdown Button */}
             <div className="relative shrink-0 pointer-events-auto">
               <button
@@ -492,7 +492,7 @@ export default function RefiningOfMetalsGamePage({
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isMethodDropdownOpen ? "rotate-180" : ""}`} />
               </button>
 
-              {/* Dropdown Menu (Opens Upward to not get cut off) */}
+              {/* Dropdown Menu (Opens Upward with High Stacking Context z-50) */}
               {isMethodDropdownOpen && (
                 <>
                   {/* Backdrop to close on click outside */}
@@ -500,7 +500,7 @@ export default function RefiningOfMetalsGamePage({
                     className="fixed inset-0 z-40"
                     onClick={() => setIsMethodDropdownOpen(false)}
                   />
-                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white/95 backdrop-blur-md border border-slate-200 rounded-2xl shadow-2xl p-1.5 z-50 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-2xl p-1.5 z-50 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-100">
                       Choose Method
                     </div>

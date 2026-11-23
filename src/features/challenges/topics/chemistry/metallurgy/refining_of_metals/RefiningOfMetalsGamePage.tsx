@@ -818,11 +818,14 @@ export default function RefiningOfMetalsGamePage({
               </button>
 
               <button
-                onClick={handleExit}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer shadow-md shadow-blue-500/25"
+                onClick={() => {
+                  setShowFinalCompletionModal(false);
+                  setShowExplanation(true);
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer shadow-md shadow-blue-500/25"
               >
-                <span>FINISH</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>EXPLANATION</span>
               </button>
             </div>
           </div>

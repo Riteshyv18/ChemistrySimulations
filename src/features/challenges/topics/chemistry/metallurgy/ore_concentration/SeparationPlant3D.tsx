@@ -932,14 +932,14 @@ export default function SeparationPlant3D({
             </mesh>
           </group>
 
-          {/* Copper Heating Coil */}
-          <mesh position={[0, 0.1, 0]}>
-            <torusGeometry args={[0.7, 0.06, 16, 32]} />
-            <meshStandardMaterial color="#B45309" metalness={0.8} />
+          {/* Copper Heating Coils (submerged horizontally around the stirrer shaft) */}
+          <mesh position={[0, 0.05, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.72, 0.05, 16, 48]} />
+            <meshStandardMaterial color="#B45309" metalness={0.85} roughness={0.25} />
           </mesh>
-          <mesh position={[0, -0.3, 0]}>
-            <torusGeometry args={[0.7, 0.06, 16, 32]} />
-            <meshStandardMaterial color="#B45309" metalness={0.8} />
+          <mesh position={[0, -0.28, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.72, 0.05, 16, 48]} />
+            <meshStandardMaterial color="#B45309" metalness={0.85} roughness={0.25} />
           </mesh>
 
           {/* Floating Bottom Badge: Insoluble Gangue Filter */}

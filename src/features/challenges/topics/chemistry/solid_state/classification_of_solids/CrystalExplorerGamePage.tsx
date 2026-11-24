@@ -241,7 +241,7 @@ export default function CrystalExplorerGamePage({
               {/* Card 1: Explore & Rotate */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 mb-1.5">
                     <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
                       1
                     </div>
@@ -249,13 +249,8 @@ export default function CrystalExplorerGamePage({
                       Explore the Sample
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-extrabold text-[9px] uppercase tracking-wider">
-                      ROTATE &amp; ZOOM
-                    </span>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[11px] leading-tight mt-1.5">
-                    Click and drag across the 3D solid to inspect how its atoms and coordinate bonds are arranged from multiple angles.
+                  <p className="text-slate-600 font-medium text-[11px] leading-snug mt-1">
+                    Rotate and zoom the 3D solid to inspect how its atomic bonds are connected.
                   </p>
                 </div>
                 <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900 flex items-center justify-center mt-2 shadow-inner p-2 text-center">
@@ -271,7 +266,7 @@ export default function CrystalExplorerGamePage({
               {/* Card 2: Inspect Arrangement */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 mb-1.5">
                     <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
                       2
                     </div>
@@ -279,13 +274,8 @@ export default function CrystalExplorerGamePage({
                       Inspect Arrangement
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-extrabold text-[9px] uppercase tracking-wider">
-                      LOOK FOR PATTERNS
-                    </span>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[11px] leading-tight mt-1.5">
-                    Look for a repeating pattern. The particles either form an ordered repeating unit cell or a disordered irregular network.
+                  <p className="text-slate-600 font-medium text-[11px] leading-snug mt-1">
+                    Observe whether atoms form an ordered lattice or a disordered network.
                   </p>
                 </div>
                 <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900 flex items-center justify-center mt-2 shadow-inner p-2 text-center">
@@ -300,7 +290,7 @@ export default function CrystalExplorerGamePage({
               {/* Card 3: Classify & Advance */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 mb-1.5">
                     <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
                       3
                     </div>
@@ -308,13 +298,8 @@ export default function CrystalExplorerGamePage({
                       Make a Decision
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px] uppercase tracking-wider">
-                      CRYSTALLINE OR AMORPHOUS
-                    </span>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[11px] leading-tight mt-1.5">
-                    Click either <strong>Crystalline</strong> or <strong>Amorphous</strong>. Correct answers advance to the next sample until complete!
+                  <p className="text-slate-600 font-medium text-[11px] leading-snug mt-1">
+                    Select Crystalline or Amorphous to verify your answer and proceed.
                   </p>
                 </div>
                 <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900 flex items-center justify-center mt-2 shadow-inner p-2 gap-2">

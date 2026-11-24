@@ -296,14 +296,11 @@ export default function CrushingRoastingCalcinationGamePage({
             {/* Card 1: Check Target Ore */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     1
                   </div>
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 1: Check Target</h3>
-                </div>
-                <div className="inline-block px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  TARGET ORE & TYPE
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
                   Look at the top pill to see the ore name, formula, and whether it is a <strong>Sulphide</strong> or <strong>Carbonate</strong> ore.
@@ -323,14 +320,11 @@ export default function CrushingRoastingCalcinationGamePage({
             {/* Card 2: Choose Roasting or Calcination */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     2
                   </div>
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 2: Choose Method</h3>
-                </div>
-                <div className="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  ROASTING OR CALCINATION
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
                   Click the dropdown and choose <strong>ROASTING</strong> (excess air for sulphides) or <strong>CALCINATION</strong> (limited air for carbonates).
@@ -350,14 +344,11 @@ export default function CrushingRoastingCalcinationGamePage({
             {/* Card 3: Start Crush Ore */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     3
                   </div>
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 3: Start Crush Ore</h3>
-                </div>
-                <div className="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  RUN & VERIFY
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
                   Click <strong>START CRUSH ORE</strong> to crush the ore chunks, feed the furnace, and verify the oxide conversion!

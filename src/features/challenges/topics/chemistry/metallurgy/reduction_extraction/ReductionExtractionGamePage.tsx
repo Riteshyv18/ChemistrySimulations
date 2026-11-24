@@ -174,6 +174,7 @@ export default function ReductionExtractionGamePage({
       setTimeout(() => setShowPromptTooltip(null), 3200);
       return;
     }
+    setIsMethodDropdownOpen(false);
     setStage("extracting");
 
     // Phase 1: Reaction completes after 1.2s -> reveals pure extracted metal ingot bars in 3D table
@@ -308,14 +309,11 @@ export default function ReductionExtractionGamePage({
             {/* Card 1: Inspect Target Metal Oxide */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     1
                   </div>
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 1: Check Target</h3>
-                </div>
-                <div className="inline-block px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  TARGET ORE
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
                   Look at the top pill to see the metal oxide name and chemical formula to be extracted.
@@ -335,14 +333,11 @@ export default function ReductionExtractionGamePage({
             {/* Card 2: Choose Method */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     2
                   </div>
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 2: Choose Method</h3>
-                </div>
-                <div className="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  PICK EXTRACTION ROUTE
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
                   Click the dropdown and select the correct extraction method for the metal.
@@ -362,14 +357,11 @@ export default function ReductionExtractionGamePage({
             {/* Card 3: Start Extraction */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     3
                   </div>
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 3: Start Extraction</h3>
-                </div>
-                <div className="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  RUN & VERIFY
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
                   Click <strong>START EXTRACTION</strong> to run the plant, see pure metal cast, and check your answer!
@@ -481,58 +473,66 @@ export default function ReductionExtractionGamePage({
               {/* Button 1: Method Dropdown Trigger & Popover */}
               <div className="relative">
                 {/* Dropdown Menu Popover (Opens Upwards) */}
-                {isMethodDropdownOpen && (
-                  <div className="absolute bottom-full mb-2 left-0 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 p-2 z-50 flex flex-col gap-1.5 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 px-2 py-1">
-                      CHOOSE METHOD
-                    </div>
-                    {shuffledMethods.map((methodKey) => {
-                      const isSelected = selectedMethod === methodKey;
-                      const config =
-                        methodKey === "electrolytic"
-                          ? { label: "ELECTROLYTIC", icon: Zap, color: "cyan" }
-                          : methodKey === "carbon"
-                          ? { label: "CARBON / CO", icon: Flame, color: "amber" }
-                          : { label: "SELF-REDUCTION", icon: RefreshCw, color: "purple" };
-                      const Icon = config.icon;
+                {isMethodDropdownOpen && stage === "idle" && (
+                  <>
+                    {/* Backdrop to close on click outside */}
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsMethodDropdownOpen(false)}
+                    />
+                    <div className="absolute bottom-full mb-2 left-0 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 p-2 z-50 flex flex-col gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 px-2 py-1">
+                        CHOOSE METHOD
+                      </div>
+                      {shuffledMethods.map((methodKey) => {
+                        const isSelected = selectedMethod === methodKey;
+                        const config =
+                          methodKey === "electrolytic"
+                            ? { label: "ELECTROLYTIC", icon: Zap, color: "cyan" }
+                            : methodKey === "carbon"
+                            ? { label: "CARBON / CO", icon: Flame, color: "amber" }
+                            : { label: "SELF-REDUCTION", icon: RefreshCw, color: "purple" };
+                        const Icon = config.icon;
 
-                      return (
-                        <button
-                          key={methodKey}
-                          onClick={() => {
-                            setSelectedMethod(methodKey);
-                            setIsMethodDropdownOpen(false);
-                            if (stage === "extracted") {
-                              setStage("idle");
-                            }
-                          }}
-                          className={`w-full py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition cursor-pointer text-left ${
-                            isSelected
-                              ? "bg-slate-900 text-white shadow-sm"
-                              : "text-slate-800 hover:bg-slate-100"
-                          }`}
-                        >
-                          <Icon
-                            className={`w-4 h-4 ${
-                              config.color === "cyan"
-                                ? "text-cyan-500"
-                                : config.color === "amber"
-                                ? "text-amber-500"
-                                : "text-purple-500"
+                        return (
+                          <button
+                            key={methodKey}
+                            onClick={() => {
+                              setSelectedMethod(methodKey);
+                              setIsMethodDropdownOpen(false);
+                            }}
+                            className={`w-full py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition cursor-pointer text-left ${
+                              isSelected
+                                ? "bg-slate-900 text-white shadow-sm"
+                                : "text-slate-800 hover:bg-slate-100"
                             }`}
-                          />
-                          <span>{config.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                          >
+                            <Icon
+                              className={`w-4 h-4 ${
+                                config.color === "cyan"
+                                  ? "text-cyan-500"
+                                  : config.color === "amber"
+                                  ? "text-amber-500"
+                                  : "text-purple-500"
+                              }`}
+                            />
+                            <span>{config.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
                 )}
 
                 {/* Dropdown Trigger Button */}
                 <button
                   onClick={() => setIsMethodDropdownOpen(!isMethodDropdownOpen)}
-                  disabled={stage === "extracting"}
-                  className={`py-2 px-4 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer border ${
+                  disabled={stage !== "idle"}
+                  className={`py-2 px-4 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md border ${
+                    stage !== "idle"
+                      ? "opacity-60 cursor-not-allowed"
+                      : "cursor-pointer"
+                  } ${
                     selectedMethod === "electrolytic"
                       ? "bg-cyan-600 text-white border-cyan-500 shadow-cyan-500/20"
                       : selectedMethod === "carbon"
@@ -571,11 +571,11 @@ export default function ReductionExtractionGamePage({
               {/* Button 2: Start Extraction Button */}
               <button
                 onClick={handleStartExtraction}
-                disabled={stage === "extracting"}
-                className={`py-2 px-5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer ${
-                  stage === "extracting"
+                disabled={stage !== "idle"}
+                className={`py-2 px-5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md ${
+                  stage !== "idle"
                     ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
-                    : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95 shadow-blue-500/25"
+                    : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95 shadow-blue-500/25 cursor-pointer"
                 }`}
               >
                 <Flame className="w-4 h-4" />

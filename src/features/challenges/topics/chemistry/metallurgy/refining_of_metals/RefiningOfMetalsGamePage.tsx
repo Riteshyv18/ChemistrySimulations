@@ -234,9 +234,9 @@ export default function RefiningOfMetalsGamePage({
       {/* SCREEN 1: MISSION BRIEFING SCREEN                                   */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {screen === "mission" && (
-        <div className="w-full h-full flex flex-col justify-between p-6 sm:p-8 relative z-10 bg-white overflow-hidden rounded-3xl sm:rounded-[32px]">
+        <div className="w-full h-full flex flex-col justify-between p-6 sm:p-7 relative bg-white">
           {/* Top Bar with Exit */}
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-start w-full z-10 shrink-0">
             <button
               onClick={handleExit}
               className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-sm cursor-pointer"
@@ -244,27 +244,26 @@ export default function RefiningOfMetalsGamePage({
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>EXIT</span>
             </button>
-            <div />
           </div>
 
-          {/* Central Hero Mission Briefing */}
-          <div className="flex-1 flex flex-col items-center justify-center text-center max-w-3xl mx-auto my-auto px-4">
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-snug sm:leading-tight mb-4">
+          {/* Central Hero Mission Briefing & Next Button Grouped */}
+          <div className="max-w-3xl w-full mx-auto text-center flex flex-col items-center justify-center flex-1 my-auto z-10 px-4 space-y-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-snug sm:leading-tight">
               <span className="text-blue-600">MISSION:</span> Convert impure metal into high-purity (99.99%) metal using the correct refining method!
             </h1>
 
+            <div className="pt-2 flex justify-center w-full">
+              <button
+                onClick={() => setScreen("instructions")}
+                className="flex items-center justify-center gap-2 px-8 py-2.5 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25 transition-all cursor-pointer transform hover:scale-105 active:scale-95"
+              >
+                <span>NEXT</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          {/* Bottom Bar: Action Next Button */}
-          <div className="w-full flex items-center justify-center pt-2">
-            <button
-              onClick={() => setScreen("instructions")}
-              className="w-40 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs sm:text-sm uppercase tracking-wider active:scale-95 transition cursor-pointer flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/25"
-            >
-              <span>NEXT</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+          <div className="h-8 shrink-0" />
         </div>
       )}
 
@@ -295,14 +294,11 @@ export default function RefiningOfMetalsGamePage({
             {/* Card 1: Inspect Sample & Target Pill */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     1
                   </div>
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 1: Check Metal</h3>
-                </div>
-                <div className="inline-block px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  INSPECT TARGET PILL
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
                   Check the top pill to see the crude metal and level challenge before choosing a method.
@@ -322,14 +318,11 @@ export default function RefiningOfMetalsGamePage({
             {/* Card 2: Select Refining Method */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     2
                   </div>
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 2: Choose Method</h3>
-                </div>
-                <div className="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  SELECT FROM DROPDOWN
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
                   Open the dropdown and choose: <strong>ELECTROLYTIC</strong>, <strong>DISTILLATION</strong>, <strong>LIQUATION</strong>, or <strong>ZONE REFINING</strong>.
@@ -349,14 +342,11 @@ export default function RefiningOfMetalsGamePage({
             {/* Card 3: Start Refining & Automated Result */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     3
                   </div>
                   <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 3: Start Refining</h3>
-                </div>
-                <div className="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  RUN &amp; VERIFY RESULT
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
                   Click <strong>START REFINING</strong> to run the plant. A popup will instantly show if it succeeded or needs a retry!

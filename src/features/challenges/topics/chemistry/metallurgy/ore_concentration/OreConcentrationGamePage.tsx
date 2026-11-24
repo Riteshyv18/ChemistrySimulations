@@ -565,16 +565,13 @@ export default function OreConcentrationGamePage({
             {/* Card 1: Check Target Ore */}
             <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between text-left shadow-sm overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     1
                   </div>
                   <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Step 1: Inspect Target</h3>
                 </div>
 
-                <div className="inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold uppercase mb-1 w-fit">
-                  TARGET ORE & PURITY
-                </div>
                 <p className="text-[11px] text-slate-600 leading-snug mb-1.5">
                   Look at the top badge to identify the mineral name, formula, and goal (e.g., Tin Stone SnO₂ &bull; &ge;90% Purity).
                 </p>
@@ -593,16 +590,13 @@ export default function OreConcentrationGamePage({
             {/* Card 2: Choose Method */}
             <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between text-left shadow-sm overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     2
                   </div>
                   <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Step 2: Choose Method</h3>
                 </div>
 
-                <div className="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold uppercase mb-1 w-fit">
-                  SEPARATION DROPDOWN
-                </div>
                 <p className="text-[11px] text-slate-600 leading-snug mb-1.5">
                   Click the dropdown and select the matching method: <strong>Hydraulic</strong>, <strong>Magnetic</strong>, <strong>Froth</strong>, or <strong>Leaching</strong>.
                 </p>
@@ -621,16 +615,13 @@ export default function OreConcentrationGamePage({
             {/* Card 3: Run Separation & Advance */}
             <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between text-left shadow-sm overflow-hidden">
               <div className="flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     3
                   </div>
                   <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Step 3: Run & Advance</h3>
                 </div>
 
-                <div className="inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase mb-1 w-fit">
-                  RUN & UNLOCK NEXT LEVEL
-                </div>
                 <p className="text-[11px] text-slate-600 leading-snug mb-1.5">
                   Click <strong>RUN SEPARATION</strong> to run the plant. When correct, watch the separation before advancing to the next level!
                 </p>
@@ -726,20 +717,6 @@ export default function OreConcentrationGamePage({
               <span>EXPLANATION</span>
             </button>
           </div>
-
-          {/* SIMULATING PROGRESS OVERLAY (Floats in center-bottom if active) */}
-          {isSimulating && (
-            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md px-5 py-2 rounded-full border border-slate-700 shadow-xl flex items-center gap-3 z-30 text-white text-xs font-bold pointer-events-none min-w-[280px]">
-              <span className="shrink-0 text-cyan-300">Separating Ore...</span>
-              <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300 rounded-full"
-                  style={{ width: `${simProgress}%` }}
-                />
-              </div>
-              <span className="shrink-0 font-mono text-[11px] text-cyan-300">{simProgress}%</span>
-            </div>
-          )}
 
           {/* FLOATING BOTTOM CONTROLS: EXACTLY 2 BUTTONS (Dropdown + Run Separation, no white outer container, shifted downward) */}
           <div className="absolute bottom-2 sm:bottom-3 left-0 right-0 z-30 flex items-center justify-center pointer-events-none">

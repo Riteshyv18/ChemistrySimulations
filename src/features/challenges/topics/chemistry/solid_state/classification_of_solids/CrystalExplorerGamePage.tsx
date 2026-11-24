@@ -46,8 +46,8 @@ export const SOLID_SAMPLES: SolidSampleConfig[] = [
     primaryColor: "#0D9488", // Teal glass
     secondaryColor: "#2DD4BF",
     particleRadius: 0.165,
-    modelScale: 0.80, // 2nd image: Zoom out so user can easily see the full disordered network clearly
-    modelOffset: [0, 0, 0],
+    modelScale: 0.68, // Zoomed out comfortably so it has breathing room from top bar and bottom buttons
+    modelOffset: [0, 0.05, 0],
     description: "Fused silica glass formed by rapid cooling. Particles show local bonding but lack long-range periodicity.",
     hint: "Notice that while nearby particles connect, the bond angles and distances vary randomly with no repeating unit cell.",
   },

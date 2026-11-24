@@ -414,12 +414,12 @@ export default function ReductionExtractionGamePage({
           {/* Main 3D Simulation Canvas Area - Single Fullscreen Canvas */}
           <div className="absolute inset-0 w-full h-full z-0">
             <Canvas shadows gl={{ antialias: true, alpha: true }} className="w-full h-full">
-              {/* Perfectly framed camera for full furnace height + chimney gas */}
-              <PerspectiveCamera makeDefault position={[0, 0.82, 5.0]} fov={38} />
+              {/* Zoomed out with small margin for comfortable framing: position z: 5.75, y: 0.85 */}
+              <PerspectiveCamera makeDefault position={[0, 0.85, 5.75]} fov={38} />
               <OrbitControls
                 enablePan={false}
-                minDistance={3.2}
-                maxDistance={7.5}
+                minDistance={3.8}
+                maxDistance={8.5}
                 maxPolarAngle={Math.PI / 2.08}
               />
               <Suspense fallback={null}>

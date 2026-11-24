@@ -17,6 +17,7 @@ import {
   Gem,
   Compass,
 } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 import CrystalSolid3D, { SolidSampleConfig, SolidSampleType } from "./CrystalSolid3D";
 
 // ============================================================================
@@ -122,7 +123,7 @@ export default function CrystalExplorerGamePage({
     if (onExit) {
       onExit();
     } else {
-      window.history.back();
+      exitSimulation();
     }
   };
 

@@ -28,7 +28,7 @@ import {
 // SIMULATION CONSTANTS & PARTICLE CONFIG
 // ============================================================================
 const NUM_PARTICLES = 64; // 4x4x4 cube lattice for solid state
-const SOLID_LATTICE_SPACING = 0.42;
+const SOLID_LATTICE_SPACING = 0.52; // slightly more open lattice to accommodate larger molecules
 
 interface ParticleData {
   id: number;
@@ -86,10 +86,10 @@ function ParticlesChamber({
     const time = state.clock.getElapsedTime();
     const clampedDelta = Math.min(delta, 0.05);
 
-    // Chamber boundaries
-    const boxX = 1.35;
-    const boxY = 1.35;
-    const boxZ = 1.35;
+    // Chamber boundaries for 5.2 x 2.6 x 2.4 rectangular vessel (longer chamber)
+    const boxX = 2.45;
+    const boxY = 1.18;
+    const boxZ = 1.05;
 
     // Phase-dependent behavior
     if (phaseState === "solid") {
@@ -104,15 +104,15 @@ function ParticlesChamber({
         p.curPos.copy(p.latticePos).add(vibration);
 
         dummy.position.copy(p.curPos);
-        dummy.scale.setScalar(0.12);
+        dummy.scale.setScalar(0.18);
         dummy.updateMatrix();
         meshRef.current?.setMatrixAt(i, dummy.matrix);
       });
     } else if (phaseState === "liquid") {
       // Liquid: Settles at bottom due to gravity, flows and slides with moderate speeds
       const speedScale = 0.8 + (temperature - 273) * 0.005;
-      const liquidFloorY = -boxY + 0.15;
-      const liquidTopY = 0.2; // constrained liquid height
+      const liquidFloorY = -boxY + 0.2;
+      const liquidTopY = 0.25; // constrained liquid height
 
       particles.forEach((p, i) => {
         // Drift
@@ -122,11 +122,11 @@ function ParticlesChamber({
         p.velocity.y -= clampedDelta * 1.8;
 
         // Soft boundaries for liquid
-        if (p.curPos.x > boxX - 0.1) {
-          p.curPos.x = boxX - 0.1;
+        if (p.curPos.x > boxX - 0.15) {
+          p.curPos.x = boxX - 0.15;
           p.velocity.x *= -0.7;
-        } else if (p.curPos.x < -boxX + 0.1) {
-          p.curPos.x = -boxX + 0.1;
+        } else if (p.curPos.x < -boxX + 0.15) {
+          p.curPos.x = -boxX + 0.15;
           p.velocity.x *= -0.7;
         }
 
@@ -138,16 +138,16 @@ function ParticlesChamber({
           p.velocity.y = Math.abs(p.velocity.y) * 0.5 + Math.random() * 0.2;
         }
 
-        if (p.curPos.z > boxZ - 0.1) {
-          p.curPos.z = boxZ - 0.1;
+        if (p.curPos.z > boxZ - 0.15) {
+          p.curPos.z = boxZ - 0.15;
           p.velocity.z *= -0.7;
-        } else if (p.curPos.z < -boxZ + 0.1) {
-          p.curPos.z = -boxZ + 0.1;
+        } else if (p.curPos.z < -boxZ + 0.15) {
+          p.curPos.z = -boxZ + 0.15;
           p.velocity.z *= -0.7;
         }
 
         dummy.position.copy(p.curPos);
-        dummy.scale.setScalar(0.115);
+        dummy.scale.setScalar(0.17);
         dummy.updateMatrix();
         meshRef.current?.setMatrixAt(i, dummy.matrix);
       });
@@ -159,21 +159,21 @@ function ParticlesChamber({
         p.curPos.addScaledVector(p.velocity, clampedDelta * speedScale);
 
         // Elastic box reflections
-        if (Math.abs(p.curPos.x) > boxX) {
-          p.curPos.x = Math.sign(p.curPos.x) * boxX;
+        if (Math.abs(p.curPos.x) > boxX - 0.1) {
+          p.curPos.x = Math.sign(p.curPos.x) * (boxX - 0.1);
           p.velocity.x *= -1;
         }
-        if (Math.abs(p.curPos.y) > boxY) {
-          p.curPos.y = Math.sign(p.curPos.y) * boxY;
+        if (Math.abs(p.curPos.y) > boxY - 0.1) {
+          p.curPos.y = Math.sign(p.curPos.y) * (boxY - 0.1);
           p.velocity.y *= -1;
         }
-        if (Math.abs(p.curPos.z) > boxZ) {
-          p.curPos.z = Math.sign(p.curPos.z) * boxZ;
+        if (Math.abs(p.curPos.z) > boxZ - 0.1) {
+          p.curPos.z = Math.sign(p.curPos.z) * (boxZ - 0.1);
           p.velocity.z *= -1;
         }
 
         dummy.position.copy(p.curPos);
-        dummy.scale.setScalar(0.11);
+        dummy.scale.setScalar(0.16);
         dummy.updateMatrix();
         meshRef.current?.setMatrixAt(i, dummy.matrix);
       });
@@ -191,16 +191,44 @@ function ParticlesChamber({
 
   return (
     <group>
-      {/* 3D Glass Chamber Bounding Box */}
+      {/* ── MODERN RECTANGULAR GLASS CHAMBER (Elongated Tinted Ice-Cyan Glass Vessel) ── */}
+      {/* Outer Tinted Glass Walls */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[5.2, 2.5, 2.3]} />
+        <meshPhysicalMaterial
+          color="#38BDF8"
+          transmission={0.88}
+          opacity={0.35}
+          transparent
+          roughness={0.1}
+          metalness={0.1}
+          ior={1.45}
+          thickness={0.5}
+        />
+      </mesh>
+
+      {/* Crisp Metallic Corner Bevel Frame */}
       <lineSegments>
-        <edgesGeometry args={[new THREE.BoxGeometry(2.9, 2.9, 2.9)]} />
-        <lineBasicMaterial color="#94A3B8" transparent opacity={0.4} />
+        <edgesGeometry args={[new THREE.BoxGeometry(5.22, 2.52, 2.32)]} />
+        <lineBasicMaterial color="#0284C7" transparent opacity={0.6} />
       </lineSegments>
 
-      {/* Chamber Floor Base */}
-      <mesh position={[0, -1.46, 0]}>
-        <cylinderGeometry args={[1.8, 1.85, 0.12, 32]} />
-        <meshStandardMaterial color="#0F172A" roughness={0.4} metalness={0.8} />
+      {/* Solid Base Platform Plate (Solid Slate Navy base) */}
+      <mesh position={[0, -1.31, 0]}>
+        <boxGeometry args={[5.6, 0.12, 2.7]} />
+        <meshStandardMaterial color="#334155" roughness={0.4} metalness={0.4} />
+      </mesh>
+
+      {/* Horizontal Cyan Guide Accent Stripe on Base */}
+      <mesh position={[0, -1.24, 0]}>
+        <boxGeometry args={[5.5, 0.015, 0.06]} />
+        <meshStandardMaterial color="#38BDF8" emissive="#0284C7" emissiveIntensity={0.7} />
+      </mesh>
+
+      {/* Sleek Polished Top Metallic Rim */}
+      <mesh position={[0, 1.28, 0]}>
+        <boxGeometry args={[5.3, 0.06, 2.4]} />
+        <meshStandardMaterial color="#475569" metalness={0.8} roughness={0.25} />
       </mesh>
 
       {/* Instanced Particle Mesh */}
@@ -290,27 +318,48 @@ export default function EntropyGamePage({
   // Navigation: "mission" -> "instructions" -> "lab"
   const [screenState, setScreenState] = useState<"mission" | "instructions" | "lab">("mission");
 
-  // Temperature control: 100K to 500K (Default: 180K Solid)
-  const [temperature, setTemperature] = useState<number>(180);
+  // State sequencing: Random targets to identify (Solid, Liquid, Gas)
+  const allPhases: PhaseKey[] = useMemo(() => ["solid", "liquid", "gas"], []);
+  const [targetPhaseIndex, setTargetPhaseIndex] = useState<number>(0);
+  const [phaseSequence, setPhaseSequence] = useState<PhaseKey[]>(() => {
+    const list: PhaseKey[] = ["solid", "gas", "liquid"];
+    return list.sort(() => Math.random() - 0.5);
+  });
+  const currentTargetPhase = phaseSequence[targetPhaseIndex] || "solid";
+  const [slideDirection, setSlideDirection] = useState<"from-left" | "from-right">("from-right");
 
-  // Derive phase from temperature:
+  // Helper to pick a starting temperature that NEVER matches the target state
+  const getNonMatchingTemp = (targetPhase: PhaseKey): number => {
+    // If target is solid (<273K), set slider to gas (450K)
+    // If target is liquid (273-373K), set slider to solid (160K)
+    // If target is gas (>=373K), set slider to liquid (300K)
+    if (targetPhase === "solid") return 450;
+    if (targetPhase === "liquid") return 160;
+    return 300;
+  };
+
+  // Temperature slider control: 100K to 500K
+  // Initialized to guarantee it NEVER starts on the correct temperature
+  const [temperature, setTemperature] = useState<number>(() => {
+    const initialTarget = phaseSequence[0] || "solid";
+    return getNonMatchingTemp(initialTarget);
+  });
+
+  // What the 3D chamber is showing: The random target phase! (DOES NOT change simultaneously with slider)
+  // Temperature passed into ParticlesChamber represents the target state's characteristic temperature for vibration/speed
+  const targetChamberTemp = useMemo(() => {
+    if (currentTargetPhase === "solid") return 180;
+    if (currentTargetPhase === "liquid") return 310;
+    return 440;
+  }, [currentTargetPhase]);
+
+  // Derive user's chosen phase from the slider temperature:
   // T < 273K: Solid | 273K <= T < 373K: Liquid | T >= 373K: Gas
-  const phaseState: PhaseKey = useMemo(() => {
+  const userSliderPhase: PhaseKey = useMemo(() => {
     if (temperature < 273) return "solid";
     if (temperature < 373) return "liquid";
     return "gas";
   }, [temperature]);
-
-  // Dynamic calculated Entropy S in J/(mol·K)
-  const entropyValue = useMemo(() => {
-    const base = PHASE_SPECS[phaseState].baseEntropy;
-    const tempFactor = (temperature / 100) * 4.2;
-    return Number((base + tempFactor).toFixed(1));
-  }, [temperature, phaseState]);
-
-  // Challenge ordering slots: student arranges [slot1, slot2, slot3] in increasing entropy
-  // Correct ordering: ["solid", "liquid", "gas"]
-  const [arrangedSlots, setArrangedSlots] = useState<PhaseKey[]>(["gas", "solid", "liquid"]);
 
   // Modals
   const [showExplanationModal, setShowExplanationModal] = useState<boolean>(false);
@@ -329,38 +378,42 @@ export default function EntropyGamePage({
     }
   };
 
-  // Move slot up or down
-  const handleSwapSlot = (index: number, direction: "left" | "right") => {
-    const targetIndex = direction === "left" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= arrangedSlots.length) return;
-
-    const updated = [...arrangedSlots];
-    const temp = updated[index];
-    updated[index] = updated[targetIndex];
-    updated[targetIndex] = temp;
-    setArrangedSlots(updated);
-  };
-
   // Reset challenge
   const handleResetChallenge = () => {
-    setArrangedSlots(["gas", "solid", "liquid"]);
-    setTemperature(180);
+    const newSeq = [...allPhases].sort(() => Math.random() - 0.5);
+    setPhaseSequence(newSeq);
+    setTargetPhaseIndex(0);
+    setTemperature(getNonMatchingTemp(newSeq[0]));
     setShowVictoryModal(false);
     setShowIncorrectModal(false);
   };
 
-  // Submit Answer
+  // Submit Answer: Verify if the user's slider temperature matches the 3D chamber's state
   const handleCheckAnswer = () => {
-    const isCorrect =
-      arrangedSlots[0] === "solid" &&
-      arrangedSlots[1] === "liquid" &&
-      arrangedSlots[2] === "gas";
+    const isCorrect = userSliderPhase === currentTargetPhase;
 
     if (isCorrect) {
-      setShowVictoryModal(true);
+      if (targetPhaseIndex < phaseSequence.length - 1) {
+        // Correct! Next random state comes in sliding from left or right
+        setNotification(`✓ Correct! That state was ${PHASE_SPECS[currentTargetPhase].name.toUpperCase()}! Moving to next state...`);
+        setTimeout(() => setNotification(null), 2500);
+        setSlideDirection(targetPhaseIndex % 2 === 0 ? "from-left" : "from-right");
+        const nextIndex = targetPhaseIndex + 1;
+        setTargetPhaseIndex(nextIndex);
+        // Ensure slider does NOT accidentally start on the new target's answer
+        setTemperature(getNonMatchingTemp(phaseSequence[nextIndex]));
+      } else {
+        // All states completed!
+        setShowVictoryModal(true);
+      }
     } else {
       setIncorrectFeedback(
-        `Current arrangement is ${arrangedSlots.map((s) => PHASE_SPECS[s].label).join(" < ")}. Remember: Solids have ordered fixed positions (lowest entropy), Liquids flow with higher disorder, and Gases possess maximum randomness and microstates!`
+        `Incorrect! Your slider is at ${temperature} K (${PHASE_SPECS[userSliderPhase].label} range). Observe the molecular motion in the chamber: ` +
+        (currentTargetPhase === "solid"
+          ? "the molecules are vibrating in an ordered lattice (Solid, < 273 K)."
+          : currentTargetPhase === "liquid"
+          ? "the molecules are flowing and sliding together at the bottom (Liquid, 273 K - 373 K)."
+          : "the molecules are moving rapidly and chaotically filling the entire container (Gas, ≥ 373 K).")
       );
       setShowIncorrectModal(true);
     }
@@ -368,10 +421,10 @@ export default function EntropyGamePage({
 
   return (
     <div className="w-full h-full h-screen h-[100dvh] bg-[#F8FAFC] text-slate-800 relative overflow-hidden select-none font-sans flex flex-col rounded-3xl sm:rounded-[32px] border border-slate-200 shadow-2xl">
-      {/* ─── TOAST NOTIFICATION ─── */}
+      {/* ─── TOAST NOTIFICATION (Vibrant Green for Correct Answer) ─── */}
       {notification && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg border border-slate-700/60 backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200 pointer-events-none text-center max-w-[90%]">
-          {notification}
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-5 py-2 rounded-full text-xs font-black tracking-wide shadow-xl border border-emerald-400 backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200 pointer-events-none text-center max-w-[90%] flex items-center gap-2">
+          <span>{notification}</span>
         </div>
       )}
 
@@ -395,7 +448,7 @@ export default function EntropyGamePage({
           {/* Central Mission Statement */}
           <div className="max-w-2xl w-full mx-auto text-center flex flex-col items-center justify-center flex-1 my-auto z-10 px-4 space-y-4">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-snug">
-              <span className="text-[#0284C7] font-extrabold uppercase">MISSION:</span> Explore how molecular arrangements and temperature affect the entropy of a system!
+              <span className="text-[#0284C7] font-extrabold uppercase">MISSION:</span> Observe the molecular disorder in the chamber, predict the correct temperature, and master the states of matter!
             </h2>
 
             <div className="pt-2 flex justify-center w-full">
@@ -454,22 +507,22 @@ export default function EntropyGamePage({
                       1
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Watch Particle Motion
+                      Observe the Chamber
                     </h3>
                   </div>
                   <div className="mt-1">
                     <span className="inline-block px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-extrabold text-[9px] uppercase tracking-wider">
-                      3D MOLECULAR CHAMBER
+                      MOLECULAR BEHAVIOR
                     </span>
                   </div>
                   <p className="text-slate-600 font-medium text-[11px] leading-tight mt-1.5">
-                    Observe particles in the chamber. Watch their movement and disorder change across Solid, Liquid, and Gas states.
+                    Carefully observe how the particles are moving and arranged inside the chamber.
                   </p>
                 </div>
-                <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-950 flex items-center justify-center mt-2 shadow-inner p-1">
+                <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900/10 flex items-center justify-center mt-2 shadow-inner p-1">
                   <img
                     src="/images/entropy_card1_chamber.png"
-                    alt="3D Particle Chamber"
+                    alt="Identify Molecular State"
                     className="w-full h-full object-contain rounded-lg"
                   />
                 </div>
@@ -492,7 +545,7 @@ export default function EntropyGamePage({
                     </span>
                   </div>
                   <p className="text-slate-600 font-medium text-[11px] leading-tight mt-1.5">
-                    Drag the slider to heat or cool. Increasing temperature makes particles vibrate and move faster, raising entropy!
+                    Drag the temperature slider to choose what you think the temperature should be for this state.
                   </p>
                 </div>
                 <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-white flex items-center justify-center mt-2 shadow-inner p-1">
@@ -504,7 +557,7 @@ export default function EntropyGamePage({
                 </div>
               </div>
 
-              {/* Card 3: Rank States by Entropy */}
+              {/* Card 3: Check & Verify Target State */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -512,23 +565,23 @@ export default function EntropyGamePage({
                       3
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Rank Phase Entropy
+                      Check Your Answer
                     </h3>
                   </div>
                   <div className="mt-1">
                     <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px] uppercase tracking-wider">
-                      SOLID &lt; LIQUID &lt; GAS
+                      VERIFY &amp; ADVANCE
                     </span>
                   </div>
                   <p className="text-slate-600 font-medium text-[11px] leading-tight mt-1.5">
-                    Use the <strong>&lt; MOVE &gt;</strong> buttons to arrange phases from lowest to highest disorder, then tap <strong>CHECK ANSWER</strong>!
+                    Click <strong>CHECK ANSWER</strong>. If correct, you will advance to the next state until all 3 states are mastered!
                   </p>
                 </div>
                 <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-white flex items-center justify-center mt-2 shadow-inner p-1">
                   <img
-                    src="/images/entropy_card3_rank.png"
-                    alt="Rank Increasing Entropy"
-                    className="w-full h-full object-contain rounded-lg bg-white"
+                    src="/images/entropy_card3_check.png"
+                    alt="Check Answer Button"
+                    className="w-full h-full object-contain rounded-lg"
                   />
                 </div>
               </div>
@@ -560,168 +613,98 @@ export default function EntropyGamePage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 3: INTERACTIVE 3D ENTROPY LAB (FULL WIDTH 3D + BOTTOM SINGLE ROW)
+          SCREEN 3: INTERACTIVE 3D ENTROPY LAB (SINGLE FULLSCREEN CANVAS)
           ══════════════════════════════════════════════════════════════════ */}
       {screenState === "lab" && (
-        <div className="w-full h-full flex flex-col justify-between relative bg-white overflow-hidden p-2 sm:p-2.5">
-          {/* Top Bar: EXIT & EXPLANATION */}
-          <div className="w-full flex items-center justify-between pb-1.5 z-30 shrink-0">
+        <div className="w-full h-full relative z-10 overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0] flex flex-col items-center justify-between">
+          {/* FULL SCREEN 3D WEBGL CANVAS VIEWPORT */}
+          <div className="absolute inset-0 w-full h-full z-0">
+            <Canvas gl={{ antialias: true, alpha: true }}>
+              <PerspectiveCamera makeDefault position={[0, 0.75, 8.4]} fov={36} />
+              <ambientLight intensity={1.2} />
+              <directionalLight position={[4, 6, 4]} intensity={1.5} />
+              <directionalLight position={[-4, 3, -2]} intensity={0.8} color="#BAE6FD" />
+              <pointLight position={[0, 2, 3]} intensity={0.8} />
+
+              <Suspense fallback={null}>
+                <group
+                  key={`${currentTargetPhase}-${targetPhaseIndex}`}
+                  position={[0, 0.95, 0]}
+                >
+                  <ParticlesChamber
+                    temperature={targetChamberTemp}
+                    phaseState={currentTargetPhase}
+                  />
+                </group>
+              </Suspense>
+            </Canvas>
+          </div>
+
+          {/* FLOATING TOP BAR: EXIT & EXPLANATION */}
+          <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 z-20 flex items-center justify-between pointer-events-none">
+            {/* Left: Exit Button */}
             <button
               type="button"
               onClick={handleExitClick}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer active:scale-95"
+              className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer active:scale-95"
             >
-              <ChevronLeft className="w-3.5 h-3.5" />
+              <ChevronLeft className="w-4 h-4" />
               <span>EXIT</span>
             </button>
 
+            {/* Right: Explanation Button */}
             <button
               type="button"
               onClick={() => setShowExplanationModal(true)}
-              className="flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] text-white font-mono font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer transform hover:scale-105 active:scale-95"
+              className="pointer-events-auto flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] text-white font-mono font-bold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer transform hover:scale-105 active:scale-95"
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>EXPLANATION</span>
             </button>
           </div>
 
-          {/* MAIN 3D VISUAL: Covers full screen width with maximized height */}
-          <div className="flex-1 w-full min-h-0 relative rounded-2xl bg-slate-950 border border-slate-800 shadow-inner overflow-hidden flex flex-col">
-            {/* Overlay HUD at Top of Chamber */}
-            <div className="absolute top-2 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
-              <div className="flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-slate-700/80 shadow-md">
-                <Thermometer className="w-3 h-3 text-amber-400" />
-                <span className="font-mono font-black text-[11px] text-white">
-                  {temperature} K
-                </span>
+          {/* FLOATING BOTTOM CONTROLS: TEMPERATURE SLIDER + CHECK ANSWER (No "Rank Increasing Entropy") */}
+          <div className="absolute bottom-2 sm:bottom-3 left-0 right-0 z-30 flex items-center justify-center pointer-events-none px-4">
+            <div className="pointer-events-auto flex items-center gap-3 bg-white/95 backdrop-blur-md p-2 rounded-2xl border border-slate-200/90 shadow-xl max-w-xl w-full">
+              {/* Temperature Slider Control */}
+              <div className="flex-1 flex flex-col justify-between px-2">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-black text-[11px] text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <Flame className="w-4 h-4 text-amber-500" />
+                    <span>CHAMBER TEMP</span>
+                  </span>
+                  <span className="font-mono font-black text-xs text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200 shadow-2xs">
+                    {temperature} K
+                  </span>
+                </div>
+
+                {/* Slider */}
+                <input
+                  type="range"
+                  min="100"
+                  max="500"
+                  step="5"
+                  value={temperature}
+                  onChange={(e) => setTemperature(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0284C7] my-1"
+                />
+
+                <div className="flex items-center justify-between text-[10px] font-mono text-slate-600 font-bold">
+                  <span>100 K</span>
+                  <span>273 K</span>
+                  <span>373 K</span>
+                  <span>500 K</span>
+                </div>
               </div>
 
-              <div className="flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-slate-700/80 shadow-md">
-                <Gauge className="w-3 h-3 text-sky-400" />
-                <span className="font-mono font-black text-[11px] text-sky-300">
-                  S = {entropyValue} J/(mol·K)
-                </span>
-              </div>
-            </div>
-
-            {/* 3D WebGL Canvas */}
-            <div className="w-full h-full relative">
-              <Canvas gl={{ antialias: true, alpha: true }}>
-                <PerspectiveCamera makeDefault position={[0, 0, 4.8]} fov={38} />
-                <ambientLight intensity={0.8} />
-                <directionalLight position={[4, 6, 4]} intensity={1.2} />
-                <directionalLight position={[-4, -3, -2]} intensity={0.4} />
-                <pointLight position={[0, 0, 2]} intensity={0.5} />
-
-                <Suspense fallback={null}>
-                  <ParticlesChamber
-                    temperature={temperature}
-                    phaseState={phaseState}
-                  />
-                </Suspense>
-              </Canvas>
-            </div>
-          </div>
-
-          {/* BOTTOM CONTROLS: COMPACT SINGLE ROW */}
-          <div className="w-full pt-1.5 flex items-stretch gap-2 shrink-0 z-10">
-            {/* 1. Temperature Slider Box (Increased length to 35% width) */}
-            <div className="w-[35%] bg-slate-50 border border-slate-200/90 rounded-xl px-2.5 py-1.5 flex flex-col justify-between shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-black text-[10px] text-slate-900 uppercase tracking-wider flex items-center gap-1">
-                  <Flame className="w-3.5 h-3.5 text-amber-500" />
-                  CHAMBER TEMP
-                </span>
-                <span className="font-mono font-black text-xs text-slate-900 bg-white px-2 py-0.5 rounded-md border border-slate-300 shadow-2xs">
-                  {temperature} K
-                </span>
-              </div>
-
-              {/* Slider */}
-              <input
-                type="range"
-                min="100"
-                max="500"
-                step="5"
-                value={temperature}
-                onChange={(e) => setTemperature(Number(e.target.value))}
-                className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0284C7] my-1"
-              />
-
-              <div className="flex items-center justify-between text-[9px] font-mono text-slate-900 font-extrabold">
-                <span>100K</span>
-                <span>273K</span>
-                <span>373K</span>
-                <span>500K</span>
-              </div>
-            </div>
-
-            {/* 2. Rank Increasing Entropy Box (flex-1) */}
-            <div className="flex-1 bg-white border border-slate-200/90 rounded-xl px-2.5 py-1.5 flex flex-col justify-between shadow-xs">
-              <div className="flex items-center justify-between pb-0.5 border-b border-slate-100">
-                <span className="font-black text-[10px] text-slate-900 uppercase tracking-wider flex items-center gap-1">
-                  <Layers className="w-3 h-3 text-[#0284C7]" />
-                  RANK INCREASING ENTROPY
-                </span>
-                <button
-                  type="button"
-                  onClick={handleResetChallenge}
-                  className="flex items-center gap-0.5 text-[8.5px] text-slate-600 hover:text-slate-900 font-extrabold cursor-pointer"
-                >
-                  <RotateCcw className="w-2.5 h-2.5" />
-                  <span>RESET</span>
-                </button>
-              </div>
-
-              {/* 3 State Slots with Arrows */}
-              <div className="grid grid-cols-3 gap-1.5 pt-1 my-auto">
-                {arrangedSlots.map((phaseKey, idx) => {
-                  const spec = PHASE_SPECS[phaseKey];
-                  return (
-                    <div
-                      key={phaseKey}
-                      className={`px-2 py-1.5 rounded-lg border flex items-center justify-between gap-1 transition-all ${spec.bgPill}`}
-                    >
-                      <span className={`font-black text-xs uppercase tracking-wider whitespace-nowrap ${spec.textColor}`}>
-                        {spec.label}
-                      </span>
-
-                      {/* Swap Buttons */}
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        <button
-                          type="button"
-                          disabled={idx === 0}
-                          onClick={() => handleSwapSlot(idx, "left")}
-                          className="p-1 rounded bg-white hover:bg-slate-100 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer shadow-2xs border border-slate-300"
-                          title="Move left"
-                        >
-                          <ChevronLeft className="w-2.5 h-2.5 text-slate-800" />
-                        </button>
-                        <button
-                          type="button"
-                          disabled={idx === arrangedSlots.length - 1}
-                          onClick={() => handleSwapSlot(idx, "right")}
-                          className="p-1 rounded bg-white hover:bg-slate-100 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer shadow-2xs border border-slate-300"
-                          title="Move right"
-                        >
-                          <ChevronRight className="w-2.5 h-2.5 text-slate-800" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 3. Check Answer Button (Reduced button size, fully visible text) */}
-            <div className="w-32 sm:w-36 flex items-center shrink-0">
+              {/* Check Answer Button */}
               <button
                 type="button"
                 onClick={handleCheckAnswer}
-                className="w-full h-full py-1.5 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-[11px] uppercase tracking-normal shadow-md transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+                className="h-11 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 shrink-0"
               >
-                <CheckCircle2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                <span className="whitespace-nowrap">CHECK ANSWER</span>
+                <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
+                <span>CHECK ANSWER</span>
               </button>
             </div>
           </div>
@@ -729,38 +712,39 @@ export default function EntropyGamePage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          VICTORY MODAL
+          VICTORY MODAL (COMPACT WITH REPLAY & EXPLANATION)
           ══════════════════════════════════════════════════════════════════ */}
       {showVictoryModal && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-white rounded-3xl p-6 text-center shadow-2xl border border-emerald-100 flex flex-col items-center">
-            <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mb-3 text-emerald-600 shadow-inner">
-              <Trophy className="w-7 h-7" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-[280px] bg-white rounded-2xl border border-slate-100 shadow-2xl p-4 text-center flex flex-col items-center">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mb-2 text-emerald-600 shadow-inner">
+              <Trophy className="w-5 h-5" />
             </div>
 
-            <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-extrabold text-[10px] uppercase tracking-wider mb-2 border border-emerald-200/60">
-              ENTROPY PRINCIPLE VERIFIED
-            </span>
-
-            <h3 className="text-xl font-black text-slate-900 mb-2">
-              Phase Disorder Mastered!
+            <h3 className="text-sm font-black text-slate-900 mb-0.5">
+              Entropy Challenge Complete!
             </h3>
 
-            <p className="text-slate-600 text-xs font-medium leading-relaxed mb-5">
-              You correctly identified that entropy increases as states transition from fixed crystal solids to mobile liquids, reaching maximum disorder and microstates in gases:
-              <br />
-              <strong className="text-emerald-700 font-mono mt-1 block">
-                S(Solid) &lt; S(Liquid) &lt; S(Gas)
-              </strong>
+            <p className="text-[11px] text-slate-600 mb-2">
+              You verified all 3 states of matter across temperature ranges!
             </p>
 
-            <div className="w-full grid grid-cols-2 gap-3">
+            <div className="w-full bg-emerald-50 border border-emerald-200 rounded-xl p-2 mb-3 text-left">
+              <div className="text-[10px] font-bold text-emerald-800 font-mono text-center">
+                S(Solid) &lt; S(Liquid) &lt; S(Gas)
+              </div>
+              <p className="text-[9.5px] text-emerald-700 leading-snug mt-1 text-center">
+                Solids have fixed order, while liquids flow and gases possess maximum entropy and disorder!
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1.5 w-full">
               <button
                 type="button"
                 onClick={handleResetChallenge}
-                className="w-full py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="flex-1 h-8 rounded-full font-bold text-[10.5px] uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95 cursor-pointer flex items-center justify-center gap-1"
               >
-                <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
+                <RotateCcw className="w-3 h-3 text-slate-600" />
                 <span>REPLAY</span>
               </button>
 
@@ -770,9 +754,9 @@ export default function EntropyGamePage({
                   setShowVictoryModal(false);
                   setShowExplanationModal(true);
                 }}
-                className="w-full py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="flex-1 h-8 rounded-full font-extrabold text-[10.5px] uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md transition active:scale-95 cursor-pointer flex items-center justify-center gap-1"
               >
-                <BookOpen className="w-3.5 h-3.5 fill-current" />
+                <BookOpen className="w-3 h-3 fill-current" />
                 <span>EXPLANATION</span>
               </button>
             </div>
@@ -781,35 +765,37 @@ export default function EntropyGamePage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          INCORRECT MODAL
+          INCORRECT MODAL (COMPACT WITH RETRY & EXPLANATION)
           ══════════════════════════════════════════════════════════════════ */}
       {showIncorrectModal && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-white rounded-3xl p-6 text-center shadow-2xl border border-rose-100 flex flex-col items-center">
-            <div className="w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center mb-3 text-rose-600 shadow-inner">
-              <AlertCircle className="w-7 h-7" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-[280px] bg-white rounded-2xl border border-slate-100 shadow-2xl p-4 text-center flex flex-col items-center">
+            <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center mb-2 text-rose-600 shadow-inner">
+              <AlertCircle className="w-5 h-5" />
             </div>
 
-            <span className="px-3 py-1 rounded-full bg-rose-50 text-rose-700 font-extrabold text-[10px] uppercase tracking-wider mb-2 border border-rose-200/60">
-              INCORRECT ORDERING
-            </span>
-
-            <h3 className="text-xl font-black text-slate-900 mb-2">
-              Check Phase Disorder
+            <h3 className="text-sm font-black text-slate-900 mb-0.5">
+              Incorrect State!
             </h3>
 
-            <p className="text-slate-600 text-xs font-medium leading-relaxed mb-5">
-              {incorrectFeedback}
+            <p className="text-[11px] text-slate-600 mb-2">
+              The temperature does not produce the requested state.
             </p>
 
-            <div className="w-full grid grid-cols-2 gap-3">
+            <div className="w-full bg-rose-50 border border-rose-100 rounded-xl p-2 mb-3 text-left">
+              <p className="text-[10px] text-rose-800 leading-snug">
+                {incorrectFeedback}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1.5 w-full">
               <button
                 type="button"
                 onClick={() => setShowIncorrectModal(false)}
-                className="w-full py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="flex-1 h-8 rounded-full font-bold text-[10.5px] uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white transition active:scale-95 cursor-pointer flex items-center justify-center gap-1"
               >
-                <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
-                <span>TRY AGAIN</span>
+                <RotateCcw className="w-3 h-3" />
+                <span>RETRY</span>
               </button>
 
               <button
@@ -818,9 +804,9 @@ export default function EntropyGamePage({
                   setShowIncorrectModal(false);
                   setShowExplanationModal(true);
                 }}
-                className="w-full py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="flex-1 h-8 rounded-full font-extrabold text-[10.5px] uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md transition active:scale-95 cursor-pointer flex items-center justify-center gap-1"
               >
-                <BookOpen className="w-3.5 h-3.5 fill-current" />
+                <BookOpen className="w-3 h-3 fill-current" />
                 <span>EXPLANATION</span>
               </button>
             </div>

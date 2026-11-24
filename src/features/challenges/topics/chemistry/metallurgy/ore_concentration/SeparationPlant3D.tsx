@@ -2,7 +2,7 @@
 
 import React, { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
+import { Html } from "@react-three/drei";
 import * as THREE from "three";
 
 interface SeparationPlant3DProps {
@@ -458,20 +458,18 @@ export default function SeparationPlant3D({
       <directionalLight position={[-6, 5, -4]} intensity={1.0} color="#BAE6FD" />
       <pointLight position={[0, 4, 3]} intensity={1.0} />
 
-      {/* ── CLEAN MODERN LAB BASE PLATFORM ── */}
-      <group position={[0, -1.15, 0]}>
-        {/* Main Clean Lab Pedestal */}
-        <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[6.8, 0.14, 3.2]} />
-          <meshStandardMaterial color="#FFFFFF" metalness={0.1} roughness={0.3} />
-        </mesh>
-        {/* Dark Sleek Base Bevel Trim */}
-        <mesh position={[0, -0.07, 0]}>
-          <boxGeometry args={[6.86, 0.02, 3.26]} />
-          <meshStandardMaterial color="#0F172A" metalness={0.8} roughness={0.2} />
-        </mesh>
-      </group>
-      <gridHelper args={[6.6, 14, "#CBD5E1", "#F1F5F9"]} position={[0, -1.075, 0]} />
+      {/* ── INDUSTRIAL CONTRAST PLATFORM (Matching Crushing / Roasting / Calcination) ── */}
+      {/* Heavy Steel Floor Plate - Industrial Slate Navy contrast stage directly under system */}
+      <mesh position={[0, -1.15, 0]}>
+        <boxGeometry args={[7.8, 0.12, 3.6]} />
+        <meshStandardMaterial color="#334155" roughness={0.45} metalness={0.3} />
+      </mesh>
+
+      {/* Floor Guide Accent Line - Cyan glow runner */}
+      <mesh position={[0, -1.08, 0]}>
+        <boxGeometry args={[7.6, 0.01, 0.05]} />
+        <meshStandardMaterial color="#38BDF8" emissive="#0284C7" emissiveIntensity={0.5} />
+      </mesh>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* 1. CLEAN 3D CUTAWAY HYDRAULIC WASHING TANK (Gravity Separation)     */}
@@ -769,20 +767,14 @@ export default function SeparationPlant3D({
             )}
 
             {/* Crisp Clean Industrial Plaque Badge */}
-            <mesh position={[0, 0.08, 0.60]}>
-              <boxGeometry args={[0.56, 0.20, 0.015]} />
-              <meshStandardMaterial color="#0F172A" metalness={0.8} roughness={0.3} />
-            </mesh>
-            <mesh position={[0, 0.165, 0.61]}>
-              <boxGeometry args={[0.52, 0.012, 0.005]} />
-              <meshStandardMaterial color="#10B981" emissive="#10B981" emissiveIntensity={0.6} />
-            </mesh>
-            <Text position={[0, 0.08, 0.612]} fontSize={0.068} color="#10B981" anchorX="center" anchorY="middle">
-              NEAR BIN
-            </Text>
-            <Text position={[0, 0.01, 0.612]} fontSize={0.052} color="#94A3B8" anchorX="center" anchorY="middle">
-              {isCorrect ? "Magnetic Concentrate" : "Empty (No Magnetic Ore)"}
-            </Text>
+            <Html position={[0, -0.05, 0.62]} center zIndexRange={[10, 0]}>
+              <div className="px-1.5 py-0.5 rounded bg-slate-900/90 border border-emerald-500/70 text-center shadow-md whitespace-nowrap pointer-events-none select-none">
+                <div className="text-[8.5px] font-black text-emerald-400 uppercase tracking-tight">NEAR BIN</div>
+                <div className="text-[7.5px] font-bold text-slate-300">
+                  {isCorrect ? "Magnetic Concentrate" : "Empty"}
+                </div>
+              </div>
+            </Html>
           </group>
 
           {/* ── E. OPEN COLLECTION BIN 2 (Far / Right: Non-Magnetic Gangue / Mixed Tailings) ── */}
@@ -817,20 +809,14 @@ export default function SeparationPlant3D({
             )}
 
             {/* Crisp Clean Industrial Plaque Badge */}
-            <mesh position={[0, 0.08, 0.60]}>
-              <boxGeometry args={[0.60, 0.20, 0.015]} />
-              <meshStandardMaterial color="#1E293B" metalness={0.8} roughness={0.3} />
-            </mesh>
-            <mesh position={[0, 0.165, 0.61]}>
-              <boxGeometry args={[0.56, 0.012, 0.005]} />
-              <meshStandardMaterial color="#F59E0B" emissive="#F59E0B" emissiveIntensity={0.6} />
-            </mesh>
-            <Text position={[0, 0.08, 0.612]} fontSize={0.068} color="#F59E0B" anchorX="center" anchorY="middle">
-              FAR BIN
-            </Text>
-            <Text position={[0, 0.01, 0.612]} fontSize={0.052} color="#94A3B8" anchorX="center" anchorY="middle">
-              {isCorrect ? "Non-Magnetic Sand" : "Unseparated Mixture"}
-            </Text>
+            <Html position={[0, -0.05, 0.62]} center zIndexRange={[10, 0]}>
+              <div className="px-1.5 py-0.5 rounded bg-slate-900/90 border border-amber-500/70 text-center shadow-md whitespace-nowrap pointer-events-none select-none">
+                <div className="text-[8.5px] font-black text-amber-400 uppercase tracking-tight">FAR BIN</div>
+                <div className="text-[7.5px] font-bold text-slate-300">
+                  {isCorrect ? "Non-Magnetic Sand" : "Tailings"}
+                </div>
+              </div>
+            </Html>
           </group>
         </group>
       )}
@@ -840,10 +826,16 @@ export default function SeparationPlant3D({
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {method === "froth" && (
         <group>
-          {/* Glass Flotation Tank */}
+          {/* Glass Flotation Tank - Transparent walls */}
           <mesh position={[0, -0.05, 0]}>
             <boxGeometry args={[3.2, 1.9, 2.0]} />
             <meshStandardMaterial color="#E0F2FE" transparent opacity={0.35} roughness={0.1} />
+          </mesh>
+
+          {/* Solid Tank Bottom Base (Not transparent) */}
+          <mesh position={[0, -0.96, 0]}>
+            <boxGeometry args={[3.24, 0.12, 2.04]} />
+            <meshStandardMaterial color="#334155" metalness={0.7} roughness={0.3} />
           </mesh>
 
           {/* Blue Water Pulp Solution inside Tank */}
@@ -857,9 +849,14 @@ export default function SeparationPlant3D({
             <boxGeometry args={[3.1, 0.35, 1.9]} />
             <meshStandardMaterial color="#FDE047" transparent opacity={0.85} roughness={0.8} />
           </mesh>
-          <Text position={[0, 1.05, 0]} fontSize={0.16} color="#854D0E" anchorX="center" anchorY="middle">
-            🫧 Froth Layer: Sulfide Ore floats with oil bubbles!
-          </Text>
+
+          {/* Floating Top Badge: Froth Layer */}
+          <Html position={[0, 1.25, 0]} center zIndexRange={[10, 0]}>
+            <div className="px-3 py-1 rounded-md bg-slate-900/90 border border-amber-500/60 text-amber-300 font-mono text-[11px] font-bold tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
+              <span>🫧</span>
+              <span>FROTH LAYER: Sulfide ore floats with oil bubbles</span>
+            </div>
+          </Html>
 
           {/* Rotating Agitator Impeller in Center */}
           <group position={[0, 0, 0]} ref={impellerRef}>
@@ -877,9 +874,13 @@ export default function SeparationPlant3D({
             </mesh>
           </group>
 
-          <Text position={[0, -1.0, 1.1]} fontSize={0.15} color="#475569" anchorX="center" anchorY="middle">
-            ⬇ Water-Wetted Gangue Sinks to Bottom
-          </Text>
+          {/* Floating Bottom Badge: Gangue */}
+          <Html position={[0, -0.68, 1.05]} center zIndexRange={[10, 0]}>
+            <div className="px-2.5 py-0.5 rounded-md bg-slate-800/95 border border-slate-600 text-slate-300 font-mono text-[10px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none flex items-center gap-1">
+              <span>⬇</span>
+              <span>Water-wetted gangue sinks to bottom</span>
+            </div>
+          </Html>
         </group>
       )}
 
@@ -888,10 +889,16 @@ export default function SeparationPlant3D({
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {method === "leaching" && (
         <group>
-          {/* Reaction Glass Beaker / Vessel */}
+          {/* Reaction Glass Beaker / Vessel - Transparent walls */}
           <mesh position={[0, -0.1, 0]}>
             <cylinderGeometry args={[1.3, 1.3, 1.9, 32]} />
             <meshStandardMaterial color="#E2E8F0" transparent opacity={0.35} roughness={0.1} />
+          </mesh>
+
+          {/* Solid Beaker Bottom Base (Not transparent) */}
+          <mesh position={[0, -1.02, 0]}>
+            <cylinderGeometry args={[1.34, 1.34, 0.12, 32]} />
+            <meshStandardMaterial color="#334155" metalness={0.7} roughness={0.3} />
           </mesh>
 
           {/* Chemical Reagent Solution (Green/Cyan NaOH) */}
@@ -904,9 +911,14 @@ export default function SeparationPlant3D({
               roughness={0.1}
             />
           </mesh>
-          <Text position={[0, 0.95, 0]} fontSize={0.16} color="#065F46" anchorX="center" anchorY="middle">
-            🧪 Hot Concentrated NaOH Reagent
-          </Text>
+
+          {/* Floating Top Badge: Hot Concentrated Reagent */}
+          <Html position={[0, 1.25, 0]} center zIndexRange={[10, 0]}>
+            <div className="px-3 py-1 rounded-md bg-slate-900/90 border border-emerald-500/60 text-emerald-300 font-mono text-[11px] font-bold tracking-tight shadow-lg whitespace-nowrap pointer-events-none select-none flex items-center gap-1.5">
+              <span>🧪</span>
+              <span>HOT CONCENTRATED NaOH REAGENT</span>
+            </div>
+          </Html>
 
           {/* Central Motorized Stirrer */}
           <group position={[0, 0, 0]} ref={impellerRef}>
@@ -930,9 +942,13 @@ export default function SeparationPlant3D({
             <meshStandardMaterial color="#B45309" metalness={0.8} />
           </mesh>
 
-          <Text position={[0, -1.0, 1.2]} fontSize={0.14} color="#64748B" anchorX="center" anchorY="middle">
-            ⬇ Insoluble Gangue (Red Mud) Trapped at Base Filter
-          </Text>
+          {/* Floating Bottom Badge: Insoluble Gangue Filter */}
+          <Html position={[0, -0.72, 0.95]} center zIndexRange={[10, 0]}>
+            <div className="px-2.5 py-0.5 rounded-md bg-slate-800/95 border border-slate-600 text-slate-300 font-mono text-[10px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none flex items-center gap-1">
+              <span>⬇</span>
+              <span>Insoluble Gangue (Red Mud) trapped at base filter</span>
+            </div>
+          </Html>
         </group>
       )}
 

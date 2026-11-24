@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, useMemo, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera, OrbitControls } from "@react-three/drei";
 import ReductionFurnace3D, { type ExtractionMethod } from "./ReductionFurnace3D";
@@ -12,9 +12,11 @@ import {
   XCircle,
   X,
   ChevronRight,
+  ChevronDown,
   Flame,
   Zap,
   RefreshCw,
+  Sparkles,
   Award,
 } from "lucide-react";
 import { exitSimulation } from "@/lib/mobileBridge";
@@ -132,13 +134,26 @@ export default function ReductionExtractionGamePage({
   const [levelIndex, setLevelIndex] = useState(0);
   const currentChallenge = REDUCTION_CHALLENGES[levelIndex];
 
+  // Scramble the order of extraction method options per level so they are not in fixed predictable order
+  const shuffledMethods = useMemo((): ExtractionMethod[] => {
+    const permutations: ExtractionMethod[][] = [
+      ["carbon", "electrolytic", "self"], // Level 1 (Answer: carbon at 1st pos)
+      ["self", "electrolytic", "carbon"], // Level 2 (Answer: electrolytic at 2nd pos)
+      ["electrolytic", "carbon", "self"], // Level 3 (Answer: carbon at 2nd pos)
+      ["carbon", "self", "electrolytic"], // Level 4 (Answer: self at 2nd pos)
+    ];
+    return permutations[levelIndex % permutations.length];
+  }, [levelIndex]);
+
   const [selectedMethod, setSelectedMethod] = useState<ExtractionMethod | null>(null);
+  const [isMethodDropdownOpen, setIsMethodDropdownOpen] = useState(false);
   const [stage, setStage] = useState<"idle" | "extracting" | "extracted">("idle");
   const [isLevelPassed, setIsLevelPassed] = useState(false);
   const [showPromptTooltip, setShowPromptTooltip] = useState<string | null>(null);
 
   // Modals
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFinalCompletionModal, setShowFinalCompletionModal] = useState(false);
   const [showFailModal, setShowFailModal] = useState(false);
   const [failFeedback, setFailFeedback] = useState("");
@@ -151,7 +166,8 @@ export default function ReductionExtractionGamePage({
     }
   };
 
-  // Step 1: Start extraction action
+  // Step 1: Start extraction action - triggers animation and immediately shows outcome modal
+  // Step 1: Start extraction action - runs reaction, reveals extracted metal, then after 3s displays outcome popup
   const handleStartExtraction = () => {
     if (!selectedMethod) {
       setShowPromptTooltip("Choose an Extraction Method First!");
@@ -159,48 +175,39 @@ export default function ReductionExtractionGamePage({
       return;
     }
     setStage("extracting");
+
+    // Phase 1: Reaction completes after 1.2s -> reveals pure extracted metal ingot bars in 3D table
     setTimeout(() => {
       setStage("extracted");
-    }, 1800);
-  };
 
-  // Step 2: Check Answer
-  const handleCheckAnswer = () => {
-    // Validation 1: Method chosen?
-    if (!selectedMethod) {
-      setShowPromptTooltip("Select an Extraction Method First!");
-      setTimeout(() => setShowPromptTooltip(null), 3200);
-      return;
-    }
-
-    // Validation 2: Extraction executed?
-    if (stage === "idle") {
-      setShowPromptTooltip("Click '1. START EXTRACTION' To Run Furnace!");
-      setTimeout(() => setShowPromptTooltip(null), 3200);
-      return;
-    }
-
-    // Check correctness
-    if (selectedMethod === currentChallenge.correctMethod) {
-      setIsLevelPassed(true);
-    } else {
-      // Wrong method selected -> reset extraction state so "START EXTRACTION" reactivates and ore chunks return
-      setStage("idle");
-      let feedback = "";
-      if (currentChallenge.correctMethod === "electrolytic") {
-        feedback = `${currentChallenge.metalName} is a HIGHLY reactive metal. Its oxide cannot be reduced by carbon or self-reduction because it holds oxygen too tightly! It requires Electrolytic Reduction (Electrometallurgy).`;
-      } else if (currentChallenge.correctMethod === "carbon") {
-        feedback = `${currentChallenge.metalName} is a MODERATELY reactive metal. It is economically and chemically reduced using Coke (Carbon) or CO at high temperatures in a furnace.`;
-      } else {
-        feedback = `${currentChallenge.metalName} is a LOW reactivity metal. It undergoes Self-Reduction where the oxide and sulphide react together directly without needing external carbon or electricity!`;
-      }
-      setFailFeedback(feedback);
-      setShowFailModal(true);
-    }
+      // Phase 2: User gets 3 full seconds to view the pure extracted metal in the 3D plant before popup appears
+      setTimeout(() => {
+        if (selectedMethod === currentChallenge.correctMethod) {
+          setIsLevelPassed(true);
+          if (levelIndex < REDUCTION_CHALLENGES.length - 1) {
+            setShowSuccessModal(true);
+          } else {
+            setShowFinalCompletionModal(true);
+          }
+        } else {
+          let feedback = "";
+          if (currentChallenge.correctMethod === "electrolytic") {
+            feedback = `${currentChallenge.metalName} is a HIGHLY reactive metal. Its oxide cannot be reduced by carbon or self-reduction because it holds oxygen too tightly! It requires Electrolytic Reduction (Electrometallurgy).`;
+          } else if (currentChallenge.correctMethod === "carbon") {
+            feedback = `${currentChallenge.metalName} is a MODERATELY reactive metal. It is economically and chemically reduced using Coke (Carbon) or CO at high temperatures in a furnace.`;
+          } else {
+            feedback = `${currentChallenge.metalName} is a LOW reactivity metal. It undergoes Self-Reduction where the oxide and sulphide react together directly without needing external carbon or electricity!`;
+          }
+          setFailFeedback(feedback);
+          setShowFailModal(true);
+        }
+      }, 3000);
+    }, 1200);
   };
 
   // Advance to next level or show final modal
   const handleNextLevel = () => {
+    setShowSuccessModal(false);
     if (levelIndex < REDUCTION_CHALLENGES.length - 1) {
       setLevelIndex((prev) => prev + 1);
       setSelectedMethod(null);
@@ -211,9 +218,18 @@ export default function ReductionExtractionGamePage({
     }
   };
 
+  // Replay current level from success modal
+  const handleReplayCurrentLevel = () => {
+    setShowSuccessModal(false);
+    setSelectedMethod(null);
+    setStage("idle");
+    setIsLevelPassed(false);
+  };
+
   // Reset current challenge
   const handleReset = () => {
     setSelectedMethod(null);
+    setIsMethodDropdownOpen(false);
     setStage("idle");
     setIsLevelPassed(false);
     setShowPromptTooltip(null);
@@ -289,83 +305,83 @@ export default function ReductionExtractionGamePage({
 
           {/* 3 Step Cards - Compact Height & Clear Instructions */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3.5 my-auto max-w-5xl mx-auto w-full">
-            {/* Card 1: Inspect Oxide & Reactivity */}
+            {/* Card 1: Inspect Target Metal Oxide */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     1
                   </div>
-                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 1: Inspect Target</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 1: Check Target</h3>
                 </div>
                 <div className="inline-block px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  METAL OXIDE & REACTIVITY
+                  TARGET ORE
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
-                  Observe the ore feeder and furnace plant. Note the metal&apos;s reactivity tier (<strong>High</strong>, <strong>Moderate</strong>, or <strong>Low</strong>).
+                  Look at the top pill to see the metal oxide name and chemical formula to be extracted.
                 </p>
               </div>
 
-              {/* Visual 1: 3D Plant Simulation with Oxide Feeder & Furnace */}
-              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-slate-900/10 relative flex items-center justify-center mt-auto">
+              {/* Visual 1: Level Target Pill Image */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative flex items-center justify-center mt-auto p-2">
                 <img
-                  src="/instructions_reduction_step1.png"
-                  alt="3D Extraction Plant"
-                  className="w-full h-full object-cover rounded-lg scale-110"
+                  src="/instructions_reduction_step1_new.png"
+                  alt="Target Metal Oxide Pill"
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
             </div>
 
-            {/* Card 2: Select Reduction Route */}
+            {/* Card 2: Choose Method */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     2
                   </div>
-                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 2: Choose Route</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 2: Choose Method</h3>
                 </div>
                 <div className="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  EXTRACTION METHOD
+                  PICK EXTRACTION ROUTE
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
-                  Choose the matching route: <strong>ELECTROLYTIC</strong> (high reactivity), <strong>CARBON / CO</strong> (moderate), or <strong>SELF-REDUCTION</strong> (low).
+                  Click the dropdown and select the correct extraction method for the metal.
                 </p>
               </div>
 
-              {/* Visual 2: 3 Method Option Buttons - Zoomed in for legibility */}
-              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative flex items-center justify-center mt-auto">
+              {/* Visual 2: Method Dropdown Options Image */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative flex items-center justify-center mt-auto p-2">
                 <img
-                  src="/instructions_reduction_step2.jpg"
-                  alt="Extraction Route Options"
-                  className="w-full h-full object-contain scale-[1.55]"
+                  src="/instructions_reduction_step2_new.png"
+                  alt="Choose Extraction Method Dropdown"
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
             </div>
 
-            {/* Card 3: Start Extraction & Check Answer */}
+            {/* Card 3: Start Extraction */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     3
                   </div>
-                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 3: Extract & Check</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 3: Start Extraction</h3>
                 </div>
                 <div className="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
                   RUN & VERIFY
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
-                  Click <strong>1. START EXTRACTION</strong> to cast pure metal ingots. Then click <strong>CHECK ANSWER</strong> to verify and advance!
+                  Click <strong>START EXTRACTION</strong> to run the plant, see pure metal cast, and check your answer!
                 </p>
               </div>
 
-              {/* Visual 3: Start Extraction, Reset & Check Answer Controls - Zoomed in */}
-              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative flex items-center justify-center mt-auto">
+              {/* Visual 3: Start Extraction Button Image */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative flex items-center justify-center mt-auto p-2">
                 <img
-                  src="/instructions_reduction_step3.jpg"
-                  alt="Start Extraction, Reset and Check Answer"
-                  className="w-full h-full object-contain scale-[1.45]"
+                  src="/instructions_reduction_step3_new.png"
+                  alt="Start Extraction Button"
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
             </div>
@@ -391,45 +407,12 @@ export default function ReductionExtractionGamePage({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SCREEN 3: INTERACTIVE LAB GAMEPLAY (Single Landscape Div / Canvas)  */}
+      {/* SCREEN 3: INTERACTIVE LAB GAMEPLAY (Single Fullscreen 3D Canvas)    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {screen === "lab" && (
-        <div className="w-full h-full flex flex-col justify-between p-1.5 sm:p-2 relative z-10 bg-white overflow-hidden rounded-3xl sm:rounded-[32px]">
-          {/* Top Header Bar */}
-          <div className="w-full flex items-center justify-between pb-1 shrink-0">
-            {/* Top-Left Exit Button (Single Unified Black Pill) */}
-            <button
-              onClick={handleExit}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-sm cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>EXIT</span>
-            </button>
-
-            {/* Central Target Pill */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-slate-800 bg-slate-100 px-3.5 py-1 rounded-full border border-slate-200 shadow-xs flex items-center gap-1.5">
-                <span className="text-blue-600">Level {currentChallenge.level}:</span>
-                <span>{currentChallenge.oxideName} ({currentChallenge.oxideFormula})</span>
-                <span className="text-slate-400">•</span>
-                <span className="text-amber-600 uppercase font-bold text-[10px] tracking-wider">
-                  {currentChallenge.reactivityDesc}
-                </span>
-              </span>
-            </div>
-
-            {/* Explanation Button */}
-            <button
-              onClick={() => setShowExplanation(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-sm cursor-pointer"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>EXPLANATION</span>
-            </button>
-          </div>
-
-          {/* Main 3D Simulation Canvas Area - Seamless Slate Grey Canvas Background */}
-          <div className="flex-1 w-full min-h-0 relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#94A3B8] via-[#64748B] to-[#475569] border border-slate-300 shadow-inner">
+        <div className="w-full h-full relative z-10 overflow-hidden rounded-3xl sm:rounded-[32px] bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0]">
+          {/* Main 3D Simulation Canvas Area - Single Fullscreen Canvas */}
+          <div className="absolute inset-0 w-full h-full z-0">
             <Canvas shadows gl={{ antialias: true, alpha: true }} className="w-full h-full">
               {/* Perfectly framed camera for full furnace height + chimney gas */}
               <PerspectiveCamera makeDefault position={[0, 0.82, 5.0]} fov={38} />
@@ -454,106 +437,200 @@ export default function ReductionExtractionGamePage({
             </Canvas>
           </div>
 
-          {/* Bottom Single-Row Control Bar */}
-          <div className="w-full flex items-center gap-2 shrink-0 z-20 pt-1 border-t border-slate-100">
-            {/* Action 1: Extraction Method Toggles */}
-            <div className="flex-1 grid grid-cols-3 gap-1.5 h-full">
-              {/* Route 1: Electrolytic Reduction */}
-              <button
-                onClick={() => setSelectedMethod("electrolytic")}
-                disabled={stage === "extracting"}
-                className={`py-1.5 px-2 rounded-xl border text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                  selectedMethod === "electrolytic"
-                    ? "bg-cyan-600 text-white border-cyan-600 shadow-md shadow-cyan-500/25 scale-[1.01]"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                }`}
-              >
-                <Zap className="w-3.5 h-3.5 text-cyan-300" />
-                <span className="truncate">ELECTROLYTIC REDUCTION</span>
-              </button>
+          {/* Floating Top Header Bar */}
+          <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 z-20 flex items-center justify-between pointer-events-none">
+            {/* Top-Left Exit Button (Single Unified Black Pill) */}
+            <button
+              onClick={handleExit}
+              className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-md cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>EXIT</span>
+            </button>
 
-              {/* Route 2: Carbon / CO Reduction */}
-              <button
-                onClick={() => setSelectedMethod("carbon")}
-                disabled={stage === "extracting"}
-                className={`py-1.5 px-2 rounded-xl border text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                  selectedMethod === "carbon"
-                    ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/25 scale-[1.01]"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                }`}
-              >
-                <Flame className="w-3.5 h-3.5 text-amber-300" />
-                <span className="truncate">CARBON / CO REDUCTION</span>
-              </button>
-
-              {/* Route 3: Self-Reduction */}
-              <button
-                onClick={() => setSelectedMethod("self")}
-                disabled={stage === "extracting"}
-                className={`py-1.5 px-2 rounded-xl border text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                  selectedMethod === "self"
-                    ? "bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-500/25 scale-[1.01]"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                }`}
-              >
-                <RefreshCw className="w-3.5 h-3.5 text-purple-300" />
-                <span className="truncate">SELF-REDUCTION</span>
-              </button>
+            {/* Central Target Pill */}
+            <div className="pointer-events-auto flex items-center gap-2">
+              <span className="text-xs font-black text-slate-800 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full border border-slate-200 shadow-md flex items-center gap-1.5">
+                <span className="text-blue-600 font-extrabold">Level {currentChallenge.level}:</span>
+                <span>{currentChallenge.oxideName} ({currentChallenge.oxideFormula})</span>
+              </span>
             </div>
 
-            {/* Action 2: Start Extraction Button */}
+            {/* Explanation Button */}
             <button
-              onClick={handleStartExtraction}
-              disabled={stage !== "idle"}
-              className={`py-1.5 px-3 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer shrink-0 ${
-                stage === "idle"
-                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 active:scale-95 shadow-md shadow-blue-500/20"
-                  : "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
-              }`}
+              onClick={() => setShowExplanation(true)}
+              className="pointer-events-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
             >
-              <Flame className="w-3.5 h-3.5" />
-              <span>1. START EXTRACTION</span>
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>EXPLANATION</span>
             </button>
+          </div>
 
-            {/* Action 3: Reset Button */}
-            <button
-              onClick={handleReset}
-              className="py-1.5 px-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition cursor-pointer shadow-xs shrink-0"
-              title="Reset Reactor"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">RESET</span>
-            </button>
-
-            {/* Action 4: Check Answer OR Next Level (When Passed) */}
-            <div className="relative shrink-0">
+          {/* Floating Bottom Control Bar: Exactly 2 Centered Buttons (Method Dropdown + Start Extraction) */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-30 flex items-center justify-center pointer-events-none">
+            <div className="pointer-events-auto relative flex items-center gap-2 sm:gap-3">
               {/* Tooltip prompt when clicking without required selections */}
               {showPromptTooltip && (
-                <div className="absolute -top-11 right-0 px-3 py-1.5 rounded-xl bg-slate-900 text-white font-mono text-[10.5px] font-bold shadow-xl border border-slate-700 whitespace-nowrap z-50 flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-xl bg-slate-900 text-white font-mono text-[10.5px] font-bold shadow-xl border border-slate-700 whitespace-nowrap z-50 flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
                   <span className="text-amber-400">⚠️</span>
                   <span>{showPromptTooltip}</span>
-                  <div className="absolute top-full right-8 border-4 border-transparent border-t-slate-900" />
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
                 </div>
               )}
 
-              {isLevelPassed ? (
+              {/* Button 1: Method Dropdown Trigger & Popover */}
+              <div className="relative">
+                {/* Dropdown Menu Popover (Opens Upwards) */}
+                {isMethodDropdownOpen && (
+                  <div className="absolute bottom-full mb-2 left-0 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 p-2 z-50 flex flex-col gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 px-2 py-1">
+                      CHOOSE METHOD
+                    </div>
+                    {shuffledMethods.map((methodKey) => {
+                      const isSelected = selectedMethod === methodKey;
+                      const config =
+                        methodKey === "electrolytic"
+                          ? { label: "ELECTROLYTIC", icon: Zap, color: "cyan" }
+                          : methodKey === "carbon"
+                          ? { label: "CARBON / CO", icon: Flame, color: "amber" }
+                          : { label: "SELF-REDUCTION", icon: RefreshCw, color: "purple" };
+                      const Icon = config.icon;
+
+                      return (
+                        <button
+                          key={methodKey}
+                          onClick={() => {
+                            setSelectedMethod(methodKey);
+                            setIsMethodDropdownOpen(false);
+                            if (stage === "extracted") {
+                              setStage("idle");
+                            }
+                          }}
+                          className={`w-full py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition cursor-pointer text-left ${
+                            isSelected
+                              ? "bg-slate-900 text-white shadow-sm"
+                              : "text-slate-800 hover:bg-slate-100"
+                          }`}
+                        >
+                          <Icon
+                            className={`w-4 h-4 ${
+                              config.color === "cyan"
+                                ? "text-cyan-500"
+                                : config.color === "amber"
+                                ? "text-amber-500"
+                                : "text-purple-500"
+                            }`}
+                          />
+                          <span>{config.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Dropdown Trigger Button */}
                 <button
-                  onClick={handleNextLevel}
-                  className="w-36 sm:w-44 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer shrink-0 whitespace-nowrap animate-bounce"
-                >
-                  <span>{levelIndex < REDUCTION_CHALLENGES.length - 1 ? "NEXT LEVEL" : "VIEW RESULTS"}</span>
-                  <ChevronRight className="w-4 h-4 shrink-0" />
-                </button>
-              ) : (
-                <button
-                  onClick={handleCheckAnswer}
+                  onClick={() => setIsMethodDropdownOpen(!isMethodDropdownOpen)}
                   disabled={stage === "extracting"}
-                  className="w-36 sm:w-44 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer shrink-0 whitespace-nowrap"
+                  className={`py-2 px-4 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer border ${
+                    selectedMethod === "electrolytic"
+                      ? "bg-cyan-600 text-white border-cyan-500 shadow-cyan-500/20"
+                      : selectedMethod === "carbon"
+                      ? "bg-amber-600 text-white border-amber-500 shadow-amber-500/20"
+                      : selectedMethod === "self"
+                      ? "bg-purple-600 text-white border-purple-500 shadow-purple-500/20"
+                      : "bg-white/95 backdrop-blur-md text-slate-800 border-slate-200 hover:bg-slate-50"
+                  }`}
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="whitespace-nowrap">CHECK ANSWER</span>
+                  {selectedMethod === "electrolytic" ? (
+                    <Zap className="w-4 h-4 text-cyan-200" />
+                  ) : selectedMethod === "carbon" ? (
+                    <Flame className="w-4 h-4 text-amber-200" />
+                  ) : selectedMethod === "self" ? (
+                    <RefreshCw className="w-4 h-4 text-purple-200" />
+                  ) : (
+                    <Sparkles className="w-4 h-4 text-blue-500" />
+                  )}
+                  <span>
+                    {selectedMethod === "electrolytic"
+                      ? "ELECTROLYTIC"
+                      : selectedMethod === "carbon"
+                      ? "CARBON / CO"
+                      : selectedMethod === "self"
+                      ? "SELF-REDUCTION"
+                      : "SELECT METHOD"}
+                  </span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      isMethodDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
-              )}
+              </div>
+
+              {/* Button 2: Start Extraction Button */}
+              <button
+                onClick={handleStartExtraction}
+                disabled={stage === "extracting"}
+                className={`py-2 px-5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer ${
+                  stage === "extracting"
+                    ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
+                    : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95 shadow-blue-500/25"
+                }`}
+              >
+                <Flame className="w-4 h-4" />
+                <span>START EXTRACTION</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* MODAL 2A: LEVEL PASSED MODAL (Levels 1 - 3)                         */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {showSuccessModal && (
+        <div className="absolute inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3">
+          <div className="w-full max-w-[310px] sm:max-w-[330px] bg-white rounded-2xl p-4 shadow-2xl border border-emerald-100 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 shadow-inner">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-base font-black text-slate-900 mb-1">
+              Correct Extraction!
+            </h3>
+
+            <p className="text-[11px] text-slate-600 mb-2.5 leading-snug">
+              Great job! You chose the correct extraction route for{" "}
+              <strong>{currentChallenge.oxideName} ({currentChallenge.oxideFormula})</strong>.
+            </p>
+
+            <div className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-left font-mono text-[10.5px] mb-3 text-slate-800 space-y-1">
+              <div className="text-emerald-700 font-bold leading-tight">
+                ✓ Reaction: {currentChallenge.reactionEquation}
+              </div>
+              <div className="text-[10px] text-slate-600 leading-tight">
+                • {currentChallenge.whyThisMethod}
+              </div>
+            </div>
+
+            {/* 2 Buttons: REPLAY and NEXT LEVEL */}
+            <div className="w-full flex items-center gap-2">
+              <button
+                onClick={handleReplayCurrentLevel}
+                className="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>REPLAY</span>
+              </button>
+
+              <button
+                onClick={handleNextLevel}
+                className="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md shadow-emerald-500/25 cursor-pointer"
+              >
+                <span>NEXT LEVEL</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>

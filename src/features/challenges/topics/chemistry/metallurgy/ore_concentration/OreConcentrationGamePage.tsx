@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, Suspense } from "react";
+import React, { useState, useEffect, useRef, useMemo, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera, OrbitControls } from "@react-three/drei";
 import SeparationPlant3D from "./SeparationPlant3D";
@@ -12,6 +12,7 @@ import {
   XCircle,
   X,
   ChevronRight,
+  ChevronDown,
   Play,
   Waves,
   Magnet,
@@ -126,8 +127,10 @@ export default function OreConcentrationGamePage({
   // Highest Unlocked Level Index (0: L1 unlocked, 1: L2 unlocked, 2: L3 unlocked, 3: L4 unlocked)
   const [unlockedLevel, setUnlockedLevel] = useState<number>(0);
 
-  // Selected Method
+  // Selected Method & Dropdown state
   const [selectedMethod, setSelectedMethod] = useState<SeparationMethod | null>(null);
+  const [isMethodDropdownOpen, setIsMethodDropdownOpen] = useState(false);
+  const [showPromptTooltip, setShowPromptTooltip] = useState<string | null>(null);
 
   // Sliders for Hydraulic Washing (Water Flow & Pulse Speed)
   const [waterFlow, setWaterFlow] = useState<number>(70); // 10 to 100
@@ -142,8 +145,108 @@ export default function OreConcentrationGamePage({
   // Modals
   const [showExplanation, setShowExplanation] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFinalCompletionModal, setShowFinalCompletionModal] = useState(false);
   const [showFailModal, setShowFailModal] = useState(false);
   const [failFeedback, setFailFeedback] = useState<string>("");
+
+  // Method list for randomized dropdown per level
+  const methodOptions: SeparationMethod[] = useMemo(() => {
+    return ["hydraulic", "magnetic", "froth", "leaching"];
+  }, [sampleIndex]);
+
+  // Exit Handler
+  const handleExit = () => {
+    if (onExit) {
+      onExit();
+    } else {
+      exitSimulation();
+    }
+  };
+
+  // Run Simulation Handler - runs smoothly over ~1.8s, reveals separated state, then delays popup 3s if correct or instant if fail
+  const handleRunSimulation = () => {
+    if (!selectedMethod) {
+      setShowPromptTooltip("Choose a Concentration Method First!");
+      setTimeout(() => setShowPromptTooltip(null), 3200);
+      return;
+    }
+
+    setIsMethodDropdownOpen(false);
+    setShowPromptTooltip(null);
+    setIsSimulating(true);
+    setSimProgress(0);
+    setIsSeparated(false);
+    setSeparationQuality("none");
+
+    let current = 0;
+    const interval = setInterval(() => {
+      current += 2;
+      setSimProgress(current);
+
+      if (current >= 100) {
+        clearInterval(interval);
+        setIsSimulating(false);
+        setIsSeparated(true);
+
+        const isMatch = selectedMethod === currentOre.correctMethod;
+        if (isMatch) {
+          setSeparationQuality("success");
+          setUnlockedLevel((prev) => Math.max(prev, sampleIndex + 1));
+
+          // Give 3 full seconds to view the separated particles/plant before modal popup
+          setTimeout(() => {
+            if (sampleIndex < ORE_SAMPLES.length - 1) {
+              setShowSuccessModal(true);
+            } else {
+              setShowFinalCompletionModal(true);
+            }
+          }, 3000);
+        } else {
+          setSeparationQuality("fail");
+          setFailFeedback(
+            `Selected method does not match ${currentOre.name}'s properties! ${currentOre.explanation}`
+          );
+          // Incorrect modal appears after 2 seconds so the user can observe the result first
+          setTimeout(() => {
+            setShowFailModal(true);
+          }, 2000);
+        }
+      }
+    }, 28);
+  };
+
+  // Replay Current Level
+  const handleReplayCurrentLevel = () => {
+    setShowSuccessModal(false);
+    setIsSeparated(false);
+    setSeparationQuality("none");
+    setSelectedMethod(null);
+    initParticles();
+  };
+
+  // Replay All Levels
+  const handleReplayChallenge = () => {
+    setShowFinalCompletionModal(false);
+    setShowSuccessModal(false);
+    setSampleIndex(0);
+    setIsSeparated(false);
+    setSeparationQuality("none");
+    setSelectedMethod(null);
+    initParticles();
+  };
+
+  // Next Sample / Advance Target Level
+  const handleNextSample = () => {
+    setShowSuccessModal(false);
+    if (sampleIndex < ORE_SAMPLES.length - 1) {
+      setSampleIndex((prev) => prev + 1);
+      setIsSeparated(false);
+      setSeparationQuality("none");
+      setSelectedMethod(null);
+    } else {
+      setShowFinalCompletionModal(true);
+    }
+  };
 
   // Canvas ref for dynamic particle physics
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -162,15 +265,6 @@ export default function OreConcentrationGamePage({
       phase: number;
     }>
   >([]);
-
-  // Exit Handler
-  const handleExit = () => {
-    if (onExit) {
-      onExit();
-    } else {
-      exitSimulation();
-    }
-  };
 
   // Initialize Particles whenever ore changes or reset
   const initParticles = () => {
@@ -397,63 +491,8 @@ export default function OreConcentrationGamePage({
     };
   }, [selectedMethod, isSimulating, isSeparated, sampleIndex, simProgress]);
 
-  // Run Simulation Handler - runs smoothly over ~3.5 seconds
-  const handleRunSimulation = () => {
-    if (!selectedMethod) return;
-
-    setIsSimulating(true);
-    setSimProgress(0);
-    setIsSeparated(false);
-    setSeparationQuality("none");
-
-    let current = 0;
-    const interval = setInterval(() => {
-      current += 1;
-      setSimProgress(current);
-
-      if (current >= 100) {
-        clearInterval(interval);
-        setIsSimulating(false);
-        setIsSeparated(true);
-
-        const isMatch = selectedMethod === currentOre.correctMethod;
-        if (isMatch) {
-          setSeparationQuality("success");
-        } else {
-          setSeparationQuality("fail");
-        }
-      }
-    }, 35);
-  };
-
-  // Check Result / Claim Victory Handler
-  const handleCheckResult = () => {
-    if (!isSeparated) return;
-
-    if (selectedMethod === currentOre.correctMethod) {
-      // Unlock the next level
-      setUnlockedLevel((prev) => Math.max(prev, sampleIndex + 1));
-      setShowSuccessModal(true);
-    } else {
-      setFailFeedback(
-        `Selected method (${selectedMethod?.toUpperCase()}) does not match ${currentOre.name}'s properties! ${currentOre.explanation}`
-      );
-      setShowFailModal(true);
-    }
-  };
-
-  // Next Sample / Advance Target Level
-  const handleNextSample = () => {
-    setShowSuccessModal(false);
-    if (sampleIndex < ORE_SAMPLES.length - 1) {
-      setSampleIndex((prev) => prev + 1);
-    } else {
-      setSampleIndex(0); // Replay from level 1
-    }
-  };
-
   return (
-    <div className="w-full h-full h-screen h-[100dvh] bg-white text-slate-800 relative overflow-hidden select-none font-sans flex flex-col rounded-3xl sm:rounded-[32px] border border-slate-200 shadow-2xl p-2.5 sm:p-3.5">
+    <div className="w-full h-full h-screen h-[100dvh] bg-[#F8FAFC] text-slate-800 relative overflow-hidden select-none font-sans flex flex-col rounded-3xl sm:rounded-[32px] border border-slate-200 shadow-2xl">
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* SCREEN 1: MISSION SCREEN                                            */}
@@ -523,86 +562,86 @@ export default function OreConcentrationGamePage({
 
           {/* 3 Instruction Cards with User-Provided Images (Text/Heading on Top, Image on Bottom) */}
           <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5 flex-1 my-2 min-h-0">
-            {/* Card 1: 3D Plant Simulation */}
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between text-left shadow-sm overflow-hidden">
+            {/* Card 1: Check Target Ore */}
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between text-left shadow-sm overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     1
                   </div>
-                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Observe 3D Separation Plant</h3>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Step 1: Inspect Target</h3>
                 </div>
 
                 <div className="inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold uppercase mb-1 w-fit">
-                  INTERACTIVE 3D SIMULATION
+                  TARGET ORE & PURITY
                 </div>
                 <p className="text-[11px] text-slate-600 leading-snug mb-1.5">
-                  Inspect the physical setup and powdered ore feed. Watch the mechanical working of sluice riffles, magnetic rollers, and flotation tanks.
+                  Look at the top badge to identify the mineral name, formula, and goal (e.g., Tin Stone SnO₂ &bull; &ge;90% Purity).
                 </p>
               </div>
 
-              {/* Image 1: 3D Simulation Model placed at the bottom */}
-              <div className="w-full h-24 sm:h-26 rounded-xl overflow-hidden border border-slate-200 bg-slate-900 relative mt-auto">
+              {/* Image 1: Target Ore Badge at top */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-1.5 flex items-center justify-center mt-auto">
                 <img
-                  src="/images/instructions_step1_model.png"
-                  alt="3D Plant Simulation Model"
-                  className="w-full h-full object-cover object-center"
+                  src="/instructions_ore_step1.png"
+                  alt="Target Ore Badge"
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
             </div>
 
-            {/* Card 2: 4 Concentration Methods */}
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between text-left shadow-sm overflow-hidden">
+            {/* Card 2: Choose Method */}
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between text-left shadow-sm overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     2
                   </div>
-                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Select Matching Method</h3>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Step 2: Choose Method</h3>
                 </div>
 
                 <div className="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold uppercase mb-1 w-fit">
-                  MATCH METHOD TO ORE
+                  SEPARATION DROPDOWN
                 </div>
                 <p className="text-[11px] text-slate-600 leading-snug mb-1.5">
-                  Choose the correct technique based on ore properties: <strong>Hydraulic</strong> (gravity), <strong>Magnetic</strong>, <strong>Froth Flotation</strong>, or <strong>Leaching</strong>.
+                  Click the dropdown and select the matching method: <strong>Hydraulic</strong>, <strong>Magnetic</strong>, <strong>Froth</strong>, or <strong>Leaching</strong>.
                 </p>
               </div>
 
-              {/* Image 2: 4 Method Selector Buttons placed at the bottom */}
-              <div className="w-full h-24 sm:h-26 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-1 flex items-center justify-center mt-auto">
+              {/* Image 2: Method Dropdown Menu (Clean Zoomed-Out View) */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-1.5 flex items-center justify-center mt-auto">
                 <img
-                  src="/images/instructions_step2_methods.jpg"
-                  alt="Concentration Methods Options"
-                  className="w-full h-full object-contain"
+                  src="/instructions_ore_step2.png"
+                  alt="Method Dropdown Menu"
+                  className="max-h-full max-w-full object-contain p-0.5"
                 />
               </div>
             </div>
 
-            {/* Card 3: Controls - Check Answer */}
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 flex flex-col justify-between text-left shadow-sm overflow-hidden">
+            {/* Card 3: Run Separation & Advance */}
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between text-left shadow-sm overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
                     3
                   </div>
-                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Run & Check Answer</h3>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 truncate">Step 3: Run & Advance</h3>
                 </div>
 
                 <div className="inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase mb-1 w-fit">
-                  TEST & ADVANCE LEVEL
+                  RUN & UNLOCK NEXT LEVEL
                 </div>
                 <p className="text-[11px] text-slate-600 leading-snug mb-1.5">
-                  Run the plant, watch the particles separate, and click <strong>Check Answer</strong> to verify your choice and unlock the next level!
+                  Click <strong>RUN SEPARATION</strong> to run the plant. When correct, watch the separation before advancing to the next level!
                 </p>
               </div>
 
-              {/* Image 3: Check Answer Button placed at the bottom */}
-              <div className="w-full h-24 sm:h-26 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-1 flex items-center justify-center mt-auto">
+              {/* Image 3: Run Separation Button */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-1.5 flex items-center justify-center mt-auto">
                 <img
-                  src="/images/instructions_step3_controls.jpg"
-                  alt="Check Answer Controls"
-                  className="w-full h-full object-contain"
+                  src="/instructions_ore_step3.png"
+                  alt="Run Separation Button"
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
             </div>
@@ -631,173 +670,236 @@ export default function OreConcentrationGamePage({
       {/* SCREEN 3: INTERACTIVE LAB & CONCENTRATION PLANT SIMULATION          */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {screen === "lab" && (
-        <div className="w-full h-full flex flex-col justify-between overflow-hidden">
-          {/* Top Bar: Minimalist Clean Header */}
-          <div className="w-full flex items-center justify-between pb-1 shrink-0">
+        <div className="w-full h-full relative z-10 overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0]">
+          {/* FULL SCREEN 3D CANVAS VIEWPORT (covers whole screen) */}
+          <div className="absolute inset-0 w-full h-full z-0">
+            <Canvas shadows gl={{ antialias: true, alpha: true }}>
+              <PerspectiveCamera makeDefault position={[0.1, 1.25, 5.4]} fov={41} />
+              <OrbitControls
+                enablePan={false}
+                minDistance={3.2}
+                maxDistance={8.0}
+                maxPolarAngle={Math.PI / 2.05}
+              />
+              <Suspense fallback={null}>
+                <SeparationPlant3D
+                  method={selectedMethod || "hydraulic"}
+                  isSimulating={isSimulating}
+                  isSeparated={isSeparated}
+                  isCorrect={selectedMethod === currentOre.correctMethod}
+                  oreColor={currentOre.color}
+                  simProgress={simProgress}
+                  waterFlow={waterFlow}
+                  pulseSpeed={pulseSpeed}
+                />
+              </Suspense>
+            </Canvas>
+          </div>
+
+          {/* FLOATING TOP BAR */}
+          <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 z-20 flex items-center justify-between pointer-events-none">
+            {/* Left: Exit Button */}
             <button
               onClick={handleExit}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-sm"
+              className="pointer-events-auto flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-md cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>EXIT</span>
             </button>
 
-            {/* Clean Single Target Badge: L1, L2, L3 or L4 */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-extrabold text-blue-900 bg-blue-50 px-3.5 py-1 rounded-full border border-blue-200 shadow-sm">
-                L{sampleIndex + 1}: Target: {currentOre.name} ({currentOre.formula}) &bull; &ge;90% Purity
+            {/* Middle: Level & Target Ore Badge */}
+            <div className="pointer-events-auto flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full border border-slate-200/80 shadow-md">
+              <span className="text-xs font-black text-blue-600">
+                Level {sampleIndex + 1}:
+              </span>
+              <span className="text-xs font-bold text-slate-800">
+                {currentOre.name} ({currentOre.formula}) &bull; &ge;90% Purity
               </span>
             </div>
 
+            {/* Right: Explanation Button */}
             <button
               onClick={() => setShowExplanation(true)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-sm cursor-pointer"
+              className="pointer-events-auto flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>EXPLANATION</span>
             </button>
           </div>
 
-          {/* Full Screen 3D / Dynamic Separation Plant with Bottom Controls in Single Row */}
-          <div className="w-full flex-1 flex flex-col min-h-0 overflow-hidden relative">
+          {/* SIMULATING PROGRESS OVERLAY (Floats in center-bottom if active) */}
+          {isSimulating && (
+            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md px-5 py-2 rounded-full border border-slate-700 shadow-xl flex items-center gap-3 z-30 text-white text-xs font-bold pointer-events-none min-w-[280px]">
+              <span className="shrink-0 text-cyan-300">Separating Ore...</span>
+              <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300 rounded-full"
+                  style={{ width: `${simProgress}%` }}
+                />
+              </div>
+              <span className="shrink-0 font-mono text-[11px] text-cyan-300">{simProgress}%</span>
+            </div>
+          )}
 
-            {/* FULL CANVAS VIEWPORT: Directly rendered on outer screen, NO nested border boxes */}
-            <div className="w-full flex-1 relative overflow-hidden min-h-0 flex flex-col">
-              {/* Real 3D Three.js Simulation Canvas: Clean Crisp White Studio Background with Closer Zoom */}
-              <div className="w-full flex-1 relative overflow-hidden flex items-center justify-center bg-gradient-to-b from-slate-50 via-white to-slate-100 rounded-2xl border border-slate-100 shadow-inner">
-                <Canvas shadows gl={{ antialias: true, alpha: true }}>
-                  <PerspectiveCamera makeDefault position={[0.1, 1.25, 4.3]} fov={41} />
-                  <OrbitControls
-                    enablePan={false}
-                    minDistance={2.8}
-                    maxDistance={6.5}
-                    maxPolarAngle={Math.PI / 2.05}
-                  />
-                  <Suspense fallback={null}>
-                    <SeparationPlant3D
-                      method={selectedMethod || "hydraulic"}
-                      isSimulating={isSimulating}
-                      isSeparated={isSeparated}
-                      isCorrect={selectedMethod === currentOre.correctMethod}
-                      oreColor={currentOre.color}
-                      simProgress={simProgress}
-                      waterFlow={waterFlow}
-                      pulseSpeed={pulseSpeed}
-                    />
-                  </Suspense>
-                </Canvas>
+          {/* FLOATING BOTTOM CONTROLS: EXACTLY 2 BUTTONS (Dropdown + Run Separation, no white outer container, shifted downward) */}
+          <div className="absolute bottom-2 sm:bottom-3 left-0 right-0 z-30 flex items-center justify-center pointer-events-none">
+            <div className="pointer-events-auto flex items-center gap-2 sm:gap-3 relative">
+              {/* Tooltip prompt if user clicks run without selecting a method */}
+              {showPromptTooltip && (
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-rose-600 text-white font-bold text-[11px] px-3 py-1 rounded-full shadow-lg pointer-events-none whitespace-nowrap animate-bounce">
+                  {showPromptTooltip}
+                </div>
+              )}
 
-                {/* Bottom Simple Progress Bar (Only during/after simulation) */}
-                {isSimulating && (
-                  <div className="absolute bottom-2.5 left-4 right-4 bg-slate-900/85 backdrop-blur-md px-4 py-1.5 rounded-full border border-slate-700/80 shadow-md flex items-center justify-between gap-3 z-20 text-white text-[11px] font-bold">
-                    <span className="shrink-0 text-cyan-300">Separating...</span>
-                    <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-300 rounded-full"
-                        style={{ width: `${simProgress}%` }}
-                      />
-                    </div>
-                    <span className="shrink-0 font-mono text-[10px] text-cyan-300">{simProgress}%</span>
+              {/* BUTTON 1: METHOD SELECTION DROPDOWN */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsMethodDropdownOpen(!isMethodDropdownOpen)}
+                  disabled={isSimulating}
+                  className={`h-9 px-4 rounded-xl border text-center transition flex items-center justify-center gap-2 font-bold text-xs shadow-md cursor-pointer ${
+                    selectedMethod
+                      ? "bg-white text-blue-800 border-blue-300 hover:bg-blue-50"
+                      : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                  } ${isSimulating ? "opacity-60 cursor-not-allowed" : ""}`}
+                >
+                  {selectedMethod ? (
+                    <>
+                      <span className="text-sm">
+                        {selectedMethod === "hydraulic" && "🌊"}
+                        {selectedMethod === "magnetic" && "🧲"}
+                        {selectedMethod === "froth" && "🫧"}
+                        {selectedMethod === "leaching" && "🧪"}
+                      </span>
+                      <span className="truncate">
+                        {selectedMethod === "hydraulic" && "Hydraulic Washing"}
+                        {selectedMethod === "magnetic" && "Magnetic Roller"}
+                        {selectedMethod === "froth" && "Froth Flotation"}
+                        {selectedMethod === "leaching" && "Chemical Leaching"}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+                      <span>SELECT METHOD</span>
+                    </>
+                  )}
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isMethodDropdownOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {/* Dropdown Menu (pops UP) */}
+                {isMethodDropdownOpen && (
+                  <div className="absolute bottom-full mb-2 left-0 w-64 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-2xl p-1.5 flex flex-col gap-1 z-50 animate-in fade-in slide-in-from-bottom-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedMethod("hydraulic");
+                        setIsMethodDropdownOpen(false);
+                        setShowPromptTooltip(null);
+                        setIsSeparated(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2.5 cursor-pointer ${
+                        selectedMethod === "hydraulic"
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      <span className="text-base shrink-0 leading-none">🌊</span>
+                      <div className="flex flex-col">
+                        <span>Hydraulic Washing</span>
+                        <span className={`text-[10px] font-normal ${selectedMethod === "hydraulic" ? "text-blue-100" : "text-slate-400"}`}>
+                          Gravity / density separation
+                        </span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedMethod("magnetic");
+                        setIsMethodDropdownOpen(false);
+                        setShowPromptTooltip(null);
+                        setIsSeparated(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2.5 cursor-pointer ${
+                        selectedMethod === "magnetic"
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      <span className="text-base shrink-0 leading-none">🧲</span>
+                      <div className="flex flex-col">
+                        <span>Magnetic Roller</span>
+                        <span className={`text-[10px] font-normal ${selectedMethod === "magnetic" ? "text-blue-100" : "text-slate-400"}`}>
+                          Magnetic property separation
+                        </span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedMethod("froth");
+                        setIsMethodDropdownOpen(false);
+                        setShowPromptTooltip(null);
+                        setIsSeparated(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2.5 cursor-pointer ${
+                        selectedMethod === "froth"
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      <span className="text-base shrink-0 leading-none">🫧</span>
+                      <div className="flex flex-col">
+                        <span>Froth Flotation</span>
+                        <span className={`text-[10px] font-normal ${selectedMethod === "froth" ? "text-blue-100" : "text-slate-400"}`}>
+                          Wetting & bubble flotation
+                        </span>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedMethod("leaching");
+                        setIsMethodDropdownOpen(false);
+                        setShowPromptTooltip(null);
+                        setIsSeparated(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2.5 cursor-pointer ${
+                        selectedMethod === "leaching"
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      <span className="text-base shrink-0 leading-none">🧪</span>
+                      <div className="flex flex-col">
+                        <span>Chemical Leaching</span>
+                        <span className={`text-[10px] font-normal ${selectedMethod === "leaching" ? "text-blue-100" : "text-slate-400"}`}>
+                          Selective chemical dissolution
+                        </span>
+                      </div>
+                    </button>
                   </div>
                 )}
               </div>
+
+              {/* BUTTON 2: RUN SEPARATION */}
+              <button
+                type="button"
+                onClick={handleRunSimulation}
+                disabled={isSimulating}
+                className={`h-9 px-5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md ${
+                  isSimulating
+                    ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95 cursor-pointer"
+                }`}
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                <span>RUN SEPARATION</span>
+              </button>
             </div>
-
-            {/* BOTTOM CONTROLS: SINGLE ROW (Minimalist compact buttons) */}
-            <div className="w-full pt-1.5 flex items-center justify-between gap-2 z-10 shrink-0">
-              {/* 4 Method Selection Buttons */}
-              <div className="flex-1 flex items-center gap-1.5 sm:gap-2">
-                {/* 1. Hydraulic Washing */}
-                <button
-                  onClick={() => {
-                    setSelectedMethod("hydraulic");
-                    setIsSeparated(false);
-                    setSeparationQuality("none");
-                  }}
-                  className={`flex-1 py-1.5 px-3 rounded-xl border text-center transition flex items-center justify-center gap-1.5 ${selectedMethod === "hydraulic"
-                    ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
-                    }`}
-                >
-                  <span className="text-base shrink-0 leading-none">🌊</span>
-                  <span className="font-bold text-xs truncate">Hydraulic Washing</span>
-                </button>
-
-                {/* 2. Magnetic Roller */}
-                <button
-                  onClick={() => {
-                    setSelectedMethod("magnetic");
-                    setIsSeparated(false);
-                    setSeparationQuality("none");
-                  }}
-                  className={`flex-1 py-1.5 px-3 rounded-xl border text-center transition flex items-center justify-center gap-1.5 ${selectedMethod === "magnetic"
-                    ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
-                    }`}
-                >
-                  <span className="text-base shrink-0 leading-none">🧲</span>
-                  <span className="font-bold text-xs truncate">Magnetic Roller</span>
-                </button>
-
-                {/* 3. Froth Flotation */}
-                <button
-                  onClick={() => {
-                    setSelectedMethod("froth");
-                    setIsSeparated(false);
-                    setSeparationQuality("none");
-                  }}
-                  className={`flex-1 py-1.5 px-3 rounded-xl border text-center transition flex items-center justify-center gap-1.5 ${selectedMethod === "froth"
-                    ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
-                    }`}
-                >
-                  <span className="text-base shrink-0 leading-none">🫧</span>
-                  <span className="font-bold text-xs truncate">Froth Flotation</span>
-                </button>
-
-                {/* 4. Chemical Leaching */}
-                <button
-                  onClick={() => {
-                    setSelectedMethod("leaching");
-                    setIsSeparated(false);
-                    setSeparationQuality("none");
-                  }}
-                  className={`flex-1 py-1.5 px-3 rounded-xl border text-center transition flex items-center justify-center gap-1.5 ${selectedMethod === "leaching"
-                    ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
-                    }`}
-                >
-                  <span className="text-base shrink-0 leading-none">🧪</span>
-                  <span className="font-bold text-xs truncate">Chemical Leaching</span>
-                </button>
-              </div>
-
-              {/* Action Trigger Button */}
-              <div className="shrink-0">
-                {!isSeparated ? (
-                  <button
-                    onClick={handleRunSimulation}
-                    disabled={!selectedMethod || isSimulating}
-                    className={`h-9 px-4 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md ${!selectedMethod || isSimulating
-                      ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95 cursor-pointer"
-                      }`}
-                  >
-                    <Play className="w-3.5 h-3.5 fill-white" />
-                    <span>RUN SEPARATION</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleCheckResult}
-                    className="h-9 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider shadow-md transition flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>CHECK ANSWER</span>
-                  </button>
-                )}
-              </div>
-            </div>
-
           </div>
         </div>
       )}
@@ -957,67 +1059,52 @@ export default function OreConcentrationGamePage({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* MODAL 2: TARGET ACHIEVED / LEVEL CLEARED MODAL (Clean & Spacious)   */}
+      {/* MODAL 2: TARGET ACHIEVED / LEVEL CLEARED MODAL (Small & Compact)    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {showSuccessModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/65 backdrop-blur-md flex items-center justify-center p-3 animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-2xl p-4 text-center flex flex-col items-center max-h-[94vh] overflow-y-auto">
-            {/* Header Badge */}
-            <div className="flex items-center justify-between w-full mb-2">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black uppercase tracking-wider">
-                <Target className="w-3.5 h-3.5 text-emerald-600" />
-                <span>LEVEL {sampleIndex + 1} CLEARED</span>
-              </div>
-              <span className="text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                Purity: 94.8%
-              </span>
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 animate-in fade-in duration-200">
+          <div className="w-full max-w-[280px] bg-white rounded-2xl border border-slate-100 shadow-2xl p-3.5 text-center flex flex-col items-center">
+            {/* Green Check Icon */}
+            <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2">
+              <CheckCircle2 className="w-5 h-5" />
             </div>
 
-            <h3 className="text-base font-black text-slate-900 leading-snug mb-3">
-              {currentOre.name} Concentrated!
+            <h3 className="text-sm font-black text-slate-900 mb-0.5">
+              Correct Separation!
             </h3>
+            <p className="text-[11px] text-slate-600 mb-2">
+              Great job! You chose the correct separation method for <strong>{currentOre.name}</strong>.
+            </p>
 
-            {/* Next Target Preview Card */}
-            {sampleIndex < ORE_SAMPLES.length - 1 ? (
-              <div className="w-full bg-blue-50/80 border border-blue-200 rounded-xl px-3 py-2 mb-3 text-left flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-1 text-blue-900 font-bold text-xs">
-                    <Unlock className="w-3.5 h-3.5 text-blue-600" />
-                    <span>NEXT: LEVEL {sampleIndex + 2} &bull; {ORE_SAMPLES[sampleIndex + 1].name} ({ORE_SAMPLES[sampleIndex + 1].formula})</span>
-                  </div>
-                  <div className="text-[11px] text-blue-700 mt-0.5">
-                    Extract {ORE_SAMPLES[sampleIndex + 1].metal} &bull; Target: &ge;90% Purity
-                  </div>
-                </div>
-                <span className="text-[10px] font-black uppercase text-blue-700 bg-white px-2 py-0.5 rounded-full border border-blue-200 shrink-0">
-                  UNLOCKED
-                </span>
+            {/* Info Box */}
+            <div className="w-full bg-slate-50 border border-slate-100 rounded-xl p-2 mb-3 text-left">
+              <div className="text-[10px] font-bold text-emerald-700 flex items-center gap-1 mb-0.5">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                <span>Purity: &gt;90% Achieved</span>
               </div>
-            ) : (
-              <div className="w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 mb-3 text-center">
-                <div className="text-xs font-black text-emerald-900">
-                  🏆 MASTER METALLURGIST AWARD!
-                </div>
-                <div className="text-[11px] text-emerald-700 mt-0.5">
-                  You successfully concentrated all 4 major ore types!
-                </div>
-              </div>
-            )}
+              <p className="text-[10px] text-slate-600 leading-snug">
+                {currentOre.explanation}
+              </p>
+            </div>
 
-            {/* Modal Actions */}
-            <div className="w-full">
+            {/* Action Buttons: REPLAY & NEXT LEVEL */}
+            <div className="flex items-center gap-1.5 w-full">
               <button
-                onClick={handleNextSample}
-                className="w-full h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider transition shadow-md flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+                type="button"
+                onClick={handleReplayCurrentLevel}
+                className="flex-1 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10.5px] uppercase tracking-wider flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer"
               >
-                {sampleIndex < ORE_SAMPLES.length - 1 ? (
-                  <>
-                    <span>PROCEED TO LEVEL {sampleIndex + 2}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </>
-                ) : (
-                  <span>REPLAY ALL LEVELS</span>
-                )}
+                <RotateCcw className="w-3 h-3" />
+                <span>REPLAY</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleNextSample}
+                className="flex-1 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10.5px] uppercase tracking-wider flex items-center justify-center gap-1 transition shadow-md active:scale-95 cursor-pointer"
+              >
+                <span>NEXT LEVEL</span>
+                <ChevronRight className="w-3 h-3" />
               </button>
             </div>
           </div>
@@ -1025,33 +1112,109 @@ export default function OreConcentrationGamePage({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* MODAL 3: RETRY / FAIL MODAL (Clean & Spacious)                     */}
+      {/* MODAL 3: RETRY / FAIL MODAL (Small & Compact)                       */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {showFailModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-2xl p-4 text-center flex flex-col items-center max-h-[94vh] overflow-y-auto">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[11px] font-black uppercase tracking-wider mb-2">
-              <XCircle className="w-3.5 h-3.5 text-rose-600" />
-              <span>SEPARATION INEFFECTIVE</span>
+          <div className="w-full max-w-[280px] bg-white rounded-2xl border border-slate-100 shadow-2xl p-3.5 text-center flex flex-col items-center">
+            {/* Red X Icon */}
+            <div className="w-9 h-9 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mb-2">
+              <XCircle className="w-5 h-5" />
             </div>
 
-            <h3 className="text-base font-black text-slate-800 mb-1.5">
-              Low Concentration
+            <h3 className="text-sm font-black text-slate-900 mb-0.5">
+              Separation Ineffective
             </h3>
-            <div className="text-xs font-bold text-rose-700 bg-rose-50 px-3 py-1 rounded-full border border-rose-200 mb-4">
-              Purity: 38.2% • Gangue Remained
+            <p className="text-[11px] text-slate-600 mb-2">
+              This method failed to concentrate <strong>{currentOre.name}</strong> properly. Gangue impurities remained.
+            </p>
+
+            <div className="w-full bg-rose-50/80 border border-rose-100 rounded-xl p-2 mb-3 text-left">
+              <div className="text-[10px] font-bold text-rose-700 mb-0.5">
+                Low Concentration (&lt;50% Purity)
+              </div>
+              <p className="text-[10px] text-slate-600 leading-snug">
+                Check whether this ore is a sulfide, oxide, magnetic mineral, or requires chemical digestion.
+              </p>
             </div>
 
-            <div className="w-full">
+            {/* Action Buttons: RETRY & EXPLANATION */}
+            <div className="flex items-center gap-1.5 w-full">
               <button
+                type="button"
                 onClick={() => {
                   setShowFailModal(false);
                   setIsSeparated(false);
                   setSeparationQuality("none");
                 }}
-                className="w-full h-8 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition shadow-md active:scale-95 cursor-pointer"
+                className="flex-1 h-8 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10.5px] uppercase tracking-wider flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer"
               >
-                TRY AGAIN
+                <RotateCcw className="w-3 h-3" />
+                <span>REPLAY</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFailModal(false);
+                  setShowExplanation(true);
+                }}
+                className="flex-1 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10.5px] uppercase tracking-wider flex items-center justify-center gap-1 transition shadow-md active:scale-95 cursor-pointer"
+              >
+                <BookOpen className="w-3 h-3" />
+                <span>EXPLANATION</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* MODAL 4: FINAL CHALLENGE COMPLETION MODAL (Small & Compact)         */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {showFinalCompletionModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 animate-in fade-in duration-200">
+          <div className="w-full max-w-[280px] bg-white rounded-2xl border border-slate-100 shadow-2xl p-3.5 text-center flex flex-col items-center">
+            <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mb-2">
+              <Award className="w-5 h-5" />
+            </div>
+
+            <h3 className="text-sm font-black text-slate-900 mb-0.5">
+              Topic Completed!
+            </h3>
+            <p className="text-[11px] text-slate-600 mb-2">
+              Congratulations! You have mastered all 4 concentration of ore techniques!
+            </p>
+
+            <div className="w-full bg-amber-50/70 border border-amber-200/80 rounded-xl p-2 mb-3 text-left">
+              <div className="text-[10px] font-bold text-amber-900 mb-0.5">
+                Master Metallurgist
+              </div>
+              <p className="text-[10px] text-amber-800 leading-snug">
+                You successfully separated Tin Stone, Hematite, Zinc Blende, and Bauxite using gravity, magnetic, froth, and chemical leaching.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1.5 w-full">
+              <button
+                type="button"
+                onClick={handleReplayChallenge}
+                className="flex-1 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10.5px] uppercase tracking-wider flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>REPLAY</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFinalCompletionModal(false);
+                  setShowExplanation(true);
+                }}
+                className="flex-1 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10.5px] uppercase tracking-wider flex items-center justify-center gap-1 transition shadow-md active:scale-95 cursor-pointer"
+              >
+                <BookOpen className="w-3 h-3" />
+                <span>EXPLANATION</span>
               </button>
             </div>
           </div>

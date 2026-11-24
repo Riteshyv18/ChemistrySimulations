@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, Suspense } from "react";
+import React, { useState, useMemo, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera, OrbitControls } from "@react-three/drei";
 import CrushingFurnace3D from "./CrushingFurnace3D";
@@ -12,6 +12,7 @@ import {
   XCircle,
   X,
   ChevronRight,
+  ChevronDown,
   Flame,
   Wind,
   Layers,
@@ -118,14 +119,21 @@ export default function CrushingRoastingCalcinationGamePage({
   // Plant State: "idle" | "crushing" | "crushed" | "furnace_running" | "transformed"
   const [stage, setStage] = useState<"idle" | "crushing" | "crushed" | "furnace_running" | "transformed">("idle");
   const [selectedProcess, setSelectedProcess] = useState<ThermalProcess | null>(null);
+  const [isProcessDropdownOpen, setIsProcessDropdownOpen] = useState(false);
 
   // Modals & Level completion state
   const [isLevelPassed, setIsLevelPassed] = useState<boolean>(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFinalCompletionModal, setShowFinalCompletionModal] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [showFailModal, setShowFailModal] = useState(false);
   const [failFeedback, setFailFeedback] = useState<string>("");
   const [showPromptTooltip, setShowPromptTooltip] = useState<string | null>(null);
+
+  // Shuffled processes for dropdown options per level
+  const shuffledProcesses = useMemo<ThermalProcess[]>(() => {
+    return ["roasting", "calcination"];
+  }, [levelIndex]);
 
   const handleExit = () => {
     if (onExit) {
@@ -139,66 +147,62 @@ export default function CrushingRoastingCalcinationGamePage({
   const handleReset = () => {
     setStage("idle");
     setSelectedProcess(null);
+    setIsProcessDropdownOpen(false);
     setIsLevelPassed(false);
   };
 
-  // Trigger Crushing Action
-  const handleCrushOre = () => {
-    if (stage === "idle") {
-      setStage("crushing");
-      setTimeout(() => {
-        setStage("crushed");
-      }, 1600);
-    }
-  };
-
-  // Check Answer Handler
-  const handleCheckAnswer = () => {
-    // If ore not crushed yet
-    if (stage === "idle" || stage === "crushing") {
-      setShowPromptTooltip("Please perform Step 1: Click '1. CRUSH ORE' first!");
-      setTimeout(() => setShowPromptTooltip(null), 3000);
-      return;
-    }
-
-    // If step 2 (Roasting or Calcination) is not selected yet
+  // Step 1: Start extraction / crushing + furnace treatment action
+  const handleStartExtraction = () => {
     if (!selectedProcess) {
-      setShowPromptTooltip("Choose Step 2: Select 'ROASTING' or 'CALCINATION' first!");
-      setTimeout(() => setShowPromptTooltip(null), 3000);
+      setShowPromptTooltip("Choose Roasting or Calcination First!");
+      setTimeout(() => setShowPromptTooltip(null), 3200);
       return;
     }
 
+    setIsProcessDropdownOpen(false);
     setShowPromptTooltip(null);
-    const isCorrect = selectedProcess === currentOre.correctProcess;
+    setStage("crushing");
 
-    setStage("furnace_running");
-
+    // Phase 1: Crushing runs for 1.2s -> advances into furnace running
     setTimeout(() => {
-      setStage("transformed");
+      setStage("furnace_running");
 
-      if (isCorrect) {
-        setIsLevelPassed(true);
-        // If it's the last level (level 4), show the final challenge completed modal!
-        if (levelIndex >= ORE_CHALLENGES.length - 1) {
-          setShowFinalCompletionModal(true);
-        }
-      } else {
-        setIsLevelPassed(false);
-        if (currentOre.oreCategory === "sulphide") {
-          setFailFeedback(
-            `${currentOre.name} (${currentOre.formula}) is a SULPHIDE ore. It requires ROASTING with excess oxygen to replace sulphur with oxygen. Calcination lacks sufficient air, leaving the sulphide unreacted!`
-          );
+      // Phase 2: Furnace processes powder -> transforms into metal oxide after 1.4s
+      setTimeout(() => {
+        setStage("transformed");
+
+        const isCorrect = selectedProcess === currentOre.correctProcess;
+
+        if (isCorrect) {
+          setIsLevelPassed(true);
+          // Wait 3 full seconds so the user can observe the transformed oxide before popup
+          setTimeout(() => {
+            if (levelIndex < ORE_CHALLENGES.length - 1) {
+              setShowSuccessModal(true);
+            } else {
+              setShowFinalCompletionModal(true);
+            }
+          }, 3000);
         } else {
-          setFailFeedback(
-            `${currentOre.name} (${currentOre.formula}) is a CARBONATE ore. It requires CALCINATION (heating in limited or no air) to thermally decompose and release CO₂ gas. Roasting with excess air is wasteful and unnecessary!`
-          );
+          setIsLevelPassed(false);
+          if (currentOre.oreCategory === "sulphide") {
+            setFailFeedback(
+              `${currentOre.name} (${currentOre.formula}) is a SULPHIDE ore. It requires ROASTING with excess oxygen to replace sulphur with oxygen. Calcination lacks sufficient air, leaving the sulphide unreacted!`
+            );
+          } else {
+            setFailFeedback(
+              `${currentOre.name} (${currentOre.formula}) is a CARBONATE ore. It requires CALCINATION (heating in limited or no air) to thermally decompose and release CO₂ gas. Roasting with excess air is wasteful and unnecessary!`
+            );
+          }
+          // Incorrect popup appears immediately as requested
+          setShowFailModal(true);
         }
-        setShowFailModal(true);
-      }
-    }, 1800);
+      }, 1400);
+    }, 1200);
   };
 
   const handleNextLevel = () => {
+    setShowSuccessModal(false);
     if (levelIndex < ORE_CHALLENGES.length - 1) {
       setLevelIndex((prev) => prev + 1);
       setStage("idle");
@@ -207,6 +211,13 @@ export default function CrushingRoastingCalcinationGamePage({
     } else {
       setShowFinalCompletionModal(true);
     }
+  };
+
+  const handleReplayCurrentLevel = () => {
+    setShowSuccessModal(false);
+    setStage("idle");
+    setSelectedProcess(null);
+    setIsLevelPassed(false);
   };
 
   const handleReplayChallenge = () => {
@@ -282,83 +293,83 @@ export default function CrushingRoastingCalcinationGamePage({
 
           {/* 3 Step Cards - Compact Height & Clear Straightforward Instructions */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3.5 my-auto max-w-5xl mx-auto w-full">
-            {/* Card 1: The 3D Plant & Ore Crushing */}
+            {/* Card 1: Check Target Ore */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     1
                   </div>
-                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 1: Crush The Ore</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 1: Check Target</h3>
                 </div>
                 <div className="inline-block px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  JAW CRUSHER & BELT
+                  TARGET ORE & TYPE
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
-                  Click <strong>1. CRUSH ORE</strong> to grind the raw ore chunks into fine powder that feeds into the reverberatory furnace.
+                  Look at the top pill to see the ore name, formula, and whether it is a <strong>Sulphide</strong> or <strong>Carbonate</strong> ore.
                 </p>
               </div>
 
-              {/* Image 1: 3D Plant Visualization */}
-              <div className="w-full h-20 sm:h-22 rounded-xl overflow-hidden border border-slate-200 bg-slate-900/10 relative p-1 flex items-center justify-center mt-auto">
+              {/* Image 1: Target Ore Pill */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-2 flex items-center justify-center mt-auto">
                 <img
-                  src="/images/instructions_metallurgy_plant.png"
-                  alt="Crushing and Furnace Simulation Plant"
-                  className="w-full h-full object-contain rounded-lg"
+                  src="/instructions_crushing_step1.png"
+                  alt="Target Ore Pill"
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
             </div>
 
-            {/* Card 2: Choose Roasting or Calcination - Action Step Without Hints */}
+            {/* Card 2: Choose Roasting or Calcination */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     2
                   </div>
-                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 2: Choose Process</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 2: Choose Method</h3>
                 </div>
                 <div className="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
                   ROASTING OR CALCINATION
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
-                  Look at the current ore sample name and formula, then choose either <strong>ROASTING</strong> (excess air) or <strong>CALCINATION</strong> (limited air).
+                  Click the dropdown and choose <strong>ROASTING</strong> (excess air for sulphides) or <strong>CALCINATION</strong> (limited air for carbonates).
                 </p>
               </div>
 
-              {/* Image 2: Process Options Selector Buttons */}
-              <div className="w-full h-20 sm:h-22 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-1 flex items-center justify-center mt-auto">
+              {/* Image 2: Choose Method Dropdown */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-2 flex items-center justify-center mt-auto">
                 <img
-                  src="/images/instructions_metallurgy_process.jpg"
-                  alt="Process Selection Buttons"
-                  className="w-full h-full object-contain rounded-lg"
+                  src="/instructions_crushing_step2.png"
+                  alt="Process Selection Dropdown"
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
             </div>
 
-            {/* Card 3: Check Answer & Learn */}
+            {/* Card 3: Start Crush Ore */}
             <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between shadow-xs overflow-hidden">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">
                     3
                   </div>
-                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 3: Check & Next</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Step 3: Start Crush Ore</h3>
                 </div>
                 <div className="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-wider mb-1 w-fit">
-                  VERIFY YOUR ANSWER
+                  RUN & VERIFY
                 </div>
                 <p className="text-slate-600 text-[11px] leading-snug mb-2">
-                  Click <strong>CHECK ANSWER</strong> to run the thermal conversion. When correct, click <strong>NEXT LEVEL</strong> to move to the next ore.
+                  Click <strong>START CRUSH ORE</strong> to crush the ore chunks, feed the furnace, and verify the oxide conversion!
                 </p>
               </div>
 
-              {/* Image 3: Check Answer & Reset Controls */}
-              <div className="w-full h-20 sm:h-22 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-1 flex items-center justify-center mt-auto">
+              {/* Image 3: Start Crush Ore Button */}
+              <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-white relative p-2 flex items-center justify-center mt-auto">
                 <img
-                  src="/images/instructions_metallurgy_controls.jpg"
-                  alt="Check Answer and Reset Controls"
-                  className="w-full h-full object-contain rounded-lg"
+                  src="/instructions_crushing_step3.png"
+                  alt="Start Crush Ore Action Button"
+                  className="max-h-full max-w-full object-contain"
                 />
               </div>
             </div>
@@ -384,43 +395,12 @@ export default function CrushingRoastingCalcinationGamePage({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SCREEN 3: INTERACTIVE LAB (Single Canvas Div: Exit + Content + All) */}
+      {/* SCREEN 3: INTERACTIVE LAB (Single Fullscreen 3D Canvas)            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {screen === "lab" && (
-        <div className="w-full h-full flex flex-col justify-between p-1.5 sm:p-2 relative z-10 bg-white overflow-hidden">
-
-          {/* Header Bar: Top Single Row (Exit, Target Pill, Explanation Button) */}
-          <div className="w-full flex items-center justify-between pb-0.5 shrink-0 z-20">
-            <button
-              onClick={handleExit}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-sm cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>EXIT</span>
-            </button>
-
-            {/* Target Level Pill */}
-            <div className="px-3.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-900 font-bold text-xs flex items-center gap-2 shadow-xs">
-              <span className="font-black text-blue-700">Level {levelIndex + 1}:</span>
-              <span>{currentOre.name} ({currentOre.formula})</span>
-              <span className="text-slate-400">•</span>
-              <span className="uppercase text-[10px] tracking-wider font-extrabold text-blue-600">
-                {currentOre.oreCategory === "sulphide" ? "Sulphide Ore" : "Carbonate Ore"}
-              </span>
-            </div>
-
-            {/* Explanation Button */}
-            <button
-              onClick={() => setShowExplanation(true)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-sm cursor-pointer"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>EXPLANATION</span>
-            </button>
-          </div>
-
-          {/* Main 3D Simulation Canvas Area - Expanded Height, Soft Neutral Slate Grey Background */}
-          <div className="flex-1 w-full min-h-0 relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#94A3B8] via-[#64748B] to-[#475569] border border-slate-300 shadow-inner">
+        <div className="w-full h-full relative z-10 overflow-hidden rounded-3xl sm:rounded-[32px] bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0]">
+          {/* Main 3D Simulation Canvas Area - Single Fullscreen Canvas */}
+          <div className="absolute inset-0 w-full h-full z-0">
             <Canvas shadows gl={{ antialias: true, alpha: true }} className="w-full h-full">
               {/* Zoomed-in closer camera for crisp visibility on mobile & landscape (z: 4.8, fov: 36) */}
               <PerspectiveCamera makeDefault position={[0, 0.95, 4.8]} fov={36} />
@@ -443,91 +423,194 @@ export default function CrushingRoastingCalcinationGamePage({
             </Canvas>
           </div>
 
-          {/* Bottom Single-Row Control Bar - Ultra Compact Height */}
-          <div className="w-full flex items-center gap-2 shrink-0 z-20 pt-1 border-t border-slate-100">
-
-            {/* Button 1: Crush Ore Action */}
+          {/* Floating Top Header Bar */}
+          <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 z-20 flex items-center justify-between pointer-events-none">
+            {/* Top-Left Exit Button (Single Unified Black Pill) */}
             <button
-              onClick={handleCrushOre}
-              disabled={stage !== "idle"}
-              className={`py-1.5 px-3 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${stage === "idle"
-                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 active:scale-95 shadow-md shadow-blue-500/20"
-                  : "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
-                }`}
+              onClick={handleExit}
+              className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-md cursor-pointer"
             >
-              <Factory className="w-3.5 h-3.5" />
-              <span>1. CRUSH ORE</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>EXIT</span>
             </button>
 
-            {/* Section 2: Process Selectors (Roasting vs Calcination) */}
-            <div className="flex-1 grid grid-cols-2 gap-2 h-full">
-              {/* Roasting Option */}
-              <button
-                onClick={() => setSelectedProcess("roasting")}
-                className={`py-1.5 px-2.5 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 ${selectedProcess === "roasting"
-                    ? "bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/25 scale-[1.01]"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                  }`}
-              >
-                <Wind className="w-3.5 h-3.5 text-amber-300" />
-                <span>ROASTING (Excess Air)</span>
-              </button>
-
-              {/* Calcination Option */}
-              <button
-                onClick={() => setSelectedProcess("calcination")}
-                className={`py-1.5 px-2.5 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 ${selectedProcess === "calcination"
-                    ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/25 scale-[1.01]"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                  }`}
-              >
-                <Flame className="w-3.5 h-3.5 text-cyan-300" />
-                <span>CALCINATION (Limited Air)</span>
-              </button>
+            {/* Target Level Pill */}
+            <div className="pointer-events-auto flex items-center gap-2">
+              <span className="text-xs font-black text-slate-800 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full border border-slate-200 shadow-md flex items-center gap-1.5">
+                <span className="text-blue-600 font-extrabold">Level {levelIndex + 1}:</span>
+                <span>{currentOre.name} ({currentOre.formula})</span>
+                <span className="text-slate-300">•</span>
+                <span className="uppercase text-[10px] tracking-wider font-extrabold text-blue-600">
+                  {currentOre.oreCategory === "sulphide" ? "Sulphide Ore" : "Carbonate Ore"}
+                </span>
+              </span>
             </div>
 
-            {/* Button 3: Reset */}
+            {/* Explanation Button */}
             <button
-              onClick={handleReset}
-              className="py-1.5 px-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition cursor-pointer shadow-xs"
-              title="Reset Ore & Furnace"
+              onClick={() => setShowExplanation(true)}
+              className="pointer-events-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">RESET</span>
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>EXPLANATION</span>
             </button>
+          </div>
 
-            {/* Button 4: Check Answer OR Next Level (When Passed) */}
-            <div className="relative shrink-0">
-              {/* Dynamic tooltip when clicking without completing step 1 or step 2 */}
+          {/* Floating Bottom Control Bar: Exactly 2 Centered Buttons (Method Dropdown + CRUSH ORE) */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-30 flex items-center justify-center pointer-events-none">
+            <div className="pointer-events-auto relative flex items-center gap-2 sm:gap-3">
+              {/* Dynamic tooltip when clicking without completing selection */}
               {showPromptTooltip && (
-                <div className="absolute -top-11 right-0 px-3 py-1.5 rounded-xl bg-slate-900 text-white font-mono text-[10.5px] font-bold shadow-xl border border-slate-700 whitespace-nowrap z-50 flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-xl bg-slate-900 text-white font-mono text-[10.5px] font-bold shadow-xl border border-slate-700 whitespace-nowrap z-50 flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-150">
                   <span className="text-amber-400">⚠️</span>
                   <span>{showPromptTooltip}</span>
-                  <div className="absolute top-full right-8 border-4 border-transparent border-t-slate-900" />
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
                 </div>
               )}
 
-              {isLevelPassed ? (
+              {/* Button 1: Thermal Process Dropdown Trigger & Popover */}
+              <div className="relative">
+                {/* Dropdown Menu Popover (Opens Upward) */}
+                {isProcessDropdownOpen && (
+                  <div className="absolute bottom-full mb-2 left-0 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 p-2 z-50 flex flex-col gap-1.5 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 px-2 py-1">
+                      CHOOSE METHOD
+                    </div>
+                    {shuffledProcesses.map((procKey) => {
+                      const isSelected = selectedProcess === procKey;
+                      const config =
+                        procKey === "roasting"
+                          ? { label: "ROASTING (EXCESS AIR)", icon: Wind, color: "amber" }
+                          : { label: "CALCINATION (LIMITED AIR)", icon: Flame, color: "blue" };
+                      const Icon = config.icon;
+
+                      return (
+                        <button
+                          key={procKey}
+                          onClick={() => {
+                            setSelectedProcess(procKey);
+                            setIsProcessDropdownOpen(false);
+                            if (stage === "transformed") {
+                              setStage("idle");
+                            }
+                          }}
+                          className={`w-full py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition cursor-pointer text-left ${
+                            isSelected
+                              ? "bg-slate-900 text-white shadow-sm"
+                              : "text-slate-800 hover:bg-slate-100"
+                          }`}
+                        >
+                          <Icon
+                            className={`w-4 h-4 ${
+                              config.color === "amber" ? "text-amber-500" : "text-blue-500"
+                            }`}
+                          />
+                          <span>{config.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Dropdown Trigger Button */}
                 <button
-                  onClick={handleNextLevel}
-                  className="w-36 sm:w-44 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer shrink-0 whitespace-nowrap animate-bounce"
-                >
-                  <span>{levelIndex < ORE_CHALLENGES.length - 1 ? "NEXT LEVEL" : "VIEW RESULTS"}</span>
-                  <ChevronRight className="w-4 h-4 shrink-0" />
-                </button>
-              ) : (
-                <button
-                  onClick={handleCheckAnswer}
+                  onClick={() => setIsProcessDropdownOpen(!isProcessDropdownOpen)}
                   disabled={stage === "crushing" || stage === "furnace_running"}
-                  className="w-36 sm:w-44 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer shrink-0 whitespace-nowrap"
+                  className={`py-2 px-4 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer border ${
+                    selectedProcess === "roasting"
+                      ? "bg-amber-600 text-white border-amber-500 shadow-amber-500/20"
+                      : selectedProcess === "calcination"
+                      ? "bg-blue-600 text-white border-blue-500 shadow-blue-500/20"
+                      : "bg-white/95 backdrop-blur-md text-slate-800 border-slate-200 hover:bg-slate-50"
+                  }`}
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="whitespace-nowrap">CHECK ANSWER</span>
+                  {selectedProcess === "roasting" ? (
+                    <Wind className="w-4 h-4 text-amber-200" />
+                  ) : selectedProcess === "calcination" ? (
+                    <Flame className="w-4 h-4 text-cyan-200" />
+                  ) : (
+                    <Sparkles className="w-4 h-4 text-blue-500" />
+                  )}
+                  <span>
+                    {selectedProcess === "roasting"
+                      ? "ROASTING"
+                      : selectedProcess === "calcination"
+                      ? "CALCINATION"
+                      : "SELECT METHOD"}
+                  </span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      isProcessDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
-              )}
+              </div>
+
+              {/* Button 2: Start / Crush Ore Button */}
+              <button
+                onClick={handleStartExtraction}
+                disabled={stage === "crushing" || stage === "furnace_running"}
+                className={`py-2 px-5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer ${
+                  stage === "crushing" || stage === "furnace_running"
+                    ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
+                    : "bg-blue-600 hover:bg-blue-700 text-white active:scale-95 shadow-blue-500/25"
+                }`}
+              >
+                <Factory className="w-4 h-4" />
+                <span>START CRUSH ORE</span>
+              </button>
             </div>
           </div>
+        </div>
+      )}
 
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* MODAL 2A: LEVEL PASSED MODAL (Levels 1 - 3)                         */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {showSuccessModal && (
+        <div className="absolute inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3">
+          <div className="w-full max-w-[310px] sm:max-w-[330px] bg-white rounded-2xl p-4 shadow-2xl border border-emerald-100 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 shadow-inner">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-base font-black text-slate-900 mb-1">
+              Correct Conversion!
+            </h3>
+
+            <p className="text-[11px] text-slate-600 mb-2.5 leading-snug">
+              Great job! You chose the correct process for{" "}
+              <strong>{currentOre.name} ({currentOre.formula})</strong>.
+            </p>
+
+            <div className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-left font-mono text-[10.5px] mb-3 text-slate-800 space-y-1">
+              <div className="text-emerald-700 font-bold leading-tight">
+                ✓ Reaction: {currentOre.chemicalEquation}
+              </div>
+              <div className="text-[10px] text-slate-600 leading-tight">
+                • {currentOre.whyThisProcess}
+              </div>
+            </div>
+
+            {/* 2 Buttons: REPLAY and NEXT LEVEL */}
+            <div className="w-full flex items-center gap-2">
+              <button
+                onClick={handleReplayCurrentLevel}
+                className="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>REPLAY</span>
+              </button>
+
+              <button
+                onClick={handleNextLevel}
+                className="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md shadow-emerald-500/25 cursor-pointer"
+              >
+                <span>NEXT LEVEL</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

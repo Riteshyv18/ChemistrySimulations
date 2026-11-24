@@ -210,10 +210,10 @@ export default function CrushingFurnace3D({
       {/* ───────────────────────────────────────────────────────────── */}
       {/* FACTORY STUDIO ENCLOSURE (Seamless / No Artificial Walls)      */}
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* Heavy Steel Floor Plate - Industrial dark charcoal contrast stage directly under system */}
+      {/* Heavy Steel Floor Plate - Industrial Slate Navy contrast stage directly under system */}
       <mesh position={[0, -0.72, 0]}>
         <boxGeometry args={[7.8, 0.12, 3.6]} />
-        <meshStandardMaterial color="#1E293B" roughness={0.6} metalness={0.4} />
+        <meshStandardMaterial color="#334155" roughness={0.45} metalness={0.3} />
       </mesh>
 
       {/* Floor Guide Accent Line */}
@@ -268,23 +268,23 @@ export default function CrushingFurnace3D({
         {/* Heavy Crusher Body Casing - Industrial Slate/Steel */}
         <mesh position={[0, 0.25, 0]}>
           <boxGeometry args={[0.95, 0.85, 0.95]} />
-          <meshStandardMaterial color="#475569" roughness={0.35} metalness={0.65} />
+          <meshStandardMaterial color="#64748B" roughness={0.35} metalness={0.5} />
         </mesh>
 
         {/* Steel Corner Trims for crisp industrial geometry */}
         <mesh position={[0, 0.65, 0]}>
           <boxGeometry args={[0.98, 0.05, 0.98]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.8} />
+          <meshStandardMaterial color="#475569" metalness={0.7} />
         </mesh>
         <mesh position={[0, -0.15, 0]}>
           <boxGeometry args={[0.98, 0.05, 0.98]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.8} />
+          <meshStandardMaterial color="#475569" metalness={0.7} />
         </mesh>
 
         {/* Glass Inspection Window */}
         <mesh position={[0, 0.25, 0.485]}>
           <planeGeometry args={[0.62, 0.45]} />
-          <meshStandardMaterial color="#0284C7" transparent opacity={0.45} roughness={0.1} />
+          <meshStandardMaterial color="#94A3B8" transparent opacity={0.5} roughness={0.1} />
         </mesh>
 
         {/* Internal Fixed Jaw Plate */}
@@ -304,13 +304,13 @@ export default function CrushingFurnace3D({
         {/* Side Drive Pulley / Flywheel */}
         <mesh position={[0, 0.35, -0.52]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.32, 0.32, 0.08, 24]} />
-          <meshStandardMaterial color="#0284C7" metalness={0.8} />
+          <meshStandardMaterial color="#64748B" metalness={0.7} />
         </mesh>
 
         {/* Discharge Chute pouring cleanly ONTO the conveyor belt */}
         <mesh position={[0.55, -0.12, 0]} rotation={[0, 0, -0.45]}>
           <boxGeometry args={[0.42, 0.08, 0.42]} />
-          <meshStandardMaterial color="#334155" metalness={0.7} />
+          <meshStandardMaterial color="#64748B" metalness={0.6} />
         </mesh>
 
         {/* 4 Structural Steel Legs Firmly on Floor */}
@@ -318,15 +318,15 @@ export default function CrushingFurnace3D({
           [-0.35, 0.35].map((z) => (
             <mesh key={`${x}-${z}`} position={[x, -0.42, z]}>
               <boxGeometry args={[0.12, 0.48, 0.12]} />
-              <meshStandardMaterial color="#1E293B" metalness={0.8} />
+              <meshStandardMaterial color="#64748B" metalness={0.6} />
             </mesh>
           ))
         )}
 
         {/* 3D Floating Station Badge: JAW CRUSHER - Direct below unit */}
-        <Html position={[0, -0.66, 0.72]} center>
-          <div style={{ transform: 'scale(1.15)', transformOrigin: 'center' }}>
-            <div className="px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-700/70 text-cyan-400 font-mono text-[10.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
+        <Html position={[0, -0.66, 0.72]} center zIndexRange={[10, 0]}>
+          <div style={{ transform: 'scale(1.06)', transformOrigin: 'center' }}>
+            <div className="px-2.5 py-1 rounded-md bg-slate-800/95 border border-slate-600 text-cyan-300 font-mono text-[10.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
               ① JAW CRUSHER
             </div>
           </div>
@@ -350,13 +350,13 @@ export default function CrushingFurnace3D({
         {/* Moving Rubber Belt Surface */}
         <mesh ref={conveyorBeltMeshRef} position={[0, 0.02, 0]}>
           <boxGeometry args={[3.4, 0.04, 0.48]} />
-          <meshStandardMaterial color="#1E293B" roughness={0.9} />
+          <meshStandardMaterial color="#475569" roughness={0.7} />
         </mesh>
 
         {/* Steel Bed Frame */}
         <mesh position={[0, -0.02, 0]}>
           <boxGeometry args={[3.45, 0.05, 0.54]} />
-          <meshStandardMaterial color="#475569" metalness={0.7} />
+          <meshStandardMaterial color="#64748B" metalness={0.6} />
         </mesh>
 
         {/* Yellow Guard Rails */}
@@ -384,24 +384,24 @@ export default function CrushingFurnace3D({
           <group key={x} position={[x, -0.25, 0]}>
             <mesh position={[0, 0, 0.24]}>
               <boxGeometry args={[0.08, 0.46, 0.06]} />
-              <meshStandardMaterial color="#334155" metalness={0.8} />
+              <meshStandardMaterial color="#64748B" metalness={0.6} />
             </mesh>
             <mesh position={[0, 0, -0.24]}>
               <boxGeometry args={[0.08, 0.46, 0.06]} />
-              <meshStandardMaterial color="#334155" metalness={0.8} />
+              <meshStandardMaterial color="#64748B" metalness={0.6} />
             </mesh>
             {/* Cross-brace bar */}
             <mesh position={[0, -0.15, 0]}>
               <boxGeometry args={[0.06, 0.04, 0.48]} />
-              <meshStandardMaterial color="#1E293B" />
+              <meshStandardMaterial color="#475569" />
             </mesh>
           </group>
         ))}
 
-        {/* 3D Floating Station Badge: CONVEYOR FEED - Directly below belt */}
-        <Html position={[0, -0.46, 0.55]} center>
-          <div style={{ transform: 'scale(1.15)', transformOrigin: 'center' }}>
-            <div className="px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-700/70 text-slate-200 font-mono text-[10.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
+        {/* 3D Floating Station Badge: CONVEYOR FEED - Placed on top side above conveyor */}
+        <Html position={[0, 0.38, 0]} center zIndexRange={[10, 0]}>
+          <div style={{ transform: 'scale(1.06)', transformOrigin: 'center' }}>
+            <div className="px-2.5 py-1 rounded-md bg-slate-800/95 border border-slate-600 text-slate-100 font-mono text-[10.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
               ② CONVEYOR FEED
             </div>
           </div>
@@ -421,7 +421,7 @@ export default function CrushingFurnace3D({
         {/* Concrete / Brick Foundation Block (Anchors furnace to floor at y: -0.66) */}
         <mesh position={[0, -0.48, 0]}>
           <boxGeometry args={[1.5, 0.36, 1.3]} />
-          <meshStandardMaterial color="#334155" roughness={0.8} metalness={0.3} />
+          <meshStandardMaterial color="#64748B" roughness={0.7} metalness={0.3} />
         </mesh>
 
         {/* Main Refractory Brick Furnace Body */}
@@ -433,24 +433,24 @@ export default function CrushingFurnace3D({
         {/* Heavy Structural Steel Buckstays & Straps */}
         <mesh position={[0, 0.55, 0]}>
           <boxGeometry args={[1.48, 0.08, 1.28]} />
-          <meshStandardMaterial color="#0F172A" metalness={0.8} />
+          <meshStandardMaterial color="#475569" metalness={0.7} />
         </mesh>
         <mesh position={[0, -0.15, 0]}>
           <boxGeometry args={[1.48, 0.08, 1.28]} />
-          <meshStandardMaterial color="#0F172A" metalness={0.8} />
+          <meshStandardMaterial color="#475569" metalness={0.7} />
         </mesh>
 
         {/* Conveyor Entrance Throat on Left (x = -0.73) */}
         <mesh position={[-0.73, -0.12, 0]}>
           <boxGeometry args={[0.06, 0.38, 0.62]} />
-          <meshStandardMaterial color="#020617" />
+          <meshStandardMaterial color="#475569" />
         </mesh>
 
         {/* Front Inspection Port / Tinted Quartz Glass */}
         <mesh position={[0, 0.22, 0.63]}>
           <planeGeometry args={[0.7, 0.42]} />
           <meshStandardMaterial
-            color={stage === "furnace_running" || stage === "transformed" ? "#F59E0B" : "#38BDF8"}
+            color={stage === "furnace_running" || stage === "transformed" ? "#F59E0B" : "#94A3B8"}
             emissive={stage === "furnace_running" || stage === "transformed" ? "#D97706" : "#000000"}
             emissiveIntensity={stage === "furnace_running" || stage === "transformed" ? 0.8 : 0}
             transparent
@@ -493,18 +493,18 @@ export default function CrushingFurnace3D({
         {/* Flue Exhaust Chimney */}
         <mesh position={[0.35, 1.05, 0]}>
           <cylinderGeometry args={[0.16, 0.2, 0.75, 16]} />
-          <meshStandardMaterial color="#334155" metalness={0.7} />
+          <meshStandardMaterial color="#64748B" metalness={0.6} />
         </mesh>
         {/* Chimney Lip */}
         <mesh position={[0.35, 1.43, 0]}>
           <cylinderGeometry args={[0.19, 0.19, 0.06, 16]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.8} />
+          <meshStandardMaterial color="#475569" metalness={0.7} />
         </mesh>
 
         {/* 3D Floating Station Badge: REVERBERATORY FURNACE - Directly below furnace */}
-        <Html position={[0, -0.66, 0.72]} center>
-          <div style={{ transform: 'scale(1.15)', transformOrigin: 'center' }}>
-            <div className="px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-700/70 text-amber-400 font-mono text-[10.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
+        <Html position={[0, -0.66, 0.72]} center zIndexRange={[10, 0]}>
+          <div style={{ transform: 'scale(1.06)', transformOrigin: 'center' }}>
+            <div className="px-2.5 py-1 rounded-md bg-slate-800/95 border border-slate-600 text-amber-300 font-mono text-[10.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
               ③ REVERBERATORY FURNACE
             </div>
           </div>

@@ -152,11 +152,11 @@ export default function ReductionFurnace3D({
   return (
     <group position={[0, -0.48, 0]}>
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* GROUND STAGE - Industrial Dark Charcoal Platform              */}
+      {/* GROUND STAGE - Medium-Light Slate Navy Industrial Platform     */}
       {/* ───────────────────────────────────────────────────────────── */}
       <mesh position={[0, -0.72, 0]}>
         <boxGeometry args={[7.8, 0.12, 3.6]} />
-        <meshStandardMaterial color="#1E293B" roughness={0.6} metalness={0.4} />
+        <meshStandardMaterial color="#334155" roughness={0.45} metalness={0.3} />
       </mesh>
 
       {/* High-visibility Cyan Guide Line */}
@@ -173,7 +173,7 @@ export default function ReductionFurnace3D({
         {/* Slanted Steel Delivery Tube */}
         <mesh position={[0, 0, 0]} rotation={[0, 0, -0.22]}>
           <boxGeometry args={[1.5, 0.14, 0.32]} />
-          <meshStandardMaterial color="#334155" metalness={0.8} />
+          <meshStandardMaterial color="#94A3B8" metalness={0.6} roughness={0.3} />
         </mesh>
         {/* Yellow Safety Top Rim on Chute */}
         <mesh position={[0, 0.08, 0]} rotation={[0, 0, -0.22]}>
@@ -183,7 +183,7 @@ export default function ReductionFurnace3D({
         {/* Support Steel Stanchion */}
         <mesh position={[0, -0.26, 0]}>
           <boxGeometry args={[0.08, 0.44, 0.28]} />
-          <meshStandardMaterial color="#0F172A" metalness={0.8} />
+          <meshStandardMaterial color="#64748B" metalness={0.6} />
         </mesh>
       </group>
 
@@ -192,7 +192,7 @@ export default function ReductionFurnace3D({
         {/* Slanted Iron Trough Channel */}
         <mesh position={[0, 0, 0]} rotation={[0, 0, -0.16]}>
           <boxGeometry args={[1.35, 0.08, 0.28]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.9} />
+          <meshStandardMaterial color="#94A3B8" metalness={0.6} roughness={0.3} />
         </mesh>
         {/* Yellow Safety Guard Border */}
         <mesh position={[0, 0.05, 0.13]} rotation={[0, 0, -0.16]}>
@@ -216,7 +216,7 @@ export default function ReductionFurnace3D({
         {/* Stanchion Support */}
         <mesh position={[0.05, -0.38, 0]}>
           <boxGeometry args={[0.08, 0.62, 0.22]} />
-          <meshStandardMaterial color="#0F172A" metalness={0.8} />
+          <meshStandardMaterial color="#64748B" metalness={0.6} />
         </mesh>
       </group>
 
@@ -229,7 +229,7 @@ export default function ReductionFurnace3D({
           [-0.32, 0.32].map((z) => (
             <mesh key={`feeder-${x}-${z}`} position={[x, -0.42, z]}>
               <boxGeometry args={[0.08, 0.52, 0.08]} />
-              <meshStandardMaterial color="#0F172A" metalness={0.8} />
+              <meshStandardMaterial color="#64748B" metalness={0.6} />
             </mesh>
           ))
         )}
@@ -237,7 +237,7 @@ export default function ReductionFurnace3D({
         {/* Storage Silo Base */}
         <mesh position={[0, -0.1, 0]}>
           <boxGeometry args={[0.9, 0.45, 0.9]} />
-          <meshStandardMaterial color="#334155" metalness={0.6} roughness={0.5} />
+          <meshStandardMaterial color="#94A3B8" metalness={0.5} roughness={0.4} />
         </mesh>
 
         {/* Transparent Mineral Inspection Glass */}
@@ -249,7 +249,7 @@ export default function ReductionFurnace3D({
         {/* Conical Hopper Funnel (Open Top Chamber) */}
         <mesh position={[0, 0.4, 0]}>
           <cylinderGeometry args={[0.55, 0.25, 0.6, 24, 1, true]} />
-          <meshStandardMaterial color="#475569" metalness={0.7} side={THREE.DoubleSide} />
+          <meshStandardMaterial color="#94A3B8" metalness={0.6} roughness={0.3} side={THREE.DoubleSide} />
         </mesh>
 
         {/* Yellow Safety Top Rim (Horizontal collar flat on the hopper rim) */}
@@ -298,7 +298,7 @@ export default function ReductionFurnace3D({
         {/* Discharge Chute pouring cleanly into delivery runner */}
         <mesh position={[0.55, -0.16, 0]} rotation={[0, 0, -0.4]}>
           <boxGeometry args={[0.42, 0.1, 0.34]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.8} />
+          <meshStandardMaterial color="#64748B" metalness={0.6} />
         </mesh>
       </group>
 
@@ -309,7 +309,7 @@ export default function ReductionFurnace3D({
         {/* Foundation Base Block */}
         <mesh position={[0, -0.65, 0]}>
           <boxGeometry args={[2.1, 0.32, 1.8]} />
-          <meshStandardMaterial color="#334155" metalness={0.4} roughness={0.7} />
+          <meshStandardMaterial color="#64748B" metalness={0.4} roughness={0.5} />
         </mesh>
 
         {/* Main Furnace Body - Blast Furnace / Reverberatory / Electrolytic Tank / Bessemer Converter */}
@@ -318,7 +318,7 @@ export default function ReductionFurnace3D({
           <meshStandardMaterial
             color={
               isElectrolyticActive
-                ? "#1E293B" // High-tech dark electrolyte bath vat
+                ? "#64748B" // Industrial Slate Grey electrolyte bath vat
                 : isSelfReductionActive
                 ? "#7C2D12" // Bessemer Converter refractory copper-brown
                 : "#831843" // Blast furnace refractory maroon
@@ -332,14 +332,14 @@ export default function ReductionFurnace3D({
         {[-0.35, 0.1, 0.55].map((y) => (
           <mesh key={`band-${y}`} position={[0, y, 0]}>
             <cylinderGeometry args={[1.02, 1.02, 0.08, 32]} />
-            <meshStandardMaterial color="#0F172A" metalness={0.9} />
+            <meshStandardMaterial color="#475569" metalness={0.7} />
           </mesh>
         ))}
 
         {/* Clean Rectangular Observation Port Frame */}
         <mesh position={[0, 0.12, 0.98]}>
           <boxGeometry args={[0.78, 0.46, 0.08]} />
-          <meshStandardMaterial color="#0F172A" metalness={0.9} />
+          <meshStandardMaterial color="#475569" metalness={0.7} />
         </mesh>
 
         {/* Front Observation / Reaction Chamber Quartz Glass */}
@@ -399,7 +399,7 @@ export default function ReductionFurnace3D({
             {[-0.45, 0, 0.45].map((x) => (
               <mesh key={`anode-${x}`} position={[x, -0.05, 0]}>
                 <cylinderGeometry args={[0.08, 0.08, 0.75, 16]} />
-                <meshStandardMaterial color="#0F172A" roughness={0.9} metalness={0.2} />
+                <meshStandardMaterial color="#64748B" roughness={0.6} metalness={0.5} />
               </mesh>
             ))}
           </group>
@@ -432,12 +432,12 @@ export default function ReductionFurnace3D({
             {/* Top Conical Dome */}
             <mesh position={[0, 0.12, 0]}>
               <cylinderGeometry args={[0.42, 0.92, 0.35, 32]} />
-              <meshStandardMaterial color="#334155" metalness={0.7} />
+              <meshStandardMaterial color="#64748B" metalness={0.6} />
             </mesh>
             {/* Double-Bell Feed Top */}
             <mesh position={[0, 0.45, 0]}>
               <cylinderGeometry args={[0.26, 0.26, 0.38, 24]} />
-              <meshStandardMaterial color="#1E293B" metalness={0.8} />
+              <meshStandardMaterial color="#475569" metalness={0.7} />
             </mesh>
             {/* Yellow Top Access Ring */}
             <mesh position={[0, 0.65, 0]}>
@@ -450,11 +450,11 @@ export default function ReductionFurnace3D({
         {/* Off-gas Chimney Flue */}
         <mesh position={[0.55, 1.15, -0.2]}>
           <cylinderGeometry args={[0.14, 0.16, 0.75, 16]} />
-          <meshStandardMaterial color="#334155" metalness={0.7} />
+          <meshStandardMaterial color="#64748B" metalness={0.6} />
         </mesh>
         <mesh position={[0.55, 1.54, -0.2]}>
           <cylinderGeometry args={[0.18, 0.18, 0.06, 16]} />
-          <meshStandardMaterial color="#0F172A" metalness={0.9} />
+          <meshStandardMaterial color="#475569" metalness={0.7} />
         </mesh>
 
         {/* 4. CHIMNEY GAS EFFLUENT (CO, CO2, SO2, O2 Plumes) inside furnace group */}
@@ -480,7 +480,7 @@ export default function ReductionFurnace3D({
         {/* Tap-hole Spout (Right side) pouring pure metal out */}
         <mesh position={[0.95, -0.1, 0]} rotation={[0, 0, -0.16]}>
           <boxGeometry args={[0.38, 0.08, 0.22]} />
-          <meshStandardMaterial color="#0F172A" metalness={0.8} />
+          <meshStandardMaterial color="#64748B" metalness={0.7} />
         </mesh>
       </group>
 
@@ -493,7 +493,7 @@ export default function ReductionFurnace3D({
           [-0.32, 0.32].map((z) => (
             <mesh key={`ingot-stand-${x}-${z}`} position={[x, -0.42, z]}>
               <boxGeometry args={[0.08, 0.52, 0.08]} />
-              <meshStandardMaterial color="#0F172A" metalness={0.8} />
+              <meshStandardMaterial color="#64748B" metalness={0.6} />
             </mesh>
           ))
         )}
@@ -501,19 +501,19 @@ export default function ReductionFurnace3D({
         {/* Heavy Industrial Stand Base Table */}
         <mesh position={[0, -0.16, 0]}>
           <boxGeometry args={[1.05, 0.16, 0.85]} />
-          <meshStandardMaterial color="#334155" metalness={0.6} roughness={0.6} />
+          <meshStandardMaterial color="#94A3B8" metalness={0.5} roughness={0.5} />
         </mesh>
 
         {/* Outer Ingot Mould Raised Rim (Consistent Clean Industrial Slate) */}
         <mesh position={[0, -0.04, 0]}>
           <boxGeometry args={[0.94, 0.12, 0.74]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.8} />
+          <meshStandardMaterial color="#64748B" metalness={0.6} />
         </mesh>
 
         {/* Inner Clean Empty Mould Floor (Always clean silver-grey before extraction or on wrong attempt) */}
         <mesh position={[0, 0.01, 0]}>
           <boxGeometry args={[0.84, 0.03, 0.64]} />
-          <meshStandardMaterial color="#64748B" roughness={0.6} metalness={0.4} />
+          <meshStandardMaterial color="#CBD5E1" roughness={0.4} metalness={0.4} />
         </mesh>
 
         {/* 2 Empty Mould Cavity Grooves when tray is empty */}
@@ -521,11 +521,11 @@ export default function ReductionFurnace3D({
           <>
             <mesh position={[-0.2, 0.025, 0]}>
               <boxGeometry args={[0.3, 0.01, 0.52]} />
-              <meshStandardMaterial color="#475569" roughness={0.7} />
+              <meshStandardMaterial color="#94A3B8" roughness={0.5} />
             </mesh>
             <mesh position={[0.2, 0.025, 0]}>
               <boxGeometry args={[0.3, 0.01, 0.52]} />
-              <meshStandardMaterial color="#475569" roughness={0.7} />
+              <meshStandardMaterial color="#94A3B8" roughness={0.5} />
             </mesh>
           </>
         )}
@@ -556,30 +556,30 @@ export default function ReductionFurnace3D({
       </group>
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* 3D FLOATING BADGES - Perfectly Aligned at y: -0.62             */}
+      {/* 3D FLOATING BADGES                                             */}
       {/* ───────────────────────────────────────────────────────────── */}
       {/* Badge 1: Left Feeder */}
-      <Html position={[-2.4, -0.62, 0.8]} center>
-        <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
-          <div className="px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-700/70 text-cyan-400 font-mono text-[10.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
+      <Html position={[-2.4, -0.62, 0.8]} center zIndexRange={[10, 0]}>
+        <div style={{ transform: "scale(0.92)", transformOrigin: "center" }}>
+          <div className="px-2 py-0.5 rounded-md bg-slate-800/95 border border-slate-600 text-cyan-300 font-mono text-[9.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
             ① OXIDE CHARGE ({oxideName})
           </div>
         </div>
       </Html>
 
-      {/* Badge 2: Central Core */}
-      <Html position={[0.05, -0.62, 1.15]} center>
-        <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
-          <div className="px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-700/70 text-slate-200 font-mono text-[10.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
+      {/* Badge 2: Central Core (Shifted upward cleanly on the furnace front face so it is completely clear of bottom buttons) */}
+      <Html position={[0.05, -0.20, 1.25]} center zIndexRange={[10, 0]}>
+        <div style={{ transform: "scale(0.92)", transformOrigin: "center" }}>
+          <div className="px-2 py-0.5 rounded-md bg-slate-800/95 border border-slate-600 text-slate-100 font-mono text-[9.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
             ② {isElectrolyticActive ? "ELECTROLYTIC BATH" : isSelfReductionActive ? "BESSEMER CONVERTER" : "BLAST FURNACE"}
           </div>
         </div>
       </Html>
 
       {/* Badge 3: Right Ingot Mould */}
-      <Html position={[2.45, -0.62, 0.8]} center>
-        <div style={{ transform: "scale(1.15)", transformOrigin: "center" }}>
-          <div className="px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-700/70 text-amber-400 font-mono text-[10.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
+      <Html position={[2.45, -0.62, 0.8]} center zIndexRange={[10, 0]}>
+        <div style={{ transform: "scale(0.92)", transformOrigin: "center" }}>
+          <div className="px-2 py-0.5 rounded-lg bg-slate-800/95 border border-slate-600 text-amber-300 font-mono text-[9.5px] font-bold tracking-tight shadow-md whitespace-nowrap pointer-events-none select-none">
             ③ EXTRACTED {metalName.toUpperCase()}
           </div>
         </div>

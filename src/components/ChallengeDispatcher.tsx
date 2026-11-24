@@ -382,6 +382,14 @@ const RefiningOfMetalsGamePage = dynamic<{ difficulty?: string; onExit?: () => v
   { ssr: false, loading: LoadingFallback }
 );
 
+const CrystalExplorerGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/solid_state/classification_of_solids/CrystalExplorerGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -539,6 +547,22 @@ export function ChallengeDispatcher({
     normTopic.includes("refining") ||
     ((normModule.includes("metallurgy") || normModule === "m8") &&
       (normTopic === "4" || normTopic.includes("refin")));
+
+  const isSolidStateClassification =
+    normTopic === "35" ||
+    normTopic === "classification-of-solids" ||
+    normTopic === "classification_of_solids" ||
+    normTopic === "crystal-explorer" ||
+    normTopic === "crystal_explorer" ||
+    normTopic === "crystalline-amorphous" ||
+    normTopic === "crystalline_amorphous" ||
+    normTopic.includes("crystal") ||
+    normTopic.includes("amorphous") ||
+    normTopic.includes("solid-state") ||
+    normTopic.includes("solid_state") ||
+    normModule.includes("solid-state") ||
+    normModule.includes("solid_state") ||
+    normModule === "m9";
 
   const isReductionExtraction =
     !isRefiningOfMetals &&
@@ -707,7 +731,9 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isRefiningOfMetals) {
+  if (isSolidStateClassification) {
+    content = <CrystalExplorerGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isRefiningOfMetals) {
     content = <RefiningOfMetalsGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isReductionExtraction) {
     content = <ReductionExtractionGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -817,7 +843,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

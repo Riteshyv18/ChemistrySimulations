@@ -240,10 +240,10 @@ export default function UnitCellBuilderGamePage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 1: MISSION SCREEN (LANDSCAPE STUDIO DESIGN)
+          SCREEN 1: MISSION SCREEN (PORTRAIT OPTIMIZED)
           ══════════════════════════════════════════════════════════════════ */}
       {screen === "mission" && (
-        <div className="w-full h-full flex flex-col justify-between p-6 sm:p-7 relative bg-white">
+        <div className="w-full h-full flex flex-col justify-between p-5 sm:p-7 relative bg-white">
           {/* Top Bar with EXIT */}
           <div className="w-full flex items-center justify-start z-10 shrink-0">
             <button
@@ -256,17 +256,18 @@ export default function UnitCellBuilderGamePage({
             </button>
           </div>
 
-          {/* Central Mission Statement */}
-          <div className="max-w-3xl w-full mx-auto text-center flex flex-col items-center justify-center flex-1 my-auto z-10 px-4 space-y-4">
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-snug sm:leading-tight">
-              <span className="text-blue-600 font-extrabold uppercase">MISSION:</span> Build the correct cubic unit cell to unlock the crystal structure!
+          {/* Central Mission Statement (Increased Font Size for Portrait) */}
+          <div className="max-w-md w-full mx-auto text-center flex flex-col items-center justify-center flex-1 my-auto z-10 px-4 space-y-6">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-snug text-center">
+              <span className="text-blue-600 font-black uppercase">MISSION:</span>{" "}
+              Build the correct cubic unit cell to unlock the crystal structure!
             </h1>
 
             <div className="pt-2 flex justify-center w-full">
               <button
                 type="button"
                 onClick={() => setScreen("instructions")}
-                className="flex items-center justify-center gap-2 px-8 py-2.5 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/30 transition-all cursor-pointer transform hover:scale-105 active:scale-95"
+                className="w-32 sm:w-36 flex items-center justify-center gap-1.5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25 transition-all cursor-pointer active:scale-95"
               >
                 <span>NEXT</span>
                 <ChevronRight className="w-4 h-4" />
@@ -279,12 +280,12 @@ export default function UnitCellBuilderGamePage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 2: INSTRUCTIONS SCREEN (LANDSCAPE STUDIO DESIGN)
+          SCREEN 2: INSTRUCTIONS SCREEN (MATCHING REFERENCE IMAGE 1)
           ══════════════════════════════════════════════════════════════════ */}
       {screen === "instructions" && (
         <div className="w-full h-full flex flex-col justify-between p-4 sm:p-5 relative bg-white overflow-hidden">
-          {/* Top Bar with EXIT and INSTRUCTIONS TO PLAY badge */}
-          <div className="w-full flex items-center justify-between z-10 shrink-0">
+          {/* Top Header: EXIT on top-left */}
+          <div className="w-full flex items-center justify-start z-10 shrink-0 pt-2 sm:pt-2.5">
             <button
               type="button"
               onClick={handleExit}
@@ -293,101 +294,93 @@ export default function UnitCellBuilderGamePage({
               <ChevronLeft className="w-4 h-4" />
               <span>EXIT</span>
             </button>
-
-            <div className="flex items-center gap-2">
-              <div className="w-12 h-[2px] bg-gradient-to-r from-transparent via-slate-900 to-slate-900 rounded-full hidden sm:block" />
-              <div className="text-[11px] font-black uppercase tracking-widest text-slate-900 bg-slate-100 px-3.5 py-1 rounded-full border border-slate-300 shadow-2xs">
-                INSTRUCTIONS TO PLAY
-              </div>
-              <div className="w-12 h-[2px] bg-gradient-to-l from-transparent via-slate-900 to-slate-900 rounded-full hidden sm:block" />
-            </div>
-
-            <div className="w-16" />
           </div>
 
-          {/* 3 Step Guidance Cards (Using uploaded images 4, 5, 6 with clear simple instructions) */}
-          <div className="max-w-4xl w-full mx-auto flex flex-col justify-center items-center z-10 px-2 flex-1 my-1">
-            <div className="grid grid-cols-3 gap-3.5 w-full items-stretch">
-              {/* Card 1: Inspect 3D Unit Cell (Image 4) */}
-              <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                      1
-                    </div>
-                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Inspect 3D Unit Cell
-                    </h3>
+          {/* 3 Step Guidance Cards + INSTRUCTIONS TO PLAY Tab: Vertically Centered Together */}
+          <div className="w-full max-w-sm mx-auto flex flex-col justify-center items-center z-10 px-1 flex-1 my-auto space-y-2 sm:space-y-2.5 py-1.5">
+            {/* INSTRUCTIONS TO PLAY Tab placed directly above the cards */}
+            <div className="mb-10 sm:mb-12 text-[11px] sm:text-xs font-black uppercase tracking-wider text-white bg-slate-900 px-5 py-1.5 rounded-full shadow-sm">
+              INSTRUCTIONS TO PLAY
+            </div>
+            {/* Card 1: Inspect 3D Unit Cell */}
+            <div className="w-full bg-white rounded-2xl p-2.5 sm:p-3 shadow-sm border border-sky-200/80 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0 shadow-sm">
+                    1
                   </div>
-                  <p className="text-slate-600 font-medium text-[11px] leading-snug mt-1">
-                    Rotate the 3D cube to inspect empty positions at corners, faces, and the center.
-                  </p>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
+                    Inspect 3D Unit Cell
+                  </h3>
                 </div>
-                <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
-                  <img
-                    src="/instructions_unitcell_step1.png"
-                    alt="Inspect 3D Unit Cell"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+                <p className="text-slate-600 font-medium text-[10.5px] leading-snug mb-2">
+                  Rotate the 3D cube to inspect empty positions at corners, faces, and center.
+                </p>
               </div>
-
-              {/* Card 2: Place Lattice Atoms (Image 5) */}
-              <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                      2
-                    </div>
-                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Place Lattice Atoms
-                    </h3>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[11px] leading-snug mt-1">
-                    Click the buttons to toggle Corner atoms, Body Centre, or Face Centre atoms.
-                  </p>
-                </div>
-                <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
-                  <img
-                    src="/instructions_unitcell_step2.png"
-                    alt="Place Lattice Atoms"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+              <div className="w-full h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center shadow-inner p-1">
+                <img
+                  src="/instructions_unitcell_step1.png"
+                  alt="Inspect 3D Unit Cell"
+                  className="w-full h-full object-contain"
+                />
               </div>
+            </div>
 
-              {/* Card 3: Verify Unit Cell (Image 6) */}
-              <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                      3
-                    </div>
-                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Verify Unit Cell
-                    </h3>
+            {/* Card 2: Place Lattice Atoms */}
+            <div className="w-full bg-white rounded-2xl p-2.5 sm:p-3 shadow-sm border border-sky-200/80 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0 shadow-sm">
+                    2
                   </div>
-                  <p className="text-slate-600 font-medium text-[11px] leading-snug mt-1">
-                    Click Verify Unit Cell to check your structure!
-                  </p>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
+                    Place Lattice Atoms
+                  </h3>
                 </div>
-                <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
-                  <img
-                    src="/instructions_unitcell_step3.png"
-                    alt="Verify Unit Cell"
-                    className="w-full h-full object-contain"
-                  />
+                <p className="text-slate-600 font-medium text-[10.5px] leading-snug mb-2">
+                  Click the buttons to toggle Corner atoms, Body Centre, or Face Centre atoms.
+                </p>
+              </div>
+              <div className="w-full h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center shadow-inner p-1">
+                <img
+                  src="/instructions_unitcell_step2.png"
+                  alt="Place Lattice Atoms"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+
+            {/* Card 3: Check Your Answer */}
+            <div className="w-full bg-white rounded-2xl p-2.5 sm:p-3 shadow-sm border border-sky-200/80 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0 shadow-sm">
+                    3
+                  </div>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
+                    Check Your Answer
+                  </h3>
                 </div>
+                <p className="text-slate-600 font-medium text-[10.5px] leading-snug mb-2">
+                  Click Verify Unit Cell to check your structure!
+                </p>
+              </div>
+              <div className="w-full h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center shadow-inner p-1">
+                <img
+                  src="/instructions_unitcell_step3.png"
+                  alt="Verify Unit Cell"
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
           </div>
 
-          {/* Bottom Actions: BACK and PLAY */}
-          <div className="w-full flex items-center justify-center gap-4 max-w-md mx-auto pt-2 z-10 shrink-0">
+          {/* Bottom Actions: BACK and PLAY (Compact Reduced Length) */}
+          <div className="w-full flex items-center justify-center gap-4 max-w-sm mx-auto pt-2 pb-1 z-10 shrink-0">
             <button
               type="button"
               onClick={() => setScreen("mission")}
-              className="flex items-center justify-center gap-1.5 px-6 py-2 rounded-full font-mono font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer active:scale-95"
+              className="w-28 sm:w-32 flex items-center justify-center gap-1.5 py-2 rounded-full font-mono font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer active:scale-95"
             >
               <ChevronLeft className="w-4 h-4" />
               <span>BACK</span>
@@ -396,7 +389,7 @@ export default function UnitCellBuilderGamePage({
             <button
               type="button"
               onClick={() => setScreen("lab")}
-              className="flex items-center justify-center gap-1.5 px-6 py-2 rounded-full font-mono font-bold text-xs uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all cursor-pointer active:scale-95"
+              className="w-28 sm:w-32 flex items-center justify-center gap-1.5 py-2 rounded-full font-mono font-bold text-xs uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all cursor-pointer active:scale-95"
             >
               <span>PLAY</span>
               <ChevronRight className="w-4 h-4" />
@@ -406,12 +399,12 @@ export default function UnitCellBuilderGamePage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 3: 3D LAB SCREEN (FULLSCREEN LANDSCAPE CANVAS & FLOATING UI)
+          SCREEN 3: 3D LAB SCREEN (PORTRAIT OPTIMIZED CANVAS & FLOATING UI)
           ══════════════════════════════════════════════════════════════════ */}
       {screen === "lab" && (
         <div className="w-full h-full relative overflow-hidden bg-gradient-to-b from-white via-slate-50/50 to-slate-100/30 flex flex-col justify-between">
-          {/* ── 3D CANVAS (Fills Entire Middle Viewport) ── */}
-          <div className="absolute inset-0 z-0">
+          {/* ── 3D CANVAS (Shifted Upward in Viewport, Zero-Wobble Center Rotation) ── */}
+          <div className="absolute -top-8 sm:-top-10 bottom-24 sm:bottom-28 left-0 right-0 z-0">
             <Canvas gl={{ antialias: true, alpha: true }}>
               <PerspectiveCamera makeDefault position={[1.15, 0.95, 5.4]} fov={38} />
               <ambientLight intensity={0.8} />
@@ -420,6 +413,7 @@ export default function UnitCellBuilderGamePage({
               <pointLight position={[0, 4, 0]} intensity={0.6} color="#BAE6FD" />
 
               <OrbitControls
+                target={[0, 0, 0]}
                 enablePan={false}
                 minDistance={2.5}
                 maxDistance={8.5}
@@ -428,7 +422,7 @@ export default function UnitCellBuilderGamePage({
               />
 
               <Suspense fallback={null}>
-                <group position={[0, 0.08, 0]} scale={0.85}>
+                <group position={[0, 0, 0]} scale={0.48}>
                   <UnitCell3D
                     hasCorners={placedCorners}
                     hasBody={placedBody}
@@ -442,20 +436,31 @@ export default function UnitCellBuilderGamePage({
             </Canvas>
           </div>
 
-          {/* ── Floating Top Header Bar ── */}
-          <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 z-20 flex items-center justify-between pointer-events-none">
-            {/* Top-Left Exit Button (Unified Black Pill) */}
-            <button
-              onClick={handleExit}
-              className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-md cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span>EXIT</span>
-            </button>
+          {/* ── Floating Top Header Bar (Action buttons top row + Centered Level Tag second row) ── */}
+          <div className="absolute top-0 left-0 right-0 p-2.5 sm:p-3 z-20 flex flex-col items-center pointer-events-none">
+            <div className="w-full flex items-center justify-between pointer-events-none">
+              {/* Top-Left Exit Button (Unified Black Pill) */}
+              <button
+                onClick={handleExit}
+                className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-md cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>EXIT</span>
+              </button>
 
-            {/* Central Target Crystal Pill (Small & Compact) */}
-            <div className="pointer-events-auto flex items-center gap-1.5">
-              <span className="text-[11px] font-black text-slate-900 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full border border-slate-200/90 shadow-xs flex items-center gap-1.5">
+              {/* Top-Right Explanation Button */}
+              <button
+                onClick={() => setShowExplanation(true)}
+                className="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>EXPLANATION</span>
+              </button>
+            </div>
+
+            {/* Central Target Crystal Pill (Small with small margin, placed a little down) */}
+            <div className="pointer-events-auto mt-2 sm:mt-2.5">
+              <span className="text-[10.5px] sm:text-[11px] font-black text-slate-900 bg-white/95 backdrop-blur-md px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-slate-200/90 shadow-xs flex items-center gap-1 whitespace-nowrap">
                 <span className="text-blue-600 font-extrabold">Level {currentChallenge.level}:</span>
                 <span className="text-slate-900 font-black tracking-wide">
                   {currentChallenge.cellType === "SC"
@@ -466,36 +471,27 @@ export default function UnitCellBuilderGamePage({
                 </span>
               </span>
             </div>
-
-            {/* Top-Right Explanation Button */}
-            <button
-              onClick={() => setShowExplanation(true)}
-              className="pointer-events-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>EXPLANATION</span>
-            </button>
           </div>
 
-          {/* ── Floating Bottom Control Bar: Compact Standalone Buttons Without Outer Box ── */}
-          <div className="absolute bottom-0 left-0 right-0 p-2.5 sm:p-3 z-30 flex items-center justify-center pointer-events-none">
-            <div className="pointer-events-auto relative flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center">
+          {/* ── Floating Bottom Control Bar: 2 Rows × 2 Buttons (Lifted slightly upward with small margin) ── */}
+          <div className="absolute bottom-4.5 sm:bottom-5.5 left-0 right-0 px-3 sm:px-4 z-30 flex flex-col items-center justify-center pointer-events-none">
+            <div className="pointer-events-auto w-full max-w-sm grid grid-cols-2 gap-2 sm:gap-2.5">
               {/* Button 1: Toggle Corners (8 atoms) */}
               <button
                 type="button"
                 onClick={handleToggleCorners}
-                className={`py-1.5 px-3 rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm cursor-pointer border ${
+                className={`h-11 sm:h-12 w-full px-2.5 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-tight whitespace-nowrap flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer border ${
                   placedCorners
                     ? "bg-sky-600 text-white border-sky-500 shadow-sky-500/20 active:scale-95"
                     : "bg-white/95 backdrop-blur-md text-slate-700 border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 <div
-                  className={`w-3 h-3 rounded-full border flex items-center justify-center ${
+                  className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${
                     placedCorners ? "border-white bg-white/20" : "border-slate-400"
                   }`}
                 >
-                  {placedCorners && <Check className="w-2 h-2 text-white" />}
+                  {placedCorners && <Check className="w-2.5 h-2.5 text-white" />}
                 </div>
                 <span>CORNERS (8)</span>
               </button>
@@ -504,18 +500,18 @@ export default function UnitCellBuilderGamePage({
               <button
                 type="button"
                 onClick={handleToggleBody}
-                className={`py-1.5 px-3 rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm cursor-pointer border ${
+                className={`h-11 sm:h-12 w-full px-2.5 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-tight whitespace-nowrap flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer border ${
                   placedBody
                     ? "bg-amber-600 text-white border-amber-500 shadow-amber-500/20 active:scale-95"
                     : "bg-white/95 backdrop-blur-md text-slate-700 border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 <div
-                  className={`w-3 h-3 rounded-full border flex items-center justify-center ${
+                  className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${
                     placedBody ? "border-white bg-white/20" : "border-slate-400"
                   }`}
                 >
-                  {placedBody && <Check className="w-2 h-2 text-white" />}
+                  {placedBody && <Check className="w-2.5 h-2.5 text-white" />}
                 </div>
                 <span>BODY CENTRE (1)</span>
               </button>
@@ -524,27 +520,27 @@ export default function UnitCellBuilderGamePage({
               <button
                 type="button"
                 onClick={handleToggleFaces}
-                className={`py-1.5 px-3 rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm cursor-pointer border ${
+                className={`h-11 sm:h-12 w-full px-2.5 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-tight whitespace-nowrap flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer border ${
                   placedFaces
                     ? "bg-emerald-600 text-white border-emerald-500 shadow-emerald-500/20 active:scale-95"
                     : "bg-white/95 backdrop-blur-md text-slate-700 border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 <div
-                  className={`w-3 h-3 rounded-full border flex items-center justify-center ${
+                  className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${
                     placedFaces ? "border-white bg-white/20" : "border-slate-400"
                   }`}
                 >
-                  {placedFaces && <Check className="w-2 h-2 text-white" />}
+                  {placedFaces && <Check className="w-2.5 h-2.5 text-white" />}
                 </div>
                 <span>FACE CENTRES (6)</span>
               </button>
 
-              {/* Primary Action Button: Verify Unit Cell */}
+              {/* Button 4: Verify Unit Cell */}
               <button
                 type="button"
                 onClick={handleVerify}
-                className="py-1.5 px-4 rounded-xl text-[11px] font-black uppercase tracking-wider flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white active:scale-95 shadow-md shadow-blue-500/25 transition cursor-pointer"
+                className="h-11 sm:h-12 w-full px-2.5 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-tight whitespace-nowrap flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white active:scale-95 shadow-md shadow-blue-500/25 transition cursor-pointer"
               >
                 <span>VERIFY UNIT CELL</span>
               </button>
@@ -747,28 +743,28 @@ export default function UnitCellBuilderGamePage({
             </button>
           </div>
 
-          {/* Single Column Content */}
-          <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 text-slate-700 max-w-3xl mx-auto w-full text-xs sm:text-sm leading-relaxed">
+          {/* Single Column Content (Increased Font Size for Mobile Portrait Readability) */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 space-y-6 text-slate-700 max-w-2xl mx-auto w-full text-sm sm:text-base leading-relaxed">
             <div>
-              <h3 className="font-black text-slate-900 text-sm sm:text-base mb-2">
+              <h3 className="font-black text-slate-900 text-base sm:text-lg mb-2">
                 1. What is a Space Lattice and a Unit Cell?
               </h3>
-              <p className="mb-2">
+              <p className="mb-2 text-sm sm:text-base leading-relaxed">
                 A <strong>crystal lattice</strong> (or space lattice) is a regular, repeating three-dimensional array of points in space, where each point represents the constituent particle (an atom, ion, or molecule) of a crystalline solid.
               </p>
-              <p>
+              <p className="text-sm sm:text-base leading-relaxed">
                 A <strong>unit cell</strong> is the smallest repeating structural unit of the space lattice which, when repeated over and over again in three dimensions, generates the entire macroscopic crystal.
               </p>
             </div>
 
             <div>
-              <h3 className="font-black text-slate-900 text-sm sm:text-base mb-2">
+              <h3 className="font-black text-slate-900 text-base sm:text-lg mb-2">
                 2. Corner, Body, and Face Sharing Contributions
               </h3>
-              <p className="mb-2">
+              <p className="mb-2.5 text-sm sm:text-base leading-relaxed">
                 Because unit cells pack edge-to-edge and face-to-face in all three dimensions, atoms sitting on boundaries are shared between neighboring unit cells:
               </p>
-              <ul className="list-disc pl-5 space-y-1.5 text-slate-700">
+              <ul className="list-disc pl-5 space-y-2 text-sm sm:text-base leading-relaxed text-slate-700">
                 <li>
                   <strong>Corner Atom (1/8 share):</strong> A corner atom is shared simultaneously by 8 adjacent cubes. Hence, each unit cell receives only <span className="font-bold text-blue-700">1/8</span> of that atom.
                 </li>
@@ -782,19 +778,19 @@ export default function UnitCellBuilderGamePage({
             </div>
 
             <div>
-              <h3 className="font-black text-slate-900 text-sm sm:text-base mb-2">
+              <h3 className="font-black text-slate-900 text-base sm:text-lg mb-2.5">
                 3. The Three Types of Cubic Unit Cells
               </h3>
 
               <div className="space-y-4">
-                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70">
-                  <h4 className="font-bold text-blue-700 text-xs sm:text-sm mb-1">
+                <div className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/70">
+                  <h4 className="font-bold text-blue-700 text-sm sm:text-base mb-1.5">
                     A. Simple Cubic (Primitive / SC)
                   </h4>
-                  <p className="mb-1">
+                  <p className="mb-2 text-sm sm:text-base leading-relaxed">
                     Atoms sit strictly at the 8 corners of the cube.
                   </p>
-                  <p className="font-mono text-[11px] text-slate-600">
+                  <p className="font-mono text-xs sm:text-sm text-slate-700 leading-relaxed">
                     • Total atoms per unit cell (Z) = 8 × (1/8) = <strong>1 atom</strong><br />
                     • Coordination number = <strong>6</strong><br />
                     • Relation between edge length (a) and radius (r): <strong>a = 2r</strong><br />
@@ -802,14 +798,14 @@ export default function UnitCellBuilderGamePage({
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70">
-                  <h4 className="font-bold text-amber-700 text-xs sm:text-sm mb-1">
+                <div className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/70">
+                  <h4 className="font-bold text-amber-700 text-sm sm:text-base mb-1.5">
                     B. Body-Centred Cubic (BCC)
                   </h4>
-                  <p className="mb-1">
+                  <p className="mb-2 text-sm sm:text-base leading-relaxed">
                     Atoms sit at all 8 corners plus one full atom at the body centre.
                   </p>
-                  <p className="font-mono text-[11px] text-slate-600">
+                  <p className="font-mono text-xs sm:text-sm text-slate-700 leading-relaxed">
                     • Total atoms per unit cell (Z) = [8 × (1/8)] + [1 × 1] = <strong>2 atoms</strong><br />
                     • Coordination number = <strong>8</strong><br />
                     • Relation between a and r: <strong>4r = √3 · a</strong><br />
@@ -817,14 +813,14 @@ export default function UnitCellBuilderGamePage({
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70">
-                  <h4 className="font-bold text-emerald-700 text-xs sm:text-sm mb-1">
+                <div className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/70">
+                  <h4 className="font-bold text-emerald-700 text-sm sm:text-base mb-1.5">
                     C. Face-Centred Cubic (FCC / CCP)
                   </h4>
-                  <p className="mb-1">
+                  <p className="mb-2 text-sm sm:text-base leading-relaxed">
                     Atoms sit at all 8 corners plus at the center of all 6 faces.
                   </p>
-                  <p className="font-mono text-[11px] text-slate-600">
+                  <p className="font-mono text-xs sm:text-sm text-slate-700 leading-relaxed">
                     • Total atoms per unit cell (Z) = [8 × (1/8)] + [6 × (1/2)] = <strong>4 atoms</strong><br />
                     • Coordination number = <strong>12</strong><br />
                     • Relation between a and r: <strong>4r = √2 · a</strong><br />
@@ -835,41 +831,41 @@ export default function UnitCellBuilderGamePage({
             </div>
 
             <div>
-              <h3 className="font-black text-slate-900 text-sm sm:text-base mb-2">
+              <h3 className="font-black text-slate-900 text-base sm:text-lg mb-2.5">
                 4. Summary Comparison Table
               </h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse border border-slate-200 text-xs">
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="w-full text-left border-collapse text-xs sm:text-sm">
                   <thead>
                     <tr className="bg-slate-100 text-slate-800 font-bold">
-                      <th className="p-2 border border-slate-200">Unit Cell Type</th>
-                      <th className="p-2 border border-slate-200">Atom Sites</th>
-                      <th className="p-2 border border-slate-200">Total Atoms (Z)</th>
-                      <th className="p-2 border border-slate-200">Coord. No.</th>
-                      <th className="p-2 border border-slate-200">Packing %</th>
+                      <th className="p-2.5 border-b border-r border-slate-200">Unit Cell Type</th>
+                      <th className="p-2.5 border-b border-r border-slate-200">Atom Sites</th>
+                      <th className="p-2.5 border-b border-r border-slate-200">Total Atoms (Z)</th>
+                      <th className="p-2.5 border-b border-r border-slate-200">Coord. No.</th>
+                      <th className="p-2.5 border-b border-slate-200">Packing %</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="p-2 border border-slate-200 font-bold text-blue-700">Simple Cubic (SC)</td>
-                      <td className="p-2 border border-slate-200">8 Corners only</td>
-                      <td className="p-2 border border-slate-200 font-mono">1</td>
-                      <td className="p-2 border border-slate-200 font-mono">6</td>
-                      <td className="p-2 border border-slate-200 font-mono">52.4%</td>
+                    <tr className="border-b border-slate-200">
+                      <td className="p-2.5 border-r border-slate-200 font-bold text-blue-700">Simple Cubic (SC)</td>
+                      <td className="p-2.5 border-r border-slate-200">8 Corners only</td>
+                      <td className="p-2.5 border-r border-slate-200 font-mono font-bold">1</td>
+                      <td className="p-2.5 border-r border-slate-200 font-mono">6</td>
+                      <td className="p-2.5 border-slate-200 font-mono">52.4%</td>
                     </tr>
-                    <tr className="bg-slate-50/50">
-                      <td className="p-2 border border-slate-200 font-bold text-amber-700">Body-Centred (BCC)</td>
-                      <td className="p-2 border border-slate-200">8 Corners + 1 Body</td>
-                      <td className="p-2 border border-slate-200 font-mono">2</td>
-                      <td className="p-2 border border-slate-200 font-mono">8</td>
-                      <td className="p-2 border border-slate-200 font-mono">68.0%</td>
+                    <tr className="border-b border-slate-200 bg-slate-50/50">
+                      <td className="p-2.5 border-r border-slate-200 font-bold text-amber-700">Body-Centred (BCC)</td>
+                      <td className="p-2.5 border-r border-slate-200">8 Corners + 1 Body</td>
+                      <td className="p-2.5 border-r border-slate-200 font-mono font-bold">2</td>
+                      <td className="p-2.5 border-r border-slate-200 font-mono">8</td>
+                      <td className="p-2.5 border-slate-200 font-mono">68.0%</td>
                     </tr>
                     <tr>
-                      <td className="p-2 border border-slate-200 font-bold text-emerald-700">Face-Centred (FCC)</td>
-                      <td className="p-2 border border-slate-200">8 Corners + 6 Faces</td>
-                      <td className="p-2 border border-slate-200 font-mono">4</td>
-                      <td className="p-2 border border-slate-200 font-mono">12</td>
-                      <td className="p-2 border border-slate-200 font-mono">74.0%</td>
+                      <td className="p-2.5 border-r border-slate-200 font-bold text-emerald-700">Face-Centred (FCC)</td>
+                      <td className="p-2.5 border-r border-slate-200">8 Corners + 6 Faces</td>
+                      <td className="p-2.5 border-r border-slate-200 font-mono font-bold">4</td>
+                      <td className="p-2.5 border-r border-slate-200 font-mono">12</td>
+                      <td className="p-2.5 border-slate-200 font-mono">74.0%</td>
                     </tr>
                   </tbody>
                 </table>
@@ -881,7 +877,7 @@ export default function UnitCellBuilderGamePage({
           <div className="flex items-center justify-center p-3 border-t border-slate-200 shrink-0 bg-white">
             <button
               onClick={() => setShowExplanation(false)}
-              className="px-8 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
+              className="px-10 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
             >
               RESUME CHALLENGE
             </button>

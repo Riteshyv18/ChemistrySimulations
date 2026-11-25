@@ -316,6 +316,7 @@ export default function EnthalpyHeatCapacityGamePage({
 
   // Notification Toast
   const [notification, setNotification] = useState<string | null>(null);
+  const victoryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // --------------------------------------------------------------------------
   // Calorimetry Game State (Option A: Target Heat Challenge)
@@ -326,9 +327,9 @@ export default function EnthalpyHeatCapacityGamePage({
   const tempInitial = 25.0; // °C
 
   // User interactive variables
-  const [waterMass, setWaterMass] = useState<number>(100); // 50 g to 200 g
+  const [waterMass, setWaterMass] = useState<number>(125); // 50 g to 200 g (default 125 g)
   const [soluteType, setSoluteType] = useState<"naoh" | "nh4no3">("naoh");
-  const [soluteDose, setSoluteDose] = useState<number>(1); // Default 1g
+  const [soluteDose, setSoluteDose] = useState<number>(2); // Default 2g
 
   // Physical simulation state
   const [currentTemp, setCurrentTemp] = useState<number>(25.0);
@@ -412,6 +413,17 @@ export default function EnthalpyHeatCapacityGamePage({
           setIsReacting(false);
           setIsStirring(false);
           setNotification(`Reaction reached thermal equilibrium: T_f = ${targetTf.toFixed(1)}°C.`);
+
+          // Check if J reached target (+4180 J); if so, show victory popup after 1 second
+          const finalDeltaT = Number((targetTf - tempInitial).toFixed(1));
+          const finalQ = Math.round(waterMass * specificHeat * finalDeltaT);
+          if (Math.abs(finalQ - TARGET_Q) < 30) {
+            if (victoryTimerRef.current) clearTimeout(victoryTimerRef.current);
+            victoryTimerRef.current = setTimeout(() => {
+              setShowVictoryModal(true);
+            }, 1000);
+          }
+
           return targetTf;
         }
         const step = diff > 0 ? 0.25 : -0.25;
@@ -420,10 +432,11 @@ export default function EnthalpyHeatCapacityGamePage({
     }, 90);
 
     return () => clearInterval(interval);
-  }, [isReacting, targetTf]);
+  }, [isReacting, targetTf, waterMass, specificHeat, tempInitial, TARGET_Q]);
 
   // Trigger Stir & Reaction
   const handleStirAndReact = () => {
+    if (victoryTimerRef.current) clearTimeout(victoryTimerRef.current);
     setSoluteActive(true);
     setIsStirring(true);
     setIsReacting(true);
@@ -436,15 +449,17 @@ export default function EnthalpyHeatCapacityGamePage({
 
   // Reset Experiment
   const handleReset = () => {
+    if (victoryTimerRef.current) clearTimeout(victoryTimerRef.current);
+    setWaterMass(125);
     setCurrentTemp(25.0);
     setIsReacting(false);
     setIsStirring(false);
     setSoluteActive(false);
     setSelectedType("endothermic");
-    setSoluteDose(1);
+    setSoluteDose(2);
     setShowVictoryModal(false);
     setShowIncorrectModal(false);
-    setNotification(`Calorimeter reset to initial state (${waterMass} g H₂O at 25.0°C).`);
+    setNotification(`Calorimeter reset to initial state (125 g H₂O at 25.0°C).`);
     setTimeout(() => setNotification(null), 3000);
   };
 
@@ -534,26 +549,21 @@ export default function EnthalpyHeatCapacityGamePage({
             ══════════════════════════════════════════════════════════════════ */}
         {screenState === "instructions" && (
           <div className="w-full h-full flex flex-col justify-between p-4 sm:p-5 relative bg-white overflow-hidden">
-            {/* Top Bar with EXIT and INSTRUCTIONS TO PLAY badge */}
-            <div className="w-full flex items-center justify-between z-10 shrink-0">
-              <button
-                type="button"
-                onClick={handleExitClick}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer active:scale-95"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                <span>EXIT</span>
-              </button>
-
-              <div className="flex items-center gap-2">
-                <div className="w-8 sm:w-16 h-[2px] bg-gradient-to-r from-transparent via-[#0284C7] to-[#0284C7] rounded-full hidden xs:block" />
-                <div className="px-4 py-1.5 rounded-full bg-[#0B132B] text-white text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-md border border-slate-700/50">
-                  INSTRUCTIONS TO PLAY
-                </div>
-                <div className="w-8 sm:w-16 h-[2px] bg-gradient-to-l from-transparent via-[#0284C7] to-[#0284C7] rounded-full hidden xs:block" />
+            {/* Top Bar with EXIT and INSTRUCTIONS TO PLAY below it */}
+            <div className="w-full flex flex-col items-center z-10 shrink-0">
+              <div className="w-full flex items-center justify-start">
+                <button
+                  type="button"
+                  onClick={handleExitClick}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer active:scale-95"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span>EXIT</span>
+                </button>
               </div>
-
-              <div className="w-16" />
+              <div className="mt-2 sm:mt-2.5 px-4 py-1.5 rounded-full bg-[#0B132B] text-white text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-md border border-slate-700/50">
+                INSTRUCTIONS TO PLAY
+              </div>
             </div>
 
             {/* 3 Step Guidance Cards */}
@@ -571,13 +581,8 @@ export default function EnthalpyHeatCapacityGamePage({
                         Set Mass &amp; Substance
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        WATER SLIDER • DOSE
-                      </span>
-                    </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Adjust the water mass slider, pick NaOH or NH₄NO₃, and choose the chemical dose for your experiment.
+                      Adjust the water mass and NaOH mass sliders for your experiment.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
@@ -599,11 +604,6 @@ export default function EnthalpyHeatCapacityGamePage({
                       <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
                         Stir &amp; Observe Chamber
                       </h3>
-                    </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        STIRRER • DIGITAL PROBE
-                      </span>
                     </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
                       Tap Stir &amp; Dissolve to mix. Watch the crystals dissolve and read the final temperature on the digital probe.
@@ -629,13 +629,8 @@ export default function EnthalpyHeatCapacityGamePage({
                         Check Heat &amp; Verify
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        ENERGY METER HUD
-                      </span>
-                    </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Check your heat energy in the HUD, classify the reaction as EXO or ENDO, and tap Check Answer to verify!
+                      Track your heat energy in the HUD and tap Stir &amp; Dissolve to verify!
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
@@ -745,16 +740,12 @@ export default function EnthalpyHeatCapacityGamePage({
               {/* Digital Calorimetry HUD Box - Horizontal Layout */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 w-[94%] max-w-[420px] bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 border border-slate-200/90 shadow-xl space-y-1.5 animate-in fade-in duration-200">
                 
-                <div className="flex justify-between items-center border-b border-slate-100 pb-1">
+                <div className="flex justify-start items-center border-b border-slate-100 pb-1">
                   <div className="flex items-center gap-1">
                     <Thermometer className="w-3.5 h-3.5 text-sky-600" />
                     <span className="font-extrabold text-[9px] sm:text-[10px] text-slate-800 tracking-wider uppercase">
                       CALORIMETRY HUD
                     </span>
-                  </div>
-                  <div className="flex items-center gap-1 text-[8px] font-mono font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                    <Target className="w-2.5 h-2.5 text-amber-600" />
-                    <span>TARGET: +{TARGET_Q} J</span>
                   </div>
                 </div>
 
@@ -770,21 +761,26 @@ export default function EnthalpyHeatCapacityGamePage({
                     </div>
                   </div>
 
-                  {/* CHECK ANSWER BUTTON */}
+                  {/* STIR & DISSOLVE BUTTON (Replaces CHECK ANSWER) */}
                   <button
                     type="button"
-                    onClick={handleCheckAnswer}
-                    className="w-36 sm:w-40 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-[1.02] active:scale-[0.98] shrink-0"
+                    disabled={isReacting}
+                    onClick={handleStirAndReact}
+                    className={`w-36 sm:w-40 rounded-xl font-black text-xs uppercase tracking-wider text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-[1.02] active:scale-[0.98] shrink-0 ${
+                      isReacting
+                        ? "bg-slate-400 cursor-not-allowed"
+                        : "bg-[#0284C7] hover:bg-[#0369A1] shadow-sky-600/30"
+                    }`}
                   >
-                    <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
-                    <span>CHECK ANSWER</span>
+                    <Sparkles className="w-4 h-4 shrink-0" />
+                    <span>{isReacting ? "STIRRING..." : "STIR & DISSOLVE"}</span>
                   </button>
                 </div>
               </div>
             </div>
 
             {/* ══════════════════════════════════════════════════════════════
-                BOTTOM CONTROL DOCK (Sliders, Dose, and Stir Actions)
+                BOTTOM CONTROL DOCK (Water Mass Slider, Solute & Dose)
                 ══════════════════════════════════════════════════════════════ */}
             <div className="w-full bg-white border-t border-slate-100 px-3 sm:px-4 pt-2.5 pb-4 sm:pb-5 z-30 shrink-0 flex flex-col gap-2.5">
               
@@ -802,6 +798,7 @@ export default function EnthalpyHeatCapacityGamePage({
                   disabled={isReacting}
                   value={waterMass}
                   onChange={(e) => {
+                    if (victoryTimerRef.current) clearTimeout(victoryTimerRef.current);
                     setWaterMass(Number(e.target.value));
                     if (soluteActive) setSoluteActive(false);
                     setCurrentTemp(25.0);
@@ -813,120 +810,31 @@ export default function EnthalpyHeatCapacityGamePage({
                 </span>
               </div>
 
-              {/* Row 2: Solute Type & Dose Stepper (Larger Buttons) */}
-              <div className="flex items-center justify-between gap-2">
-                {/* Solute Selector - larger buttons, text "Exo/Endo" removed */}
-                <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
-                  <button
-                    type="button"
-                    disabled={isReacting}
-                    onClick={() => {
-                      setSoluteType("naoh");
-                    }}
-                    className={`px-3.5 py-1.5 rounded-lg font-extrabold text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-                      soluteType === "naoh"
-                        ? "bg-orange-600 text-white shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <Flame className="w-3.5 h-3.5" />
-                    <span>NaOH</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={isReacting}
-                    onClick={() => {
-                      setSoluteType("nh4no3");
-                    }}
-                    className={`px-3.5 py-1.5 rounded-lg font-extrabold text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-                      soluteType === "nh4no3"
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <Snowflake className="w-3.5 h-3.5" />
-                    <span>NH₄NO₃</span>
-                  </button>
-                </div>
-
-                {/* Dose Buttons: 1g (default), 2g, 4g - larger buttons */}
-                <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
-                  <span className="text-[10px] font-black text-slate-500 uppercase px-1.5">DOSE:</span>
-                  {[1, 2, 4].map((g) => (
-                    <button
-                      key={g}
-                      type="button"
-                      disabled={isReacting}
-                      onClick={() => {
-                        setSoluteDose(g);
-                        if (soluteActive) setSoluteActive(false);
-                        setCurrentTemp(25.0);
-                      }}
-                      className={`min-w-8 h-7 px-2.5 rounded-lg font-mono font-black text-xs transition-all cursor-pointer flex items-center justify-center ${
-                        soluteDose === g
-                          ? "bg-slate-900 text-white shadow-sm"
-                          : "text-slate-600 hover:text-slate-900"
-                      }`}
-                    >
-                      {g}g
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Row 3: Reaction Type Toggle (Default ENDO), Reset, and Stir Button - All larger with proper bottom margin */}
-              <div className="flex items-center justify-between gap-2 pt-0.5">
-                {/* Type Toggle (Larger buttons, Default ENDO) */}
-                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedType("exothermic")}
-                    className={`px-3 py-1.5 rounded-lg font-black text-[11px] transition-all cursor-pointer ${
-                      selectedType === "exothermic"
-                        ? "bg-orange-600 text-white shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    EXO
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedType("endothermic")}
-                    className={`px-3 py-1.5 rounded-lg font-black text-[11px] transition-all cursor-pointer ${
-                      selectedType === "endothermic"
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    ENDO
-                  </button>
-                </div>
-
-                {/* Reset Button - Larger */}
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer active:scale-95 shadow-xs"
-                >
-                  <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-                  <span>RESET</span>
-                </button>
-
-                {/* Stir & Dissolve Button - Larger */}
-                <button
-                  type="button"
+              {/* Row 2: NaOH Mass Slider (g) */}
+              <div className="flex items-center justify-between gap-2.5 bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2">
+                <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 text-orange-600" />
+                  NaOH MASS (g):
+                </span>
+                <input
+                  type="range"
+                  min="1"
+                  max="5"
+                  step="1"
                   disabled={isReacting}
-                  onClick={handleStirAndReact}
-                  className={`flex items-center gap-1.5 h-9 px-4 rounded-xl font-black text-xs uppercase tracking-wider text-white shadow-md transition-all cursor-pointer transform hover:scale-105 active:scale-95 ${
-                    isReacting
-                      ? "bg-slate-400 cursor-not-allowed"
-                      : "bg-[#0284C7] hover:bg-[#0369A1] shadow-sky-600/30"
-                  }`}
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>{isReacting ? "STIRRING..." : "STIR & DISSOLVE"}</span>
-                </button>
+                  value={soluteDose}
+                  onChange={(e) => {
+                    if (victoryTimerRef.current) clearTimeout(victoryTimerRef.current);
+                    setSoluteType("naoh");
+                    setSoluteDose(Number(e.target.value));
+                    if (soluteActive) setSoluteActive(false);
+                    setCurrentTemp(25.0);
+                  }}
+                  className="w-full accent-orange-600 cursor-pointer h-2 bg-slate-200 rounded-lg"
+                />
+                <span className="text-xs font-mono font-black text-orange-700 bg-orange-100 px-2.5 py-1 rounded-md shrink-0">
+                  {soluteDose} g
+                </span>
               </div>
 
             </div>
@@ -1093,31 +1001,23 @@ export default function EnthalpyHeatCapacityGamePage({
               {/* CONCEPT 2 */}
               <section className="space-y-2.5">
                 <h4 className="text-lg font-black text-slate-900 tracking-tight">
-                  Concept 2: Exothermic vs. Endothermic
+                  Concept 2: Exothermic Dissolution (NaOH)
                 </h4>
-                <ul className="space-y-3 pl-1 text-sm">
-                  <li className="bg-orange-50/70 p-3 rounded-xl border border-orange-200/70">
-                    <strong className="text-orange-700 font-extrabold text-sm block mb-1">
-                      Exothermic (EXO) &mdash; Heat Exits into Water:
-                    </strong>
-                    Adding <strong>NaOH</strong> releases thermal energy. The solution gets hotter (25.0&deg;C &rarr; 35.0&deg;C), temperature change is positive (&Delta;T = +10.0&deg;C), and heat transferred is positive (<strong>q &gt; 0</strong>).
-                  </li>
-                  <li className="bg-sky-50/70 p-3 rounded-xl border border-sky-200/70">
-                    <strong className="text-sky-700 font-extrabold text-sm block mb-1">
-                      Endothermic (ENDO) &mdash; Heat Enters the Chemical (Stolen from Water):
-                    </strong>
-                    Adding <strong>NH₄NO₃</strong> absorbs thermal energy. The solution gets colder (25.0&deg;C &rarr; 18.0&deg;C), temperature change is negative (&Delta;T = &minus;7.0&deg;C), and heat transferred is negative (<strong>q &lt; 0</strong>).
-                  </li>
-                </ul>
+                <div className="bg-orange-50/70 p-3.5 rounded-xl border border-orange-200/70 text-sm">
+                  <strong className="text-orange-700 font-extrabold text-sm block mb-1">
+                    Exothermic &mdash; Heat Released into Water:
+                  </strong>
+                  Dissolving solid <strong>NaOH</strong> in water releases thermal energy. The solution warms up (25.0&deg;C &rarr; 35.0&deg;C), the temperature change is positive (&Delta;T &gt; 0), and heat transferred is positive (<strong>q &gt; 0</strong>).
+                </div>
               </section>
 
               {/* CONCEPT 3 */}
               <section className="space-y-2.5">
                 <h4 className="text-lg font-black text-slate-900 tracking-tight">
-                  Concept 3: How Dose and Water Mass Affect the Result
+                  Concept 3: How NaOH Mass and Water Mass Affect q
                 </h4>
                 <p className="text-sm font-semibold text-slate-800">
-                  More grams of chemical (Dose) = More heat produced:
+                  More grams of NaOH = More heat produced:
                 </p>
                 <div className="font-mono text-xs sm:text-sm bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-1.5 text-slate-800">
                   <div>&bull; 1 g NaOH = +1045 J</div>
@@ -1135,23 +1035,17 @@ export default function EnthalpyHeatCapacityGamePage({
                   How to Play &amp; Win
                 </h4>
                 <p className="font-bold text-sm text-slate-900">
-                  Your mission goal is: <span className="text-amber-600 font-black">TARGET q = +4180 J</span>. Follow these 5 steps in the lab:
+                  Your mission goal is: <span className="text-amber-600 font-black">TARGET q = +4180 J</span>. Follow these 3 steps in the lab:
                 </p>
                 <ol className="list-decimal list-inside space-y-2.5 pl-1 text-sm text-slate-700">
                   <li>
-                    <strong>Set Water Mass (m):</strong> Drag the slider to <strong>100 g</strong>. The 3D water level visibly aligns to the 100 g line.
+                    <strong>Set Water Mass (m):</strong> Drag the <strong>WATER MASS (M)</strong> slider to <strong>100 g</strong>. The 3D water level adjusts dynamically.
                   </li>
                   <li>
-                    <strong>Choose the Substance:</strong> Click <strong>[🔥 NaOH]</strong>. (Since target is +4180 J, we need an exothermic reaction).
+                    <strong>Set NaOH Mass (g):</strong> Drag the <strong>NaOH MASS (g)</strong> slider to <strong>4 g</strong> (1 g yields ~1045 J, so 4 g produces +4180 J).
                   </li>
                   <li>
-                    <strong>Choose the Dose:</strong> Select <strong>4g</strong>. (1 g yields ~1045 J, so 4 g produces exactly +4180 J).
-                  </li>
-                  <li>
-                    <strong>Stir to React:</strong> Click <strong>STIR &amp; DISSOLVE</strong>. The probe climbs to 35.0&deg;C (&Delta;T = +10.0&deg;C), and the meter shows <strong>+4180 J</strong>.
-                  </li>
-                  <li>
-                    <strong>Classify &amp; Submit:</strong> Select <strong>EXO</strong> (temperature went up!), then tap <strong>CHECK ANSWER</strong> to win!
+                    <strong>Stir &amp; Dissolve:</strong> Tap <strong>STIR &amp; DISSOLVE</strong> in the Calorimetry HUD. As soon as thermal equilibrium reaches <strong>+4180 J</strong>, your answer is verified automatically!
                   </li>
                 </ol>
               </section>

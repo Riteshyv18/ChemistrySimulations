@@ -390,6 +390,14 @@ const CrystalExplorerGamePage = dynamic<{ difficulty?: string; onExit?: () => vo
   { ssr: false, loading: LoadingFallback }
 );
 
+const NucleophilicAdditionGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/nucleophilic_addition/NucleophilicAdditionGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -729,6 +737,15 @@ export function ChallengeDispatcher({
       normTopic.includes("molecular-shape") ||
       normTopic.includes("molecular_shape"));
 
+  const isNucleophilicAddition =
+    normTopic === "45" ||
+    normTopic.includes("nucleophilic-addition") ||
+    normTopic.includes("nucleophilic_addition") ||
+    normTopic.includes("burgi-dunitz") ||
+    normTopic.includes("carbonyl-reactivity") ||
+    ((normModule.includes("aldehydes") || normModule === "m11") &&
+      (normTopic === "45" || normTopic.includes("addition") || normTopic.includes("carbonyl")));
+
   let content: ReactNode = null;
 
   if (isSolidStateClassification) {
@@ -827,6 +844,8 @@ export function ChallengeDispatcher({
     }
   } else if (isVsepr) {
     content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isNucleophilicAddition) {
+    content = <NucleophilicAdditionGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else {
     // Default fallback to VSEPR
     content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -843,7 +862,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isNucleophilicAddition && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

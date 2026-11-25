@@ -104,26 +104,6 @@ export const UNIT_CELL_CHALLENGES: UnitCellChallenge[] = [
     description: "Face-Centred Cubic metals (Cu, Al, Ag, Au) are ductile with maximal packing. Atoms occupy all 8 corners plus the center of each of the 6 bounding cube faces.",
     hint: "For FCC, atoms sit at the 8 Corners and on all 6 Face Centres. There is no atom in the central body void.",
   },
-  {
-    id: "gold_close_packed",
-    level: 4,
-    crystalName: "Pure Gold (Au)",
-    chemicalFormula: "Au (Precious Noble Metal)",
-    cellType: "FCC",
-    cellTypeName: "Face-Centred Cubic (Close-Packed)",
-    elementSymbol: "Au",
-    atomColor: "#EAB308", // Brilliant Gold
-    cornersRequired: true,
-    bodyRequired: false,
-    facesRequired: true,
-    effectiveAtoms: 4,
-    calculationBreakdown: "[8 corners × 1/8] + [6 faces × 1/2] = 4 atoms/unit cell",
-    coordinationNumber: 12,
-    packingEfficiency: "74.0% (Close-packed metallic lattice)",
-    radiusRelation: "4r = √2·a (dense face diagonal contact)",
-    description: "Gold forms a brilliant face-centred cubic lattice. Each face-centered atom is shared between two adjacent unit cells, contributing 1/2 to the cell.",
-    hint: "Gold crystallizes in FCC close-packing: fill the 8 Corners and all 6 Face Centres.",
-  },
 ];
 
 export interface UnitCellBuilderGamePageProps {
@@ -219,6 +199,7 @@ export default function UnitCellBuilderGamePage({
       }
 
       setFailFeedback(`${errors.join(" ")} ${currentChallenge.hint}`);
+      handleClear();
       setShowFailModal(true);
     }
   };
@@ -651,7 +632,10 @@ export default function UnitCellBuilderGamePage({
             <div className="w-full flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setShowFailModal(false)}
+                onClick={() => {
+                  setShowFailModal(false);
+                  handleClear();
+                }}
                 className="flex-1 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -663,6 +647,7 @@ export default function UnitCellBuilderGamePage({
                 onClick={() => {
                   setShowFailModal(false);
                   setShowExplanation(true);
+                  handleClear();
                 }}
                 className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer shadow-md shadow-blue-500/25"
               >
@@ -675,32 +660,32 @@ export default function UnitCellBuilderGamePage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          MODAL 3: FINAL CHALLENGE COMPLETED MODAL
+          MODAL 3: FINAL CHALLENGE COMPLETED MODAL (Compact Layout)
           ══════════════════════════════════════════════════════════════════ */}
       {showFinalCompletionModal && (
-        <div className="absolute inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-white rounded-2xl p-5 shadow-2xl border border-emerald-100 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2.5 shadow-inner">
-              <Trophy className="w-8 h-8" />
+        <div className="absolute inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3">
+          <div className="w-full max-w-[330px] bg-white rounded-2xl p-3.5 shadow-2xl border border-emerald-100 flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-1.5 shadow-inner">
+              <Trophy className="w-5 h-5" />
             </div>
 
-            <h3 className="text-lg font-black text-slate-900 mb-1">
+            <h3 className="text-sm font-black text-slate-900 mb-0.5">
               Unit Cells Mastered!
             </h3>
 
-            <p className="text-xs text-slate-600 mb-3 leading-relaxed">
-              Outstanding work! You have successfully mastered the atomic architecture of Simple Cubic (SC), Body-Centred Cubic (BCC), and Face-Centred Cubic (FCC) crystal lattices.
+            <p className="text-[10.5px] text-slate-600 mb-2 leading-snug">
+              Outstanding work! You mastered the atomic architecture of SC, BCC, and FCC crystal lattices.
             </p>
 
-            <div className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-left font-mono text-[11px] mb-4 text-slate-800 space-y-1">
-              <div className="flex items-center justify-between text-emerald-700 font-bold">
+            <div className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-left font-mono text-[10px] mb-2.5 text-slate-800 space-y-0.5">
+              <div className="flex items-center justify-between text-emerald-700 font-bold mb-0.5">
                 <span>Summary of Cubic Systems:</span>
-                <span>4 / 4 Complete</span>
+                <span>3 / 3 Complete</span>
               </div>
-              <div className="text-[10px] text-slate-600">
-                • <strong>Simple Cubic (SC):</strong> Z = 1, Coordination No. = 6, 52.4%<br />
-                • <strong>Body-Centred (BCC):</strong> Z = 2, Coordination No. = 8, 68.0%<br />
-                • <strong>Face-Centred (FCC):</strong> Z = 4, Coordination No. = 12, 74.0%
+              <div className="text-[9.5px] text-slate-600 leading-tight">
+                • <strong>Simple Cubic (SC):</strong> Z = 1, Coord No. = 6, 52.4%<br />
+                • <strong>Body-Centred (BCC):</strong> Z = 2, Coord No. = 8, 68.0%<br />
+                • <strong>Face-Centred (FCC):</strong> Z = 4, Coord No. = 12, 74.0%
               </div>
             </div>
 
@@ -709,7 +694,7 @@ export default function UnitCellBuilderGamePage({
               <button
                 type="button"
                 onClick={handleReplayChallenge}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md shadow-emerald-500/25 cursor-pointer"
+                className="flex-1 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md shadow-emerald-500/25 cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>REPLAY</span>
@@ -721,7 +706,7 @@ export default function UnitCellBuilderGamePage({
                   setShowFinalCompletionModal(false);
                   setShowExplanation(true);
                 }}
-                className="flex-1 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer"
+                className="flex-1 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer"
               >
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>EXPLANATION</span>

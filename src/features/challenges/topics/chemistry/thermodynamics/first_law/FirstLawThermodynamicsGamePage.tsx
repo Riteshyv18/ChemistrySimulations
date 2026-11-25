@@ -25,6 +25,7 @@ import {
   Gauge,
   Zap,
 } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 
 // ============================================================================
 // TYPES & 3D STRUCTURES
@@ -522,7 +523,7 @@ export default function FirstLawThermodynamicsGamePage({
     if (onExit) {
       onExit();
     } else {
-      window.history.back();
+      exitSimulation();
     }
   };
 

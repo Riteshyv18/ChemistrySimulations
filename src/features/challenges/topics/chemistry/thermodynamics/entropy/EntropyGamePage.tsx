@@ -23,6 +23,7 @@ import {
   ArrowDown,
   Layers,
 } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 
 // ============================================================================
 // SIMULATION CONSTANTS & PARTICLE CONFIG
@@ -374,7 +375,7 @@ export default function EntropyGamePage({
     if (onExit) {
       onExit();
     } else {
-      window.history.back();
+      exitSimulation();
     }
   };
 

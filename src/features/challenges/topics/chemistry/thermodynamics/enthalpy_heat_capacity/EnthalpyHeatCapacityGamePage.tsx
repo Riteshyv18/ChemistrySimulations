@@ -26,6 +26,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 
 // ============================================================================
 // 3D SOLUTE PARTICLES (Dropping & Dissolving)
@@ -398,7 +399,7 @@ export default function EnthalpyHeatCapacityGamePage({
     if (onExit) {
       onExit();
     } else {
-      window.history.back();
+      exitSimulation();
     }
   };
 

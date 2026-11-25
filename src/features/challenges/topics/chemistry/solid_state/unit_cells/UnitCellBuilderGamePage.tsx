@@ -461,7 +461,7 @@ export default function UnitCellBuilderGamePage({
             {/* Central Target Crystal Pill (Small with small margin, placed a little down) */}
             <div className="pointer-events-auto mt-2 sm:mt-2.5">
               <span className="text-[10.5px] sm:text-[11px] font-black text-slate-900 bg-white/95 backdrop-blur-md px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-slate-200/90 shadow-xs flex items-center gap-1 whitespace-nowrap">
-                <span className="text-blue-600 font-extrabold">Level {currentChallenge.level}:</span>
+                <span className="text-blue-600 font-extrabold">Target:</span>
                 <span className="text-slate-900 font-black tracking-wide">
                   {currentChallenge.cellType === "SC"
                     ? "SC (Simple Cube)"

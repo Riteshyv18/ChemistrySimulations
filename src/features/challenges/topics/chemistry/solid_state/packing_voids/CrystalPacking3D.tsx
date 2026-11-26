@@ -8,7 +8,7 @@ export type LayerType = "A" | "B" | "C";
 
 export interface CrystalPacking3DProps {
   placedLayers: LayerType[];
-  expectedNextLayer: LayerType | null;
+  canPlaceMore: boolean;
   selectedLayer: LayerType | null;
   isCompleted: boolean;
   onDragStateChange: (dragging: boolean) => void;
@@ -227,7 +227,7 @@ function DraggableLooseLayer({
 
 export default function CrystalPacking3D({
   placedLayers,
-  expectedNextLayer,
+  canPlaceMore,
   selectedLayer,
   isCompleted,
   onDragStateChange,
@@ -271,24 +271,12 @@ export default function CrystalPacking3D({
         );
       })}
 
-      {/* Highlighted Target Zone above current stack */}
-      {!isCompleted && expectedNextLayer && (
+      {/* Highlighted Skeleton Target Zone above current stack */}
+      {!isCompleted && canPlaceMore && (
         <TargetGhostLayer
-          layer={expectedNextLayer}
+          layer={selectedLayer || "A"}
           y={targetY}
-          isHovered={isHoveringTarget}
-        />
-      )}
-
-      {/* Draggable Loose Layer when user selects A, B, or C */}
-      {!isCompleted && selectedLayer && expectedNextLayer && (
-        <DraggableLooseLayer
-          key={`loose-${placedLayers.length}-${selectedLayer}`}
-          layer={selectedLayer}
-          targetY={targetY}
-          onDragStateChange={onDragStateChange}
-          onAttemptPlace={onAttemptPlace}
-          onHoverTargetChange={setIsHoveringTarget}
+          isHovered={false}
         />
       )}
     </group>

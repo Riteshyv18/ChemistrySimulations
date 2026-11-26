@@ -108,8 +108,8 @@ function SingleParticle({
 
   return (
     <group ref={meshRef} position={def.initialPos}>
-      <mesh>
-        <sphereGeometry args={[0.085, 20, 20]} />
+      <mesh scale={[1 / 0.9, 1 / 1.14, 1 / 0.76]}>
+        <sphereGeometry args={[0.1, 24, 24]} />
         <meshStandardMaterial
           color={isProduct ? "#0284C7" : "#E11D48"}
           roughness={0.25}
@@ -175,7 +175,7 @@ function ReactionScene({
   isRunning: boolean;
 }) {
   return (
-    <group position={[0, 0.65, 0]} scale={[0.76, 0.76, 0.76]}>
+    <group position={[0, 0.02, 0]} scale={[0.9, 1.14, 0.76]}>
       <ReversibleChamberVisual />
       {particleDefs.map((p, idx) => (
         <SingleParticle
@@ -298,6 +298,15 @@ export function ChemicalEquilibriumGamePage({
     return () => clearInterval(interval);
   }, [isRunning, speedMultiplier]);
 
+  // Auto-dismiss wrong-answer feedback banner after 2 seconds
+  useEffect(() => {
+    if (!feedbackMessage || feedbackMessage.correct) return;
+    const timer = setTimeout(() => {
+      setFeedbackMessage(null);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [feedbackMessage]);
+
   const handleTogglePlay = () => {
     if (currentTime >= MAX_TIME) {
       setCurrentTime(0);
@@ -343,10 +352,10 @@ export function ChemicalEquilibriumGamePage({
     }
   };
 
-  // SVG Live Convergence Graph dimensions (Expanded height for tall clear curve display)
-  const graphWidth = 720;
-  const graphHeight = 115;
-  const graphPadding = { top: 6, bottom: 18, left: 35, right: 15 };
+  // SVG Live Convergence Graph dimensions (Sized for compact 30% left-side TV screen)
+  const graphWidth = 340;
+  const graphHeight = 140;
+  const graphPadding = { top: 10, bottom: 20, left: 32, right: 12 };
   const innerW = graphWidth - graphPadding.left - graphPadding.right;
   const innerH = graphHeight - graphPadding.top - graphPadding.bottom;
 
@@ -463,12 +472,7 @@ export function ChemicalEquilibriumGamePage({
                       Monitor Live Rates Curve
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-extrabold text-[9px]">
-                      Forward (rf) &amp; Reverse (rr)
-                    </span>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
+                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-2">
                     Observe the forward (rf) and reverse (rr) reaction rates as the reaction progresses over time.
                   </p>
                 </div>
@@ -482,7 +486,7 @@ export function ChemicalEquilibriumGamePage({
                 </div>
               </div>
 
-              {/* Card 2: Control Panel & Speed */}
+              {/* Card 2: Reaction Controls */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -490,16 +494,11 @@ export function ChemicalEquilibriumGamePage({
                       2
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Control Panel &amp; Speed
+                      Reaction Controls
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-extrabold text-[9px]">
-                      Speed: 1x, 2x, 4x
-                    </span>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    Start the reaction, monitor the clock, and accelerate time (1x, 2x, 4x) to reach equilibrium faster.
+                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-2">
+                    Click Start Reaction to run the simulation, then click Identify Equilibrium once both rates meet.
                   </p>
                 </div>
 
@@ -523,13 +522,8 @@ export function ChemicalEquilibriumGamePage({
                       Confirm Equilibrium State
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px]">
-                      Target: rf = rr &amp; Stable [A], [B]
-                    </span>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    When rates become equal and concentrations flatten out, click &ldquo;IDENTIFY EQUILIBRIUM&rdquo; and submit!
+                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-2">
+                    When both rates are equal, click &ldquo;YES, SUBMIT CHECK!&rdquo; to confirm—or &ldquo;Keep Observing&rdquo; to watch longer.
                   </p>
                 </div>
 
@@ -570,40 +564,9 @@ export function ChemicalEquilibriumGamePage({
           SCREEN 2: MAIN 3D SIMULATION SCREEN
           ══════════════════════════════════════════════════════════════════════ */}
       {gameStarted && (
-        <div className="relative w-full h-full flex flex-col justify-between overflow-hidden">
-          {/* LAYER 0: FULL-SCREEN 3D THREE.JS WEBGL CANVAS */}
-          <div className="absolute inset-0 z-0">
-            <Canvas gl={{ antialias: true, alpha: true }}>
-              <PerspectiveCamera makeDefault position={[0, 0.55, 6.8]} fov={34} />
-              <ambientLight intensity={0.9} />
-              <directionalLight position={[5, 8, 5]} intensity={1.3} castShadow />
-              <directionalLight position={[-5, 4, -3]} intensity={0.6} />
-              <pointLight position={[0, 0.7, 0]} intensity={0.6} color="#38BDF8" />
-
-              <gridHelper args={[10, 20, "#E2E8F0", "#F1F5F9"]} position={[0, -0.45, 0]} />
-
-              <Suspense fallback={null}>
-                <ReactionScene
-                  particleDefs={particleDefs}
-                  reactantCount={reactantCount}
-                  speedMultiplier={speedMultiplier}
-                  isRunning={isRunning}
-                />
-              </Suspense>
-
-              <OrbitControls
-                enableZoom={false}
-                enablePan={false}
-                minPolarAngle={Math.PI / 2.6}
-                maxPolarAngle={Math.PI / 1.9}
-                minAzimuthAngle={-Math.PI / 8}
-                maxAzimuthAngle={Math.PI / 8}
-              />
-            </Canvas>
-          </div>
-
+        <div className="relative w-full h-full flex flex-col justify-between overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100">
           {/* LAYER 1: TOP BAR HEADER */}
-          <div className="w-full flex items-center justify-between px-4 sm:px-6 pt-2 pb-0.5 z-30 shrink-0">
+          <div className="w-full flex items-center justify-between px-4 sm:px-6 pt-2 pb-1 z-30 shrink-0">
             {/* Exit Button */}
             <button
               type="button"
@@ -625,40 +588,183 @@ export function ChemicalEquilibriumGamePage({
             </button>
           </div>
 
-          {/* LAYER 2: TOP-CENTER PARTICLE STATUS PILL */}
-          <div className="w-full flex justify-center px-4 sm:px-6 pointer-events-none z-20 pt-1">
-            <div className="flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md">
-              <div className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#E11D48] shadow-xs" />
-                <span className="text-[10px] font-bold text-slate-900">
-                  Reactant A: <strong className="text-rose-600 font-black">{reactantCount}</strong>
-                </span>
+          {/* LAYER 2: MAIN SPLIT AREA — LEFT TV SCREEN GRAPH + RIGHT FULL-HEIGHT GLASS CHAMBER */}
+          <div className="flex-1 min-h-0 w-full flex flex-col sm:flex-row items-stretch gap-3 px-4 sm:px-6 py-1 z-20">
+            {/* LEFT: Black TV Screen Live Rates Graph (30% width, compact height, aligned with chamber top) */}
+            <div className="w-full sm:w-[30%] shrink-0 self-start mt-4 sm:mt-5 bg-[#0B0F19] rounded-2xl border-[3px] border-slate-800 shadow-2xl p-2.5 flex flex-col justify-between h-[160px] sm:h-[175px]">
+              <div className="flex items-center justify-between pb-1 border-b border-slate-800 gap-1.5 flex-wrap">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                  <span className="text-[8.5px] font-black uppercase tracking-wider text-slate-100">
+                    LIVE RATES (rf &amp; rr)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-[8px] font-black">
+                  <span className="text-rose-400 flex items-center gap-1">
+                    <span className="w-2 h-1 bg-rose-400 rounded-full inline-block" /> rf
+                  </span>
+                  <span className="text-sky-400 flex items-center gap-1">
+                    <span className="w-2 h-1 bg-sky-400 rounded-full inline-block" /> rr
+                  </span>
+                </div>
               </div>
-              <div className="h-2.5 w-[1px] bg-slate-300" />
-              <div className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#0284C7] shadow-xs" />
-                <span className="text-[10px] font-bold text-slate-900">
-                  Product B: <strong className="text-sky-600 font-black">{productCount}</strong>
-                </span>
+
+              {/* SVG Live Convergence Graph */}
+              <div className="relative flex-1 min-h-0 w-full mt-1">
+                <svg viewBox={`0 0 ${graphWidth} ${graphHeight}`} className="w-full h-full overflow-visible">
+                  {/* Axes */}
+                  <line
+                    x1={graphPadding.left}
+                    y1={graphPadding.top}
+                    x2={graphPadding.left}
+                    y2={graphPadding.top + innerH}
+                    stroke="#64748B"
+                    strokeWidth="1.5"
+                  />
+                  <line
+                    x1={graphPadding.left}
+                    y1={graphPadding.top + innerH}
+                    x2={graphPadding.left + innerW}
+                    y2={graphPadding.top + innerH}
+                    stroke="#64748B"
+                    strokeWidth="1.5"
+                  />
+
+                  {/* Y-Axis Label */}
+                  <text
+                    x={graphPadding.left - 5}
+                    y={graphPadding.top + 6}
+                    textAnchor="end"
+                    className="text-[10px] fill-slate-200 font-mono font-black"
+                  >
+                    Rate
+                  </text>
+
+                  {/* Time ticks without hints (10s and 25s only) */}
+                  <text
+                    x={graphPadding.left + (10 / MAX_TIME) * innerW}
+                    y={graphPadding.top + innerH + 14}
+                    textAnchor="middle"
+                    className="text-[9.5px] font-mono font-bold fill-slate-300"
+                  >
+                    10s
+                  </text>
+                  <text
+                    x={graphPadding.left + (25 / MAX_TIME) * innerW}
+                    y={graphPadding.top + innerH + 14}
+                    textAnchor="middle"
+                    className="text-[9.5px] font-mono font-bold fill-slate-300"
+                  >
+                    25s
+                  </text>
+
+                  {/* Live Curves - High Contrast for Black TV Screen */}
+                  {currentTime > 0 && (
+                    <>
+                      {/* Forward Rate (Bright Rose) */}
+                      <path
+                        d={forwardPath}
+                        fill="none"
+                        stroke="#FB7185"
+                        strokeWidth="3.2"
+                        strokeLinecap="round"
+                      />
+                      {/* Reverse Rate (Bright Sky Blue) */}
+                      <path
+                        d={reversePath}
+                        fill="none"
+                        stroke="#38BDF8"
+                        strokeWidth="3.2"
+                        strokeLinecap="round"
+                      />
+                    </>
+                  )}
+
+                  {/* Live Scrubber Indicator */}
+                  {currentTime > 0 && (
+                    <g>
+                      <line
+                        x1={scrubberX}
+                        y1={graphPadding.top}
+                        x2={scrubberX}
+                        y2={graphPadding.top + innerH}
+                        stroke="#94A3B8"
+                        strokeWidth="1"
+                        strokeDasharray="3 3"
+                      />
+                      <circle cx={scrubberX} cy={graphPadding.top + innerH / 2} r="3.5" fill="#38BDF8" />
+                    </g>
+                  )}
+                </svg>
+              </div>
+            </div>
+
+            {/* RIGHT: Full-Height 3D Glass Chamber */}
+            <div className="relative flex-1 min-h-0 w-full">
+              {/* Top-Center Particle Status Pill above Chamber */}
+              <div className="absolute top-1 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+                <div className="flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md whitespace-nowrap">
+                  <div className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-[#E11D48] shadow-xs" />
+                    <span className="text-[10px] font-bold text-slate-900">
+                      Reactant A: <strong className="text-rose-600 font-black">{reactantCount}</strong>
+                    </span>
+                  </div>
+                  <div className="h-2.5 w-[1px] bg-slate-300" />
+                  <div className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-[#0284C7] shadow-xs" />
+                    <span className="text-[10px] font-bold text-slate-900">
+                      Product B: <strong className="text-sky-600 font-black">{productCount}</strong>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3D Glass Chamber Canvas */}
+              <div className="w-full h-full">
+                <Canvas gl={{ antialias: true, alpha: true }}>
+                  <PerspectiveCamera makeDefault position={[0, 0.22, 5.45]} fov={37} />
+                  <ambientLight intensity={0.9} />
+                  <directionalLight position={[5, 8, 5]} intensity={1.3} castShadow />
+                  <directionalLight position={[-5, 4, -3]} intensity={0.6} />
+                  <pointLight position={[0, 0.7, 0]} intensity={0.6} color="#38BDF8" />
+
+                  <gridHelper args={[10, 20, "#E2E8F0", "#F1F5F9"]} position={[0, -1.25, 0]} />
+
+                  <Suspense fallback={null}>
+                    <ReactionScene
+                      particleDefs={particleDefs}
+                      reactantCount={reactantCount}
+                      speedMultiplier={speedMultiplier}
+                      isRunning={isRunning}
+                    />
+                  </Suspense>
+
+                  <OrbitControls
+                    enableZoom={false}
+                    enablePan={false}
+                    minPolarAngle={Math.PI / 2.6}
+                    maxPolarAngle={Math.PI / 1.9}
+                    minAzimuthAngle={-Math.PI / 8}
+                    maxAzimuthAngle={Math.PI / 8}
+                  />
+                </Canvas>
               </div>
             </div>
           </div>
 
-          {/* Flexible spacer so chamber has full screen height & width */}
-          <div className="flex-1 pointer-events-none" />
-
-          {/* Feedback banner if user guessed equilibrium too early */}
+          {/* Feedback banner if user guessed equilibrium too early (absolute overlay so chamber never shrinks) */}
           {feedbackMessage && !feedbackMessage.correct && (
-            <div className="w-full max-w-xl mx-auto px-4 z-30 mb-1 animate-in fade-in slide-in-from-bottom-2">
-              <div className="bg-amber-50/95 backdrop-blur-md border border-amber-200 rounded-xl px-3 py-1.5 flex items-center justify-between text-amber-900 shadow-md">
+            <div className="absolute bottom-14 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 z-30 animate-in fade-in slide-in-from-bottom-2">
+              <div className="bg-red-50/95 backdrop-blur-md border border-red-300 rounded-xl px-3 py-1.5 flex items-center justify-between text-red-900 shadow-lg">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span className="text-[11px] font-medium leading-tight">{feedbackMessage.text}</span>
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                  <span className="text-[11px] font-semibold leading-tight">{feedbackMessage.text}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setFeedbackMessage(null)}
-                  className="text-amber-600 hover:text-amber-800 text-xs font-bold p-1"
+                  className="text-red-600 hover:text-red-800 text-xs font-bold p-1 cursor-pointer"
                 >
                   ✕
                 </button>
@@ -666,192 +772,39 @@ export function ChemicalEquilibriumGamePage({
             </div>
           )}
 
-          {/* ──────────────────────────────────────────────────────────────────
-              LAYER 3: BOTTOM DOCK — 80% LIVE CONVERGENCE GRAPH / 20% CONTROLS
-              ────────────────────────────────────────────────────────────────── */}
-          <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 pb-2 z-20">
-            <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
-              {/* Left / Main Card: Live Rate Convergence Curve (80% of width) */}
-              <div className="w-full sm:w-[80%] bg-white/95 backdrop-blur-md rounded-2xl p-2.5 shadow-xl border border-slate-200/90 flex flex-col justify-between">
-                <div className="flex items-center justify-between px-2 pb-1 border-b border-slate-200">
-                  <div className="flex items-center gap-1.5">
-                    <TrendingDown className="w-3.5 h-3.5 text-rose-600" />
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-950">
-                      LIVE RATES: FORWARD (rf) &amp; REVERSE (rr) VS. TIME
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-[9px] font-black">
-                    <span className="text-rose-700 flex items-center gap-1">
-                      <span className="w-2.5 h-1 bg-rose-700 rounded-full inline-block" /> Forward Rate (rf)
-                    </span>
-                    <span className="text-sky-700 flex items-center gap-1">
-                      <span className="w-2.5 h-1 bg-sky-700 rounded-full inline-block" /> Reverse Rate (rr)
-                    </span>
-                  </div>
-                </div>
+          {/* LAYER 3: BOTTOM SINGLE-ROW 2 ACTION BUTTONS */}
+          <div className="w-full max-w-md mx-auto px-4 pb-2.5 pt-1 z-20 shrink-0">
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={handleTogglePlay}
+                className={`w-full py-2.5 px-3 rounded-xl font-black text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer active:scale-95 ${
+                  isRunning
+                    ? "bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20"
+                    : "bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sky-600/30"
+                }`}
+              >
+                {isRunning ? (
+                  <>
+                    <Pause className="w-3.5 h-3.5 fill-current" />
+                    <span>PAUSE</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <span>{currentTime >= MAX_TIME ? "REPLAY" : "START REACTION"}</span>
+                  </>
+                )}
+              </button>
 
-                {/* SVG Live Convergence Graph */}
-                <div className="relative w-full h-[115px] mt-0.5">
-                  <svg viewBox={`0 0 ${graphWidth} ${graphHeight}`} className="w-full h-full overflow-visible">
-                    {/* Axes */}
-                    <line
-                      x1={graphPadding.left}
-                      y1={graphPadding.top}
-                      x2={graphPadding.left}
-                      y2={graphPadding.top + innerH}
-                      stroke="#475569"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1={graphPadding.left}
-                      y1={graphPadding.top + innerH}
-                      x2={graphPadding.left + innerW}
-                      y2={graphPadding.top + innerH}
-                      stroke="#475569"
-                      strokeWidth="1.5"
-                    />
-
-                    {/* Y-Axis Label */}
-                    <text
-                      x={graphPadding.left - 4}
-                      y={graphPadding.top + 5}
-                      textAnchor="end"
-                      className="text-[9px] fill-slate-950 font-mono font-black"
-                    >
-                      Rate
-                    </text>
-
-                    {/* Time ticks without hints (10s and 25s only) */}
-                    <text
-                      x={graphPadding.left + (10 / MAX_TIME) * innerW}
-                      y={graphPadding.top + innerH + 11}
-                      textAnchor="middle"
-                      className="text-[8.5px] font-mono font-bold fill-slate-700"
-                    >
-                      10s
-                    </text>
-                    <text
-                      x={graphPadding.left + (25 / MAX_TIME) * innerW}
-                      y={graphPadding.top + innerH + 11}
-                      textAnchor="middle"
-                      className="text-[8.5px] font-mono font-bold fill-slate-700"
-                    >
-                      25s
-                    </text>
-
-                    {/* Live Curves - Darker and Bolder stroke */}
-                    {currentTime > 0 && (
-                      <>
-                        {/* Forward Rate (Dark Red) */}
-                        <path
-                          d={forwardPath}
-                          fill="none"
-                          stroke="#BE123C"
-                          strokeWidth="3.2"
-                          strokeLinecap="round"
-                        />
-                        {/* Reverse Rate (Dark Blue) */}
-                        <path
-                          d={reversePath}
-                          fill="none"
-                          stroke="#0369A1"
-                          strokeWidth="3.2"
-                          strokeLinecap="round"
-                        />
-                      </>
-                    )}
-
-                    {/* Live Scrubber Indicator */}
-                    {currentTime > 0 && (
-                      <g>
-                        <line
-                          x1={scrubberX}
-                          y1={graphPadding.top}
-                          x2={scrubberX}
-                          y2={graphPadding.top + innerH}
-                          stroke="#64748B"
-                          strokeWidth="1"
-                          strokeDasharray="2 2"
-                        />
-                        <circle cx={scrubberX} cy={graphPadding.top + innerH / 2} r="3" fill="#0284C7" />
-                      </g>
-                    )}
-                  </svg>
-                </div>
-              </div>
-
-              {/* Right Card: Next to Live Decay Curve — Clock, Speed & Actions (20% of width) */}
-              <div className="w-full sm:w-[20%] bg-white/95 backdrop-blur-md rounded-2xl p-2.5 shadow-xl border border-slate-200/90 flex flex-col justify-between shrink-0">
-                {/* Clock Mini-Stat */}
-                <div className="bg-slate-50 px-2 py-1.5 rounded-xl border border-slate-200 flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-[9px] font-black text-slate-700 uppercase">
-                    <Clock className="w-3 h-3 text-sky-600" /> CLOCK
-                  </div>
-                  <div className="text-xs font-black font-mono text-slate-950">
-                    {currentTime.toFixed(1)}<span className="text-[9.5px] text-slate-600 ml-0.5">s</span>
-                  </div>
-                </div>
-
-                {/* Speed Multiplier */}
-                <div className="flex items-center justify-between py-1 px-1 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[9px] font-black uppercase text-slate-700 tracking-wider">SPEED:</span>
-                  <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-                    {[1, 2, 4].map((spd) => (
-                      <button
-                        key={spd}
-                        type="button"
-                        onClick={() => setSpeedMultiplier(spd)}
-                        className={`px-2 py-0.5 rounded text-[9px] font-black transition-all cursor-pointer ${
-                          speedMultiplier === spd
-                            ? "bg-white text-sky-800 shadow-xs border border-slate-200"
-                            : "text-slate-700 hover:text-black"
-                        }`}
-                      >
-                        {spd}×
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Action Buttons: START/PAUSE + IDENTIFY EQUILIBRIUM */}
-                <div className="flex flex-col gap-1.5">
-                  <button
-                    type="button"
-                    onClick={handleTogglePlay}
-                    className={`w-full py-1.5 rounded-xl font-black text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer active:scale-95 ${
-                      isRunning
-                        ? "bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20"
-                        : "bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sky-600/30"
-                    }`}
-                  >
-                    {isRunning ? (
-                      <>
-                        <Pause className="w-3 h-3 fill-current" />
-                        <span>PAUSE</span>
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-3 h-3 fill-current" />
-                        <span>{currentTime >= MAX_TIME ? "REPLAY" : "START REACTION"}</span>
-                      </>
-                    )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleVerifyEquilibrium}
-                    disabled={currentTime === 0}
-                    className={`w-full py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider flex items-center justify-center gap-1 transition-all cursor-pointer shadow-sm active:scale-95 ${
-                      currentTime === 0
-                        ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
-                        : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30"
-                    }`}
-                  >
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>IDENTIFY EQUILIBRIUM</span>
-                  </button>
-                </div>
-              </div>
+              <button
+                type="button"
+                onClick={handleVerifyEquilibrium}
+                className="w-full py-2.5 px-3 rounded-xl font-black text-[10.5px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md active:scale-95 bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <span>IDENTIFY EQUILIBRIUM</span>
+              </button>
             </div>
           </div>
 
@@ -901,43 +854,43 @@ export function ChemicalEquilibriumGamePage({
               ────────────────────────────────────────────────────────────────── */}
           {showVictoryModal && (
             <div className="absolute inset-0 z-40 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3">
-              <div className="bg-white rounded-3xl p-4 sm:p-5 max-w-sm sm:max-w-md w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200 text-center space-y-2.5">
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-100 text-amber-600 mx-auto flex items-center justify-center shadow-md">
-                  <Trophy className="w-5 h-5 sm:w-6 sm:h-6" />
+              <div className="bg-white rounded-2xl p-3.5 sm:p-4 max-w-xs sm:max-w-sm w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200 text-center space-y-2">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 mx-auto flex items-center justify-center shadow-sm">
+                  <Trophy className="w-4 h-4" />
                 </div>
 
                 <div>
-                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full inline-block mb-1">
+                  <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full inline-block mb-0.5">
                     MISSION COMPLETE • 300 PTS
                   </span>
-                  <h3 className="font-extrabold text-base sm:text-lg text-slate-900">
+                  <h3 className="font-extrabold text-base text-slate-900">
                     Equilibrium Master!
                   </h3>
-                  <p className="text-[11px] sm:text-xs text-slate-600 mt-0.5 leading-tight">
-                    You accurately identified the point of dynamic equilibrium! Forward and reverse reactions continue at equal rates ($r_f = r_r$).
+                  <p className="text-[11px] text-slate-600 mt-0.5 leading-snug">
+                    You accurately identified the point of dynamic equilibrium! Forward and reverse reactions continue at equal rates (rf = rr).
                   </p>
                 </div>
 
-                <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200/80 text-left font-mono text-[10px] sm:text-[11px] space-y-0.5 text-slate-800">
+                <div className="bg-slate-50 rounded-xl p-2 border border-slate-200/80 text-left font-mono text-[10px] space-y-0.5 text-slate-800">
                   <div className="font-sans font-bold text-slate-700">Equilibrium State Summary:</div>
                   <div>• Forward Rate (rf) = Reverse Rate (rr) = <strong>~2.40 / s</strong></div>
                   <div>• Reactant A = <strong>16 particles</strong> (0.40 M)</div>
                   <div>• Product B = <strong>24 particles</strong> (0.60 M)</div>
-                  <div className="text-[9px] sm:text-[10px] text-emerald-700 font-sans font-semibold pt-0.5">
+                  <div className="text-[9.5px] text-emerald-700 font-sans font-semibold pt-0.5">
                     Notice: Equal rates does NOT mean equal amounts ([A] ≠ [B])!
                   </div>
                 </div>
 
-                <div className="flex gap-2 pt-1">
+                <div className="flex gap-2 pt-0.5">
                   <button
                     type="button"
                     onClick={() => {
                       setShowVictoryModal(false);
                       handleReset();
                     }}
-                    className="flex-1 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    className="flex-1 py-1.5 rounded-full font-black text-[11px] uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   >
-                    <RotateCcw className="w-3.5 h-3.5" />
+                    <RotateCcw className="w-3 h-3" />
                     <span>REPLAY</span>
                   </button>
 
@@ -947,9 +900,9 @@ export function ChemicalEquilibriumGamePage({
                       setShowVictoryModal(false);
                       setShowExplanationModal(true);
                     }}
-                    className="flex-1 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    className="flex-1 py-1.5 rounded-full font-black text-[11px] uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   >
-                    <BookOpen className="w-3.5 h-3.5" />
+                    <BookOpen className="w-3 h-3" />
                     <span>EXPLANATION</span>
                   </button>
                 </div>

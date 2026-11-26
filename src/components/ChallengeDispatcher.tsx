@@ -406,6 +406,14 @@ const CarbonylStructureGamePage = dynamic<{ difficulty?: string; onExit?: () => 
   { ssr: false, loading: LoadingFallback }
 );
 
+const QualitativeTestsGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/qualitative_tests_differentiation/QualitativeTestsGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -745,17 +753,29 @@ export function ChallengeDispatcher({
       normTopic.includes("molecular-shape") ||
       normTopic.includes("molecular_shape"));
 
-  const isCarbonylStructureDimerization =
-    normTopic === "43" ||
-    normTopic.includes("dimer") ||
-    normTopic.includes("dimerization") ||
-    normTopic.includes("carbonyl-structure") ||
-    normTopic.includes("structure-dipole") ||
-    normTopic.includes("carboxylic-dimerization") ||
+  const isQualitativeTests =
+    normTopic === "44" ||
+    normTopic.includes("qualitative") ||
+    normTopic.includes("tollens") ||
+    normTopic.includes("fehling") ||
+    normTopic.includes("iodoform") ||
+    normTopic.includes("chemical-differentiation") ||
     ((normModule.includes("aldehydes") || normModule === "m11") &&
-      (normTopic === "43" || normTopic.includes("nomenclature") || normTopic.includes("dimer")));
+      (normTopic === "44" || normTopic.includes("test") || normTopic.includes("differentiation")));
+
+  const isCarbonylStructureDimerization =
+    !isQualitativeTests &&
+    (normTopic === "43" ||
+      normTopic.includes("dimer") ||
+      normTopic.includes("dimerization") ||
+      normTopic.includes("carbonyl-structure") ||
+      normTopic.includes("structure-dipole") ||
+      normTopic.includes("carboxylic-dimerization") ||
+      ((normModule.includes("aldehydes") || normModule === "m11") &&
+        (normTopic === "43" || normTopic.includes("nomenclature") || normTopic.includes("dimer"))));
 
   const isNucleophilicAddition =
+    !isQualitativeTests &&
     !isCarbonylStructureDimerization &&
     (normTopic === "45" ||
       normTopic.includes("nucleophilic-addition") ||
@@ -863,6 +883,8 @@ export function ChallengeDispatcher({
     }
   } else if (isVsepr) {
     content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isQualitativeTests) {
+    content = <QualitativeTestsGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isCarbonylStructureDimerization) {
     content = <CarbonylStructureGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isNucleophilicAddition) {
@@ -883,7 +905,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-          { showExitButton && !isCarbonylStructureDimerization && !isNucleophilicAddition && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+          { showExitButton && !isQualitativeTests && !isCarbonylStructureDimerization && !isNucleophilicAddition && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
             <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
               <button
                 type="button"

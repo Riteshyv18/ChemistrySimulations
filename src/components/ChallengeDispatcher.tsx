@@ -350,6 +350,14 @@ const GibbsFreeEnergyGamePage = dynamic<{ difficulty?: string; onExit?: () => vo
   { ssr: false, loading: LoadingFallback }
 );
 
+const CrystalPackingGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/solid_state/packing_voids/CrystalPackingGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 const OreConcentrationGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
@@ -556,8 +564,21 @@ export function ChallengeDispatcher({
     ((normModule.includes("metallurgy") || normModule === "m8") &&
       (normTopic === "4" || normTopic.includes("refin")));
 
+  const isCrystalPacking =
+    normTopic === "37" ||
+    normTopic === "packing-efficiency" ||
+    normTopic === "packing_efficiency" ||
+    normTopic === "crystal-packing" ||
+    normTopic === "crystal_packing" ||
+    normTopic.includes("packing") ||
+    normTopic.includes("coordination") ||
+    normTopic.includes("void") ||
+    ((normModule.includes("solid-state") || normModule.includes("solid_state") || normModule === "m9") &&
+      normTopic === "3");
+
   const isUnitCellBuilder =
-    normTopic === "36" ||
+    !isCrystalPacking &&
+    (normTopic === "36" ||
     normTopic === "unit-cells" ||
     normTopic === "unit_cells" ||
     normTopic === "unit-cell" ||
@@ -573,9 +594,10 @@ export function ChallengeDispatcher({
     normTopic.includes("cubic-unit-cell") ||
     normTopic.includes("cubic_unit_cell") ||
     ((normModule.includes("solid-state") || normModule.includes("solid_state") || normModule === "m9") &&
-      (normTopic === "2" || normTopic.includes("unit") || normTopic.includes("lattice")));
+      (normTopic === "2" || normTopic.includes("unit") || normTopic.includes("lattice"))));
 
   const isSolidStateClassification =
+    !isCrystalPacking &&
     !isUnitCellBuilder &&
     (normTopic === "35" ||
       normTopic === "classification-of-solids" ||
@@ -759,7 +781,9 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isUnitCellBuilder) {
+  if (isCrystalPacking) {
+    content = <CrystalPackingGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isUnitCellBuilder) {
     content = <UnitCellBuilderGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isSolidStateClassification) {
     content = <CrystalExplorerGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -873,7 +897,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isUnitCellBuilder && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isCrystalPacking && !isUnitCellBuilder && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

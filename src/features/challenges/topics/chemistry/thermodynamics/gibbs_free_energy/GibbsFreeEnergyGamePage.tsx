@@ -151,21 +151,13 @@ export default function GibbsFreeEnergyGamePage({
 
   // Check Answer Handler
   const handleCheckAnswer = () => {
-    if (userSpontaneous === null) {
-      setFailFeedback("Please select whether the reaction is SPONTANEOUS or NON-SPONTANEOUS at the current temperature!");
-      setShowFailModal(true);
-      return;
-    }
-
-    if (isActualSpontaneous && userSpontaneous === true) {
+    if (isActualSpontaneous) {
       setShowSuccessModal(true);
     } else {
       if (deltaG > 0) {
-        setFailFeedback(`At T = ${temp} K, ΔG = +${deltaG.toFixed(1)} kJ/mol (> 0), so the reaction is NON-SPONTANEOUS. Increase the temperature above 267 K so ΔG becomes negative, then select SPONTANEOUS!`);
-      } else if (deltaG === 0) {
-        setFailFeedback(`At T = ${temp} K, ΔG = 0.0 kJ/mol (dynamic equilibrium). Increase the temperature above 267 K so ΔG becomes negative, then select SPONTANEOUS!`);
+        setFailFeedback(`At T = ${temp} K, ΔG = +${deltaG.toFixed(1)} kJ/mol (> 0), so the reaction is NON-SPONTANEOUS. Increase the temperature above 267 K so ΔG becomes negative!`);
       } else {
-        setFailFeedback(`At T = ${temp} K, ΔG = ${deltaG.toFixed(1)} kJ/mol (< 0), so the forward process is downhill and SPONTANEOUS! Select SPONTANEOUS to verify.`);
+        setFailFeedback(`At T = ${temp} K, ΔG = 0.0 kJ/mol (dynamic equilibrium). Increase the temperature above 267 K so ΔG becomes negative!`);
       }
       setShowFailModal(true);
     }
@@ -194,7 +186,7 @@ export default function GibbsFreeEnergyGamePage({
           {/* Mission Body */}
           <div className="max-w-2xl flex flex-col items-center gap-4 my-auto">
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-snug">
-              <span className="text-blue-600">MISSION:</span>  Adjust the temperature to discover when the reaction happens naturally without any external push!
+              <span className="text-blue-600">MISSION:</span> Adjust the temperature to find when the reaction becomes spontaneous!
             </h1>
 
 
@@ -530,34 +522,18 @@ export default function GibbsFreeEnergyGamePage({
                     />
                   </g>
 
-                  {/* Live Behavior Caption Pill centered cleanly above Peak (replaces Transition state text) */}
-                  <g transform={`translate(227, ${tsY - 30})`}>
-                    <rect
-                      x="0"
-                      y="0"
-                      width="206"
-                      height="22"
-                      rx="11"
-                      fill={deltaG < 0 ? "#ECFDF5" : deltaG === 0 ? "#FFFBEB" : "#FEF2F2"}
-                      stroke={deltaG < 0 ? "#A7F3D0" : deltaG === 0 ? "#FDE68A" : "#FECACA"}
-                      strokeWidth="1.2"
-                    />
-                    <text
-                      x="103"
-                      y="14.5"
-                      textAnchor="middle"
-                      fontSize="10.5"
-                      fontWeight="800"
-                      fill={deltaG < 0 ? "#047857" : deltaG === 0 ? "#B45309" : "#B91C1C"}
-                      fontFamily="sans-serif"
-                    >
-                      {deltaG < 0
-                        ? "Flows downhill → Spontaneous!"
-                        : deltaG === 0
-                        ? "Balanced → Dynamic Equilibrium"
-                        : "Rolls back ← Needs external push"}
-                    </text>
-                  </g>
+                  {/* Transition State Label */}
+                  <text
+                    x="330"
+                    y={tsY - 10}
+                    textAnchor="middle"
+                    fill="#0F172A"
+                    fontWeight="800"
+                    fontSize="13"
+                    fontFamily="sans-serif"
+                  >
+                    Transition state
+                  </text>
 
                   {/* Reactants Label */}
                   <text
@@ -633,12 +609,13 @@ export default function GibbsFreeEnergyGamePage({
             </div>
 
             {/* ───────────────────────────────────────────────────────────── */}
-            {/* BOTTOM: 50% Temperature Slider + 50% 3 Action Buttons         */}
+            {/* BOTTOM: Temperature Slider + Check Answer Button               */}
             {/* ───────────────────────────────────────────────────────────── */}
-            <div className="w-full grid grid-cols-2 items-stretch gap-2 shrink-0 z-10 pt-0.5 border-t border-slate-100">
+            <div className="w-full shrink-0 z-10 pt-1.5 border-t border-slate-100 flex justify-center px-6 sm:px-12">
+              <div className="w-full max-w-xl flex items-stretch gap-2.5">
 
-              {/* Left 50%: Temperature Slider Box with floating popup on slide */}
-              <div className="w-full relative py-1 px-2 rounded-xl border border-slate-200 bg-slate-50/70 shadow-xs flex flex-col justify-between">
+              {/* Left: Temperature Slider Box with floating popup on slide */}
+              <div className="flex-1 relative py-1 px-2 rounded-xl border border-slate-200 bg-slate-50/70 shadow-xs flex flex-col justify-between">
                 
                 {/* Floating dynamic popup when sliding / hovering */}
                 {isSliding && (
@@ -696,37 +673,16 @@ export default function GibbsFreeEnergyGamePage({
                 </div>
               </div>
 
-              {/* Right 50%: 3 Equal Buttons (Spontaneous, Non-Spontaneous, Check Answer) */}
-              <div className="w-full grid grid-cols-3 gap-1.5 h-full">
-                <button
-                  onClick={() => setUserSpontaneous(true)}
-                  className={`w-full h-full py-1.5 px-1.5 rounded-xl border text-[10px] sm:text-[11px] font-black uppercase tracking-tight transition-all cursor-pointer flex items-center justify-center text-center leading-tight ${userSpontaneous === true
-                      ? "bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/25 scale-[1.01]"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                    }`}
-                >
-                  Spontaneous
-                </button>
+              {/* Right: Check Answer Button */}
+              <button
+                onClick={handleCheckAnswer}
+                className="w-40 sm:w-44 shrink-0 py-1.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>CHECK ANSWER</span>
+              </button>
 
-                <button
-                  onClick={() => setUserSpontaneous(false)}
-                  className={`w-full h-full py-1.5 px-1.5 rounded-xl border text-[10px] sm:text-[11px] font-black uppercase tracking-tight transition-all cursor-pointer flex items-center justify-center text-center leading-tight ${userSpontaneous === false
-                      ? "bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-500/25 scale-[1.01]"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                    }`}
-                >
-                  Non-Spontaneous
-                </button>
-
-                <button
-                  onClick={handleCheckAnswer}
-                  className="w-full h-full py-1.5 px-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-[10px] sm:text-[11px] uppercase tracking-tight flex items-center justify-center gap-1 text-center leading-tight shadow-md active:scale-95 transition cursor-pointer"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>CHECK ANSWER</span>
-                </button>
               </div>
-
             </div>
 
           </div>

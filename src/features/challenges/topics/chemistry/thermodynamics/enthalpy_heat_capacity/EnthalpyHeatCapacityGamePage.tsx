@@ -415,13 +415,21 @@ export default function EnthalpyHeatCapacityGamePage({
           setIsStirring(false);
           setNotification(`Reaction reached thermal equilibrium: T_f = ${targetTf.toFixed(1)}°C.`);
 
-          // Check if J reached target (+4180 J); if so, show victory popup after 1 second
+          // Check if Water Mass is 100g, NaOH is 4g, and J reached target (+4180 J)
           const finalDeltaT = Number((targetTf - tempInitial).toFixed(1));
           const finalQ = Math.round(waterMass * specificHeat * finalDeltaT);
-          if (Math.abs(finalQ - TARGET_Q) < 30) {
-            if (victoryTimerRef.current) clearTimeout(victoryTimerRef.current);
+          if (victoryTimerRef.current) clearTimeout(victoryTimerRef.current);
+
+          if (waterMass === 100 && soluteDose === 4 && Math.abs(finalQ - TARGET_Q) < 30) {
             victoryTimerRef.current = setTimeout(() => {
               setShowVictoryModal(true);
+            }, 1000);
+          } else {
+            setIncorrectFeedback(
+              `Measured ΔT = +${finalDeltaT.toFixed(1)}°C and q = +${finalQ} J (with ${waterMass} g H₂O and ${soluteDose} g NaOH). Target is ΔT = +10.0°C and q = +${TARGET_Q} J.`
+            );
+            victoryTimerRef.current = setTimeout(() => {
+              setShowIncorrectModal(true);
             }, 1000);
           }
 
@@ -433,7 +441,7 @@ export default function EnthalpyHeatCapacityGamePage({
     }, 90);
 
     return () => clearInterval(interval);
-  }, [isReacting, targetTf, waterMass, specificHeat, tempInitial, TARGET_Q]);
+  }, [isReacting, targetTf, waterMass, soluteDose, specificHeat, tempInitial, TARGET_Q]);
 
   // Trigger Stir & Reaction
   const handleStirAndReact = () => {
@@ -520,8 +528,9 @@ export default function EnthalpyHeatCapacityGamePage({
             {/* Central Mission Statement */}
             <div className="max-w-md w-full mx-auto text-center flex flex-col items-center justify-center flex-1 my-auto z-10 px-2">
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
-                <span className="text-[#0284C7] font-extrabold uppercase">MISSION:</span> Adjust water and chemical dose to reach target heat energy{" "}
-                <span className="text-amber-500 font-extrabold">q = +{TARGET_Q} J</span>!
+                <span className="text-[#0284C7] font-extrabold uppercase">MISSION:</span> Adjust water mass and NaOH to reach{" "}
+                <span className="text-amber-500 font-extrabold">&Delta;T = +10.0&deg;C</span>{" "}
+                (<span className="text-sky-600 font-extrabold">q = +{TARGET_Q} J</span>)!
               </h2>
 
               <div className="mt-8 flex justify-center w-full">
@@ -752,14 +761,15 @@ export default function EnthalpyHeatCapacityGamePage({
 
                 {/* Horizontal Row: Digital Display on Left, Check Answer Button on Right */}
                 <div className="flex items-stretch gap-2">
-                  {/* Digital Display Box */}
-                  <div className="flex-1 bg-[#0B132B] rounded-xl px-3 py-1 text-center text-white border border-slate-800 shadow-inner flex flex-col justify-center">
-                    <div className="font-mono font-black text-base sm:text-lg text-amber-400 tracking-tight leading-none py-0.5">
+                  {/* Digital Display Box: Shows both ΔT and q (J) */}
+                  <div className="flex-1 bg-[#0B132B] rounded-xl px-2.5 py-2 text-center text-white border border-slate-800 shadow-inner flex items-center justify-center gap-2">
+                    <span className="font-mono font-black text-xs sm:text-sm text-sky-400 tracking-tight whitespace-nowrap">
+                      &Delta;T: {deltaT >= 0 ? `+${deltaT.toFixed(1)}` : deltaT.toFixed(1)}&deg;C
+                    </span>
+                    <span className="text-slate-600 font-bold">|</span>
+                    <span className="font-mono font-black text-xs sm:text-sm text-amber-400 tracking-tight whitespace-nowrap">
                       {measuredQ >= 0 ? `+${measuredQ}` : measuredQ} J
-                    </div>
-                    <div className="text-[9px] font-mono text-slate-400">
-                      m: {waterMass}g • ΔT: {deltaT >= 0 ? `+${deltaT}` : deltaT}°C
-                    </div>
+                    </span>
                   </div>
 
                   {/* STIR & DISSOLVE BUTTON (Replaces CHECK ANSWER) */}
@@ -923,7 +933,7 @@ export default function EnthalpyHeatCapacityGamePage({
                   className="w-full py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
                 >
                   <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
-                  <span>TRY AGAIN</span>
+                  <span>RETRY</span>
                 </button>
 
                 <button
@@ -1036,7 +1046,7 @@ export default function EnthalpyHeatCapacityGamePage({
                   How to Play &amp; Win
                 </h4>
                 <p className="font-bold text-sm text-slate-900">
-                  Your mission goal is: <span className="text-amber-600 font-black">TARGET q = +4180 J</span>. Follow these 3 steps in the lab:
+                  Your mission goal is: <span className="text-amber-600 font-black">TARGET &Delta;T = +10.0&deg;C (q = +4180 J)</span>. Follow these 3 steps in the lab:
                 </p>
                 <ol className="list-decimal list-inside space-y-2.5 pl-1 text-sm text-slate-700">
                   <li>
@@ -1046,7 +1056,7 @@ export default function EnthalpyHeatCapacityGamePage({
                     <strong>Set NaOH Mass (g):</strong> Drag the <strong>NaOH MASS (g)</strong> slider to <strong>4 g</strong> (1 g yields ~1045 J, so 4 g produces +4180 J).
                   </li>
                   <li>
-                    <strong>Stir &amp; Dissolve:</strong> Tap <strong>STIR &amp; DISSOLVE</strong> in the Calorimetry HUD. As soon as thermal equilibrium reaches <strong>+4180 J</strong>, your answer is verified automatically!
+                    <strong>Stir &amp; Dissolve:</strong> Tap <strong>STIR &amp; DISSOLVE</strong> in the Calorimetry HUD. As soon as thermal equilibrium reaches <strong>&Delta;T = +10.0&deg;C (+4180 J)</strong>, your answer is verified automatically!
                   </li>
                 </ol>
               </section>

@@ -449,7 +449,7 @@ export default function EntropyGamePage({
           {/* Central Mission Statement */}
           <div className="max-w-2xl w-full mx-auto text-center flex flex-col items-center justify-center flex-1 my-auto z-10 px-4 space-y-4">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-snug">
-              <span className="text-[#0284C7] font-extrabold uppercase">MISSION:</span> Observe the molecular disorder in the chamber, predict the correct temperature, and master the states of matter!
+              <span className="text-[#0284C7] font-extrabold uppercase">MISSION:</span> Adjust the chamber temperature to match Solid, Liquid, and Gas!
             </h2>
 
             <div className="pt-2 flex justify-center w-full">

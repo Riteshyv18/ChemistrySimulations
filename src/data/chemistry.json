@@ -5054,8 +5054,8 @@
       "topics": [
         {
           "topicId": "43",
-          "topicName": "Nomenclature & Structure",
-          "coreConcept": "Carbonyl group polarity, sp² hybridization, IUPAC nomenclature of aldehydes, ketones, and carboxylic acids, and physical properties.",
+          "topicName": "Carbonyl Structure, Dipole & Carboxylic Dimerization",
+          "coreConcept": "Carbonyl sp² planar geometry, strong dipole moment (δ+/δ-), and intermolecular cyclic hydrogen-bonded carboxylic acid dimers.",
           "keyFormulas": [
             {
               "formula": ">C=O: Electrophilic Carbon (δ+) and Nucleophilic Oxygen (δ-)",
@@ -5072,16 +5072,16 @@
           },
           "challenges": {
             "easy": {
-              "title": "Carbonyl IUPAC Builder — Level 1",
-              "description": "Construct structural formulas and assign IUPAC names to branched aldehydes and ketones."
+              "title": "Carbonyl Geometry & Dipole — Level 1",
+              "description": "Explore sp² planar geometry, 120° bond angles, and electric dipole polarization in aldehydes and ketones."
             },
             "medium": {
-              "title": "Polarity & Dipole Vector — Level 2",
-              "description": "Map electrostatic potential surfaces around the carbonyl group and explain nucleophilic susceptibility."
+              "title": "Electrostatic Potential Surface — Level 2",
+              "description": "Map partial charges and nucleophilic/electrophilic susceptibility on carbonyl surfaces."
             },
             "advanced": {
-              "title": "Carboxylic Dimer Modeler — Level 3",
-              "description": "Simulate dual hydrogen-bonded carboxylic acid dimers in non-polar solvents."
+              "title": "Carboxylic Acid Dimer Lab — Level 3",
+              "description": "Simulate pairwise O-H···O=C hydrogen-bonding into stable 8-membered cyclic dimers in non-polar media."
             }
           },
           "practiceTests": {
@@ -5117,38 +5117,38 @@
         },
         {
           "topicId": "44",
-          "topicName": "Preparation Methods",
-          "coreConcept": "Oxidation of alcohols (PCC, Jones), ozonolysis of alkenes, hydration of alkynes, Rosenmund reduction, and Stephen reaction.",
+          "topicName": "Qualitative Tests & Chemical Differentiation",
+          "coreConcept": "Laboratory chemical discrimination of aldehydes and ketones via Tollens' silver mirror, Fehling's red cuprous oxide, and the Iodoform test.",
           "keyFormulas": [
             {
-              "formula": "Rosenmund: R-COCl + H₂ —(Pd/BaSO₄/quinoline)→ R-CHO + HCl",
-              "label": "Rosenmund Reduction"
+              "formula": "Tollens: R-CHO + 2[Ag(NH₃)₂]⁺ + 3OH⁻ → R-COO⁻ + 2Ag↓ (Silver Mirror) + 4NH₃ + 2H₂O",
+              "label": "Tollens' Test for Aldehydes"
             },
             {
-              "formula": "Stephen: R-CN + SnCl₂/HCl → R-CH=NH·HCl —(H₃O⁺)→ R-CHO",
-              "label": "Stephen Aldehyde Synthesis"
+              "formula": "Fehling: R-CHO + 2Cu²⁺ + 5OH⁻ → R-COO⁻ + Cu₂O↓ (Red) + 3H₂O",
+              "label": "Fehling's Test for Aliphatic Aldehydes"
             },
             {
-              "formula": "Etard: C₆H₅-CH₃ + CrO₂Cl₂ —(CS₂)→ Brown Complex —(H₃O⁺)→ C₆H₅-CHO",
-              "label": "Etard Reaction"
+              "formula": "Iodoform: R-COCH₃ + 3I₂ + 4NaOH → R-COONa + CHI₃↓ (Yellow) + 3NaI + 3H₂O",
+              "label": "Haloform / Iodoform Reaction"
             }
           ],
           "theory": {
-            "basics": "Carbonyl compounds are synthesized through diverse controlled functional group transformations:\n\n- **Controlled Alcohol Oxidation:** Primary alcohols oxidized with Pyridinium Chlorochromate (PCC) cleanly yield aldehydes without over-oxidation to carboxylic acids; secondary alcohols yield ketones.\n- **Acid Chloride Reductions:** Rosenmund reduction converts acyl chlorides to aldehydes using poisoned Pd catalyst.\n- **Nitrile Reductions:** Stephen reduction and DIBAL-H reduce nitriles selectively to aldehydes.\n- **Aromatic Carbonyls:** Etard reaction oxidizes toluene to benzaldehyde using chromyl chloride (CrO₂Cl₂); Friedel-Crafts acylation prepares aromatic ketones.",
-            "fullConcept": "## DIBAL-H Chemoselectivity\n\nDiisobutylaluminum hydride (DIBAL-H) at low temperatures (-78 °C) selectively reduces esters and nitriles to aldehydes by forming a stable tetrahedral hemiacetal intermediate that only hydrolyzes to the aldehyde during aqueous workup."
+            "basics": "Aldehydes and ketones are distinguished chemically by differing oxidizability and structural motifs:\n\n- **Tollens' Test:** Mild ammoniacal silver nitrate oxidizes aldehydes to carboxylates while depositing a reflective silver mirror; ketones do not react.\n- **Fehling's Test:** Alkaline tartrate-complexed copper(II) oxidizes aliphatic aldehydes to give red cuprous oxide (Cu₂O) precipitate; aromatic aldehydes and ketones give negative results.\n- **Iodoform Reaction:** Compounds containing the methyl carbonyl (CH₃-C=O) or methyl carbinol (CH₃-CH(OH)-) unit react with iodine and base to produce canary yellow iodoform (CHI₃) crystals.",
+            "fullConcept": "## Distinction Between Benzaldehyde and Acetaldehyde\n\nBenzaldehyde reduces Tollens' reagent but does not reduce Fehling's solution due to resonance stabilization from the phenyl ring lowering carbonyl electrophilicity, making Fehling's test ideal for distinguishing aliphatic from aromatic aldehydes."
           },
           "challenges": {
             "easy": {
-              "title": "Oxidation Path Selector — Level 1",
-              "description": "Select between PCC, KMnO₄, and CrO₃ to synthesize aldehydes vs carboxylic acids."
+              "title": "Tollens' Silver Mirror Test — Level 1",
+              "description": "Select ammoniacal silver nitrate to selectively oxidize aldehydes into carboxylates and deposit reflective silver mirrors."
             },
             "medium": {
-              "title": "Name Preparation Matcher — Level 2",
-              "description": "Map starting materials and catalysts for Rosenmund, Stephen, Etard, and Gattermann-Koch reactions."
+              "title": "Fehling's & Benedict's Redox — Level 2",
+              "description": "Distinguish aliphatic from aromatic aldehydes using alkaline tartrate-complexed Cu²⁺ to precipitate red Cu₂O."
             },
             "advanced": {
-              "title": "Chemoselective DIBAL-H Reactor — Level 3",
-              "description": "Target ester groups in polyfunctional molecules for aldehyde conversion without reducing ketones."
+              "title": "Iodoform (Haloform) Reactor — Level 3",
+              "description": "Identify CH₃C=O and CH₃CH(OH) groups by synthesizing bright yellow CHI₃ crystals using I₂ and NaOH."
             }
           },
           "practiceTests": {
@@ -5184,8 +5184,8 @@
         },
         {
           "topicId": "45",
-          "topicName": "Nucleophilic Addition Reactions",
-          "coreConcept": "Mechanism of nucleophilic addition to carbonyls, reactivity order (aldehydes vs ketones), addition of HCN, NaHSO₃, Grignard reagents, and alcohols.",
+          "topicName": "Nucleophilic Addition & Carbonyl Reactivity",
+          "coreConcept": "Bürgi–Dunitz trajectory (107°), π* LUMO orbital overlap, steric and inductive reactivity order, and acid-catalyzed cyanohydrin synthesis.",
           "keyFormulas": [
             {
               "formula": "Reactivity: HCHO > RCHO > R₂C=O > Ar₂C=O",
@@ -5206,16 +5206,16 @@
           },
           "challenges": {
             "easy": {
-              "title": "Reactivity Hierarchy Ranker — Level 1",
-              "description": "Rank aldehydes and ketones by nucleophilic addition rates based on electronic and steric factors."
+              "title": "Bürgi–Dunitz Trajectory — Stage 1",
+              "description": "Align the nucleophile along the optimal 107° angle to maximize π* LUMO orbital overlap and observe sp² to sp³ umbrella rehybridization."
             },
             "medium": {
-              "title": "Grignard Addition Architect — Level 2",
-              "description": "Select carbonyl and Grignard reagent pairs to synthesize targeted 1°, 2°, and 3° alcohols."
+              "title": "Steric & Inductive Hindrance — Stage 2",
+              "description": "Test nucleophilic addition on Acetaldehyde vs Acetone, overcoming methyl steric shielding and inductive (+I) charge dampening."
             },
             "advanced": {
-              "title": "Acetal Protection & Deprotection — Level 3",
-              "description": "Protect carbonyl functionalities during lithium aluminum hydride reduction of ester groups."
+              "title": "Acid Catalysis Activation — Stage 3",
+              "description": "Activate unreactive ketones with H⁺ protonation to drop activation energy from 78 kJ/mol to 28 kJ/mol and synthesize Acetone Cyanohydrin."
             }
           },
           "practiceTests": {
@@ -5314,8 +5314,8 @@
         },
         {
           "topicId": "47",
-          "topicName": "Carboxylic Acid Reactions & Important Name Reactions",
-          "coreConcept": "Acidity of carboxylic acids, inductive and resonance effects, Hell-Volhard-Zelinsky (HVZ) reaction, decarboxylation, and esterification.",
+          "topicName": "Carboxylic Acid Acidity & HVZ Reaction",
+          "coreConcept": "Resonance stabilization of carboxylate anions, inductive (-I/+I) acidity ladder, Hell-Volhard-Zelinsky (HVZ) α-halogenation, and esterification.",
           "keyFormulas": [
             {
               "formula": "RCOOH + R'OH —(H⁺)⇌ RCOOR' + H₂O",
@@ -5337,15 +5337,15 @@
           "challenges": {
             "easy": {
               "title": "Carboxylic Acidity Ladder — Level 1",
-              "description": "Rank haloacetic acids by pKa based on the inductive effect (-I) and distance of halogen atoms."
+              "description": "Rank haloacetic acids by pKa based on the inductive effect (-I), distance, and electronegativity of halogens."
             },
             "medium": {
-              "title": "HVZ Synthesis Lab — Level 2",
-              "description": "Synthesize α-amino acids from propanoic acid via HVZ bromination followed by amination."
+              "title": "HVZ Synthesis Chamber — Level 2",
+              "description": "Synthesize α-bromo acids from propanoic acid using Br₂/Red P followed by nucleophilic substitution."
             },
             "advanced": {
-              "title": "Esterification Kinetic Engine — Level 3",
-              "description": "Drive Fischer esterification to completion using Dean-Stark water traps and steric hindrance modeling."
+              "title": "Fischer Esterification Engine — Level 3",
+              "description": "Drive tetrahedral nucleophilic acyl substitution to completion using acid catalysts and water removal."
             }
           },
           "practiceTests": {

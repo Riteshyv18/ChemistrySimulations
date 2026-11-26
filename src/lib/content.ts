@@ -115,6 +115,47 @@ export function findTopic(
       if ((norm.includes("reaction-rate") || norm.includes("factors-affecting") || norm === "factors-affecting-reaction-rate") && (t.topicId === "18" || t.topicId === "2")) return true;
       if ((norm.includes("activation") || norm.includes("catalyst") || norm === "activation-energy-catalysts") && (t.topicId === "19" || t.topicId === "3")) return true;
       if ((norm.includes("rate-law") || norm.includes("reaction-order") || norm.includes("half-life") || norm === "rate-law-reaction-order-half-life") && (t.topicId === "20" || t.topicId === "4")) return true;
+      if (
+        (norm.includes("dimer") ||
+          norm.includes("structure-dipole") ||
+          norm.includes("nomenclature") ||
+          norm === "carbonyl-structure-dipole-carboxylic-dimerization") &&
+        (t.topicId === "43" || t.topicId === "1")
+      )
+        return true;
+      if (
+        (norm.includes("qualitative") ||
+          norm.includes("tollens") ||
+          norm.includes("fehling") ||
+          norm.includes("iodoform") ||
+          norm === "qualitative-tests-chemical-differentiation") &&
+        (t.topicId === "44" || t.topicId === "2")
+      )
+        return true;
+      if (
+        (norm.includes("nucleophilic") ||
+          norm.includes("carbonyl-reactivity") ||
+          norm.includes("burgi") ||
+          norm === "nucleophilic-addition" ||
+          norm === "nucleophilic-addition-carbonyl-reactivity") &&
+        (t.topicId === "45" || t.topicId === "3")
+      )
+        return true;
+      if (
+        (norm.includes("aldol") ||
+          norm.includes("cannizzaro") ||
+          norm === "aldol-condensation-cannizzaro-reaction") &&
+        (t.topicId === "46" || t.topicId === "4")
+      )
+        return true;
+      if (
+        (norm.includes("hvz") ||
+          norm.includes("acidity") ||
+          norm.includes("carboxylic-acid") ||
+          norm === "carboxylic-acid-acidity-hvz-reaction") &&
+        (t.topicId === "47" || t.topicId === "5")
+      )
+        return true;
       return false;
     }) || mod.topics[0];
 

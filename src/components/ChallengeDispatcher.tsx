@@ -398,6 +398,14 @@ const NucleophilicAdditionGamePage = dynamic<{ difficulty?: string; onExit?: () 
   { ssr: false, loading: LoadingFallback }
 );
 
+const CarbonylStructureGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/carbonyl_structure_dimerization/CarbonylStructureGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -737,14 +745,25 @@ export function ChallengeDispatcher({
       normTopic.includes("molecular-shape") ||
       normTopic.includes("molecular_shape"));
 
-  const isNucleophilicAddition =
-    normTopic === "45" ||
-    normTopic.includes("nucleophilic-addition") ||
-    normTopic.includes("nucleophilic_addition") ||
-    normTopic.includes("burgi-dunitz") ||
-    normTopic.includes("carbonyl-reactivity") ||
+  const isCarbonylStructureDimerization =
+    normTopic === "43" ||
+    normTopic.includes("dimer") ||
+    normTopic.includes("dimerization") ||
+    normTopic.includes("carbonyl-structure") ||
+    normTopic.includes("structure-dipole") ||
+    normTopic.includes("carboxylic-dimerization") ||
     ((normModule.includes("aldehydes") || normModule === "m11") &&
-      (normTopic === "45" || normTopic.includes("addition") || normTopic.includes("carbonyl")));
+      (normTopic === "43" || normTopic.includes("nomenclature") || normTopic.includes("dimer")));
+
+  const isNucleophilicAddition =
+    !isCarbonylStructureDimerization &&
+    (normTopic === "45" ||
+      normTopic.includes("nucleophilic-addition") ||
+      normTopic.includes("nucleophilic_addition") ||
+      normTopic.includes("burgi-dunitz") ||
+      normTopic.includes("carbonyl-reactivity") ||
+      ((normModule.includes("aldehydes") || normModule === "m11") &&
+        (normTopic === "45" || normTopic.includes("addition"))));
 
   let content: ReactNode = null;
 
@@ -788,7 +807,7 @@ export function ChallengeDispatcher({
     content = <RateLawHalfLifeGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isElectrolysis) {
     content = <ElectrolysisLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
-  } else   if (isGalvanicCell) {
+  } else if (isGalvanicCell) {
     content = <GalvanicCellLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isElectronIonFlow) {
     content = <ElectronIonFlowLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -844,6 +863,8 @@ export function ChallengeDispatcher({
     }
   } else if (isVsepr) {
     content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isCarbonylStructureDimerization) {
+    content = <CarbonylStructureGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isNucleophilicAddition) {
     content = <NucleophilicAdditionGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else {
@@ -862,27 +883,27 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isNucleophilicAddition && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
-          <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (onExit) {
-                  onExit();
-                } else {
-                  exitSimulation();
-                }
-              }}
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/95 hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200/90 hover:border-slate-300 backdrop-blur-md font-mono font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer"
-              title="Exit Simulation (Back to App)"
-            >
-              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span>EXIT</span>
-            </button>
-          </div>
-        )}
+          { showExitButton && !isCarbonylStructureDimerization && !isNucleophilicAddition && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+            <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (onExit) {
+                    onExit();
+                  } else {
+                    exitSimulation();
+                  }
+                }}
+                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/95 hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200/90 hover:border-slate-300 backdrop-blur-md font-mono font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer"
+                title="Exit Simulation (Back to App)"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span>EXIT</span>
+              </button>
+            </div>
+          )}
 
         {content}
       </div>

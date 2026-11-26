@@ -9,6 +9,7 @@ import {
   XCircle,
   RotateCcw,
   ChevronRight,
+  ChevronLeft,
   Play,
   Minus,
   Plus,
@@ -98,183 +99,210 @@ export default function NucleophilicAdditionGamePage({
   return (
     <div className="w-full h-full h-screen h-[100dvh] bg-[#F8FAFC] text-slate-800 relative overflow-hidden select-none font-sans flex flex-col rounded-3xl sm:rounded-[32px] border border-slate-200 shadow-2xl">
       {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 1: MISSION SCREEN (LANDSCAPE STUDIO DESIGN)
+          SCREEN 1: MISSION SCREEN (Matching Chemistry Template)
           ══════════════════════════════════════════════════════════════════ */}
       {screen === "mission" && (
-        <div className="w-full h-full flex flex-col justify-between p-6 sm:p-7 relative bg-white">
-          {/* Top Bar with EXIT */}
-          <div className="w-full flex items-center justify-start z-10 shrink-0">
-            <button
-              type="button"
-              onClick={handleExit}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer active:scale-95"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>EXIT</span>
-            </button>
-          </div>
-
-          {/* Center Content: Two Columns */}
-          <div className="w-full flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 items-center max-w-5xl mx-auto my-auto">
-            {/* Left Column: Briefing & Objectives */}
-            <div className="flex flex-col justify-center space-y-4">
-              <div className="space-y-1">
-                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">
-                  Chemistry • Module 11 • Carbonyl Reactivity
-                </span>
-                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  Nucleophilic Addition & Bürgi–Dunitz Lab
-                </h1>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  In planar carbonyls (&gt;C=O), nucleophiles cannot attack head-on. They must follow the{" "}
-                  <strong>Bürgi–Dunitz trajectory (θ ≈ 107°)</strong> to overlap with carbon's empty π* LUMO orbital
-                  and trigger smooth umbrella rehybridization from planar sp² to tetrahedral sp³.
-                </p>
-              </div>
-
-              {/* Stage Target Card */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-slate-700">CURRENT TARGET:</span>
-                  <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-mono text-[10px] font-bold">
-                    Stage {currentStage}/3
-                  </span>
-                </div>
-                <div className="text-xs sm:text-sm font-black text-slate-800">
-                  {stage.title}
-                </div>
-                <p className="text-[11px] text-slate-600">
-                  {stage.targetDescription}
-                </p>
-              </div>
-            </div>
-
-            {/* Right Column: Visual Target Preview & Next Button */}
-            <div className="flex flex-col items-center justify-center p-6 rounded-3xl bg-gradient-to-br from-sky-50 to-blue-50 border border-sky-100 shadow-sm text-center">
-              <div className="w-20 h-20 rounded-2xl bg-white shadow-md border border-sky-200 flex items-center justify-center mb-3">
-                <FlaskConical className="w-10 h-10 text-sky-600" />
-              </div>
-              <h3 className="font-black text-slate-800 text-sm mb-1">
-                Substrate: {stage.substrateName} ({stage.substrateFormula})
-              </h3>
-              <p className="text-slate-500 text-[11px] max-w-xs mb-4">
-                Nucleophile: <strong>{stage.nucleophileName}</strong> ({stage.nucleophileFormula}) ⟶ Product:{" "}
-                <strong>{stage.productName}</strong>
-              </p>
-              <button
-                type="button"
-                onClick={() => setScreen("instructions")}
-                className="w-full max-w-xs py-2.5 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-md shadow-sky-600/30 transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5"
-              >
-                <span>NEXT &gt;</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Bottom Footer Note */}
-          <div className="text-center text-[10px] text-slate-400 font-mono">
-            JEE Mains & Advanced Organic Chemistry Simulation Engine
-          </div>
-        </div>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 2: INSTRUCTIONS SCREEN (3 CARDS STUDIO LAYOUT)
-          ══════════════════════════════════════════════════════════════════ */}
-      {screen === "instructions" && (
-        <div className="w-full h-full flex flex-col justify-between p-6 sm:p-7 relative bg-white">
+        <div className="absolute inset-0 z-50 flex flex-col justify-between p-3 sm:p-4 bg-white/98 backdrop-blur-md overflow-y-auto">
           {/* Top Bar with EXIT */}
           <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
               type="button"
               onClick={handleExit}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              title="Exit Simulation"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
+              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
               <span>EXIT</span>
             </button>
-            <span className="font-mono text-xs font-bold text-slate-400 uppercase tracking-wider">
-              3-Step Mission Instructions
-            </span>
           </div>
 
-          {/* 3 Step Cards */}
-          <div className="w-full max-w-5xl mx-auto my-auto grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Card 1 */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-3">
-              <div>
-                <div className="w-7 h-7 rounded-full bg-sky-600 text-white font-mono font-black text-xs flex items-center justify-center mb-2">
-                  1
-                </div>
-                <h3 className="font-black text-slate-900 text-sm mb-1">
-                  Align Bürgi-Dunitz Angle
-                </h3>
-                <p className="text-[11px] text-slate-600 leading-snug">
-                  Adjust the attack angle slider to <strong>θ ≈ 107.0°</strong>. Attacking at 90° causes lone-pair
-                  repulsion from oxygen; attacking &gt; 120° misses the π* LUMO lobe.
-                </p>
-              </div>
-              <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-center font-mono text-[11px] font-bold text-sky-700">
-                Optimal: θ = 107.0°
-              </div>
+          {/* Mission Center Content */}
+          <div className="max-w-2xl mx-auto my-auto text-center space-y-3 sm:space-y-4 z-10 px-2 sm:px-4 py-2 animate-in fade-in duration-200">
+            <div className="text-[#2563EB] text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
+              MODULE 11 • TOPIC 45
             </div>
 
-            {/* Card 2 */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-3">
-              <div>
-                <div className="w-7 h-7 rounded-full bg-blue-600 text-white font-mono font-black text-xs flex items-center justify-center mb-2">
-                  2
-                </div>
-                <h3 className="font-black text-slate-900 text-sm mb-1">
-                  Calibrate Kinetic Energy (Ek)
-                </h3>
-                <p className="text-[11px] text-slate-600 leading-snug">
-                  Set collision energy to overcome the activation barrier (<strong>Ek ≥ Ea</strong>). Methyl groups in ketones
-                  create steric strain and +I charge dampening, demanding higher Ek.
-                </p>
-              </div>
-              <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-center font-mono text-[11px] font-bold text-blue-700">
-                Required: Ek ≥ {effectiveEa.toFixed(1)} kJ/mol
-              </div>
-            </div>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1E293B] tracking-tight leading-snug">
+              <span className="text-[#2563EB]">MISSION:</span> Master Bürgi–Dunitz Trajectory &amp; Carbonyl Reactivity
+            </h1>
 
-            {/* Card 3 */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-3">
-              <div>
-                <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-mono font-black text-xs flex items-center justify-center mb-2">
-                  3
-                </div>
-                <h3 className="font-black text-slate-900 text-sm mb-1">
-                  Collide & Rehybridize
-                </h3>
-                <p className="text-[11px] text-slate-600 leading-snug">
-                  Click <strong>COLLIDE & ATTACK</strong> to launch the nucleophile (:CN⁻). Watch the planar sp² carbon
-                  umbrella-invert into a 3D tetrahedral sp³ cyanohydrin!
-                </p>
-              </div>
-              <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-center font-mono text-[11px] font-bold text-emerald-700">
-                Rehybridization: sp² ⟶ sp³
-              </div>
+            <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+              Align incoming nucleophiles along the non-orthogonal Bürgi–Dunitz trajectory (θ ≈ 107.0°) to overlap with the carbon π* LUMO orbital, overcome steric and inductive barriers in aldehydes vs ketones, and observe umbrella rehybridization from planar sp² to tetrahedral sp³.
+            </p>
+
+            <div className="pt-2 sm:pt-4">
+              <button
+                type="button"
+                onClick={() => setScreen("instructions")}
+                className="px-6 sm:px-8 py-2 rounded-full font-extrabold text-xs sm:text-sm uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-2 mx-auto cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+              >
+                <span>NEXT</span>
+                <ChevronRight className="w-4 h-4 text-sky-200" />
+              </button>
             </div>
           </div>
 
-          {/* Bottom Bar: Back & Play buttons */}
-          <div className="w-full flex items-center justify-center gap-4 pt-2">
+          {/* Bottom Footer Note */}
+          <div className="w-full text-center text-[9.5px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0 pb-1">
+            Click NEXT to view challenge instructions
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════
+          SCREEN 2: INSTRUCTIONS SCREEN (3 CARDS LANDSCAPE GRID)
+          ══════════════════════════════════════════════════════════════════ */}
+      {screen === "instructions" && (
+        <div className="absolute inset-0 z-50 flex flex-col justify-between p-3 sm:p-4 bg-white/98 backdrop-blur-md overflow-y-auto">
+          {/* Top Bar with EXIT */}
+          <div className="w-full flex items-center justify-between z-10 shrink-0">
             <button
               type="button"
-              onClick={() => setScreen("mission")}
-              className="w-32 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider active:scale-95 transition cursor-pointer flex items-center justify-center"
+              onClick={handleExit}
+              className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+              title="Exit Simulation"
             >
-              &lt; BACK
+              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>EXIT</span>
             </button>
-            <button
-              type="button"
-              onClick={() => setScreen("lab")}
-              className="w-32 py-2.5 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-xs uppercase tracking-wider active:scale-95 transition cursor-pointer flex items-center justify-center gap-1 shadow-md shadow-sky-600/25"
-            >
-              <span>PLAY</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
+          </div>
+
+          {/* Instructions Center Container */}
+          <div className="max-w-4xl mx-auto my-auto flex flex-col justify-between z-10 px-2 sm:px-3 py-1 w-full animate-in fade-in duration-200 flex-1">
+            <div className="text-center pt-0.5 pb-2">
+              <h2 className="text-[#1E293B] text-sm sm:text-base md:text-lg font-black tracking-wide uppercase">
+                INSTRUCTIONS TO PLAY
+              </h2>
+            </div>
+
+            {/* 3 Step Cards Side-by-Side in Landscape Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 landscape:grid-cols-3 gap-2.5 sm:gap-3.5 w-full mx-auto my-auto items-stretch">
+              {/* Card 1: Bürgi-Dunitz Angle */}
+              <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      1
+                    </div>
+                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                      Align Bürgi-Dunitz Angle
+                    </h3>
+                  </div>
+                  <div className="mt-1">
+                    <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                      Optimal θ = 107.0°
+                    </span>
+                  </div>
+                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1">
+                    Adjust the attack angle slider to θ ≈ 107.0° to maximize constructive overlap with the π* LUMO lobe and avoid oxygen lone-pair repulsion.
+                  </p>
+                </div>
+
+                {/* Visual Diagram Box 1 */}
+                <div className="w-full h-20 sm:h-24 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex flex-col items-center justify-center p-1.5 mt-2 text-white">
+                  <div className="text-[10px] font-mono text-cyan-300 font-bold">
+                    θ = 107.0° ± 2.0°
+                  </div>
+                  <div className="text-[8.5px] text-emerald-400 font-mono mt-0.5">
+                    Maximum π* LUMO Overlap
+                  </div>
+                  <div className="text-[8px] text-slate-400 mt-0.5">
+                    90°: Repelled • &gt;120°: Missed
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2: Kinetic Energy & Hindrance */}
+              <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      2
+                    </div>
+                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                      Tune Kinetic Energy (Ek)
+                    </h3>
+                  </div>
+                  <div className="mt-1">
+                    <span className="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                      Steric &amp; +I Barriers
+                    </span>
+                  </div>
+                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1">
+                    Set collision energy (Ek ≥ Ea). Methyl groups in acetone create steric shielding and +I charge dampening, requiring higher energy or acid catalysis.
+                  </p>
+                </div>
+
+                {/* Visual Diagram Box 2 */}
+                <div className="w-full h-20 sm:h-24 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex flex-col items-center justify-center p-1.5 mt-2 text-white">
+                  <div className="text-[9.5px] font-mono text-amber-300 font-bold">
+                    HCHO: 40 kJ/mol (Fast)
+                  </div>
+                  <div className="text-[9.5px] font-mono text-rose-300 font-bold mt-0.5">
+                    Acetone: 78 kJ/mol (Hindered)
+                  </div>
+                  <div className="text-[8px] text-emerald-300 font-mono mt-0.5">
+                    + H⁺ Catalyst: Drops to 28 kJ/mol
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 3: Collide & Rehybridize */}
+              <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                      3
+                    </div>
+                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
+                      Collide &amp; Rehybridize
+                    </h3>
+                  </div>
+                  <div className="mt-1">
+                    <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
+                      sp² ⟶ sp³ Inversion
+                    </span>
+                  </div>
+                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1">
+                    Click FIRE NUCLEOPHILE (:CN⁻). Watch the planar 120° sp² carbonyl umbrella-invert in slow motion into a tetrahedral 109.5° sp³ cyanohydrin!
+                  </p>
+                </div>
+
+                {/* Visual Diagram Box 3 */}
+                <div className="w-full h-20 sm:h-24 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex flex-col items-center justify-center p-1.5 mt-2 text-white">
+                  <div className="text-[9.5px] font-mono text-emerald-400 font-bold">
+                    sp² (120°) ⟶ sp³ (109.5°)
+                  </div>
+                  <div className="text-[8px] text-sky-300 font-mono mt-0.5">
+                    Smooth Umbrella Pyramidalization
+                  </div>
+                  <div className="text-[8px] text-amber-300 font-bold mt-0.5">
+                    Forms Tetrahedral Cyanohydrin
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons: Back and Play */}
+            <div className="pt-2 pb-0.5 flex items-center justify-center gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => setScreen("mission")}
+                className="px-5 sm:px-6 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+              >
+                <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+                <span>BACK</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setScreen("lab")}
+                className="px-6 sm:px-8 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-lg shadow-sky-600/30 flex items-center gap-1.5 cursor-pointer transition-all transform hover:scale-105 active:scale-95"
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                <span>PLAY</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

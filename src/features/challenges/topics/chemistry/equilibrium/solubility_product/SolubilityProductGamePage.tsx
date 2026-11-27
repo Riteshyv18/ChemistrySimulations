@@ -26,6 +26,7 @@ import {
   AlertCircle,
   Check,
 } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 
 // ============================================================================
 // TYPES & 3D STRUCTURES (Ag⁺, Cl⁻, AgCl Crystal Lattice)
@@ -458,7 +459,7 @@ export function SolubilityProductGamePage({
     if (onExit) {
       onExit();
     } else {
-      window.history.back();
+      exitSimulation();
     }
   };
 

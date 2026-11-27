@@ -24,6 +24,7 @@ import {
   Gauge,
   ArrowRight,
 } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 
 // ============================================================================
 // TYPES & MOLECULAR / ION STRUCTURES
@@ -678,7 +679,7 @@ export function IonicEquilibriumPhGamePage({
 
   const handleExitClick = () => {
     if (onExit) onExit();
-    else window.history.back();
+    else exitSimulation();
   };
 
   const liquidHeight = Math.min(3.2, 1.4 + (volume / 250) * 1.8);

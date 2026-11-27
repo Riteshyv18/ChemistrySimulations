@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useMemo, useEffect, Suspense } from "react";
+import { exitSimulation } from "@/lib/mobileBridge";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -953,7 +954,7 @@ export function LeChatelierPrincipleGamePage({
 
   const handleExitClick = () => {
     if (onExit) onExit();
-    else window.history.back();
+    else exitSimulation();
   };
 
   return (

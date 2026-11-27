@@ -17,7 +17,7 @@ const MODULE_DESCRIPTIONS: Record<string, string> = {
   M8: "Extraction and refining of metals, metallurgy principles, roasting, calcination, and reduction processes.",
   M9: "Crystalline and amorphous solids, unit cell lattices, packing efficiency, coordination number, and crystal density.",
   M10: "Structure, nomenclature, physical properties, and characteristic reaction mechanisms of hydrocarbons.",
-  M11: "Carbonyl chemistry, nucleophilic additions, aldol and Cannizzaro reactions, and carboxylic acid derivatives.",
+  M11: "Carbonyl structure and dipole, qualitative tests, Bürgi–Dunitz nucleophilic addition, aldol & Cannizzaro, and carboxylic acidity.",
 };
 
 const THEMES = [

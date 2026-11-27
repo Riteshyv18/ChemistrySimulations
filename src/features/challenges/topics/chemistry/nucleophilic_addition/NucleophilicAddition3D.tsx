@@ -409,6 +409,13 @@ function CarbonylSubstrateMolecule({
           opacity={0.35}
           depthWrite={false}
         />
+        {!isModalOpen && (
+          <Html center className="pointer-events-none select-none">
+            <span className="font-mono font-black text-[11px] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+              C
+            </span>
+          </Html>
+        )}
       </mesh>
 
       {/* ── Carbonyl Oxygen & Smooth Double-to-Single Bond ── */}
@@ -425,6 +432,13 @@ function CarbonylSubstrateMolecule({
           roughness={0.25}
           metalness={0.1}
         />
+        {!isModalOpen && (
+          <Html center className="pointer-events-none select-none">
+            <span className="font-mono font-black text-[11px] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+              O
+            </span>
+          </Html>
+        )}
       </mesh>
 
       {/* Oxygen Delta Negative Label */}
@@ -466,6 +480,11 @@ function CarbonylSubstrateMolecule({
         <mesh position={r1Pos}>
           <sphereGeometry args={[0.18, 24, 24]} />
           <meshStandardMaterial color="#f1f5f9" roughness={0.3} />
+          {!isModalOpen && (
+            <Html center className="pointer-events-none select-none">
+              <span className="font-mono font-black text-[8.5px] text-slate-800">H</span>
+            </Html>
+          )}
         </mesh>
       ) : (
         <MethylGroup position={r1Pos} side="left" isModalOpen={isModalOpen} />
@@ -477,6 +496,11 @@ function CarbonylSubstrateMolecule({
         <mesh position={r2Pos}>
           <sphereGeometry args={[0.18, 24, 24]} />
           <meshStandardMaterial color="#f1f5f9" roughness={0.3} />
+          {!isModalOpen && (
+            <Html center className="pointer-events-none select-none">
+              <span className="font-mono font-black text-[8.5px] text-slate-800">H</span>
+            </Html>
+          )}
         </mesh>
       ) : (
         <MethylGroup position={r2Pos} side="right" isModalOpen={isModalOpen} />
@@ -589,12 +613,26 @@ function ProjectileNucleophile({
         <mesh position={[0, 0, 0]}>
           <sphereGeometry args={[0.22, 24, 24]} />
           <meshStandardMaterial color="#0284c7" emissive="#0284c7" emissiveIntensity={0.45} roughness={0.2} />
+          {!isModalOpen && (
+            <Html center className="pointer-events-none select-none">
+              <span className="font-mono font-black text-[9.5px] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                C
+              </span>
+            </Html>
+          )}
         </mesh>
 
         {/* Nitrogen atom of cyanide (trailing behind) */}
         <mesh position={[0, -0.34, 0]}>
           <sphereGeometry args={[0.20, 24, 24]} />
           <meshStandardMaterial color="#2563eb" roughness={0.25} />
+          {!isModalOpen && (
+            <Html center className="pointer-events-none select-none">
+              <span className="font-mono font-black text-[9.5px] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                N
+              </span>
+            </Html>
+          )}
         </mesh>
 
         {/* C≡N Triple Bond */}

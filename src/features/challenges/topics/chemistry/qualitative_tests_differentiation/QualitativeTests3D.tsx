@@ -560,24 +560,24 @@ function ElectricCoilHeatingBath({
       <group position={[0, -0.52, 0.46]}>
         {/* Sleek Dark Console Housing / Junction Box */}
         <mesh position={[0, 0, -0.02]}>
-          <boxGeometry args={[0.88, 0.12, 0.04]} />
+          <boxGeometry args={[1.1, 0.16, 0.04]} />
           <meshStandardMaterial color="#1E293B" roughness={0.4} metalness={0.5} />
         </mesh>
 
         {/* Cable Gland Ports on Left and Right Sides */}
-        <mesh position={[-0.43, 0, -0.01]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.024, 0.024, 0.04, 16]} />
+        <mesh position={[-0.54, 0, -0.01]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.028, 0.028, 0.04, 16]} />
           <meshStandardMaterial color="#475569" roughness={0.5} metalness={0.6} />
         </mesh>
-        <mesh position={[0.43, 0, -0.01]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.024, 0.024, 0.04, 16]} />
+        <mesh position={[0.54, 0, -0.01]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.028, 0.028, 0.04, 16]} />
           <meshStandardMaterial color="#475569" roughness={0.5} metalness={0.6} />
         </mesh>
 
         {/* Clean Minimalist Pill (Matching Topic 1 Style) */}
         {!isModalOpen && (
           <Html position={[0, 0, 0.03]} center className="select-none pointer-events-auto">
-            <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2 py-0.5 rounded-full border border-sky-300 shadow-md">
+            <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full border border-sky-300 shadow-md">
               {/* Minus Button */}
               <button
                 type="button"
@@ -586,15 +586,15 @@ function ElectricCoilHeatingBath({
                   onDecrement();
                 }}
                 disabled={temperature <= 25}
-                className="w-5 h-5 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-90 text-slate-700 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center font-bold text-xs transition-all cursor-pointer border border-slate-200"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-90 text-slate-700 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center font-bold text-sm transition-all cursor-pointer border border-slate-200"
                 title="Decrease (-5°C)"
               >
-                <Minus className="w-3 h-3 text-slate-600" />
+                <Minus className="w-4 h-4 text-slate-600" />
               </button>
 
-              {/* Center Number Block (Exact Topic 1 Style) */}
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-50 border border-sky-200">
-                <span className="font-mono font-black text-xs text-sky-800 whitespace-nowrap">
+              {/* Center Number Block */}
+              <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-sky-50 border border-sky-200">
+                <span className="font-mono font-black text-sm text-sky-800 whitespace-nowrap">
                   {Math.round(temperature)}°C
                 </span>
               </div>
@@ -607,10 +607,10 @@ function ElectricCoilHeatingBath({
                   onIncrement();
                 }}
                 disabled={temperature >= 100}
-                className="w-5 h-5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] active:scale-90 text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center font-bold text-xs transition-all cursor-pointer shadow-xs"
+                className="w-7 h-7 rounded-full bg-[#0284C7] hover:bg-[#0369A1] active:scale-90 text-white disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center font-bold text-sm transition-all cursor-pointer shadow-xs"
                 title="Increase (+5°C)"
               >
-                <Plus className="w-3 h-3 text-white" />
+                <Plus className="w-4 h-4 text-white" />
               </button>
             </div>
           </Html>
@@ -1079,7 +1079,7 @@ export default function QualitativeTests3D() {
   return (
     <div className="w-full h-full relative cursor-grab active:cursor-grabbing">
       <Canvas
-        camera={{ position: [0.15, 2.7, 6.2], fov: 44 }}
+        camera={{ position: [0.15, 2.2, 5.0], fov: 40 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       >
         <Suspense fallback={null}>

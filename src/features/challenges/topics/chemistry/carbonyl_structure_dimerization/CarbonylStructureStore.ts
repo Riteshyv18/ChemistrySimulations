@@ -56,9 +56,9 @@ export const CARBONYL_STAGES: Record<1 | 2 | 3, StageConfig> = {
     subtitle: "Centrosymmetric Dual Hydrogen-Bond Ring & van 't Hoff Anomaly",
     badge: "Cyclic H-Bond Dimerization",
     learningGoal:
-      "Align two acetic acid monomers into the centrosymmetric 8-membered cyclic dimer sweet spot (d ≈ 1.76 Å, 180° orientation), lock dual H-bonds (-60 kJ/mol), and observe dimer thermal breakdown.",
+      "Rotate Monomer 2 to 180° (head-to-tail), join the 8-membered cyclic dimer (i = 0.50), then heat ≥ 120°C to observe thermal dissociation into monomers (i = 1.00).",
     prompt:
-      "Rotate Monomer 2 to 180° (head-to-tail), translate distance to ~1.76 Å, and lock the dual O-H···O=C hydrogen bonds. Test temperature and solvent effects on the van 't Hoff factor (i).",
+      "Rotate Monomer 2 to 180° and click JOIN DIMER ✓ to lock the dual H-bonds. Then raise Heat ≥ 120°C to break the dimer back into monomers!",
     keyConcepts: [
       "Pair of Complementary H-bonds: C=O···H-O & O-H···O=C",
       "8-Membered Planar Centrosymmetric Cyclic Dimer Ring",
@@ -174,9 +174,12 @@ export interface CarbonylStructureState {
   // Stage 3: Carboxylic Dimerization
   monomer2Distance: number; // 1.2 to 5.0 Angstroms
   monomer2Rotation: number; // 0 to 360 degrees
-  temperature: number; // 273 to 450 Kelvin
+  temperature: number; // 25 to 150 °C
   solvent: "benzene" | "water";
   dimerLocked: boolean;
+  dimerJoining: boolean;
+  dimerDissociating: boolean;
+  dimerDissociated: boolean;
   bindingEnergy: number; // kJ/mol (up to -60)
   vanTHoffFactor: number; // 0.50 to 1.00
   dimerAttempts: number;
@@ -210,6 +213,9 @@ export interface CarbonylStructureState {
   setMonomer2Rotation: (rot: number) => void;
   setTemperature: (temp: number) => void;
   setSolvent: (solv: "benzene" | "water") => void;
+  triggerJoinDimer: () => void;
+  completeDimerJoin: () => void;
+  completeDimerDissociation: () => void;
   attemptDimerLock: () => boolean;
   unlockDimer: () => void;
   finishStage3Experiment: () => void;
@@ -244,9 +250,12 @@ export const useCarbonylStructureStore = create<CarbonylStructureState>((set, ge
   // Stage 3 defaults
   monomer2Distance: 3.5, // initial separated distance (Å)
   monomer2Rotation: 45, // initial misaligned orientation (deg)
-  temperature: 298, // 25°C
+  temperature: 25, // 25°C
   solvent: "benzene",
   dimerLocked: false,
+  dimerJoining: false,
+  dimerDissociating: false,
+  dimerDissociated: false,
   bindingEnergy: 0,
   vanTHoffFactor: 1.0,
   dimerAttempts: 0,
@@ -439,21 +448,56 @@ export const useCarbonylStructureStore = create<CarbonylStructureState>((set, ge
     }
   },
   setTemperature: (temp) => {
+    const { dimerLocked, dimerDissociating, dimerDissociated } = get();
     set({ temperature: temp });
-    // Thermal breakdown: Dimer dissociates at higher temperatures
-    // ΔG = ΔH - TΔS. At T > 393 K (120°C), dimer dissociates!
-    if (get().dimerLocked) {
-      if (temp > 393 || get().solvent === "water") {
-        const factor = Math.min(1.0, 0.5 + ((temp - 298) / (450 - 298)) * 0.5);
-        const energy = -60 * (1 - (factor - 0.5) * 2);
-        set({
-          vanTHoffFactor: Number(factor.toFixed(2)),
-          bindingEnergy: Number(energy.toFixed(1)),
-        });
+    // Thermal breakdown: Heating >= 120°C breaks the hydrogen-bonded dimer!
+    if (dimerLocked && !dimerDissociating && !dimerDissociated) {
+      if (temp >= 120) {
+        set({ dimerDissociating: true });
       } else {
         set({ vanTHoffFactor: 0.5, bindingEnergy: -60.0 });
       }
     }
+  },
+
+  triggerJoinDimer: () => {
+    const { monomer2Rotation, dimerLocked, dimerJoining } = get();
+    if (dimerLocked || dimerJoining) return;
+    if (Math.abs(monomer2Rotation - 180) > 15) return;
+    set({
+      dimerJoining: true,
+      monomer2Rotation: 180,
+      lastFailureReason: null,
+    });
+  },
+
+  completeDimerJoin: () => {
+    set({
+      dimerJoining: false,
+      dimerLocked: true,
+      monomer2Distance: 1.76,
+      monomer2Rotation: 180,
+      bindingEnergy: -60.0,
+      vanTHoffFactor: 0.5,
+      lastFailureReason: null,
+    });
+  },
+
+  completeDimerDissociation: () => {
+    set({
+      dimerDissociating: false,
+      dimerDissociated: true,
+      dimerLocked: false,
+      monomer2Distance: 3.5,
+      bindingEnergy: 0.0,
+      vanTHoffFactor: 1.0,
+      lastFailureReason: null,
+    });
+    setTimeout(() => {
+      if (get().stage === 3 && get().dimerDissociated) {
+        set({ showSuccessModal: true });
+      }
+    }, 1000);
   },
   setSolvent: (solv) => {
     set({ solvent: solv });
@@ -565,9 +609,12 @@ export const useCarbonylStructureStore = create<CarbonylStructureState>((set, ge
       set({
         monomer2Distance: 3.5,
         monomer2Rotation: 45,
-        temperature: 298,
+        temperature: 25,
         solvent: "benzene",
         dimerLocked: false,
+        dimerJoining: false,
+        dimerDissociating: false,
+        dimerDissociated: false,
         bindingEnergy: 0,
         vanTHoffFactor: 1.0,
         lastFailureReason: null,

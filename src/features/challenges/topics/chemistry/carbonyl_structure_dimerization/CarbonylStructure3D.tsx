@@ -457,19 +457,48 @@ function Stage2DipolePolarityScene({ modalActive = false }: { modalActive?: bool
 // Stage 3: Carboxylic Acid 8-Membered Cyclic Dimerization
 // ============================================================================
 function Stage3CarboxylicDimerScene({ modalActive = false }: { modalActive?: boolean }) {
-  const { monomer2Distance, monomer2Rotation, dimerLocked, temperature, solvent } = useCarbonylStructureStore();
+  const {
+    monomer2Distance,
+    monomer2Rotation,
+    dimerLocked,
+    dimerJoining,
+    dimerDissociating,
+    dimerDissociated,
+    temperature,
+    solvent,
+    setMonomer2Distance,
+    triggerJoinDimer,
+    completeDimerJoin,
+    completeDimerDissociation,
+  } = useCarbonylStructureStore();
 
   const monomer1Ref = useRef<THREE.Group>(null);
   const monomer2Ref = useRef<THREE.Group>(null);
 
-  // Compute thermal vibration jitter if temperature is high or in water
-  useFrame(({ clock }) => {
-    const isJittering = temperature > 393 || solvent === "water";
+  // Smoothly animate joining (3.5 -> 1.76) and thermal dissociation (1.76 -> 3.5) + thermal jitter
+  useFrame(({ clock }, delta) => {
+    if (dimerJoining) {
+      const next = THREE.MathUtils.lerp(monomer2Distance, 1.76, Math.min(1, delta * 5.0));
+      if (Math.abs(next - 1.76) <= 0.03) {
+        completeDimerJoin();
+      } else {
+        setMonomer2Distance(next);
+      }
+    } else if (dimerDissociating) {
+      const next = THREE.MathUtils.lerp(monomer2Distance, 3.5, Math.min(1, delta * 3.5));
+      if (Math.abs(next - 3.5) <= 0.04) {
+        completeDimerDissociation();
+      } else {
+        setMonomer2Distance(next);
+      }
+    }
+
+    const isJittering = temperature >= 120 || dimerDissociating || solvent === "water";
     if (isJittering) {
-      const t = clock.getElapsedTime() * 14;
-      const intensity = (temperature - 300) / 100;
-      const jitterX = Math.sin(t) * 0.04 * intensity;
-      const jitterY = Math.cos(t * 1.3) * 0.04 * intensity;
+      const t = clock.getElapsedTime() * 18;
+      const intensity = Math.max(0.6, (temperature - 50) / 80);
+      const jitterX = Math.sin(t) * 0.045 * intensity;
+      const jitterY = Math.cos(t * 1.3) * 0.045 * intensity;
 
       if (monomer1Ref.current) {
         monomer1Ref.current.position.y = -jitterY;
@@ -569,7 +598,7 @@ function Stage3CarboxylicDimerScene({ modalActive = false }: { modalActive?: boo
           />
 
           {/* Emerald 8-Membered Centrosymmetric Cyclic Ring Glow when Locked */}
-          {dimerLocked && (
+          {dimerLocked && !dimerDissociating && !dimerDissociated && (
             <mesh position={[0, 0, 0]}>
               <ringGeometry args={[0.65, 1.35, 8]} />
               <meshBasicMaterial color="#10b981" transparent opacity={0.2} side={THREE.DoubleSide} />
@@ -577,6 +606,23 @@ function Stage3CarboxylicDimerScene({ modalActive = false }: { modalActive?: boo
           )}
         </group>
       )}
+
+      {/* Interactive Center JOIN DIMER ✓ Button when aligned within ±15° */}
+      {Math.abs(monomer2Rotation - 180) <= 15 &&
+        !dimerLocked &&
+        !dimerJoining &&
+        !dimerDissociated &&
+        !modalActive && (
+          <Html position={[0, 0.15, 0]} center>
+            <button
+              type="button"
+              onClick={triggerJoinDimer}
+              className="px-4 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-extrabold tracking-wider shadow-lg shadow-emerald-600/30 border border-emerald-400 cursor-pointer transition-transform hover:scale-105 active:scale-95 whitespace-nowrap animate-bounce"
+            >
+              JOIN DIMER ✓
+            </button>
+          </Html>
+        )}
     </group>
   );
 }

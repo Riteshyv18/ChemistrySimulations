@@ -16,6 +16,8 @@ import {
   Zap,
   Minus,
   Plus,
+  RotateCw,
+  Flame,
 } from "lucide-react";
 import { exitSimulation } from "@/lib/mobileBridge";
 import {
@@ -176,14 +178,14 @@ const STAGE_EXPLANATIONS: Record<number, StageExplanationData> = {
       },
       {
         step: 3,
-        title: "Factors Dissociating the Dimer",
-        math: "ΔG° = ΔH° - TΔS°   (where ΔH° < 0, ΔS° < 0)",
+        title: "Why Heat Breaks the Dimer (Unlike Covalent Reactions)",
+        math: "Dimer (25°C, i = 0.50, M = 120)  —(Δ ≥ 120°C)→  2 Monomers (i = 1.00, M = 60)",
         explanation:
-          "Two factors dissociate the dimer back to monomers (i → 1.00): (1) Thermal heating past 393 K (120°C) where the -TΔS entropy penalty overwhelms ΔH; and (2) Polar protic solvents like water, which form competing hydration bonds around the molecules.",
+          "Unlike Aldol or Esterification where heat drives covalent bond formation, hydrogen bonds are weak physical forces (ΔH ≈ -60 kJ/mol). Raising temperature to ≥ 120°C supplies enough kinetic energy to snap the dual H-bonds, breaking the dimer back into individual monomers!",
       },
     ],
     conclusion:
-      "Key Takeaway: In non-polar media, acetic acid forms an 8-membered cyclic dimer held by dual hydrogen bonds (-60 kJ/mol). This halves the effective particle count (i = 0.50), doubling the apparent molar mass. Heating or adding water breaks the dimer back into individual monomers.",
+      "Key Takeaway: Acetic acid forms a cyclic dimer spontaneously at room temperature (25°C, i = 0.50, apparent molar mass = 120 g/mol). Heating (≥ 120°C) breaks the weak hydrogen bonds, restoring individual monomers (i = 1.00, molar mass = 60 g/mol).",
   },
 };
 
@@ -231,18 +233,15 @@ export default function CarbonylStructureGamePage({
     setStage2SelectedOption,
     submitStage2Answer,
     // Stage 3
-    monomer2Distance,
     monomer2Rotation,
     temperature,
-    solvent,
     dimerLocked,
+    dimerJoining,
+    dimerDissociating,
+    dimerDissociated,
     vanTHoffFactor,
-    setMonomer2Distance,
     setMonomer2Rotation,
     setTemperature,
-    setSolvent,
-    attemptDimerLock,
-    finishStage3Experiment,
     resetCurrentStage,
   } = useCarbonylStructureStore();
 
@@ -531,36 +530,17 @@ export default function CarbonylStructureGamePage({
             </div>
           )}
 
-          {/* ── BOTTOM DOCK CONTROLS (Stage-Adaptive Floating Capsule) ── */}
+          {/* ── MINIMAL FLOATING BOTTOM CONTROL DOCK ── */}
           {!showExplanationModal && !showSuccessModal && (
-            <div
-              className={`absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 z-30 w-[95%] pointer-events-auto transition-all duration-300 ${stage === 1
-                ? "max-w-xl"
-                : stage === 2
-                  ? "max-w-2xl"
-                  : "max-w-3xl lg:max-w-4xl"
-                }`}
-            >
-              <div className="p-2.5 sm:p-3 rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white/95 backdrop-blur-2xl shadow-xl flex flex-col gap-2">
-              {/* Stage 1 Controls: Clean & Minimalist with Stepper Buttons */}
+            <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-30 flex items-center justify-center pointer-events-none">
+              <div className="pointer-events-auto py-2 px-3.5 sm:px-5 rounded-full bg-white/95 backdrop-blur-2xl border border-slate-200/90 shadow-lg flex flex-wrap sm:flex-nowrap items-center justify-center gap-2.5 sm:gap-3">
+              {/* Stage 1 Controls: Minimalist Bond Angle Slider */}
               {stage === 1 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-1.5 py-0.5">
-                  <div className="flex items-center gap-2 w-full sm:w-auto flex-1">
-                    <span className="text-xs text-slate-600 font-mono font-bold whitespace-nowrap">
-                      Bond Angle:
+                <>
+                  <div className="flex items-center gap-2 min-w-[210px] sm:min-w-[240px]">
+                    <span className="font-mono text-[10px] font-bold text-slate-600 uppercase whitespace-nowrap">
+                      Bond Angle
                     </span>
-
-                    {/* Step - Button */}
-                    <button
-                      type="button"
-                      disabled={stage1MeasuredAngle <= 110}
-                      onClick={() => setStage1MeasuredAngle(Math.max(110, Number((stage1MeasuredAngle - 0.5).toFixed(1))))}
-                      className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 flex items-center justify-center font-bold transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer shrink-0"
-                      title="Decrease by 0.5°"
-                    >
-                      <Minus className="w-3.5 h-3.5" />
-                    </button>
-
                     <input
                       type="range"
                       min={110}
@@ -568,21 +548,9 @@ export default function CarbonylStructureGamePage({
                       step={0.5}
                       value={stage1MeasuredAngle}
                       onChange={(e) => setStage1MeasuredAngle(parseFloat(e.target.value))}
-                      className="flex-1 accent-sky-600 cursor-pointer h-2 bg-slate-200 rounded-lg min-w-0"
+                      className="flex-1 accent-sky-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg"
                     />
-
-                    {/* Step + Button */}
-                    <button
-                      type="button"
-                      disabled={stage1MeasuredAngle >= 130}
-                      onClick={() => setStage1MeasuredAngle(Math.min(130, Number((stage1MeasuredAngle + 0.5).toFixed(1))))}
-                      className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 flex items-center justify-center font-bold transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer shrink-0"
-                      title="Increase by 0.5°"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
-
-                    <span className="text-sm font-mono font-black text-sky-700 w-14 text-right shrink-0">
+                    <span className="font-mono text-xs font-bold text-sky-700 w-12 text-right shrink-0">
                       {stage1MeasuredAngle.toFixed(1)}°
                     </span>
                   </div>
@@ -590,274 +558,110 @@ export default function CarbonylStructureGamePage({
                   <button
                     type="button"
                     onClick={verifyStage1Planarity}
-                    className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-black text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer shrink-0 whitespace-nowrap"
+                    className="px-4 py-1.5 rounded-full font-mono text-xs font-bold bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm transition active:scale-95 cursor-pointer whitespace-nowrap"
                   >
                     VERIFY PLANARITY
                   </button>
-                </div>
+                </>
               )}
 
-              {/* Stage 2 Controls: Ultra-Minimalist Polarity Classification */}
+              {/* Stage 2 Controls: 3 Minimalist Pills */}
               {stage === 2 && (
-                <div className="flex flex-col gap-2 px-1">
-                  {/* Subtle 1-line Feedback Banner */}
-                  {stage2Feedback && (
-                    <div
-                      className={`w-full py-1.5 px-3 rounded-xl border flex items-center gap-2 text-xs font-bold animate-in fade-in duration-150 ${stage2Feedback.type === "success"
-                        ? "bg-emerald-50 border-emerald-300 text-emerald-800"
-                        : "bg-amber-50 border-amber-300 text-amber-800"
+                <>
+                  <span className="font-mono text-[10px] font-bold text-slate-500 uppercase whitespace-nowrap hidden sm:inline">
+                    Polarity:
+                  </span>
+
+                  {STAGE_2_OPTIONS.map((opt) => {
+                    const isSel = stage2SelectedOption === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        disabled={stage2SlideState !== "idle"}
+                        onClick={() => {
+                          setStage2SelectedOption(opt.id);
+                          // Direct submission on click for fast fluid flow
+                          setTimeout(() => submitStage2Answer(), 50);
+                        }}
+                        className={`px-3.5 py-1.5 rounded-full font-mono text-xs font-bold transition active:scale-95 cursor-pointer ${
+                          isSel
+                            ? "bg-sky-600 text-white shadow-sm"
+                            : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80"
                         }`}
-                    >
-                      {stage2Feedback.type === "success" ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      ) : (
-                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                      )}
-                      <span className="flex-1 leading-tight">{stage2Feedback.message}</span>
-                    </div>
-                  )}
-
-                  {/* Clean Single Row: Prompt + 3 Minimalist Pills + Submit Button */}
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5 w-full sm:w-auto flex-1">
-                      <span className="text-xs font-mono font-bold text-slate-500 whitespace-nowrap hidden md:inline">
-                        Polarity:
-                      </span>
-
-                      {/* 3 Sleek Pill Option Buttons */}
-                      <div className="grid grid-cols-3 gap-2 w-full flex-1">
-                        {STAGE_2_OPTIONS.map((opt) => {
-                          const isSel = stage2SelectedOption === opt.id;
-                          return (
-                            <button
-                              key={opt.id}
-                              type="button"
-                              onClick={() => setStage2SelectedOption(opt.id)}
-                              className={`py-1.5 px-3 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center active:scale-95 ${isSel
-                                ? "bg-sky-600 border-sky-600 text-white shadow-xs scale-[1.02]"
-                                : "bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700"
-                                }`}
-                            >
-                              <span className="text-xs font-black tracking-wide leading-tight">
-                                {opt.label}
-                              </span>
-                              <span
-                                className={`text-[10px] font-mono leading-tight mt-0.5 ${isSel ? "text-sky-100" : "text-slate-400"
-                                  }`}
-                              >
-                                {opt.sublabel}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <button
-                      type="button"
-                      disabled={stage2SlideState !== "idle" || !stage2SelectedOption}
-                      onClick={submitStage2Answer}
-                      className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-black text-xs uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer shrink-0 disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap"
-                    >
-                      SUBMIT ANSWER →
-                    </button>
-                  </div>
-                </div>
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </>
               )}
 
-              {/* Stage 3 Controls: Guided 2-Phase Carboxylic Dimerization */}
+              {/* Stage 3 Controls: Rotate -> Join -> Heat Breakdown */}
               {stage === 3 && (
-                <div className="flex flex-col gap-1.5 px-1">
-                  {!dimerLocked ? (
-                    /* ── PHASE 1: Assembling the Dimer ── */
-                    <>
-                      <div className="hidden sm:flex items-center justify-between px-0.5 text-[11px] font-mono">
-                        <span className="font-bold text-slate-700 flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          Assemble Head-to-Tail Cyclic Dimer
-                        </span>
-                        <span className="text-slate-400">
-                          Target: 180° orientation · ~1.76 Å
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-                        <div className="flex flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto flex-1">
-                          {/* Rotation Stepper Slider */}
-                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                            <span className="text-xs text-slate-600 font-mono font-bold whitespace-nowrap">
-                              Rotation:
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => setMonomer2Rotation((monomer2Rotation - 15 + 360) % 360)}
-                              className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 flex items-center justify-center font-bold transition-all active:scale-95 cursor-pointer shrink-0"
-                              title="Rotate -15°"
-                            >
-                              <Minus className="w-3 h-3" />
-                            </button>
-                            <input
-                              type="range"
-                              min={0}
-                              max={360}
-                              step={5}
-                              value={monomer2Rotation}
-                              onChange={(e) => setMonomer2Rotation(parseInt(e.target.value))}
-                              className="flex-1 accent-emerald-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg min-w-[50px]"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setMonomer2Rotation((monomer2Rotation + 15) % 360)}
-                              className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 flex items-center justify-center font-bold transition-all active:scale-95 cursor-pointer shrink-0"
-                              title="Rotate +15°"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </button>
-                            <span className="text-xs font-mono font-black text-emerald-700 w-10 text-right shrink-0">
-                              {monomer2Rotation}°
-                            </span>
-                          </div>
-
-                          {/* Distance Stepper Slider */}
-                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                            <span className="text-xs text-slate-600 font-mono font-bold whitespace-nowrap">
-                              Distance:
-                            </span>
-                            <button
-                              type="button"
-                              disabled={monomer2Distance <= 1.2}
-                              onClick={() => setMonomer2Distance(Math.max(1.2, Number((monomer2Distance - 0.1).toFixed(2))))}
-                              className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 flex items-center justify-center font-bold transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer shrink-0"
-                              title="Move closer"
-                            >
-                              <Minus className="w-3 h-3" />
-                            </button>
-                            <input
-                              type="range"
-                              min={1.2}
-                              max={3.8}
-                              step={0.05}
-                              value={monomer2Distance}
-                              onChange={(e) => setMonomer2Distance(parseFloat(e.target.value))}
-                              className="flex-1 accent-sky-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg min-w-[50px]"
-                            />
-                            <button
-                              type="button"
-                              disabled={monomer2Distance >= 3.8}
-                              onClick={() => setMonomer2Distance(Math.min(3.8, Number((monomer2Distance + 0.1).toFixed(2))))}
-                              className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 flex items-center justify-center font-bold transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer shrink-0"
-                              title="Move farther"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </button>
-                            <span className="text-xs font-mono font-black text-sky-700 w-12 text-right shrink-0">
-                              {monomer2Distance.toFixed(2)}Å
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Lock Action Button */}
-                        <button
-                          type="button"
-                          onClick={attemptDimerLock}
-                          className="w-full sm:w-auto px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 whitespace-nowrap"
-                        >
-                          LOCK
-                        </button>
-                      </div>
-                    </>
+                <>
+                  {!dimerLocked && !dimerDissociating && !dimerDissociated ? (
+                    /* ── PHASE 1: Rotate Slider Only ── */
+                    <div className="flex items-center gap-2.5 min-w-[230px] sm:min-w-[260px]">
+                      <RotateCw
+                        className={`w-4 h-4 shrink-0 ${
+                          Math.abs(monomer2Rotation - 180) <= 15 ? "text-emerald-600" : "text-sky-600"
+                        }`}
+                      />
+                      <span className="font-mono text-[10px] font-bold text-slate-600 uppercase whitespace-nowrap">
+                        Rotate
+                      </span>
+                      <input
+                        type="range"
+                        min={0}
+                        max={360}
+                        step={5}
+                        disabled={dimerJoining}
+                        value={monomer2Rotation}
+                        onChange={(e) => setMonomer2Rotation(parseInt(e.target.value, 10))}
+                        className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 disabled:opacity-60"
+                      />
+                      <span
+                        className={`font-mono text-xs font-bold w-14 text-right ${
+                          Math.abs(monomer2Rotation - 180) <= 15
+                            ? "text-emerald-600"
+                            : "text-slate-700"
+                        }`}
+                      >
+                        {dimerJoining ? "Joining..." : `${monomer2Rotation}°`}
+                      </span>
+                    </div>
                   ) : (
-                    /* ── PHASE 2: Testing Thermal Breakdown & Solvent Effects ── */
-                    <>
-                      <div className="w-full py-1 px-2.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-900 text-[11px] font-bold flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span>8-Membered Cyclic Dimer Locked! (-60 kJ/mol, i = {vanTHoffFactor.toFixed(2)})</span>
-                        </div>
-                        <span className="text-[10px] font-mono text-emerald-700 hidden md:inline">
-                          Heating &gt; 393 K (120°C) or adding water breaks dimer (i → 1.0)
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-                        <div className="flex flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto flex-1">
-                          {/* Temperature Stepper */}
-                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                            <Thermometer className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                            <span className="text-xs text-slate-600 font-mono font-bold whitespace-nowrap">
-                              Temp:
-                            </span>
-                            <button
-                              type="button"
-                              disabled={temperature <= 273}
-                              onClick={() => setTemperature(Math.max(273, temperature - 10))}
-                              className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 flex items-center justify-center font-bold transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer shrink-0"
-                            >
-                              <Minus className="w-3 h-3" />
-                            </button>
-                            <input
-                              type="range"
-                              min={273}
-                              max={450}
-                              step={5}
-                              value={temperature}
-                              onChange={(e) => setTemperature(parseInt(e.target.value))}
-                              className="flex-1 accent-rose-500 cursor-pointer h-1.5 bg-slate-200 rounded-lg min-w-[50px]"
-                            />
-                            <button
-                              type="button"
-                              disabled={temperature >= 450}
-                              onClick={() => setTemperature(Math.min(450, temperature + 10))}
-                              className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 flex items-center justify-center font-bold transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer shrink-0"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </button>
-                            <span className="text-xs font-mono font-black text-rose-600 w-12 text-right shrink-0">
-                              {temperature} K
-                            </span>
-                          </div>
-
-                          {/* Solvent Toggle */}
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-xs text-slate-600 font-mono font-bold whitespace-nowrap">
-                              Solvent:
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => setSolvent(solvent === "benzene" ? "water" : "benzene")}
-                              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold border transition-all cursor-pointer ${solvent === "benzene"
-                                ? "bg-emerald-50 text-emerald-800 border-emerald-300 shadow-xs"
-                                : "bg-sky-50 text-sky-800 border-sky-300 shadow-xs"
-                                }`}
-                            >
-                              {solvent === "benzene" ? "Benzene (Non-Polar)" : "Water (Protic)"}
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Action buttons */}
-                        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
-                          <button
-                            type="button"
-                            onClick={resetCurrentStage}
-                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-all cursor-pointer"
-                            title="Reset Dimer"
-                          >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={finishStage3Experiment}
-                            className="flex-1 sm:flex-none px-5 py-2 rounded-xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer whitespace-nowrap"
-                          >
-                            FINISH EXPERIMENT →
-                          </button>
-                        </div>
-                      </div>
-                    </>
+                    /* ── PHASE 2: Heat Slider Replaces Rotate Once Connected ── */
+                    <div className="flex items-center gap-2.5 min-w-[230px] sm:min-w-[260px] animate-in fade-in duration-200">
+                      <Flame
+                        className={`w-4 h-4 shrink-0 ${
+                          temperature >= 120 ? "text-rose-500" : "text-slate-500"
+                        }`}
+                      />
+                      <span className="font-mono text-[10px] font-bold text-slate-600 uppercase whitespace-nowrap">
+                        Heat (Δ)
+                      </span>
+                      <input
+                        type="range"
+                        min={25}
+                        max={150}
+                        step={5}
+                        disabled={dimerDissociating || dimerDissociated}
+                        value={temperature}
+                        onChange={(e) => setTemperature(parseInt(e.target.value, 10))}
+                        className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                      />
+                      <span
+                        className={`font-mono text-xs font-bold w-12 text-right ${
+                          temperature >= 120 ? "text-rose-600" : "text-slate-700"
+                        }`}
+                      >
+                        {temperature}°C
+                      </span>
+                    </div>
                   )}
-                </div>
+                </>
               )}
             </div>
           </div>
@@ -985,7 +789,7 @@ export default function CarbonylStructureGamePage({
               {stage === 2 &&
                 "All 3 molecules verified! Polar carbonyls possess high permanent dipoles (μ = 2.88 D) which align with the electric field, whereas non-polar hydrocarbons do not."}
               {stage === 3 &&
-                "Dual complementary hydrogen bonds locked into the centrosymmetric 8-membered cyclic ring (ΔH = -60 kJ/mol, i = 0.50)."}
+                "Thermal dissociation verified! At 25°C, Acetic Acid forms an 8-membered cyclic dimer (i = 0.50, M = 120 g/mol). Heating ≥ 120°C breaks the dual H-bonds back into monomers (i = 1.00, M = 60 g/mol)."}
             </p>
 
             <div className="flex items-center gap-2">

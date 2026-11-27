@@ -635,13 +635,27 @@ export default function UnitCellDensityGamePage({
                 <span>REPLAY</span>
               </button>
 
-              <button
-                type="button"
-                onClick={handleNextLevel}
-                className="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-mono font-bold text-[11px] uppercase tracking-wider shadow-md shadow-blue-600/20 transition-all cursor-pointer active:scale-95"
-              >
-                {levelIndex + 1 < DENSITY_LEVELS.length ? "NEXT LEVEL →" : "COMPLETE →"}
-              </button>
+              {levelIndex + 1 < DENSITY_LEVELS.length ? (
+                <button
+                  type="button"
+                  onClick={handleNextLevel}
+                  className="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-mono font-bold text-[11px] uppercase tracking-wider shadow-md shadow-blue-600/20 transition-all cursor-pointer active:scale-95"
+                >
+                  NEXT LEVEL &rarr;
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    setShowExplanation(true);
+                  }}
+                  className="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-mono font-bold text-[11px] uppercase tracking-wider shadow-md shadow-blue-600/20 transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>EXPLANATION</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

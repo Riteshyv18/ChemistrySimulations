@@ -358,6 +358,14 @@ const CrystalPackingGamePage = dynamic<{ difficulty?: string; onExit?: () => voi
   { ssr: false, loading: LoadingFallback }
 );
 
+const UnitCellDensityGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/solid_state/density_of_unit_cell/UnitCellDensityGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 const OreConcentrationGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
@@ -563,6 +571,17 @@ export function ChallengeDispatcher({
     normTopic.includes("refining") ||
     ((normModule.includes("metallurgy") || normModule === "m8") &&
       (normTopic === "4" || normTopic.includes("refin")));
+
+  const isUnitCellDensity =
+    normTopic === "38" ||
+    normTopic === "density-of-unit-cell" ||
+    normTopic === "density_of_unit_cell" ||
+    normTopic === "density-of-a-unit-cell" ||
+    normTopic === "unit-cell-density" ||
+    normTopic === "crystal-density" ||
+    normTopic.includes("density") ||
+    ((normModule.includes("solid-state") || normModule.includes("solid_state") || normModule === "m9") &&
+      normTopic === "4");
 
   const isCrystalPacking =
     normTopic === "37" ||
@@ -781,7 +800,9 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isCrystalPacking) {
+  if (isUnitCellDensity) {
+    content = <UnitCellDensityGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isCrystalPacking) {
     content = <CrystalPackingGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isUnitCellBuilder) {
     content = <UnitCellBuilderGamePage difficulty={normDifficulty} onExit={onExit} />;

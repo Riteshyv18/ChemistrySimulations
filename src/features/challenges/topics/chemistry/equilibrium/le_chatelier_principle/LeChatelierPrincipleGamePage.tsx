@@ -12,6 +12,8 @@ import * as THREE from "three";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   Play,
   RotateCcw,
   Sparkles,
@@ -71,6 +73,40 @@ const matNNBond = new THREE.MeshStandardMaterial({
   roughness: 0.25,
 });
 
+// Atom label that always faces the camera and sits right on the atom's front surface
+function AtomLabel({
+  position,
+  label,
+  radius,
+}: {
+  position: [number, number, number];
+  label: "N" | "O";
+  radius: number;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  useFrame(({ camera }) => {
+    if (groupRef.current) {
+      groupRef.current.lookAt(camera.position);
+    }
+  });
+  return (
+    <group ref={groupRef} position={position}>
+      <Text
+        position={[0, 0, radius + 0.02]}
+        fontSize={radius > 0.23 ? 0.19 : 0.16}
+        color="#FFFFFF"
+        fontWeight="bold"
+        outlineWidth={0.022}
+        outlineColor="#0F172A"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {label}
+      </Text>
+    </group>
+  );
+}
+
 // NO2: Bent geometry (~134 degrees) with central Nitrogen and 2 Oxygens
 function MoleculeNO2() {
   const bondDist = 0.46;
@@ -80,9 +116,10 @@ function MoleculeNO2() {
   const o2Y = -bondDist * Math.cos(1.17);
 
   return (
-    <group>
+    <group scale={1.32}>
       {/* Central Nitrogen (Blue) */}
       <mesh geometry={sphereGeoNitrogen} material={matNitrogen} position={[0, 0, 0]} />
+      <AtomLabel position={[0, 0, 0]} label="N" radius={0.26} />
 
       {/* Bond 1 */}
       <mesh
@@ -93,6 +130,7 @@ function MoleculeNO2() {
       />
       {/* Oxygen 1 (Red) */}
       <mesh geometry={sphereGeoOxygen} material={matOxygen} position={[o1X, o1Y, 0]} />
+      <AtomLabel position={[o1X, o1Y, 0]} label="O" radius={0.21} />
 
       {/* Bond 2 */}
       <mesh
@@ -103,6 +141,7 @@ function MoleculeNO2() {
       />
       {/* Oxygen 2 (Red) */}
       <mesh geometry={sphereGeoOxygen} material={matOxygen} position={[o2X, o2Y, 0]} />
+      <AtomLabel position={[o2X, o2Y, 0]} label="O" radius={0.21} />
     </group>
   );
 }
@@ -114,7 +153,7 @@ function MoleculeN2O4() {
   const oAngle = Math.PI / 3;
 
   return (
-    <group>
+    <group scale={1.32}>
       {/* Central N-N Bond */}
       <mesh
         geometry={cylGeoNNBond}
@@ -124,6 +163,7 @@ function MoleculeN2O4() {
 
       {/* Nitrogen 1 (Left) */}
       <mesh geometry={sphereGeoNitrogen} material={matNitrogen} position={[-nnDist / 2, 0, 0]} />
+      <AtomLabel position={[-nnDist / 2, 0, 0]} label="N" radius={0.26} />
       {/* Oxygen 1A (Top Left) */}
       <mesh
         geometry={cylGeoBond}
@@ -139,6 +179,11 @@ function MoleculeN2O4() {
         geometry={sphereGeoOxygen}
         material={matOxygen}
         position={[-nnDist / 2 - noDist * Math.cos(oAngle), noDist * Math.sin(oAngle), 0]}
+      />
+      <AtomLabel
+        position={[-nnDist / 2 - noDist * Math.cos(oAngle), noDist * Math.sin(oAngle), 0]}
+        label="O"
+        radius={0.21}
       />
       {/* Oxygen 1B (Bottom Left) */}
       <mesh
@@ -156,9 +201,15 @@ function MoleculeN2O4() {
         material={matOxygen}
         position={[-nnDist / 2 - noDist * Math.cos(oAngle), -noDist * Math.sin(oAngle), 0]}
       />
+      <AtomLabel
+        position={[-nnDist / 2 - noDist * Math.cos(oAngle), -noDist * Math.sin(oAngle), 0]}
+        label="O"
+        radius={0.21}
+      />
 
       {/* Nitrogen 2 (Right) */}
       <mesh geometry={sphereGeoNitrogen} material={matNitrogen} position={[nnDist / 2, 0, 0]} />
+      <AtomLabel position={[nnDist / 2, 0, 0]} label="N" radius={0.26} />
       {/* Oxygen 2A (Top Right) */}
       <mesh
         geometry={cylGeoBond}
@@ -174,6 +225,11 @@ function MoleculeN2O4() {
         geometry={sphereGeoOxygen}
         material={matOxygen}
         position={[nnDist / 2 + noDist * Math.cos(oAngle), noDist * Math.sin(oAngle), 0]}
+      />
+      <AtomLabel
+        position={[nnDist / 2 + noDist * Math.cos(oAngle), noDist * Math.sin(oAngle), 0]}
+        label="O"
+        radius={0.21}
       />
       {/* Oxygen 2B (Bottom Right) */}
       <mesh
@@ -191,6 +247,11 @@ function MoleculeN2O4() {
         material={matOxygen}
         position={[nnDist / 2 + noDist * Math.cos(oAngle), -noDist * Math.sin(oAngle), 0]}
       />
+      <AtomLabel
+        position={[nnDist / 2 + noDist * Math.cos(oAngle), -noDist * Math.sin(oAngle), 0]}
+        label="O"
+        radius={0.21}
+      />
     </group>
   );
 }
@@ -206,8 +267,8 @@ interface ReactorVesselProps {
 }
 
 function ReactorVessel({ pistonY, brownIntensity, temperature }: ReactorVesselProps) {
-  // Rectangular chamber dimensions (Expanded horizontally)
-  const chamberWidth = 5.2; // X span: [-2.6, 2.6]
+  // Rectangular chamber dimensions (Expanded horizontally to span screen)
+  const chamberWidth = 8.4; // X span: [-4.2, 4.2]
   const chamberDepth = 2.4; // Z span: [-1.2, 1.2]
   const chamberBottom = -2.0;
   const currentChamberHeight = pistonY - chamberBottom;
@@ -289,14 +350,14 @@ function ReactorVessel({ pistonY, brownIntensity, temperature }: ReactorVesselPr
           <boxGeometry args={[chamberWidth - 0.02, 0.05, chamberDepth - 0.02]} />
           <meshStandardMaterial color="#0284C7" roughness={0.4} metalness={0.3} />
         </mesh>
-        {/* Piston Vertical Shaft */}
-        <mesh position={[0, 1.3, 0]}>
-          <cylinderGeometry args={[0.22, 0.22, 2.2, 20]} />
+        {/* Piston Vertical Shaft (Short & compact so it never covers Target pill) */}
+        <mesh position={[0, 0.55, 0]}>
+          <cylinderGeometry args={[0.2, 0.2, 0.75, 20]} />
           <meshStandardMaterial color="#94A3B8" roughness={0.2} metalness={0.9} />
         </mesh>
         {/* Top Handle Disc */}
-        <mesh position={[0, 2.4, 0]}>
-          <boxGeometry args={[1.3, 0.12, 0.5]} />
+        <mesh position={[0, 0.95, 0]}>
+          <boxGeometry args={[1.1, 0.12, 0.45]} />
           <meshStandardMaterial color="#0F172A" roughness={0.3} metalness={0.7} />
         </mesh>
       </group>
@@ -344,20 +405,20 @@ interface MolecularFieldProps {
 
 function MolecularField({ molecules, pistonY, temperature }: MolecularFieldProps) {
   // Rectangular inner boundaries accounting for enlarged molecule collision radius (~0.65)
-  // chamberWidth is 5.2 ([-2.6, 2.6]) -> halfWidth safe margin = 1.95
+  // chamberWidth is 8.4 ([-4.2, 4.2]) -> halfWidth safe margin = 3.55
   // chamberDepth is 2.4 ([-1.2, 1.2]) -> halfDepth safe margin = 0.65
   // chamberBottom is -2.0 -> bottom safe margin = -1.35
-  const halfWidth = 1.95;
-  const halfDepth = 0.65;
-  const chamberBottom = -1.35;
+  const halfWidth = 3.2;
+  const halfDepth = 0.35;
+  const chamberBottom = -1.1;
   const itemRefs = useRef<Map<string, THREE.Group>>(new Map());
 
   // Animate molecules directly via object3D refs in useFrame (bypasses React reconciliation)
   useFrame((_, delta) => {
     const thermalSpeed = Math.sqrt(temperature / 298.15);
     const dt = Math.min(delta, 0.033);
-    // Piston bottom is at pistonY; safe collision buffer below piston is 0.65
-    const topBound = pistonY - 0.65;
+    // Piston bottom is at pistonY; safe collision buffer below piston for 1.32x molecules
+    const topBound = Math.max(chamberBottom + 0.15, pistonY - 0.9);
 
     for (let i = 0; i < molecules.length; i++) {
       const m = molecules[i];
@@ -456,8 +517,13 @@ export function LeChatelierPrincipleGamePage({
   const [pressure, setPressure] = useState<number>(1.0);
   const [pressureSliderVal, setPressureSliderVal] = useState<number>(1.0);
 
-  // Bottom dock active tab: "temperature" | "pressure" | "concentration"
-  const [activeTab, setActiveTab] = useState<"temperature" | "pressure" | "concentration">("temperature");
+  // Level State: Level 1 (N2O4 -> NO2) | Level 2 (NO2 -> N2O4)
+  const [level, setLevel] = useState<1 | 2>(1);
+  const [hasApplied, setHasApplied] = useState<boolean>(false);
+
+  // Bottom dock active tab: start Level 1 on "pressure" so user must pick "temperature"
+  const [activeTab, setActiveTab] = useState<"temperature" | "pressure" | "concentration">("pressure");
+  const [isStressMenuOpen, setIsStressMenuOpen] = useState<boolean>(false);
 
   // Dynamic Piston Height Y (animates between 0.2 for 3.5 atm compressed and 2.1 for 0.5 atm expanded)
   const targetPistonY = useMemo(() => {
@@ -541,47 +607,37 @@ export function LeChatelierPrincipleGamePage({
   const { targetN2O4, targetNO2 } = useMemo(() => {
     const countN2O4 = molecules.filter((m) => m.type === "N2O4").length;
     const countNO2 = molecules.filter((m) => m.type === "NO2").length;
+    const totalN = 2 * countN2O4 + countNO2;
+    const maxN2O4 = Math.floor(totalN / 2);
 
     if (activeTab === "pressure") {
       if (pressure >= 1.8) {
-        return { targetN2O4: 1, targetNO2: 0 };
-      } else {
-        return { targetN2O4: 0, targetNO2: 2 };
+        return { targetN2O4: maxN2O4, targetNO2: totalN % 2 };
       }
+      if (pressure <= 0.9) {
+        return { targetN2O4: 0, targetNO2: totalN };
+      }
+      const half = Math.floor(maxN2O4 / 2);
+      return { targetN2O4: half, targetNO2: totalN - 2 * half };
     }
 
-    if (activeTab === "concentration") {
-      // In Concentration mode:
-      // Initially, chamber is completely empty: both NO2 and N2O4 are 0.
-      // When user adds NO2, once there are at least 2 NO2 molecules, they associate into 1 N2O4!
-      // (e.g. 2 NO2 -> 1 N2O4; adding 2 more NO2 -> converts into another N2O4).
-      const possibleN2O4Pairs = Math.floor(countNO2 / 2);
-      if (possibleN2O4Pairs >= 1) {
-        return {
-          targetN2O4: countN2O4 + possibleN2O4Pairs,
-          targetNO2: countNO2 % 2,
-        };
-      } else {
-        // Less than 2 NO2 (0 or 1 NO2): no association possible
-        return { targetN2O4: countN2O4, targetNO2: countNO2 };
-      }
-    }
-
-    // Default: Temperature mode (Starts at 273K with 4 N2O4, converts up to 8 NO2)
-    if (temperature <= 273) {
-      return { targetN2O4: 4, targetNO2: 0 };
+    // Temperature mode (conserves totalN)
+    if (temperature <= 285) {
+      return { targetN2O4: maxN2O4, targetNO2: totalN % 2 };
     }
     if (temperature >= 390) {
-      return { targetN2O4: 0, targetNO2: 8 };
+      return { targetN2O4: 0, targetNO2: totalN };
     }
     if (temperature > 350) {
-      return { targetN2O4: 1, targetNO2: 6 };
+      const keep = Math.min(maxN2O4, 1);
+      return { targetN2O4: keep, targetNO2: totalN - 2 * keep };
     }
     if (temperature > 310) {
-      return { targetN2O4: 2, targetNO2: 4 };
-    } else {
-      return { targetN2O4: 3, targetNO2: 2 };
+      const keep = Math.min(maxN2O4, 2);
+      return { targetN2O4: keep, targetNO2: totalN - 2 * keep };
     }
+    const keep = Math.max(0, maxN2O4 - 1);
+    return { targetN2O4: keep, targetNO2: totalN - 2 * keep };
   }, [activeTab, pressure, temperature, molecules]);
 
   // --------------------------------------------------------------------------
@@ -593,7 +649,7 @@ export function LeChatelierPrincipleGamePage({
   const [shiftNotice, setShiftNotice] = useState<string | null>(null);
 
   useEffect(() => {
-    if (introStep !== "lab") return;
+    if (introStep !== "lab" || !hasApplied) return;
 
     const interval = setInterval(() => {
       setMolecules((prevList) => {
@@ -661,7 +717,7 @@ export function LeChatelierPrincipleGamePage({
     }, 1000); // 1000ms stable step
 
     return () => clearInterval(interval);
-  }, [targetN2O4, targetNO2, introStep]);
+  }, [targetN2O4, targetNO2, introStep, hasApplied]);
 
   // Macroscopic brown color intensity [0, 1] derived purely from NO2 molecules
   // If count of NO2 is 0 -> brownIntensity is strictly 0 (completely clear and colorless)
@@ -670,89 +726,115 @@ export function LeChatelierPrincipleGamePage({
   const currentCountN2O4 = molecules.filter((m) => m.type === "N2O4").length;
   const brownIntensity = currentCountNO2 === 0 ? 0 : Math.min(1.0, currentCountNO2 / 8);
 
+  // Detect Level 1 & Level 2 completion after molecules convert
+  useEffect(() => {
+    if (introStep !== "lab" || !hasApplied || showVictoryModal) return;
+    const isLevel1Done = level === 1 && currentCountNO2 === 8 && currentCountN2O4 === 0;
+    const isLevel2Done = level === 2 && currentCountN2O4 === 4 && currentCountNO2 === 0;
+    if (isLevel1Done || isLevel2Done) {
+      const timer = setTimeout(() => {
+        setShowVictoryModal(true);
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, [introStep, hasApplied, level, currentCountNO2, currentCountN2O4, showVictoryModal]);
+
+  const initLevel1 = () => {
+    setLevel(1);
+    setHasApplied(false);
+    setShowVictoryModal(false);
+    setActiveTab("pressure");
+    setTemperature(273);
+    setTempSliderVal(273);
+    setPressure(1.0);
+    setPressureSliderVal(1.0);
+    setMolecules([
+      {
+        id: `N2O4-l1-1`,
+        type: "N2O4",
+        pos: new THREE.Vector3(-1.3, -0.4, -0.2),
+        vel: new THREE.Vector3(0.5, 0.4, 0.2),
+        rot: new THREE.Euler(0.3, 0.5, 0),
+        rotSpeed: new THREE.Euler(0.4, 0.6, 0.2),
+      },
+      {
+        id: `N2O4-l1-2`,
+        type: "N2O4",
+        pos: new THREE.Vector3(1.3, 0.4, 0.2),
+        vel: new THREE.Vector3(-0.5, -0.3, -0.2),
+        rot: new THREE.Euler(-0.4, 0.8, 0),
+        rotSpeed: new THREE.Euler(-0.5, 0.3, 0.4),
+      },
+      {
+        id: `N2O4-l1-3`,
+        type: "N2O4",
+        pos: new THREE.Vector3(-0.5, 0.5, 0.1),
+        vel: new THREE.Vector3(0.4, -0.5, 0.3),
+        rot: new THREE.Euler(0.6, -0.2, 0.1),
+        rotSpeed: new THREE.Euler(0.3, 0.4, 0.5),
+      },
+      {
+        id: `N2O4-l1-4`,
+        type: "N2O4",
+        pos: new THREE.Vector3(0.6, -0.5, -0.1),
+        vel: new THREE.Vector3(-0.4, 0.5, -0.3),
+        rot: new THREE.Euler(-0.5, 0.3, 0.2),
+        rotSpeed: new THREE.Euler(-0.4, 0.3, -0.3),
+      },
+    ]);
+    setShiftNotice(null);
+  };
+
+  const initLevel2 = () => {
+    setLevel(2);
+    setHasApplied(false);
+    setShowVictoryModal(false);
+    setActiveTab("temperature");
+    setTemperature(390);
+    setTempSliderVal(390);
+    setPressure(0.5);
+    setPressureSliderVal(0.5);
+    setMolecules(
+      Array.from({ length: 8 }, (_, idx) => ({
+        id: `NO2-l2-${idx + 1}`,
+        type: "NO2" as const,
+        pos: new THREE.Vector3(
+          ((idx % 4) - 1.5) * 0.85,
+          idx < 4 ? 0.45 : -0.45,
+          (idx % 2 === 0 ? 1 : -1) * 0.25
+        ),
+        vel: new THREE.Vector3(
+          (idx % 2 === 0 ? 1 : -1) * 0.5,
+          (idx < 4 ? -1 : 1) * 0.4,
+          0.25
+        ),
+        rot: new THREE.Euler(0.3 * idx, 0.5 * idx, 0),
+        rotSpeed: new THREE.Euler(0.4, 0.5, 0.2),
+      }))
+    );
+    setShiftNotice(null);
+  };
+
   // --------------------------------------------------------------------------
   // USER ACTIONS & DISTURBANCES
   // --------------------------------------------------------------------------
-  // Tab Selection
+  // Tab Selection: reset the other control back to the level's original position (without touching molecules)
   const handleSelectTab = (tab: "temperature" | "pressure" | "concentration") => {
     setActiveTab(tab);
-    if (tab === "pressure") {
-      setPressure(0.5);
-      setPressureSliderVal(0.5);
-      setMolecules([
-        {
-          id: `NO2-p-start-1`,
-          type: "NO2",
-          pos: new THREE.Vector3(-0.9, 0.4, 0),
-          vel: new THREE.Vector3(0.5, 0.4, 0.2),
-          rot: new THREE.Euler(0.3, 0.5, 0),
-          rotSpeed: new THREE.Euler(0.4, 0.5, 0.2),
-        },
-        {
-          id: `NO2-p-start-2`,
-          type: "NO2",
-          pos: new THREE.Vector3(0.9, 0.1, 0),
-          vel: new THREE.Vector3(-0.5, -0.3, -0.2),
-          rot: new THREE.Euler(-0.3, 0.7, 0),
-          rotSpeed: new THREE.Euler(-0.4, 0.4, 0.3),
-        },
-      ]);
-      setShiftNotice("Pressure mode: Starts at 0.5 atm with 2 NO₂ molecules. Compress to 1 N₂O₄!");
-      setTimeout(() => setShiftNotice(null), 4000);
-    } else if (tab === "concentration") {
-      // In Concentration mode, starts with both molecules at 0!
-      setTemperature(298);
-      setTempSliderVal(298);
-      setPressure(1.0);
-      setPressureSliderVal(1.0);
-      setMolecules([]); // Both N2O4 and NO2 start at 0
-      setShiftNotice("Concentration Lab: Initially both molecules are 0. Click '+ NO₂' to add molecules and watch them convert into N₂O₄!");
-      setTimeout(() => setShiftNotice(null), 4000);
-    } else if (tab === "temperature") {
-      setTemperature(273);
-      setTempSliderVal(273);
-      setPressure(1.0);
-      setPressureSliderVal(1.0);
-      setMolecules([
-        {
-          id: `N2O4-init-1`,
-          type: "N2O4",
-          pos: new THREE.Vector3(-1.3, -0.4, -0.2),
-          vel: new THREE.Vector3(0.5, 0.4, 0.2),
-          rot: new THREE.Euler(0.3, 0.5, 0),
-          rotSpeed: new THREE.Euler(0.4, 0.6, 0.2),
-        },
-        {
-          id: `N2O4-init-2`,
-          type: "N2O4",
-          pos: new THREE.Vector3(1.3, 0.4, 0.2),
-          vel: new THREE.Vector3(-0.5, -0.3, -0.2),
-          rot: new THREE.Euler(-0.4, 0.8, 0),
-          rotSpeed: new THREE.Euler(-0.5, 0.3, 0.4),
-        },
-        {
-          id: `N2O4-init-3`,
-          type: "N2O4",
-          pos: new THREE.Vector3(-0.5, 0.5, 0.1),
-          vel: new THREE.Vector3(0.4, -0.5, 0.3),
-          rot: new THREE.Euler(0.6, -0.2, 0.1),
-          rotSpeed: new THREE.Euler(0.3, 0.4, 0.5),
-        },
-        {
-          id: `N2O4-init-4`,
-          type: "N2O4",
-          pos: new THREE.Vector3(0.6, -0.5, -0.1),
-          vel: new THREE.Vector3(-0.4, 0.5, -0.3),
-          rot: new THREE.Euler(-0.5, 0.3, 0.2),
-          rotSpeed: new THREE.Euler(-0.4, 0.3, -0.3),
-        },
-      ]);
-      setShiftNotice("Temperature mode: Starts at 273 K with 4 N₂O₄ molecules (colorless).");
-      setTimeout(() => setShiftNotice(null), 3500);
+    setHasApplied(false);
+    if (tab === "temperature") {
+      const origP = level === 1 ? 1.0 : 0.5;
+      setPressure(origP);
+      setPressureSliderVal(origP);
+    } else if (tab === "pressure") {
+      const origT = level === 1 ? 273 : 390;
+      setTemperature(origT);
+      setTempSliderVal(origT);
     }
   };
 
   const handleApplyChange = () => {
+    setHasApplied(true);
     if (activeTab === "temperature") {
       setTemperature(tempSliderVal);
       const isHeating = tempSliderVal > temperature;
@@ -902,7 +984,7 @@ export function LeChatelierPrincipleGamePage({
             {/* Centered Single-Liner Mission Statement */}
             <div className="max-w-2xl mx-auto my-auto text-center space-y-4 sm:space-y-6 z-10 px-4 py-2 animate-in fade-in duration-200">
               <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1E293B] tracking-tight leading-tight">
-                <span className="text-[#0284C7]">MISSION:</span> Explore Le Chatelier&apos;s Principle by shifting the reaction between colorless N₂O₄ and brown NO₂!
+                <span className="text-[#0284C7]">MISSION:</span> Choose the right condition to shift N₂O₄ ⇌ 2 NO₂ inside the chamber and complete both Target levels!
               </h1>
 
               <div className="pt-2">
@@ -953,7 +1035,7 @@ export function LeChatelierPrincipleGamePage({
             <div className="max-w-4xl w-full mx-auto flex flex-col justify-center items-center z-10 px-2 sm:px-4 flex-1">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full items-stretch">
 
-                {/* Card 1: Adjust Conditions */}
+                {/* Card 1: Choose Condition */}
                 <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2">
@@ -961,28 +1043,23 @@ export function LeChatelierPrincipleGamePage({
                         1
                       </div>
                       <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                        Adjust Lab Conditions
+                        Pick Temperature or Pressure
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        Temp • Pressure • Moles
-                      </span>
-                    </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Select a tab at the bottom to alter Temperature (K), move the Pressure slider, or inject molecules, then tap <strong>APPLY</strong>.
+                      Open the bottom menu and choose whether to change <strong>Temperature</strong> or <strong>Pressure</strong> for the current target.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
                     <img
                       src="/instructions/le_chatelier_step1_controls.png"
-                      alt="Control Dock & Sliders"
+                      alt="Temperature and Pressure Dropdown"
                       className="w-full h-full object-contain rounded-lg"
                     />
                   </div>
                 </div>
 
-                {/* Card 2: Observe 3D Chamber Reaction */}
+                {/* Card 2: Slide & Apply */}
                 <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2">
@@ -990,28 +1067,23 @@ export function LeChatelierPrincipleGamePage({
                         2
                       </div>
                       <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                        Watch Molecular Shifts
+                        Set Value &amp; Tap Apply
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        N₂O₄ ⇌ 2 NO₂
-                      </span>
-                    </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Watch bonds split or form inside the reaction chamber. Colorless N₂O₄ dissociates into brown NO₂, or combines back.
+                      Drag the slider to increase or decrease the value, then tap <strong>APPLY</strong> to run the change in the chamber.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
                     <img
-                      src="/instructions/le_chatelier_step2_chamber.png"
-                      alt="3D Reaction Chamber"
+                      src="/instructions/le_chatelier_step3_monitor.png"
+                      alt="Slider and Apply Button"
                       className="w-full h-full object-contain rounded-lg"
                     />
                   </div>
                 </div>
 
-                {/* Card 3: Track Live Equilibrium Monitor */}
+                {/* Card 3: Watch Conversion & Match Target */}
                 <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2">
@@ -1019,22 +1091,17 @@ export function LeChatelierPrincipleGamePage({
                         3
                       </div>
                       <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                        Track Live Equilibrium
+                        Match the Target
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        Live Composition
-                      </span>
-                    </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Check real-time mole counts on the monitor to see whether the system is associating, dissociating, or balanced.
+                      Watch <strong>N₂O₄</strong> and <strong>NO₂</strong> convert inside the glass chamber until you reach the top <strong>Target</strong>.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
                     <img
-                      src="/instructions/le_chatelier_step3_monitor.png"
-                      alt="Live Equilibrium Monitor"
+                      src="/instructions/le_chatelier_step2_chamber.png"
+                      alt="3D Reaction Chamber and Target"
                       className="w-full h-full object-contain rounded-lg"
                     />
                   </div>
@@ -1067,301 +1134,228 @@ export function LeChatelierPrincipleGamePage({
 
         {/* ══════════════════════════════════════════════════════════════════
             LAB TOP HEADER (Minimalist & Clean)
+        {/* ══════════════════════════════════════════════════════════════════
+            FULLSCREEN 3D CANVAS + FLOATING CONTROLS
             ══════════════════════════════════════════════════════════════════ */}
-        <div className="w-full flex items-center justify-between px-3 sm:px-6 pt-3 pb-1 shrink-0 z-20 bg-white">
-          <div className="flex items-center gap-2">
+        <div className="relative flex-1 w-full h-full overflow-hidden bg-white">
+          {/* Fullscreen Three.js Canvas */}
+          <div className="absolute inset-0 z-0">
+            <Canvas
+              className="w-full h-full"
+              gl={{ antialias: true, alpha: true }}
+              camera={{ position: [0, 0.15, 9.2], fov: 45 }}
+            >
+              <ambientLight intensity={1.1} />
+              <directionalLight position={[5, 8, 5]} intensity={1.5} castShadow />
+              <directionalLight position={[-5, -4, -3]} intensity={0.5} color="#93C5FD" />
+
+              <Suspense fallback={null}>
+                <group position={[0, 0.32, 0]}>
+                  {/* Reactor Cylinder & Movable Piston */}
+                  <ReactorVessel
+                    pistonY={currentPistonY}
+                    brownIntensity={brownIntensity}
+                    temperature={temperature}
+                  />
+
+                  {/* Real-time Bouncing Molecules */}
+                  <MolecularField
+                    molecules={molecules}
+                    pistonY={currentPistonY}
+                    temperature={temperature}
+                  />
+                </group>
+              </Suspense>
+
+              <OrbitControls
+                target={[0, 0.15, 0]}
+                enablePan={false}
+                minDistance={5.0}
+                maxDistance={12.0}
+                maxPolarAngle={Math.PI / 2 + 0.15}
+                minPolarAngle={Math.PI / 4}
+              />
+            </Canvas>
+          </div>
+
+          {/* Floating Top Header: EXIT & EXPLANATION */}
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 sm:px-6 pt-3 z-20 pointer-events-none">
             <button
               type="button"
               onClick={handleExitClick}
-              className="flex items-center gap-1 h-7 sm:h-8 px-3 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer active:scale-95"
+              className="pointer-events-auto flex items-center gap-1 h-7 sm:h-8 px-3 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer active:scale-95"
             >
               <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
               <span>EXIT</span>
             </button>
 
-
+            <button
+              type="button"
+              onClick={() => setShowExplanationModal(true)}
+              className="pointer-events-auto flex items-center gap-1.5 h-7 sm:h-8 px-3.5 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm transition-all cursor-pointer active:scale-95"
+            >
+              <span>EXPLANATION</span>
+            </button>
           </div>
 
-          {/* Explanation Button */}
-          <button
-            type="button"
-            onClick={() => setShowExplanationModal(true)}
-            className="flex items-center gap-1.5 h-7 sm:h-8 px-3 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm transition-all cursor-pointer active:scale-95"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-sky-200" />
-            <span className="hidden sm:inline">EXPLANATION</span>
-          </button>
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════════════
-            MAIN 3D CANVAS VIEW (Clean, No Overlay Boxes)
-            ══════════════════════════════════════════════════════════════════ */}
-        <div className="relative flex-1 w-full overflow-hidden bg-white">
+          {/* Top-Center Target Pill (aligned with top bar, clear of piston) */}
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+            <div className="px-4 py-1 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+              <span className="text-[11px] font-extrabold text-blue-600">
+                Target:
+              </span>
+              <span className="text-[11px] font-black text-slate-900">
+                {level === 1 ? "Convert N₂O₄ → NO₂" : "Convert NO₂ → N₂O₄"}
+              </span>
+            </div>
+          </div>
 
           {/* Active Shift Notification Banner */}
           {shiftNotice && (
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 text-white font-semibold text-xs py-1 px-3.5 rounded-full shadow-md border border-slate-700 animate-in fade-in duration-150 max-w-lg text-center">
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 text-white font-semibold text-xs py-1 px-3.5 rounded-full shadow-md border border-slate-700 animate-in fade-in duration-150 max-w-lg text-center pointer-events-none">
               {shiftNotice}
             </div>
           )}
 
-          {/* Right Side Equilibrium Composition & Conversion Monitor */}
-          <div className="absolute top-3 right-3 z-20 w-44 sm:w-48 bg-white/95 backdrop-blur-md rounded-2xl p-3 border border-slate-200/90 shadow-xl space-y-2.5 animate-in fade-in duration-200">
-            {/* Header */}
-            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-700">
-                Live Equilibrium
-              </span>
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono">
-                {pressure.toFixed(1)} atm
-              </span>
-            </div>
-
-            {/* N2O4 Level Gauge */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="flex items-center gap-1.5 font-bold text-blue-800">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#1D4ED8] inline-block shadow-xs" />
-                  N₂O₄
-                </span>
-                <span className="font-black text-blue-900">{currentCountN2O4} mol</span>
-              </div>
-              <div className="w-full h-2 bg-blue-50 rounded-full overflow-hidden border border-blue-200/60 p-0.5">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-300"
-                  style={{ width: `${Math.min(100, Math.max(8, (currentCountN2O4 / 16) * 100))}%` }}
-                />
-              </div>
-            </div>
-
-            {/* NO2 Level Gauge */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="flex items-center gap-1.5 font-bold text-amber-900">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#DC2626] inline-block shadow-xs" />
-                  NO₂
-                </span>
-                <span className="font-black text-amber-950">{currentCountNO2} mol</span>
-              </div>
-              <div className="w-full h-2 bg-amber-50 rounded-full overflow-hidden border border-amber-200/60 p-0.5">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-rose-600 transition-all duration-300"
-                  style={{ width: `${Math.min(100, Math.max(8, (currentCountNO2 / 24) * 100))}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Dynamic Conversion & Equilibrium Shift Arrow */}
-            <div className="pt-1 border-t border-slate-100">
-              <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                Dynamic Shift
-              </div>
-              <div className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-slate-50 border border-slate-200/70 text-center text-[10px] font-black">
-                {currentCountNO2 < targetNO2 ? (
-                  <span className="text-rose-600 flex items-center gap-1 animate-pulse">
-                    <span>N₂O₄</span>
-                    <ArrowRight className="w-3 h-3 stroke-[3]" />
-                    <span>2 NO₂</span>
-                    <span className="text-[9px] font-bold text-rose-500">(Dissociating)</span>
-                  </span>
-                ) : currentCountN2O4 < targetN2O4 ? (
-                  <span className="text-blue-700 flex items-center gap-1 animate-pulse">
-                    <span>2 NO₂</span>
-                    <ArrowLeft className="w-3 h-3 stroke-[3]" />
-                    <span>N₂O₄</span>
-                    <span className="text-[9px] font-bold text-blue-600">(Associating)</span>
-                  </span>
-                ) : (
-                  <span className="text-emerald-700 flex items-center gap-1 font-mono">
-                    <span>N₂O₄ ⇌ 2 NO₂</span>
-                    <span className="text-[9px] font-sans font-bold text-emerald-600">(Balanced)</span>
-                  </span>
+          {/* Floating Bottom Control Dock: Dropdown (Temp / Pressure) + Slider + Apply */}
+          <div className="absolute bottom-3 left-0 right-0 px-3 sm:px-6 z-30 flex justify-center pointer-events-none">
+            <div className="pointer-events-auto w-full max-w-2xl bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-xl p-2 flex flex-col sm:flex-row items-center gap-2.5">
+              {/* 1. Custom Upward Dropdown (Temperature & Pressure) */}
+              <div className="relative w-full sm:w-44 shrink-0">
+                {isStressMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsStressMenuOpen(false)}
+                    />
+                    <div className="absolute bottom-full left-0 mb-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200/90 p-1.5 z-50 space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-150">
+                      {[
+                        {
+                          id: "temperature" as const,
+                          label: "Temperature",
+                          desc: "273 K – 420 K • heat shift",
+                          icon: <Flame className="w-4 h-4 text-rose-600 shrink-0" />,
+                          bg: "bg-rose-50",
+                        },
+                        {
+                          id: "pressure" as const,
+                          label: "Pressure",
+                          desc: "0.5 – 3.5 atm • volume shift",
+                          icon: <Gauge className="w-4 h-4 text-indigo-600 shrink-0" />,
+                          bg: "bg-indigo-50",
+                        },
+                      ].map((opt) => {
+                        const active = activeTab === opt.id;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => {
+                              handleSelectTab(opt.id);
+                              setIsStressMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                              active
+                                ? opt.id === "temperature"
+                                  ? "bg-rose-50 ring-1 ring-rose-300"
+                                  : "bg-indigo-50 ring-1 ring-indigo-300"
+                                : "hover:bg-slate-50"
+                            }`}
+                          >
+                            <div className={`w-7 h-7 rounded-lg ${opt.bg} flex items-center justify-center shrink-0`}>
+                              {opt.icon}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-extrabold text-slate-900 leading-tight">
+                                {opt.label}
+                              </div>
+                              <div className="text-[10px] font-medium text-slate-500 leading-tight mt-0.5">
+                                {opt.desc}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
                 )}
-              </div>
-            </div>
-          </div>
 
-          {/* Three.js Canvas */}
-          <Canvas
-            className="w-full h-full"
-            gl={{ antialias: true, alpha: true }}
-            camera={{ position: [0, 0.2, 7.8], fov: 45 }}
-          >
-            <ambientLight intensity={1.1} />
-            <directionalLight position={[5, 8, 5]} intensity={1.5} castShadow />
-            <directionalLight position={[-5, -4, -3]} intensity={0.5} color="#93C5FD" />
-
-            <Suspense fallback={null}>
-              {/* Reactor Cylinder & Movable Piston */}
-              <ReactorVessel
-                pistonY={currentPistonY}
-                brownIntensity={brownIntensity}
-                temperature={temperature}
-              />
-
-              {/* Real-time Bouncing Molecules */}
-              <MolecularField
-                molecules={molecules}
-                pistonY={currentPistonY}
-                temperature={temperature}
-              />
-            </Suspense>
-
-            <OrbitControls
-              enablePan={false}
-              minDistance={4.5}
-              maxDistance={8.5}
-              maxPolarAngle={Math.PI / 2 + 0.15}
-              minPolarAngle={Math.PI / 4}
-            />
-          </Canvas>
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════════════
-            BOTTOM CONTROL DOCK (Clean, Balanced & Responsive)
-            ══════════════════════════════════════════════════════════════════ */}
-        <div className="w-full bg-white border-t border-slate-100 px-3 sm:px-6 py-3.5 z-30 shrink-0 flex justify-center">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 max-w-4xl w-full">
-
-            {/* Mode Selection Tabs (Compact Pills) */}
-            <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl shrink-0">
-              <button
-                type="button"
-                onClick={() => handleSelectTab("temperature")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${activeTab === "temperature"
-                  ? "bg-rose-500 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-                  }`}
-              >
-                Temperature
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSelectTab("pressure")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${activeTab === "pressure"
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-                  }`}
-              >
-                Pressure
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSelectTab("concentration")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${activeTab === "concentration"
-                  ? "bg-emerald-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-                  }`}
-              >
-                Concentration
-              </button>
-            </div>
-
-            {/* Dynamic Input Controls (Increased Slider Length) */}
-            <div className="flex-1 w-full max-w-md px-1 sm:px-3">
-              {/* Tab 1: Temperature Slider */}
-              {activeTab === "temperature" && (
-                <div className="flex items-center gap-2.5">
-                  <span className="text-[11px] font-semibold text-slate-500 shrink-0">273 K</span>
-                  <input
-                    type="range"
-                    min={273}
-                    max={420}
-                    step={5}
-                    value={tempSliderVal}
-                    onChange={(e) => setTempSliderVal(Number(e.target.value))}
-                    className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-500"
-                  />
-                  <span className="text-[11px] font-semibold text-slate-500 shrink-0">420 K</span>
-                  <span className="font-mono text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md text-[11px] font-bold shrink-0">
-                    {tempSliderVal} K
-                  </span>
-                </div>
-              )}
-
-              {/* Tab 2: Pressure Slider */}
-              {activeTab === "pressure" && (
-                <div className="flex items-center gap-2.5">
-                  <span className="text-[11px] font-semibold text-slate-500 shrink-0">0.5 atm</span>
-                  <input
-                    type="range"
-                    min={0.5}
-                    max={3.5}
-                    step={0.1}
-                    value={pressureSliderVal}
-                    onChange={(e) => setPressureSliderVal(Number(e.target.value))}
-                    className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-                  />
-                  <span className="text-[11px] font-semibold text-slate-500 shrink-0">3.5 atm</span>
-                  <span className="font-mono text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md text-[11px] font-bold shrink-0">
-                    {pressureSliderVal.toFixed(1)} atm
-                  </span>
-                </div>
-              )}
-
-              {/* Tab 3: Concentration Injections */}
-              {activeTab === "concentration" && (
-                <div className="flex items-center justify-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={handleAddNO2}
-                    className="py-1 px-2.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition-all cursor-pointer active:scale-95"
-                  >
-                    + NO₂
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleRemoveNO2}
-                    className="py-1 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-all cursor-pointer active:scale-95"
-                  >
-                    - NO₂
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleAddN2O4}
-                    className="py-1 px-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold transition-all cursor-pointer active:scale-95"
-                  >
-                    + N₂O₄
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleRemoveN2O4}
-                    className="py-1 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-all cursor-pointer active:scale-95"
-                  >
-                    - N₂O₄
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={handleReset}
-                className="px-3 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset</span>
-              </button>
-
-              {activeTab !== "concentration" && (
                 <button
                   type="button"
-                  onClick={handleApplyChange}
-                  className="px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm transition-all cursor-pointer active:scale-95 flex items-center gap-1"
+                  onClick={() => setIsStressMenuOpen((o) => !o)}
+                  className={`w-full h-10 px-3 rounded-xl border font-extrabold text-xs flex items-center justify-between gap-1.5 shadow-sm transition-all cursor-pointer active:scale-95 text-white ${
+                    activeTab === "pressure"
+                      ? "bg-indigo-600 hover:bg-indigo-700 border-indigo-500"
+                      : "bg-rose-500 hover:bg-rose-600 border-rose-400"
+                  }`}
                 >
-                  <span>Apply</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="flex items-center gap-1.5 truncate">
+                    {activeTab === "pressure" ? (
+                      <Gauge className="w-3.5 h-3.5 text-white/90 shrink-0" />
+                    ) : (
+                      <Flame className="w-3.5 h-3.5 text-white/90 shrink-0" />
+                    )}
+                    <span className="truncate">
+                      {activeTab === "pressure" ? "Pressure" : "Temperature"}
+                    </span>
+                  </span>
+                  {isStressMenuOpen ? (
+                    <ChevronDown className="w-4 h-4 text-white/80 shrink-0" />
+                  ) : (
+                    <ChevronUp className="w-4 h-4 text-white/80 shrink-0" />
+                  )}
                 </button>
-              )}
-            </div>
+              </div>
 
+              {/* 2. Dynamic Slider (Temperature or Pressure) */}
+              <div className="flex-1 w-full px-1">
+                {activeTab === "pressure" ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-semibold text-slate-500 shrink-0">0.5 atm</span>
+                    <input
+                      type="range"
+                      min={0.5}
+                      max={3.5}
+                      step={0.1}
+                      value={pressureSliderVal}
+                      onChange={(e) => setPressureSliderVal(Number(e.target.value))}
+                      className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    />
+                    <span className="text-[11px] font-semibold text-slate-500 shrink-0">3.5 atm</span>
+                    <span className="font-mono text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md text-[11px] font-bold shrink-0">
+                      {pressureSliderVal.toFixed(1)} atm
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-semibold text-slate-500 shrink-0">273 K</span>
+                    <input
+                      type="range"
+                      min={273}
+                      max={420}
+                      step={5}
+                      value={tempSliderVal}
+                      onChange={(e) => setTempSliderVal(Number(e.target.value))}
+                      className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                    />
+                    <span className="text-[11px] font-semibold text-slate-500 shrink-0">420 K</span>
+                    <span className="font-mono text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md text-[11px] font-bold shrink-0">
+                      {tempSliderVal} K
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* 3. APPLY Button */}
+              <button
+                type="button"
+                onClick={handleApplyChange}
+                className="w-full sm:w-auto px-5 h-10 rounded-xl font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5 shrink-0"
+              >
+                <span>APPLY</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1631,6 +1625,63 @@ export function LeChatelierPrincipleGamePage({
               >
                 RESUME SIMULATION
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════
+            LAYER 5: LEVEL 1 & LEVEL 2 VICTORY MODAL
+            ══════════════════════════════════════════════════════════════════ */}
+        {showVictoryModal && (
+          <div className="absolute inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-5 sm:p-6 max-w-sm w-full text-center shadow-2xl border border-slate-100 space-y-3.5 animate-in fade-in zoom-in-95 duration-200">
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
+                <Trophy className="w-6 h-6" />
+              </div>
+
+              <h3 className="font-black text-lg text-slate-900">
+                {level === 1 ? "Level 1 Complete!" : "Challenge Completed!"}
+              </h3>
+
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                {level === 1
+                  ? "Great job! You shifted the equilibrium forward, converting colorless N₂O₄ into reddish-brown NO₂ molecules."
+                  : "Awesome! You shifted the equilibrium backward, compressing NO₂ molecules back into colorless N₂O₄ dimers."}
+              </p>
+
+              <div className="flex gap-2.5 pt-1">
+                <button
+                  type="button"
+                  onClick={level === 1 ? initLevel1 : initLevel1}
+                  className="flex-1 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>REPLAY</span>
+                </button>
+
+                {level === 1 ? (
+                  <button
+                    type="button"
+                    onClick={initLevel2}
+                    className="flex-1 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1"
+                  >
+                    <span>NEXT LEVEL</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowVictoryModal(false);
+                      setShowExplanationModal(true);
+                    }}
+                    className="flex-1 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>EXPLANATION</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}

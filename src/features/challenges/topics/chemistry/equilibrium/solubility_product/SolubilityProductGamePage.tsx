@@ -7,6 +7,8 @@ import * as THREE from "three";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   Play,
   RotateCcw,
   Sparkles,
@@ -63,11 +65,11 @@ const matCl = new THREE.MeshStandardMaterial({
 });
 
 const matCrystal = new THREE.MeshStandardMaterial({
-  color: "#F8FAFC",
-  roughness: 0.4,
-  metalness: 0.1,
-  transparent: true,
-  opacity: 0.95,
+  color: "#F59E0B",
+  emissive: "#B45309",
+  emissiveIntensity: 0.18,
+  roughness: 0.35,
+  metalness: 0.2,
 });
 
 // Single Ion Renderer with Billboarding Text Label
@@ -244,24 +246,6 @@ function GlassBeaker({
           — 200 mL —
         </Text>
       </group>
-
-      {/* Optical Turbidity / Conductivity Probe Sensor */}
-      <group position={[0.7, 0.4, 0.35]} rotation={[0.08, 0, -0.2]}>
-        {/* Rod body */}
-        <mesh position={[0, 0.6, 0]}>
-          <cylinderGeometry args={[0.045, 0.045, 2.5, 16]} />
-          <meshStandardMaterial color="#1E293B" metalness={0.8} roughness={0.3} />
-        </mesh>
-        {/* Optical Sensor Tip */}
-        <mesh position={[0, -0.7, 0]}>
-          <cylinderGeometry args={[0.065, 0.065, 0.3, 16]} />
-          <meshStandardMaterial color="#0284C7" metalness={0.5} roughness={0.2} />
-        </mesh>
-        <mesh position={[0, -0.86, 0]}>
-          <sphereGeometry args={[0.06, 16, 16]} />
-          <meshStandardMaterial color="#38BDF8" emissive="#0284C7" emissiveIntensity={0.6} />
-        </mesh>
-      </group>
     </group>
   );
 }
@@ -279,7 +263,7 @@ function PrecipitateBed({ amount }: { amount: number }) {
       const dist = Math.random() * 1.35;
       const x = Math.cos(angle) * dist;
       const z = Math.sin(angle) * dist;
-      const y = -1.4 + Math.random() * 0.16 * Math.min(2.5, amount * 0.7);
+      const y = -1.26 + Math.random() * 0.16 * Math.min(2.5, amount * 0.7);
       list.push({
         pos: [x, y, z],
         rot: [Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI],
@@ -323,19 +307,20 @@ export function SolubilityProductGamePage({
   const [screenState, setScreenState] = useState<"mission" | "instructions" | "game">("mission");
 
   // Reagent Dock Controls
-  // Reagent Type: "agcl" (Solid AgCl) | "nacl" (Soluble Common Cl-) | "agno3" (Soluble Common Ag+) | "water" (Dilute)
-  const [reagentType, setReagentType] = useState<"agcl" | "nacl" | "agno3" | "water">("nacl");
+  // Reagent Type: "nacl" (Common Cl-) | "water" (Dilute)
+  const [reagentType, setReagentType] = useState<"nacl" | "water">("nacl");
+  const [isReagentMenuOpen, setIsReagentMenuOpen] = useState<boolean>(false);
   const [dosageMmol, setDosageMmol] = useState<number>(0.1); // 0.1 or 0.5 mmol
 
   // Chemical State:
-  // Initial state: 100 mL of pure saturated AgCl solution at equilibrium
-  // [Ag+] = 1.34e-5 M, [Cl-] = 1.34e-5 M => Qsp = 1.8e-10 = Ksp
+  // Initial state: 100 mL of unsaturated AgCl solution
+  // [Ag+] = 1.00e-5 M, [Cl-] = 1.00e-5 M => Qsp = 1.00e-10 < Ksp (1.80e-10)
   const KSP = 1.8e-10; // AgCl Ksp at 25 °C
 
   const [volumeMl, setVolumeMl] = useState<number>(100); // mL
-  const [concAg, setConcAg] = useState<number>(1.34e-5); // M (mol/L)
-  const [concCl, setConcCl] = useState<number>(1.34e-5); // M (mol/L)
-  const [precipitateAmount, setPrecipitateAmount] = useState<number>(0.2); // Relative arbitrary units of solid deposit
+  const [concAg, setConcAg] = useState<number>(1.0e-5); // M (mol/L)
+  const [concCl, setConcCl] = useState<number>(1.0e-5); // M (mol/L)
+  const [precipitateAmount, setPrecipitateAmount] = useState<number>(0); // Solid deposit starts at 0
 
   // Feedback, Modals & Notifications
   const [showExplanationModal, setShowExplanationModal] = useState<boolean>(false);
@@ -356,15 +341,15 @@ export function SolubilityProductGamePage({
 
   // Dynamic status condition
   const solutionCondition = useMemo(() => {
-    if (ratio < 0.85) return "unsaturated";
-    if (ratio > 1.25) return "supersaturated";
+    if (ratio < 0.98) return "unsaturated";
+    if (ratio > 1.02) return "supersaturated";
     return "saturated";
   }, [ratio]);
 
-  // Target Goal: Induce precipitation by adding a common ion (NaCl or AgNO3), achieving Qsp > Ksp with active precipitate!
+  // Target Goal: Induce precipitation by adding NaCl so Qsp exceeds Ksp (supersaturated)
   const isTargetAchieved = useMemo(() => {
-    return solutionCondition === "supersaturated" && precipitateAmount > 0.6;
-  }, [solutionCondition, precipitateAmount]);
+    return solutionCondition === "supersaturated";
+  }, [solutionCondition]);
 
   // 3D Moving Ions state
   const [ions, setIons] = useState<Ion3DData[]>([]);
@@ -412,32 +397,14 @@ export function SolubilityProductGamePage({
 
   const handleAddReagent = () => {
     if (reagentType === "nacl") {
-      // Adding common ion Cl-
-      // Dosage is in mmol added to current volume
-      const addedMolesCl = (dosageMmol * 1e-4); // scaled for clear visible simulation progression
+      // Adding common ion Cl-: +2.0e-6 M per 0.1 mmol tap at 100 mL (5 taps: 1.00 -> 2.00 x 10^-10)
+      const addedMolesCl = dosageMmol * 2e-6;
       const newConcCl = concCl + addedMolesCl / (volumeMl / 1000);
       setConcCl(newConcCl);
-      // Because Qsp > Ksp, common ion causes AgCl to precipitate out!
-      setPrecipitateAmount((prev) => Math.min(3.5, prev + dosageMmol * 1.8));
-      setNotification(`➕ Added ${dosageMmol} mmol NaCl (Common Cl⁻)! Ion product Qsp shoots up.`);
-    } else if (reagentType === "agno3") {
-      // Adding common ion Ag+
-      const addedMolesAg = (dosageMmol * 1e-4);
-      const newConcAg = concAg + addedMolesAg / (volumeMl / 1000);
-      setConcAg(newConcAg);
-      setPrecipitateAmount((prev) => Math.min(3.5, prev + dosageMmol * 1.8));
-      setNotification(`➕ Added ${dosageMmol} mmol AgNO₃ (Common Ag⁺)! Driving precipitation.`);
-    } else if (reagentType === "agcl") {
-      // Adding slightly soluble AgCl salt
-      // If already saturated, excess solid simply adds to precipitate bed!
-      if (solutionCondition === "unsaturated") {
-        setConcAg((prev) => Math.min(1.34e-5, prev + 2e-6));
-        setConcCl((prev) => Math.min(1.34e-5, prev + 2e-6));
-        setNotification(`🧂 Added solid AgCl! Salt dissolves into free Ag⁺ and Cl⁻ ions.`);
-      } else {
-        setPrecipitateAmount((prev) => Math.min(3.5, prev + dosageMmol * 1.2));
-        setNotification(`🧂 Solution is already saturated! Added AgCl deposits as solid crystal.`);
+      if (concAg * newConcCl > KSP * 1.02) {
+        setPrecipitateAmount((prev) => Math.min(3.5, prev + 0.45));
       }
+      setNotification(`➕ Added ${dosageMmol} mmol NaCl (Common Cl⁻)! Ion product Qsp increases.`);
     } else if (reagentType === "water") {
       // Diluting with pure water lowers ion concentrations and dissolves precipitate
       const newVol = Math.min(200, volumeMl + dosageMmol * 20);
@@ -475,14 +442,14 @@ export function SolubilityProductGamePage({
 
   const handleReset = () => {
     setVolumeMl(100);
-    setConcAg(1.34e-5);
-    setConcCl(1.34e-5);
-    setPrecipitateAmount(0.2);
+    setConcAg(1.0e-5);
+    setConcCl(1.0e-5);
+    setPrecipitateAmount(0);
     setReagentType("nacl");
     setDosageMmol(0.1);
     setShowVictoryModal(false);
     setShowIncorrectModal(false);
-    setNotification("Reset to initial saturated AgCl equilibrium (100 mL, Qsp = Ksp).");
+    setNotification("Reset to initial unsaturated solution (100 mL, Qsp = 1.00 × 10⁻¹⁰).");
     setTimeout(() => setNotification(null), 3500);
   };
 
@@ -547,7 +514,7 @@ export function SolubilityProductGamePage({
 
             <div className="max-w-2xl mx-auto my-auto text-center space-y-4 sm:space-y-6 z-10 px-4 py-2 animate-in fade-in duration-200">
               <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1E293B] tracking-tight leading-tight">
-                <span className="text-[#0284C7]">MISSION:</span> Add common ions (NaCl for Cl⁻ or AgNO₃ for Ag⁺) to push the ion product <span className="font-mono text-sky-800">Qsp</span> above <span className="font-mono text-sky-800">Ksp</span> and force solid AgCl to precipitate!
+                <span className="text-[#0284C7]">MISSION:</span> Choose a solution to push <span className="font-mono text-sky-800">Qsp</span> above <span className="font-mono text-sky-800">Ksp (1.80 × 10⁻¹⁰)</span> and cause AgCl precipitation!
               </h1>
 
               <div className="pt-2">
@@ -606,13 +573,8 @@ export function SolubilityProductGamePage({
                         Select Reagents
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        NaCl • AgNO₃ • AgCl • H₂O
-                      </span>
-                    </div>
-                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Choose solid AgCl salt, soluble common ions (NaCl or AgNO₃), or Dilute with pure H₂O, then tap <strong>ADD</strong>.
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-2">
+                      Select <strong>+ NaCl (Cl⁻)</strong> or <strong>Dilute (H₂O)</strong>, then tap <strong>ADD 0.1 MMOL</strong> to add it to the beaker.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
@@ -635,13 +597,8 @@ export function SolubilityProductGamePage({
                         Observe Beaker Reaction
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        3D Ag⁺, Cl⁻ &amp; Crystals
-                      </span>
-                    </div>
-                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Watch silver Ag⁺ and green Cl⁻ ions interact dynamically as excess ions crystallize into solid white AgCl precipitate!
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-2">
+                      Watch Ag⁺ and Cl⁻ ions move inside the beaker as solid AgCl crystals form at the bottom!
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
@@ -664,13 +621,8 @@ export function SolubilityProductGamePage({
                         Check Your Answer
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        Target: Precipitation
-                      </span>
-                    </div>
-                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Track the real-time Qsp readout, induce common-ion precipitation, and tap <strong>CHECK ANSWER</strong> to verify!
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-2">
+                      Track the live Qsp readout as you add solution, then tap <strong>SUBMIT</strong> to check your answer!
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
@@ -744,17 +696,29 @@ export function SolubilityProductGamePage({
             MAIN 3D CANVAS VIEW
             ══════════════════════════════════════════════════════════════════ */}
         <div className="relative flex-1 w-full overflow-hidden bg-white">
+          {/* Top-Center Small Live QSP Tab */}
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+            <div className="px-3.5 py-1 rounded-full bg-[#0B132B]/90 backdrop-blur-md border border-slate-700/80 shadow-md flex items-center gap-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-300">
+                QSP
+              </span>
+              <span className="font-mono font-black text-xs sm:text-sm text-amber-400 tracking-tight">
+                {formatSci(currentQsp)}
+              </span>
+            </div>
+          </div>
+
           {/* Notification Banner */}
           {notification && (
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 text-white font-semibold text-xs py-1 px-4 rounded-full shadow-md border border-slate-700 animate-in fade-in duration-150 max-w-lg text-center">
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 text-white font-semibold text-xs py-1 px-4 rounded-full shadow-md border border-slate-700 animate-in fade-in duration-150 max-w-lg text-center pointer-events-none">
               {notification}
             </div>
           )}
 
-          {/* Three.js Canvas: Zoomed in slightly & centered */}
+          {/* Three.js Canvas: Zoomed out cleanly for portrait & landscape */}
           <Canvas
             className="w-full h-full"
-            camera={{ position: [0, 1.1, 10.2], fov: 38 }}
+            camera={{ position: [0, 1.0, 13.0], fov: 38 }}
             gl={{ antialias: true, alpha: true }}
             shadows
           >
@@ -763,8 +727,8 @@ export function SolubilityProductGamePage({
             <directionalLight position={[-4, -3, -3]} intensity={0.6} color="#BAE6FD" />
 
             <Suspense fallback={null}>
-              {/* Center the beaker horizontally and raise it upward */}
-              <group position={[0, 1.25, 0]}>
+              {/* Center the beaker horizontally and raise it above bottom controls */}
+              <group position={[0, 1.45, 0]}>
                 <GlassBeaker volume={volumeMl} precipitationAmount={precipitateAmount} />
                 <PrecipitateBed amount={precipitateAmount} />
                 {ions.map((ion) => (
@@ -774,157 +738,122 @@ export function SolubilityProductGamePage({
             </Suspense>
 
             <OrbitControls
-              target={[0, 1.25, 0]}
+              target={[0, 0.95, 0]}
               enablePan={false}
-              minDistance={5.0}
-              maxDistance={13.0}
+              minDistance={6.0}
+              maxDistance={16.5}
               maxPolarAngle={Math.PI / 2 + 0.1}
               minPolarAngle={Math.PI / 4}
             />
           </Canvas>
 
-          {/* Digital Qsp HUD Box - Horizontal Layout */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 w-[94%] max-w-[380px] bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 border border-slate-200/90 shadow-xl space-y-1.5 animate-in fade-in duration-200">
-            
-            <div className="flex justify-between items-center border-b border-slate-100 pb-1">
-              <div className="flex items-center gap-1">
-                <Gauge className="w-3.5 h-3.5 text-sky-600" />
-                <span className="font-extrabold text-[9px] sm:text-[10px] text-slate-800 tracking-wider uppercase">
-                  ION PRODUCT METER
-                </span>
-              </div>
-              <span className="text-[8px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full">
-                {volumeMl.toFixed(0)} mL
-              </span>
-            </div>
+          {/* Bottom Floating Overlay: Row 1 (Dropdown + ADD 0.1 MMOL) & Row 2 (Long SUBMIT) */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 w-[92%] max-w-[360px] flex flex-col gap-2 animate-in fade-in duration-200">
+            {/* Row 1: Reagent Dropdown + ADD 0.1 MMOL */}
+            <div className="w-full grid grid-cols-2 gap-2 items-center">
+              {/* Custom Upward Dropdown for NaCl & H2O */}
+              <div className="relative w-full">
+                {isReagentMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsReagentMenuOpen(false)}
+                    />
+                    <div className="absolute bottom-full left-0 mb-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200/90 p-1.5 z-50 space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-150">
+                      {[
+                        {
+                          id: "nacl" as const,
+                          label: "+ NaCl (Cl⁻)",
+                          desc: "Increases Qsp • common ion",
+                          icon: <PlusCircle className="w-4 h-4 text-violet-600 shrink-0" />,
+                          bg: "bg-violet-50",
+                        },
+                        {
+                          id: "water" as const,
+                          label: "Dilute (H₂O)",
+                          desc: "Decreases Qsp • dilutes ions",
+                          icon: <Droplets className="w-4 h-4 text-teal-600 shrink-0" />,
+                          bg: "bg-teal-50",
+                        },
+                      ].map((opt) => {
+                        const active = reagentType === opt.id;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => {
+                              setReagentType(opt.id);
+                              setIsReagentMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                              active
+                                ? opt.id === "nacl"
+                                  ? "bg-violet-50 ring-1 ring-violet-300"
+                                  : "bg-teal-50 ring-1 ring-teal-300"
+                                : "hover:bg-slate-50"
+                            }`}
+                          >
+                            <div className={`w-7 h-7 rounded-lg ${opt.bg} flex items-center justify-center shrink-0`}>
+                              {opt.icon}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-extrabold text-slate-900 leading-tight">
+                                {opt.label}
+                              </div>
+                              <div className="text-[10px] font-medium text-slate-500 leading-tight mt-0.5">
+                                {opt.desc}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
 
-            {/* Horizontal Row: Digital Display on Left, Check Answer Button on Right */}
-            <div className="flex items-stretch gap-2">
-              {/* Digital Display Box */}
-              <div className="flex-1 bg-[#0B132B] rounded-xl px-3 py-1.5 text-center text-white border border-slate-800 shadow-inner flex flex-col justify-center">
-                <div className="text-[7.5px] sm:text-[8px] uppercase font-bold text-slate-400 tracking-wider">
-                  ION PRODUCT (Qsp)
-                </div>
-                <div className="font-mono font-black text-sm sm:text-base text-amber-400 tracking-tight leading-tight">
-                  {formatSci(currentQsp)}
-                </div>
-                <div className="text-[10px] sm:text-[11px] font-mono font-bold text-sky-200 mt-0.5">
-                  <span className="text-slate-400 font-semibold">Ksp = </span>{formatSci(KSP)}
-                </div>
-              </div>
-
-              {/* CHECK ANSWER BUTTON */}
-              <button
-                type="button"
-                onClick={handleCheckAnswer}
-                className="w-36 sm:w-40 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-[1.02] active:scale-[0.98] shrink-0"
-              >
-                <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
-                <span>CHECK ANSWER</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════════════
-            BOTTOM CONTROL DOCK (Matching Topic 04's exact styling)
-            ══════════════════════════════════════════════════════════════════ */}
-        <div className="w-full bg-white border-t border-slate-100 px-3 sm:px-6 py-3.5 z-30 shrink-0 flex justify-center">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 max-w-4xl w-full">
-            
-            {/* Reagent Selector Buttons */}
-            <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl shrink-0">
-              <button
-                type="button"
-                onClick={() => setReagentType("nacl")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  reagentType === "nacl"
-                    ? "bg-blue-600 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                + NaCl (Cl⁻)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setReagentType("agno3")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  reagentType === "agno3"
-                    ? "bg-indigo-600 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                + AgNO₃ (Ag⁺)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setReagentType("agcl")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  reagentType === "agcl"
-                    ? "bg-slate-700 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                + AgCl Salt
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setReagentType("water")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  reagentType === "water"
-                    ? "bg-sky-500 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Dilute (H₂O)
-              </button>
-            </div>
-
-            {/* Dosage Selector */}
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                DOSE:
-              </span>
-              {[0.1, 0.5].map((d) => (
                 <button
-                  key={d}
                   type="button"
-                  onClick={() => setDosageMmol(d)}
-                  className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                    dosageMmol === d
-                      ? "bg-slate-900 text-white shadow-xs"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  onClick={() => setIsReagentMenuOpen((o) => !o)}
+                  className={`w-full h-12 px-3 rounded-xl border font-extrabold text-xs flex items-center justify-between gap-1.5 shadow-md transition-all cursor-pointer active:scale-95 text-white ${
+                    reagentType === "nacl"
+                      ? "bg-violet-600 hover:bg-violet-700 border-violet-500 shadow-violet-500/25"
+                      : "bg-teal-600 hover:bg-teal-700 border-teal-500 shadow-teal-500/25"
                   }`}
                 >
-                  {d} mmol
+                  <span className="flex items-center gap-1.5 truncate">
+                    <Sparkles className="w-3.5 h-3.5 text-white/90 shrink-0" />
+                    <span className="truncate">
+                      {reagentType === "nacl" ? "+ NaCl (Cl⁻)" : "Dilute (H₂O)"}
+                    </span>
+                  </span>
+                  {isReagentMenuOpen ? (
+                    <ChevronDown className="w-4 h-4 text-white/80 shrink-0" />
+                  ) : (
+                    <ChevronUp className="w-4 h-4 text-white/80 shrink-0" />
+                  )}
                 </button>
-              ))}
-            </div>
+              </div>
 
-            {/* Action Buttons: Reset & Add */}
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={handleReset}
-                className="px-3.5 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset</span>
-              </button>
-
+              {/* ADD 0.1 MMOL Button */}
               <button
                 type="button"
                 onClick={handleAddReagent}
-                className="px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 bg-[#0284C7] hover:bg-[#0369A1] shadow-sky-500/30"
+                className="w-full h-12 px-3 rounded-xl font-black text-xs uppercase tracking-wider text-white bg-[#0284C7] hover:bg-[#0369A1] shadow-md shadow-sky-500/30 transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap"
               >
-                <Droplets className="w-3.5 h-3.5 fill-white" />
+                <Droplets className="w-3.5 h-3.5 fill-white shrink-0" />
                 <span>ADD {dosageMmol} MMOL</span>
               </button>
             </div>
 
+            {/* Row 2: Single Long SUBMIT Button */}
+            <button
+              type="button"
+              onClick={handleCheckAnswer}
+              className="w-full h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98]"
+            >
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>SUBMIT</span>
+            </button>
           </div>
         </div>
 
@@ -988,7 +917,7 @@ export function SolubilityProductGamePage({
                   className="flex-1 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>PLAY AGAIN</span>
+                  <span>REPLAY</span>
                 </button>
                 <button
                   type="button"

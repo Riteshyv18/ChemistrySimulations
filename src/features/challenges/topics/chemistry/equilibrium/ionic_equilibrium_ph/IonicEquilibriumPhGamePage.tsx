@@ -736,7 +736,7 @@ export function IonicEquilibriumPhGamePage({
         {introStep === "instructions" && (
           <div className="absolute inset-0 z-40 flex flex-col justify-between p-4 sm:p-6 bg-white overflow-y-auto rounded-3xl sm:rounded-[32px]">
             {/* Top Bar */}
-            <div className="w-full flex items-center justify-between z-10 shrink-0">
+            <div className="w-full flex items-center justify-start z-10 shrink-0">
               <button
                 type="button"
                 onClick={handleExitClick}
@@ -745,8 +745,11 @@ export function IonicEquilibriumPhGamePage({
                 <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
                 <span>EXIT</span>
               </button>
+            </div>
 
-              <div className="flex items-center gap-2">
+            {/* 3 Step Guidance Cards */}
+            <div className="max-w-4xl w-full mx-auto flex flex-col justify-center items-center z-10 px-2 sm:px-4 flex-1">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4 mt-2">
                 <div className="w-8 sm:w-16 h-[2px] bg-gradient-to-r from-transparent via-[#0284C7] to-[#0284C7] rounded-full hidden xs:block" />
                 <div className="px-4 py-1.5 rounded-full bg-slate-900 text-white font-extrabold text-[11px] sm:text-xs tracking-wider flex items-center gap-2 shadow-sm">
                   <span className="w-2 h-2 rounded-full bg-[#38BDF8] animate-ping" />
@@ -755,11 +758,6 @@ export function IonicEquilibriumPhGamePage({
                 <div className="w-8 sm:w-16 h-[2px] bg-gradient-to-l from-transparent via-[#0284C7] to-[#0284C7] rounded-full hidden xs:block" />
               </div>
 
-              <div className="w-16" />
-            </div>
-
-            {/* 3 Step Guidance Cards */}
-            <div className="max-w-4xl w-full mx-auto flex flex-col justify-center items-center z-10 px-2 sm:px-4 flex-1">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full items-stretch">
 
                 {/* Card 1: Reagents Addition */}
@@ -868,7 +866,7 @@ export function IonicEquilibriumPhGamePage({
             <Canvas
               className="w-full h-full"
               gl={{ antialias: true, alpha: true }}
-              camera={{ position: [0, 0.45, 9.6], fov: 38 }}
+              camera={{ position: [0, 0.7, 13.5], fov: 38 }}
             >
               <ambientLight intensity={1.15} />
               <directionalLight position={[4, 8, 4]} intensity={1.6} castShadow />
@@ -885,10 +883,10 @@ export function IonicEquilibriumPhGamePage({
               </Suspense>
 
               <OrbitControls
-                target={[0, 0.45, 0]}
+                target={[0, 0.35, 0]}
                 enablePan={false}
-                minDistance={5.0}
-                maxDistance={12.0}
+                minDistance={6.0}
+                maxDistance={17.0}
                 maxPolarAngle={Math.PI / 2 + 0.1}
                 minPolarAngle={Math.PI / 4}
               />
@@ -909,15 +907,14 @@ export function IonicEquilibriumPhGamePage({
             <button
               type="button"
               onClick={() => setShowExplanationModal(true)}
-              className="pointer-events-auto flex items-center gap-1.5 h-7 sm:h-8 px-3.5 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm transition-all cursor-pointer active:scale-95"
+              className="pointer-events-auto flex items-center justify-center h-7 sm:h-8 px-3.5 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm transition-all cursor-pointer active:scale-95"
             >
-              <BookOpen className="w-3.5 h-3.5 text-sky-200" />
-              <span className="hidden sm:inline">EXPLANATION</span>
+              <span>EXPLANATION</span>
             </button>
           </div>
 
           {/* Centered Colored Transparent Live PH Tab above the Glass */}
-          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+          <div className="absolute top-12 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
             <div
               className="px-4 py-1 rounded-full backdrop-blur-md border shadow-xs flex items-center gap-2 transition-colors duration-300"
               style={{
@@ -939,14 +936,15 @@ export function IonicEquilibriumPhGamePage({
 
           {/* Notification Banner */}
           {notification && (
-            <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 text-white font-semibold text-xs py-1 px-4 rounded-full shadow-md border border-slate-700 animate-in fade-in duration-150 max-w-lg text-center pointer-events-none">
+            <div className="absolute top-22 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 text-white font-semibold text-xs py-1 px-4 rounded-full shadow-md border border-slate-700 animate-in fade-in duration-150 max-w-lg text-center pointer-events-none">
               {notification}
             </div>
           )}
 
-          {/* Floating Bottom Control Dock (Single Row: Dropdown + ADD 1 ML + SUBMIT) */}
+          {/* Floating Bottom Control Dock (2 Rows: Row 1 = Dropdown + ADD 1 ML, Row 2 = SUBMIT) */}
           <div className="absolute bottom-3 left-0 right-0 px-3 sm:px-6 z-30 flex justify-center pointer-events-none">
-            <div className="pointer-events-auto grid grid-cols-3 items-center gap-2.5 sm:gap-3 max-w-xl w-full">
+            <div className="pointer-events-auto w-[92%] max-w-[360px] flex flex-col gap-2">
+              <div className="w-full grid grid-cols-2 items-center gap-2">
             {/* 1. Custom Upward Reagent Dropdown (Base, Acid, Dilute) */}
             <div className="relative w-full">
               {isReagentMenuOpen && (
@@ -1015,7 +1013,7 @@ export function IonicEquilibriumPhGamePage({
               <button
                 type="button"
                 onClick={() => setIsReagentMenuOpen((o) => !o)}
-                className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 font-extrabold text-xs flex items-center justify-between gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95"
+                className="w-full h-12 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 font-extrabold text-xs flex items-center justify-between gap-1.5 shadow-md transition-all cursor-pointer active:scale-95"
               >
                 <span className="flex items-center gap-1.5 truncate">
                   <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0" />
@@ -1039,7 +1037,7 @@ export function IonicEquilibriumPhGamePage({
             <button
               type="button"
               onClick={handleAddReagent}
-              className={`w-full h-10 px-3 rounded-xl font-black text-xs uppercase tracking-wider text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5 ${
+              className={`w-full h-12 px-3 rounded-xl font-black text-xs uppercase tracking-wider text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap ${
                 reagentType === "base"
                   ? "bg-blue-600 hover:bg-blue-700 shadow-blue-500/30"
                   : reagentType === "acid"
@@ -1050,16 +1048,17 @@ export function IonicEquilibriumPhGamePage({
               <Droplets className="w-3.5 h-3.5 fill-current shrink-0" />
               <span>ADD 1 ML</span>
             </button>
+              </div>
 
-            {/* 3. SUBMIT Button */}
-            <button
-              type="button"
-              onClick={handleCheckAnswer}
-              className="w-full h-10 px-3 rounded-xl font-black text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5"
-            >
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>SUBMIT</span>
-            </button>
+              {/* Row 2: Full-Width SUBMIT Button */}
+              <button
+                type="button"
+                onClick={handleCheckAnswer}
+                className="w-full h-12 px-3 rounded-xl font-black text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-lg transition-all cursor-pointer active:scale-[0.98] flex items-center justify-center gap-1.5"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>SUBMIT</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1178,24 +1177,21 @@ export function IonicEquilibriumPhGamePage({
               </button>
             </div>
 
-            {/* Modal Scrollable Body */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-8 sm:py-6 space-y-4 sm:space-y-5 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans w-full">
-              
+            {/* Modal Scrollable Body (Clean editorial layout without boxes) */}
+            <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-8 sm:py-6 space-y-6 text-sm sm:text-base text-slate-700 leading-relaxed font-sans max-w-3xl mx-auto w-full">
+
               {/* Section 1: The Two Key Ions in Water */}
-              <div className="space-y-2 bg-sky-50/70 p-4 rounded-2xl border border-sky-100">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-200/60 px-2.5 py-0.5 rounded-full inline-block">
-                  1. THE TWO KEY IONS IN WATER
-                </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
-                  Self-Ionization of Water
+              <section className="space-y-2 border-b border-slate-100 pb-5">
+                <h3 className="font-black text-base sm:text-lg text-slate-900">
+                  1. Self-Ionization of Water (H₃O⁺ &amp; OH⁻)
                 </h3>
-                <p className="text-slate-600 text-xs sm:text-sm">
+                <p className="text-slate-600">
                   Even pure water isn&apos;t just still molecules; a tiny fraction naturally splits in an equilibrium called <strong>Self-Ionization</strong>:
                 </p>
-                <div className="text-center font-mono font-black text-xs sm:text-sm text-sky-950 bg-white p-2.5 rounded-xl border border-sky-200 shadow-xs">
+                <p className="font-mono font-black text-sm sm:text-base text-sky-900 py-1">
                   2 H₂O ⇌ H₃O⁺ (Hydronium) + OH⁻ (Hydroxide)
-                </div>
-                <ul className="space-y-1.5 text-slate-600 text-xs sm:text-sm list-disc list-inside pt-1">
+                </p>
+                <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
                   <li>
                     <strong className="text-rose-700 font-mono">H₃O⁺</strong> (Acid ion): More of this makes the liquid acidic (<span className="font-mono text-rose-700 font-bold">pH &lt; 7</span>, red/orange).
                   </li>
@@ -1203,120 +1199,96 @@ export function IonicEquilibriumPhGamePage({
                     <strong className="text-blue-700 font-mono">OH⁻</strong> (Base ion): More of this makes the liquid basic (<span className="font-mono text-blue-700 font-bold">pH &gt; 7</span>, blue/purple).
                   </li>
                 </ul>
-              </div>
+              </section>
 
               {/* Section 2: The Constant Seesaw (Kw) */}
-              <div className="space-y-2.5 bg-sky-50/70 p-4 sm:p-5 rounded-2xl border border-sky-100 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-200/60 px-2.5 py-0.5 rounded-full inline-block">
-                  2. THE CONSTANT SEESAW (Kw)
-                </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
-                  Ionic Product Constant of Water
+              <section className="space-y-2 border-b border-slate-100 pb-5">
+                <h3 className="font-black text-base sm:text-lg text-slate-900">
+                  2. Ionic Product Constant of Water (Kw)
                 </h3>
-                <p className="text-slate-600 text-xs sm:text-sm">
+                <p className="text-slate-600">
                   In any aqueous solution at 25 °C, the concentrations of these two ions always multiply to a fixed constant:
                 </p>
-                <div className="text-center font-mono font-black text-xs sm:text-sm text-sky-950 bg-white p-3 rounded-xl border border-sky-200 shadow-xs">
+                <p className="font-mono font-black text-sm sm:text-base text-sky-900 py-1">
                   Kw = [H₃O⁺] × [OH⁻] = 1.0 × 10⁻¹⁴
-                </div>
-                <ul className="space-y-1.5 text-slate-600 text-xs sm:text-sm list-disc list-inside pt-1">
+                </p>
+                <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
                   <li>When <strong>[H₃O⁺]</strong> goes up, <strong>[OH⁻]</strong> must go down.</li>
                   <li>In pure neutral water, both are exactly equal: <span className="font-mono font-bold text-emerald-700">1.0 × 10⁻⁷ M</span>.</li>
                 </ul>
-              </div>
+              </section>
 
               {/* Section 3: What is pH & pOH? */}
-              <div className="space-y-2.5 bg-sky-50/70 p-4 sm:p-5 rounded-2xl border border-sky-100 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-200/60 px-2.5 py-0.5 rounded-full inline-block">
-                  3. WHAT IS pH &amp; pOH?
-                </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
-                  The Logarithmic Acidity Scale
+              <section className="space-y-2.5 border-b border-slate-100 pb-5">
+                <h3 className="font-black text-base sm:text-lg text-slate-900">
+                  3. What is pH &amp; pOH?
                 </h3>
-                <p className="text-slate-600 text-xs sm:text-sm">
+                <p className="text-slate-600">
                   Because ion concentrations are tiny decimals (like 0.0000001 M), we use a negative logarithmic scale:
                 </p>
-                <div className="text-center font-mono font-black text-xs sm:text-sm text-sky-950 bg-white p-3 rounded-xl border border-sky-200 shadow-xs">
+                <p className="font-mono font-black text-sm sm:text-base text-sky-900 py-1">
                   pH = −log₁₀[H₃O⁺] &nbsp;|&nbsp; pOH = −log₁₀[OH⁻] &nbsp;|&nbsp; pH + pOH = 14
-                </div>
-                <p className="text-slate-600 text-xs sm:text-sm">
+                </p>
+                <p className="text-slate-600">
                   Each <strong>1 pH unit step is a 10× difference</strong>: pH 3 is 10× more acidic than pH 4, and 10,000× more acidic than pH 7.
                 </p>
 
                 {/* Indicator Table */}
-                <div className="overflow-x-auto rounded-xl border border-sky-200 bg-white mt-2">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-sky-100/60 text-sky-900 uppercase font-bold text-[10px]">
+                <div className="overflow-x-auto pt-2">
+                  <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                    <thead className="border-b border-slate-200 text-slate-700 uppercase font-bold text-[11px] sm:text-xs">
                       <tr>
-                        <th className="px-3 py-2">pH Range</th>
-                        <th className="px-3 py-2">Condition</th>
-                        <th className="px-3 py-2">Dominant Ion</th>
-                        <th className="px-3 py-2">Universal Indicator Color</th>
+                        <th className="py-2 pr-3">pH Range</th>
+                        <th className="py-2 pr-3">Condition</th>
+                        <th className="py-2 pr-3">Dominant Ion</th>
+                        <th className="py-2">Indicator Color</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-sky-100">
+                    <tbody className="divide-y divide-slate-100">
                       <tr>
-                        <td className="px-3 py-2 font-mono font-bold">1.0 – 3.0</td>
-                        <td className="px-3 py-2 text-rose-700 font-bold">Strongly Acidic</td>
-                        <td className="px-3 py-2 font-mono">[H₃O⁺] &gt;&gt; [OH⁻]</td>
-                        <td className="px-3 py-2 text-rose-600 font-bold flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] inline-block" />
-                          Red / Deep Orange
-                        </td>
+                        <td className="py-2 pr-3 font-mono font-bold">1.0 – 3.0</td>
+                        <td className="py-2 pr-3 text-rose-700 font-bold">Strongly Acidic</td>
+                        <td className="py-2 pr-3 font-mono">[H₃O⁺] &gt;&gt; [OH⁻]</td>
+                        <td className="py-2 text-rose-600 font-bold">Red / Deep Orange</td>
                       </tr>
                       <tr>
-                        <td className="px-3 py-2 font-mono font-bold">4.0 – 6.0</td>
-                        <td className="px-3 py-2 text-amber-700 font-bold">Weakly Acidic</td>
-                        <td className="px-3 py-2 font-mono">[H₃O⁺] &gt; [OH⁻]</td>
-                        <td className="px-3 py-2 text-amber-600 font-bold flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] inline-block" />
-                          Yellow / Light Green
-                        </td>
-                      </tr>
-                      <tr className="bg-emerald-50/70">
-                        <td className="px-3 py-2 font-mono font-bold text-emerald-800">7.00</td>
-                        <td className="px-3 py-2 text-emerald-700 font-bold">Neutral</td>
-                        <td className="px-3 py-2 font-mono text-emerald-800">[H₃O⁺] = [OH⁻]</td>
-                        <td className="px-3 py-2 text-emerald-600 font-bold flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] inline-block" />
-                          Emerald Green
-                        </td>
+                        <td className="py-2 pr-3 font-mono font-bold">4.0 – 6.0</td>
+                        <td className="py-2 pr-3 text-amber-700 font-bold">Weakly Acidic</td>
+                        <td className="py-2 pr-3 font-mono">[H₃O⁺] &gt; [OH⁻]</td>
+                        <td className="py-2 text-amber-600 font-bold">Yellow / Light Green</td>
                       </tr>
                       <tr>
-                        <td className="px-3 py-2 font-mono font-bold">8.0 – 10.0</td>
-                        <td className="px-3 py-2 text-blue-700 font-bold">Weakly Basic</td>
-                        <td className="px-3 py-2 font-mono">[OH⁻] &gt; [H₃O⁺]</td>
-                        <td className="px-3 py-2 text-blue-600 font-bold flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#06B6D4] inline-block" />
-                          Cyan / Blue
-                        </td>
+                        <td className="py-2 pr-3 font-mono font-bold text-emerald-800">7.00</td>
+                        <td className="py-2 pr-3 text-emerald-700 font-bold">Neutral</td>
+                        <td className="py-2 pr-3 font-mono text-emerald-800">[H₃O⁺] = [OH⁻]</td>
+                        <td className="py-2 text-emerald-600 font-bold">Emerald Green</td>
                       </tr>
                       <tr>
-                        <td className="px-3 py-2 font-mono font-bold">11.0 – 14.0</td>
-                        <td className="px-3 py-2 text-purple-700 font-bold">Strongly Basic</td>
-                        <td className="px-3 py-2 font-mono">[OH⁻] &gt;&gt; [H₃O⁺]</td>
-                        <td className="px-3 py-2 text-purple-600 font-bold flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-[#7C3AED] inline-block" />
-                          Deep Violet
-                        </td>
+                        <td className="py-2 pr-3 font-mono font-bold">8.0 – 10.0</td>
+                        <td className="py-2 pr-3 text-blue-700 font-bold">Weakly Basic</td>
+                        <td className="py-2 pr-3 font-mono">[OH⁻] &gt; [H₃O⁺]</td>
+                        <td className="py-2 text-blue-600 font-bold">Cyan / Blue</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 pr-3 font-mono font-bold">11.0 – 14.0</td>
+                        <td className="py-2 pr-3 text-purple-700 font-bold">Strongly Basic</td>
+                        <td className="py-2 pr-3 font-mono">[OH⁻] &gt;&gt; [H₃O⁺]</td>
+                        <td className="py-2 text-purple-600 font-bold">Deep Violet</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </section>
 
               {/* Section 4: How the Game Mechanics Work */}
-              <div className="space-y-2.5 bg-sky-50/70 p-4 sm:p-5 rounded-2xl border border-sky-100 shadow-xs">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-700 bg-sky-200/60 px-2.5 py-0.5 rounded-full inline-block">
-                  4. HOW THE GAME MECHANICS WORK
-                </span>
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
-                  Neutralization in the Lab
+              <section className="space-y-2 pb-2">
+                <h3 className="font-black text-base sm:text-lg text-slate-900">
+                  4. Neutralization in the Lab
                 </h3>
-                <div className="text-center font-mono font-black text-xs sm:text-sm text-sky-950 bg-white p-3 rounded-xl border border-sky-200 shadow-xs">
+                <p className="font-mono font-black text-sm sm:text-base text-sky-900 py-1">
                   H₃O⁺ (from Acid) + OH⁻ (from Base) ⟶ 2 H₂O (Neutral Water)
-                </div>
-                <ul className="space-y-2 text-slate-600 text-xs sm:text-sm list-disc list-inside pt-1">
+                </p>
+                <ul className="space-y-2 text-slate-600 list-disc list-inside">
                   <li>
                     <strong>Initial Solution (pH 3.00):</strong> The beaker starts with excess acid (H₃O⁺), showing an orange-red color.
                   </li>
@@ -1330,7 +1302,7 @@ export function IonicEquilibriumPhGamePage({
                     <strong>Overshooting &amp; Acid Correction (HCl):</strong> Adding too much base causes OH⁻ to take over (pH 8–12, purple). Adding Acid (HCl) injects new H₃O⁺ to bring it back down to neutral 7.00.
                   </li>
                 </ul>
-              </div>
+              </section>
 
             </div>
 

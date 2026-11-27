@@ -364,8 +364,12 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
           isSimulating: false,
           isGameOver: true,
           failureReason: s.pendingFailureReason,
-          showResultModal: true,
         });
+        setTimeout(() => {
+          if (get().isGameOver && !get().isSimulating) {
+            set({ showResultModal: true });
+          }
+        }, 1000);
       } else {
         set({ deflectionProgress: nextDeflect });
       }
@@ -447,8 +451,12 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
         isSimulating: false,
         collisionResult: "hit",
         isWon: true,
-        showResultModal: true,
       });
+      setTimeout(() => {
+        if (get().isWon && !get().isSimulating) {
+          set({ showResultModal: true });
+        }
+      }, 1000);
     }
   },
 

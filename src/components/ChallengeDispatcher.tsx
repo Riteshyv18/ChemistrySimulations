@@ -406,6 +406,46 @@ const CrystalExplorerGamePage = dynamic<{ difficulty?: string; onExit?: () => vo
   { ssr: false, loading: LoadingFallback }
 );
 
+const NucleophilicAdditionGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/nucleophilic_addition/NucleophilicAdditionGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const CarbonylStructureGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/carbonyl_structure_dimerization/CarbonylStructureGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const QualitativeTestsGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/qualitative_tests_differentiation/QualitativeTestsGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const AldolCannizzaroGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/aldol_cannizzaro/AldolCannizzaroGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const CarboxylicAcidityGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/carboxylic_acidity_hvz/CarboxylicAcidityGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 const UnitCellBuilderGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
@@ -798,6 +838,55 @@ export function ChallengeDispatcher({
       normTopic.includes("molecular-shape") ||
       normTopic.includes("molecular_shape"));
 
+  const isCarboxylicAcidityHvz =
+    normTopic === "47" ||
+    normTopic.includes("hvz") ||
+    normTopic.includes("carboxylic-acid-acidity") ||
+    normTopic.includes("carboxylic_acidity") ||
+    ((normModule.includes("aldehydes") || normModule === "m11") &&
+      (normTopic === "47" || normTopic.includes("acidity") || normTopic.includes("hvz")));
+
+  const isAldolCannizzaro =
+    !isCarboxylicAcidityHvz &&
+    (normTopic === "46" ||
+    normTopic.includes("aldol") ||
+    normTopic.includes("cannizzaro") ||
+    ((normModule.includes("aldehydes") || normModule === "m11") &&
+      (normTopic === "46" || normTopic.includes("aldol") || normTopic.includes("cannizzaro"))));
+
+  const isQualitativeTests =
+    !isAldolCannizzaro &&
+    (normTopic === "44" ||
+    normTopic.includes("qualitative") ||
+    normTopic.includes("tollens") ||
+    normTopic.includes("fehling") ||
+    normTopic.includes("iodoform") ||
+    normTopic.includes("chemical-differentiation") ||
+    ((normModule.includes("aldehydes") || normModule === "m11") &&
+      (normTopic === "44" || normTopic.includes("test") || normTopic.includes("differentiation"))));
+
+  const isCarbonylStructureDimerization =
+    !isQualitativeTests &&
+    (normTopic === "43" ||
+      normTopic.includes("dimer") ||
+      normTopic.includes("dimerization") ||
+      normTopic.includes("carbonyl-structure") ||
+      normTopic.includes("structure-dipole") ||
+      normTopic.includes("carboxylic-dimerization") ||
+      ((normModule.includes("aldehydes") || normModule === "m11") &&
+        (normTopic === "43" || normTopic.includes("nomenclature") || normTopic.includes("dimer"))));
+
+  const isNucleophilicAddition =
+    !isQualitativeTests &&
+    !isCarbonylStructureDimerization &&
+    (normTopic === "45" ||
+      normTopic.includes("nucleophilic-addition") ||
+      normTopic.includes("nucleophilic_addition") ||
+      normTopic.includes("burgi-dunitz") ||
+      normTopic.includes("carbonyl-reactivity") ||
+      ((normModule.includes("aldehydes") || normModule === "m11") &&
+        (normTopic === "45" || normTopic.includes("addition"))));
+
   let content: ReactNode = null;
 
   if (isUnitCellDensity) {
@@ -846,7 +935,7 @@ export function ChallengeDispatcher({
     content = <RateLawHalfLifeGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isElectrolysis) {
     content = <ElectrolysisLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
-  } else   if (isGalvanicCell) {
+  } else if (isGalvanicCell) {
     content = <GalvanicCellLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isElectronIonFlow) {
     content = <ElectronIonFlowLevel1GamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -902,6 +991,16 @@ export function ChallengeDispatcher({
     }
   } else if (isVsepr) {
     content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isCarboxylicAcidityHvz) {
+    content = <CarboxylicAcidityGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isAldolCannizzaro) {
+    content = <AldolCannizzaroGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isQualitativeTests) {
+    content = <QualitativeTestsGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isCarbonylStructureDimerization) {
+    content = <CarbonylStructureGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isNucleophilicAddition) {
+    content = <NucleophilicAdditionGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else {
     // Default fallback to VSEPR
     content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -918,7 +1017,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-        {showExitButton && !isCrystalPacking && !isUnitCellBuilder && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+        {showExitButton && !isCarboxylicAcidityHvz && !isAldolCannizzaro && !isQualitativeTests && !isCarbonylStructureDimerization && !isNucleophilicAddition && !isCrystalPacking && !isUnitCellBuilder && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
           <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
             <button
               type="button"

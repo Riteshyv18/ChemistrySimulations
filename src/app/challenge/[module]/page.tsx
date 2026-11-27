@@ -50,14 +50,14 @@ export default async function ModulePage({ params }: PageProps) {
         actions={
           <div className="glass-panel px-4 py-2 rounded-xl border border-white/10 text-xs font-semibold text-slate-300">
             <span className="text-emerald-400">Module progress: </span>
-            <span className="text-white font-bold">{mod.moduleId === 'M1' ? '100%' : mod.moduleId === 'M2' ? '40%' : '0%'}</span>
+            <span className="text-white font-bold">{mod.moduleId === 'M1' ? '100%' : mod.moduleId === 'M2' ? '40%' : mod.moduleId === 'M11' ? '100%' : '0%'}</span>
           </div>
         }
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-10">
         {topics.map((topic, index) => {
-          const progress = mod.moduleId === 'M3' ? 0 : [100, 80, 60][index % 3];
+          const progress = mod.moduleId === 'M11' ? (topic.topicId === '43' || topic.topicId === '44' || topic.topicId === '45' || topic.topicId === '46' || topic.topicId === '47' ? 100 : 0) : mod.moduleId === 'M3' ? 0 : [100, 80, 60][index % 3];
           const topicHref = `/challenge/${mod.slug}/${topic.slug}`;
 
           return (

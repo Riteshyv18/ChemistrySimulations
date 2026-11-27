@@ -13,12 +13,8 @@ import {
   Play,
   Minus,
   Plus,
-  Flame,
   Zap,
-  Sparkles,
   X,
-  Target,
-  FlaskConical,
 } from "lucide-react";
 import { exitSimulation } from "@/lib/mobileBridge";
 import NucleophilicAddition3D from "./NucleophilicAddition3D";
@@ -61,6 +57,7 @@ export default function NucleophilicAdditionGamePage({
 
   // Modals
   const [showExplanation, setShowExplanation] = useState(false);
+  const restartAll = useNucleophilicAdditionStore((s) => s.restartAll);
 
   // Editable angle input state
   const [isEditingAngle, setIsEditingAngle] = useState(false);
@@ -92,12 +89,9 @@ export default function NucleophilicAdditionGamePage({
   };
 
   const effectiveEa = acidCatalystActive && stage.catalyzedEa ? stage.catalyzedEa : stage.baselineEa;
-  const carbonDelta = acidCatalystActive && stage.catalyzedCarbonDeltaPlus
-    ? stage.catalyzedCarbonDeltaPlus
-    : stage.carbonDeltaPlus;
 
   return (
-    <div className="w-full h-full h-screen h-[100dvh] bg-[#F8FAFC] text-slate-800 relative overflow-hidden select-none font-sans flex flex-col rounded-3xl sm:rounded-[32px] border border-slate-200 shadow-2xl">
+    <div className="w-full h-full h-[100dvh] bg-[#F8FAFC] text-slate-800 relative overflow-hidden select-none font-sans flex flex-col">
       {/* ══════════════════════════════════════════════════════════════════
           SCREEN 1: MISSION SCREEN (Matching Chemistry Template)
           ══════════════════════════════════════════════════════════════════ */}
@@ -119,16 +113,12 @@ export default function NucleophilicAdditionGamePage({
           {/* Mission Center Content */}
           <div className="max-w-2xl mx-auto my-auto text-center space-y-3 sm:space-y-4 z-10 px-2 sm:px-4 py-2 animate-in fade-in duration-200">
             <div className="text-[#2563EB] text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
-              MODULE 11 • TOPIC 45
+              MODULE 11 • CARBONYL COMPOUNDS
             </div>
 
             <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1E293B] tracking-tight leading-snug">
-              <span className="text-[#2563EB]">MISSION:</span> Master Bürgi–Dunitz Trajectory &amp; Carbonyl Reactivity
+              <span className="text-[#2563EB]">MISSION:</span> Aim the Nucleophile at the Correct Angle and Attack the Carbonyl Group
             </h1>
-
-            <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
-              Align incoming nucleophiles along the non-orthogonal Bürgi–Dunitz trajectory (θ ≈ 107.0°) to overlap with the carbon π* LUMO orbital, overcome steric and inductive barriers in aldehydes vs ketones, and observe umbrella rehybridization from planar sp² to tetrahedral sp³.
-            </p>
 
             <div className="pt-2 sm:pt-4">
               <button
@@ -140,11 +130,6 @@ export default function NucleophilicAdditionGamePage({
                 <ChevronRight className="w-4 h-4 text-sky-200" />
               </button>
             </div>
-          </div>
-
-          {/* Bottom Footer Note */}
-          <div className="w-full text-center text-[9.5px] sm:text-xs text-[#64748B] font-mono z-10 shrink-0 pb-1">
-            Click NEXT to view challenge instructions
           </div>
         </div>
       )}
@@ -173,112 +158,88 @@ export default function NucleophilicAdditionGamePage({
               <h2 className="text-[#1E293B] text-sm sm:text-base md:text-lg font-black tracking-wide uppercase">
                 INSTRUCTIONS TO PLAY
               </h2>
+              <p className="text-slate-500 font-medium text-xs mt-0.5">
+                Follow these 3 simple steps to complete the reaction:
+              </p>
             </div>
 
             {/* 3 Step Cards Side-by-Side in Landscape Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 landscape:grid-cols-3 gap-2.5 sm:gap-3.5 w-full mx-auto my-auto items-stretch">
-              {/* Card 1: Bürgi-Dunitz Angle */}
-              <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+              {/* Card 1: Set the Angle */}
+              <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-3.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
                 <div>
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
                       1
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Align Bürgi-Dunitz Angle
+                      Set the Angle
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
-                      Optimal θ = 107.0°
-                    </span>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1">
-                    Adjust the attack angle slider to θ ≈ 107.0° to maximize constructive overlap with the π* LUMO lobe and avoid oxygen lone-pair repulsion.
+                  <p className="text-slate-600 font-medium text-xs leading-relaxed mt-2">
+                    Use the ANGLE slider (+ / −) to aim the nucleophile along the optimal approach trajectory.
                   </p>
                 </div>
 
-                {/* Visual Diagram Box 1 */}
-                <div className="w-full h-20 sm:h-24 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex flex-col items-center justify-center p-1.5 mt-2 text-white">
-                  <div className="text-[10px] font-mono text-cyan-300 font-bold">
-                    θ = 107.0° ± 2.0°
-                  </div>
-                  <div className="text-[8.5px] text-emerald-400 font-mono mt-0.5">
-                    Maximum π* LUMO Overlap
-                  </div>
-                  <div className="text-[8px] text-slate-400 mt-0.5">
-                    90°: Repelled • &gt;120°: Missed
-                  </div>
+                {/* Image Illustration 1 */}
+                <div className="w-full h-14 sm:h-16 rounded-xl bg-slate-50/90 border border-slate-200/80 flex items-center justify-center p-1.5 mt-2.5 overflow-hidden">
+                  <img
+                    src="/instructions/nucleophilic_step1_angle.svg"
+                    alt="Angle alignment illustration"
+                    className="max-h-full max-w-full object-contain pointer-events-none select-none"
+                  />
                 </div>
               </div>
 
-              {/* Card 2: Kinetic Energy & Hindrance */}
-              <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+              {/* Card 2: Set the Energy */}
+              <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-3.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
                 <div>
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
                       2
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Tune Kinetic Energy (Ek)
+                      Set the Energy
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
-                      Steric &amp; +I Barriers
-                    </span>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1">
-                    Set collision energy (Ek ≥ Ea). Methyl groups in acetone create steric shielding and +I charge dampening, requiring higher energy or acid catalysis.
+                  <p className="text-slate-600 font-medium text-xs leading-relaxed mt-2">
+                    Move the ENERGY slider to reach the required Ea shown at the top (turn on H⁺ in Stage 3).
                   </p>
                 </div>
 
-                {/* Visual Diagram Box 2 */}
-                <div className="w-full h-20 sm:h-24 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex flex-col items-center justify-center p-1.5 mt-2 text-white">
-                  <div className="text-[9.5px] font-mono text-amber-300 font-bold">
-                    HCHO: 40 kJ/mol (Fast)
-                  </div>
-                  <div className="text-[9.5px] font-mono text-rose-300 font-bold mt-0.5">
-                    Acetone: 78 kJ/mol (Hindered)
-                  </div>
-                  <div className="text-[8px] text-emerald-300 font-mono mt-0.5">
-                    + H⁺ Catalyst: Drops to 28 kJ/mol
-                  </div>
+                {/* Image Illustration 2 */}
+                <div className="w-full h-14 sm:h-16 rounded-xl bg-slate-50/90 border border-slate-200/80 flex items-center justify-center p-1.5 mt-2.5 overflow-hidden">
+                  <img
+                    src="/instructions/nucleophilic_step2_energy.svg"
+                    alt="Energy and catalyst illustration"
+                    className="max-h-full max-w-full object-contain pointer-events-none select-none"
+                  />
                 </div>
               </div>
 
-              {/* Card 3: Collide & Rehybridize */}
-              <div className="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
+              {/* Card 3: Click Attack */}
+              <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-3.5 shadow-md border border-slate-200 flex flex-col justify-between transition-all hover:shadow-lg">
                 <div>
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
                       3
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Collide &amp; Rehybridize
+                      Click Attack
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[9px] sm:text-[10px] tracking-wide">
-                      sp² ⟶ sp³ Inversion
-                    </span>
-                  </div>
-                  <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1">
-                    Click FIRE NUCLEOPHILE (:CN⁻). Watch the planar 120° sp² carbonyl umbrella-invert in slow motion into a tetrahedral 109.5° sp³ cyanohydrin!
+                  <p className="text-slate-600 font-medium text-xs leading-relaxed mt-2">
+                    Press the ATTACK button to fire :C≡N⁻ and watch the flat molecule flip into a 3D tetrahedral shape!
                   </p>
                 </div>
 
-                {/* Visual Diagram Box 3 */}
-                <div className="w-full h-20 sm:h-24 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shadow-inner flex flex-col items-center justify-center p-1.5 mt-2 text-white">
-                  <div className="text-[9.5px] font-mono text-emerald-400 font-bold">
-                    sp² (120°) ⟶ sp³ (109.5°)
-                  </div>
-                  <div className="text-[8px] text-sky-300 font-mono mt-0.5">
-                    Smooth Umbrella Pyramidalization
-                  </div>
-                  <div className="text-[8px] text-amber-300 font-bold mt-0.5">
-                    Forms Tetrahedral Cyanohydrin
-                  </div>
+                {/* Image Illustration 3 */}
+                <div className="w-full h-14 sm:h-16 rounded-xl bg-slate-50/90 border border-slate-200/80 flex items-center justify-center p-1.5 mt-2.5 overflow-hidden">
+                  <img
+                    src="/instructions/nucleophilic_step3_attack.svg"
+                    alt="Attack and tetrahedral flip illustration"
+                    className="max-h-full max-w-full object-contain pointer-events-none select-none"
+                  />
                 </div>
               </div>
             </div>
@@ -288,9 +249,9 @@ export default function NucleophilicAdditionGamePage({
               <button
                 type="button"
                 onClick={() => setScreen("mission")}
-                className="px-5 sm:px-6 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 shadow-md flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                className="px-5 sm:px-6 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm flex items-center gap-1 cursor-pointer transition-all active:scale-95"
               >
-                <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+                <ChevronLeft className="w-3.5 h-3.5 text-slate-500" />
                 <span>BACK</span>
               </button>
 
@@ -311,11 +272,11 @@ export default function NucleophilicAdditionGamePage({
           SCREEN 3: INTERACTIVE LAB GAMEPLAY (3D Canvas & HUD)
           ══════════════════════════════════════════════════════════════════ */}
       {screen === "lab" && (
-        <div className="w-full h-full relative z-10 overflow-hidden rounded-3xl sm:rounded-[32px] bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0]">
+        <div className="w-full h-full relative z-10 overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0]">
           {/* Main 3D Simulation Canvas Area */}
           <div className="absolute inset-0 w-full h-full z-0">
             <Canvas shadows gl={{ antialias: true, alpha: true }} className="w-full h-full">
-              <NucleophilicAddition3D />
+              <NucleophilicAddition3D isModalOpen={showExplanation || showResultModal} />
             </Canvas>
           </div>
 
@@ -331,33 +292,23 @@ export default function NucleophilicAdditionGamePage({
               <span>EXIT</span>
             </button>
 
-            {/* Central Target & Parameter HUD */}
-            <div className="max-w-[calc(100vw-360px)] lg:max-w-none text-[10px] sm:text-[11px] px-2.5 sm:px-3.5 py-1 rounded-2xl sm:rounded-full bg-white/95 backdrop-blur-md border border-slate-300 shadow-xs font-mono select-none pointer-events-none flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 sm:gap-x-2">
-              <span className="font-bold text-slate-800">Stage {currentStage}/3</span>
-              <span className="text-slate-300">·</span>
-              <span className="text-slate-500">
-                Substrate: <span className="font-bold text-slate-800">{stage.substrateName}</span>
+            {/* Minimal Single-Line Central Target HUD */}
+            <div className="px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-sm font-mono text-[11px] select-none pointer-events-none flex items-center gap-2 whitespace-nowrap">
+              <span className="font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200/80">
+                STAGE {currentStage}/3
               </span>
-              <span className="text-slate-300">·</span>
-              <span className="text-slate-500">
-                Target: <span className="font-bold text-sky-600">θ ≈ 107.0°</span>
+              <span className="font-bold text-slate-800">{stage.substrateName}</span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-600">
+                Target: <span className="font-bold text-emerald-700">θ ≈ 107°</span>
               </span>
-              <span className="text-slate-300">·</span>
-              <span className="text-slate-500">
-                Ea: <span className="font-bold text-slate-800">{effectiveEa.toFixed(1)} kJ/mol</span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-600">
+                Ea:{" "}
+                <span className={`font-bold ${acidCatalystActive ? "text-emerald-600" : "text-slate-800"}`}>
+                  {effectiveEa.toFixed(0)} kJ/mol
+                </span>
               </span>
-              <span className="text-slate-300">·</span>
-              <span className="text-slate-500">
-                C(δ⁺): <span className="font-bold text-sky-700">+{carbonDelta.toFixed(2)}</span>
-              </span>
-              {currentStage === 3 && (
-                <>
-                  <span className="text-slate-300">·</span>
-                  <span className={`font-bold ${acidCatalystActive ? "text-emerald-600" : "text-amber-600"}`}>
-                    {acidCatalystActive ? "H⁺ Acid ON (-50 kJ)" : "Acid OFF"}
-                  </span>
-                </>
-              )}
             </div>
 
             {/* Top-Right Explanation Button */}
@@ -371,14 +322,14 @@ export default function NucleophilicAdditionGamePage({
             </button>
           </div>
 
-          {/* Floating Bottom Control Dock */}
+          {/* Minimal Floating Bottom Control Dock */}
           <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-30 flex items-center justify-center pointer-events-none">
-            <div className="pointer-events-auto w-full max-w-2xl py-2 px-3 sm:py-2.5 sm:px-4 rounded-full bg-white/95 backdrop-blur-2xl border border-slate-300 shadow-[0_4px_25px_rgba(0,0,0,0.1)] flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+            <div className="pointer-events-auto w-full max-w-xl py-2 px-3.5 sm:px-4 rounded-full bg-white/95 backdrop-blur-2xl border border-slate-200/90 shadow-lg flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
               {/* Angle Control Column */}
-              <div className="flex flex-col min-w-[170px] flex-1">
+              <div className="flex flex-col min-w-[150px] flex-1">
                 <div className="flex items-center justify-between gap-1 mb-1">
-                  <span className="text-[10px] sm:text-xs font-mono font-bold tracking-wider text-slate-700">
-                    ATTACK ANGLE (θ)
+                  <span className="text-[10px] font-mono font-bold tracking-wider text-slate-600">
+                    ANGLE (θ)
                   </span>
 
                   {isEditingAngle ? (
@@ -395,7 +346,7 @@ export default function NucleophilicAdditionGamePage({
                           if (e.key === "Enter") commitTypedAngle();
                           if (e.key === "Escape") setIsEditingAngle(false);
                         }}
-                        className="w-16 px-1 py-0.5 text-right font-mono text-xs font-bold bg-white text-slate-900 border border-sky-500 rounded shadow-inner outline-none"
+                        className="w-14 px-1 py-0.5 text-right font-mono text-xs font-bold bg-white text-slate-900 border border-sky-500 rounded outline-none"
                       />
                       <span className="text-slate-500 text-xs font-mono">°</span>
                     </div>
@@ -407,24 +358,23 @@ export default function NucleophilicAdditionGamePage({
                         setTypedAngle(attackAngle.toFixed(1));
                         setIsEditingAngle(true);
                       }}
-                      className="group flex items-center gap-1 px-1.5 py-0.2 rounded hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-300 cursor-pointer"
-                      title="Click to type exact angle"
+                      className="px-1.5 rounded hover:bg-slate-100 transition-colors cursor-pointer"
+                      title="Click to type angle"
                     >
-                      <span className="text-xs font-mono font-bold text-slate-800 group-hover:text-sky-700">
+                      <span className="text-xs font-mono font-bold text-slate-800">
                         {attackAngle.toFixed(1)}°
                       </span>
-                      <span className="text-[9px] text-slate-400 group-hover:text-sky-600 font-mono">✎</span>
                     </button>
                   )}
                 </div>
 
                 {/* Angle Slider + Steppers */}
-                <div className="flex items-center gap-1 sm:gap-1.5 w-full">
+                <div className="flex items-center gap-1.5 w-full">
                   <button
                     type="button"
                     disabled={isSimulating || attackAngle <= stage.minAngle}
                     onClick={() => setAttackAngle(attackAngle - 1.0)}
-                    className="p-1 rounded bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer"
+                    className="p-1 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer"
                   >
                     <Minus className="w-3 h-3" />
                   </button>
@@ -444,7 +394,7 @@ export default function NucleophilicAdditionGamePage({
                     type="button"
                     disabled={isSimulating || attackAngle >= stage.maxAngle}
                     onClick={() => setAttackAngle(attackAngle + 1.0)}
-                    className="p-1 rounded bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer"
+                    className="p-1 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 transition-all disabled:opacity-40 disabled:pointer-events-none active:scale-95 cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
                   </button>
@@ -452,13 +402,13 @@ export default function NucleophilicAdditionGamePage({
               </div>
 
               {/* Energy Control Column */}
-              <div className="flex flex-col min-w-[150px] flex-1">
+              <div className="flex flex-col min-w-[130px] flex-1">
                 <div className="flex items-center justify-between gap-1 mb-1">
-                  <span className="text-[10px] sm:text-xs font-mono font-bold tracking-wider text-slate-700">
+                  <span className="text-[10px] font-mono font-bold tracking-wider text-slate-600">
                     ENERGY (Ek)
                   </span>
                   <span className="text-xs font-mono font-bold text-slate-800">
-                    {kineticEnergy.toFixed(0)} kJ/mol
+                    {kineticEnergy.toFixed(0)} kJ
                   </span>
                 </div>
                 <input
@@ -479,14 +429,14 @@ export default function NucleophilicAdditionGamePage({
                   type="button"
                   disabled={isSimulating}
                   onClick={toggleAcidCatalyst}
-                  className={`shrink-0 px-3 py-1.5 rounded-full font-mono text-[11px] font-bold border transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 ${
+                  className={`shrink-0 px-3 py-1.5 rounded-full font-mono text-[11px] font-bold border transition-all cursor-pointer active:scale-95 flex items-center gap-1 ${
                     acidCatalystActive
-                      ? "bg-emerald-500 text-white border-emerald-400 shadow-md shadow-emerald-500/30"
+                      ? "bg-emerald-500 text-white border-emerald-400 shadow-sm"
                       : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300"
                   }`}
                 >
                   <Zap className={`w-3.5 h-3.5 ${acidCatalystActive ? "fill-current" : ""}`} />
-                  <span>{acidCatalystActive ? "H⁺ ACID ON" : "H⁺ ACID OFF"}</span>
+                  <span>{acidCatalystActive ? "H⁺ ON" : "H⁺ OFF"}</span>
                 </button>
               )}
 
@@ -495,14 +445,14 @@ export default function NucleophilicAdditionGamePage({
                 type="button"
                 disabled={isSimulating}
                 onClick={fireNucleophile}
-                className={`shrink-0 flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-mono text-xs sm:text-sm font-bold tracking-wider transition-all duration-300 shadow-md ${
+                className={`shrink-0 flex items-center justify-center gap-1.5 px-5 py-2 rounded-full font-mono text-xs font-bold tracking-wider transition-all duration-200 shadow-md ${
                   isSimulating
                     ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-                    : "bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white active:scale-95 shadow-sky-600/30 cursor-pointer"
+                    : "bg-[#0284C7] hover:bg-[#0369A1] text-white active:scale-95 shadow-sky-600/25 cursor-pointer"
                 }`}
               >
                 <Play className={`w-3.5 h-3.5 fill-current ${isSimulating ? "animate-pulse" : ""}`} />
-                <span>{isSimulating ? "ATTACKING..." : "COLLIDE & ATTACK"}</span>
+                <span>{isSimulating ? "FIRING..." : "ATTACK"}</span>
               </button>
             </div>
           </div>
@@ -513,7 +463,7 @@ export default function NucleophilicAdditionGamePage({
           MODAL 1: EXPLANATION MODAL (KaTeX & Chemical Theory)
           ══════════════════════════════════════════════════════════════════ */}
       {showExplanation && (
-        <div className="absolute inset-0 z-50 bg-white/98 backdrop-blur-md flex flex-col justify-between overflow-hidden animate-in fade-in duration-200 rounded-3xl sm:rounded-[32px]">
+        <div className="absolute inset-0 z-[110] bg-white/98 backdrop-blur-md flex flex-col justify-between overflow-hidden animate-in fade-in duration-200 rounded-3xl sm:rounded-[32px]">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-slate-100 shrink-0">
             <div className="flex items-center gap-3">
@@ -609,26 +559,30 @@ export default function NucleophilicAdditionGamePage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          MODAL 2: VICTORY / STAGE CLEARED MODAL
+          MODAL 2: VICTORY / STAGE CLEARED MODAL (Matching Standard Template)
           ══════════════════════════════════════════════════════════════════ */}
       {showResultModal && isWon && (
-        <div className="absolute inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 animate-in fade-in duration-200">
-          <div className="w-full max-w-[340px] bg-white rounded-3xl p-5 shadow-2xl border border-emerald-100 flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 shadow-inner">
-              <CheckCircle2 className="w-7 h-7" />
+        <div className="pointer-events-auto bg-slate-900/60 backdrop-blur-xs fixed inset-0 flex items-center justify-center p-4 z-[100] animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl p-5 text-center max-w-sm w-full shadow-2xl border border-emerald-300">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-2.5 shadow-inner">
+              <CheckCircle2 className="w-6 h-6" />
             </div>
 
-            <h3 className="text-lg font-black text-slate-900 mb-1">
-              Stage {currentStage} Cleared!
+            <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200">
+              STAGE {currentStage} COMPLETE
+            </span>
+
+            <h3 className="text-base font-black text-slate-800 mt-2 mb-1">
+              Target Achieved!
             </h3>
 
-            <p className="text-xs text-slate-600 mb-3 leading-snug">
+            <p className="text-xs text-slate-600 mb-3 leading-relaxed font-medium">
               Bürgi-Dunitz overlap achieved! The nucleophile pierced the π* LUMO and converted{" "}
               <strong>{stage.substrateName}</strong> into <strong>{stage.productName}</strong>.
             </p>
 
             {/* Stats Summary */}
-            <div className="w-full p-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-left font-mono text-[11px] mb-4 space-y-1">
+            <div className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-left font-mono text-[11px] mb-4 space-y-1">
               <div className="flex justify-between">
                 <span className="text-slate-500">Attack Angle:</span>
                 <span className="font-bold text-emerald-600">{attackAngle.toFixed(1)}° (θ_BD = 107.0°)</span>
@@ -643,66 +597,78 @@ export default function NucleophilicAdditionGamePage({
               </div>
             </div>
 
-            {/* Buttons: Replay & Next */}
-            <div className="w-full flex items-center gap-2">
+            <div className="flex gap-2 w-full pt-1">
               <button
                 type="button"
                 onClick={resetSimulation}
-                className="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-95"
+                className="flex-1 py-2 px-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-extrabold text-xs transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-95"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>REPLAY</span>
+                <span>Retry</span>
               </button>
 
-              {currentStage < 3 ? (
-                <button
-                  type="button"
-                  onClick={nextStage}
-                  className="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md shadow-emerald-600/25 cursor-pointer active:scale-95"
-                >
-                  <span>STAGE {currentStage + 1}</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={resetSimulation}
-                  className="flex-1 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md shadow-sky-600/25 cursor-pointer active:scale-95"
-                >
-                  <span>REPLAY ALL</span>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setShowExplanation(true)}
+                className="flex-1 py-2 px-3 rounded-xl border border-sky-300 text-sky-700 font-extrabold text-xs hover:bg-sky-50 transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Theory</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={currentStage < 3 ? nextStage : restartAll}
+                className="flex-1 py-2 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/20 transition-all cursor-pointer active:scale-95 flex items-center justify-center"
+              >
+                {currentStage < 3 ? "Next →" : "Restart"}
+              </button>
             </div>
           </div>
         </div>
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          MODAL 3: FAILURE / INCORRECT COLLISION MODAL
+          MODAL 3: FAILURE / INCORRECT COLLISION MODAL (Matching Standard Template)
           ══════════════════════════════════════════════════════════════════ */}
       {showResultModal && isGameOver && (
-        <div className="absolute inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 animate-in fade-in duration-200">
-          <div className="w-full max-w-[340px] bg-white rounded-3xl p-5 shadow-2xl border border-red-100 flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
-            <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-2 shadow-inner">
-              <XCircle className="w-7 h-7" />
+        <div className="pointer-events-auto bg-slate-900/60 backdrop-blur-xs fixed inset-0 flex items-center justify-center p-4 z-[100] animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl p-5 text-center max-w-sm w-full shadow-2xl border border-rose-300">
+            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-2.5 shadow-inner">
+              <XCircle className="w-6 h-6" />
             </div>
 
-            <h3 className="text-lg font-black text-slate-900 mb-1">
+            <span className="text-[10px] font-mono font-bold text-rose-700 uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-rose-50 border border-rose-200">
+              STAGE {currentStage} • COLLISION FAILED
+            </span>
+
+            <h3 className="text-base font-black text-slate-800 mt-2 mb-1">
               Collision Failed!
             </h3>
 
-            <p className="text-xs text-slate-600 mb-3 leading-snug">
+            <p className="text-xs text-slate-600 mb-4 leading-relaxed font-medium">
               {failureReason}
             </p>
 
-            <button
-              type="button"
-              onClick={resetSimulation}
-              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-md cursor-pointer active:scale-95"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>TRY AGAIN</span>
-            </button>
+            <div className="flex gap-2 w-full pt-1">
+              <button
+                type="button"
+                onClick={resetSimulation}
+                className="flex-1 py-2 px-3 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Try Again</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowExplanation(true)}
+                className="flex-1 py-2 px-3 rounded-xl border border-sky-300 text-sky-700 font-extrabold text-xs hover:bg-sky-50 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Theory</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

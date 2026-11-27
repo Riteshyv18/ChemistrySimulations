@@ -71,53 +71,52 @@ export const NUCLEOPHILIC_STAGES: Record<number, NucleophilicStageConfig> = {
     defaultEnergy: 20.0,
     targetDescription: "Align attack angle θ ≈ 107.0° and provide kinetic energy Ek ≥ 25.0 kJ/mol to initiate nucleophilic addition.",
     mathDerivation: {
-      title: "Stage 1: Bürgi–Dunitz Trajectory & Frontier Molecular Orbital Theory",
+      title: "Why 107°? The Bürgi–Dunitz Attack Angle & Tetrahedral Inversion",
       concept:
-        "When an incoming nucleophile (:Nu⁻) attacks a carbonyl group (>C=O), why does it not attack perpendicularly at 90°, nor along the bond axis at 180°?\n\n" +
-        "1. The Bürgi–Dunitz Trajectory (θ ≈ 107°)\n" +
-        "In carbonyls, the empty antibonding π* orbital (Lowest Unoccupied Molecular Orbital, LUMO) has a larger lobe on the less electronegative carbon atom, tilted away from oxygen at an angle of roughly 105°–110°.\n" +
-        "• At 90°: The nucleophile is pushed away by electrostatic and Pauli repulsion from oxygen's electron-rich non-bonding lone pairs.\n" +
-        "• At > 120°: The nucleophile has poor spatial overlap with the π* LUMO.\n" +
-        "• At 107°: Maximum constructive orbital overlap is achieved with minimal electron-electron repulsion!\n\n" +
-        "2. The sp² → sp³ Rehybridization\n" +
-        "As the nucleophile approaches, two electrons from the C=O π-bond shift entirely to the more electronegative oxygen atom. The planar 120° H-C-H geometry flexes backward (umbrella pyramidalization) into a 109.5° tetrahedral alkoxide intermediate.",
+        "In Formaldehyde (H₂C=O), the carbon-oxygen double bond is strongly polarized: Oxygen (δ⁻) pulls electrons away from Carbon (δ⁺). This makes Carbon an electrophile (electron-lover) that attracts negatively charged nucleophiles like the cyanide ion (:C≡N⁻).\n\n" +
+        "Why can't the nucleophile attack straight at 90° or 180°?\n" +
+        "• Too Steep (< 98°): Oxygen has two electron-rich lone pairs. Because like charges repel, a negative nucleophile approaching too close to Oxygen gets pushed away (electrostatic repulsion).\n" +
+        "• Too Wide (> 116°): The nucleophile misses the empty π* antibonding orbital (LUMO) lobe on Carbon and fails to form a bond.\n" +
+        "• The Sweet Spot (θ ≈ 107°): Approaching at 107° to the C=O bond gives maximum overlap with the π* LUMO while staying clear of Oxygen's lone pairs.\n\n" +
+        "What happens to the shape (sp² ⟶ sp³)?\n" +
+        "Formaldehyde starts flat (trigonal planar, sp², 120° angles). As :C≡N⁻ forms a new C–C bond, the π-electrons shift onto Oxygen (O⁻), and the two H atoms fold backward like an opening umbrella into a 3D tetrahedral (sp³, 109.5°) shape!",
       conclusion:
-        "Key Chemistry Takeaway: The Bürgi-Dunitz angle (107°) represents the path of least resistance on the potential energy surface. HCHO is the most reactive aliphatic carbonyl because hydrogen atoms impose zero steric obstruction and zero electron donation.",
+        "Key Takeaway: Formaldehyde (HCHO) is the fastest-reacting carbonyl compound because its tiny hydrogen atoms create zero steric crowding and zero electron donation—leaving the δ⁺ carbon wide open at 107°!",
       formulas: [
         {
-          label: "1. BÜRGI-DUNITZ ATTACK ANGLE",
-          formula: "\\theta_{\\text{BD}} = \\angle(\\text{O}=\\text{C}\\cdots\\text{Nu}^-) \\approx 107.0^\\circ",
-          explanation: "Angle between carbonyl C=O axis and incoming nucleophile trajectory yielding maximum π* LUMO overlap.",
+          label: "1. POLARITY & ELECTROPHILICITY",
+          formula: "C(δ⁺)=O(δ⁻)  +  :C≡N⁻  ⟶  ⁻O–C–CN",
+          explanation: "Oxygen pulls π-electrons, leaving Carbon electron-poor (δ⁺ = +0.55) and ready for nucleophilic attack.",
         },
         {
-          label: "2. PLANAR TO TETRAHEDRAL PYRAMIDALIZATION",
-          formula: "sp^2\\text{ (Planar, } 120^\\circ\\text{)} \\longrightarrow sp^3\\text{ (Tetrahedral, } 109.5^\\circ\\text{)}",
-          explanation: "Transition state geometry relief as π-bond breaks and 4 equivalent σ-bonds form.",
+          label: "2. THE BÜRGI–DUNITZ SWEET SPOT",
+          formula: "θ_BD = ∠(O=C···Nu⁻) ≈ 107.0°",
+          explanation: "The exact approach angle that maximizes π* LUMO overlap while avoiding Oxygen lone-pair repulsion.",
         },
         {
-          label: "3. ACTIVATION BARRIER ENVELOPE",
-          formula: "E_a(\\theta) = E_{a0} + k_\\theta(\\theta - 107.0^\\circ)^2",
-          explanation: "Deviating from 107° dramatically spikes activation energy due to Pauli repulsion or orbital misalignment.",
+          label: "3. UMBRELLA REHYBRIDIZATION",
+          formula: "sp² (Flat, 120°)  ⟶  sp³ (Tetrahedral, 109.5°)",
+          explanation: "Breaking the C=O π-bond converts the flat molecule into a 3D tetrahedral alkoxide intermediate.",
         },
       ],
       steps: [
         {
           step: 1,
-          title: "Identify Substrate & Orbital Geometry",
-          math: "\\text{HCHO: } sp^2\\text{ hybridized C, bond angles } 120^\\circ, \\text{ electrophilic center } \\delta^+ = +0.55",
-          explanation: "Formaldehyde has two tiny hydrogen atoms, offering an unshielded approach vector for the cyanide ion.",
+          title: "Aim Along the 107° Corridor",
+          math: "θ = 107.0° ± 3.5°   (103.5° to 110.5°)",
+          explanation: "Align the trajectory beam with the green 107° marker so the nucleophile hits the center of the blue π* LUMO lobe.",
         },
         {
           step: 2,
-          title: "Determine Optimal Attack Vector",
-          math: "\\theta_{\\text{target}} = 107.0^\\circ \\quad (\\text{Tolerance: } 103.5^\\circ \\le \\theta \\le 110.5^\\circ)",
-          explanation: "Attacking at 107° channels the nucleophile directly into the carbon π* lobe.",
+          title: "Supply Activation Energy (Ea)",
+          math: "Ek ≥ Ea = 25.0 kJ/mol",
+          explanation: "Formaldehyde has tiny H atoms and no electron-donating groups, so its barrier is very low (25 kJ/mol).",
         },
         {
           step: 3,
-          title: "Supply Sufficient Kinetic Energy",
-          math: "E_k \\ge E_a = 25.0\\text{ kJ/mol}",
-          explanation: "Kinetic energy of collision must exceed the 25.0 kJ/mol activation barrier to cleave the π-bond.",
+          title: "Observe Umbrella Inversion",
+          math: "H₂C=O + :CN⁻ ⟶ H₂C(O⁻)CN",
+          explanation: "Watch the C=O double bond fade into a single bond as the H atoms fold back into a 109.5° tetrahedron.",
         },
       ],
     },
@@ -144,43 +143,43 @@ export const NUCLEOPHILIC_STAGES: Record<number, NucleophilicStageConfig> = {
     defaultEnergy: 40.0,
     targetDescription: "Navigate the narrow steric corridor (θ = 107.0° ± 2.0°) with high kinetic energy Ek ≥ 65.0 kJ/mol to overcome +I charge dampening.",
     mathDerivation: {
-      title: "Stage 2: Electronic (+I) and Steric Shielding in Ketones vs Aldehydes",
+      title: "Why Are Ketones Slower Than Aldehydes? (Steric + Electronic Effects)",
       concept:
-        "Why are ketones significantly less reactive toward nucleophilic addition than aldehydes (JEE Mains Golden Rule)?\n\n" +
-        "1. Electronic Effect (+I Inductive Effect)\n" +
-        "Each methyl group (-CH₃) is electron-donating (+I). In acetone, two methyl groups push electron density toward the carbonyl carbon:\n" +
-        "• Formaldehyde (HCHO): δ+ = +0.55\n" +
-        "• Acetaldehyde (CH₃CHO): δ+ = +0.42\n" +
-        "• Acetone (CH₃COCH₃): δ+ = +0.30\n" +
-        "The reduced positive charge weakens the electrostatic Coulomb pull on the incoming nucleophile.\n\n" +
-        "2. Steric Hindrance (Angle Compression Strain)\n" +
-        "In the planar sp² state, the methyl groups are spread out at 120°. In the tetrahedral sp³ transition state, all four bonds crowd together at 109.5°. The bulky rotating hydrogen clouds of the two methyl groups clash, generating significant steric strain and raising activation energy from 25 kJ/mol to 65 kJ/mol!",
+        "Replacing Formaldehyde's two tiny hydrogens with two bulky methyl groups (-CH₃) in Acetone (CH₃COCH₃) slows down nucleophilic addition for two major reasons:\n\n" +
+        "1. Electronic Effect (+I Inductive Push)\n" +
+        "Methyl groups are electron-donating (+I effect). They push extra electron density into the carbonyl carbon, partially neutralizing its positive charge:\n" +
+        "• Formaldehyde (HCHO): δ⁺ = +0.55 (strong pull)\n" +
+        "• Acetaldehyde (CH₃CHO): δ⁺ = +0.42 (moderate pull)\n" +
+        "• Acetone (CH₃COCH₃): δ⁺ = +0.30 (weak pull)\n" +
+        "Because Carbon is less positive, it attracts the negative nucleophile much more weakly.\n\n" +
+        "2. Steric Hindrance (Physical Crowding)\n" +
+        "Each -CH₃ group has three spinning hydrogen atoms forming a bulky electron cloud (the gray translucent sphere). These clouds physically block sloppy approach angles (shrinking tolerance to ±2.0°), and squeezing them from 120° down to 109.5° creates steric strain that raises the barrier from 25 to 65 kJ/mol!",
       conclusion:
-        "Key Chemistry Takeaway: Reactivity order of carbonyl addition is governed by both electronic (+I) and steric factors: HCHO > RCHO > RCOR. Higher collision energy and precision alignment are required to penetrate acetone's hindered corridor.",
+        "Key Takeaway: Aldehydes are always more reactive than ketones in nucleophilic addition because ketones suffer from both +I electron donation (lowering δ⁺) and steric crowding from two alkyl groups.",
       formulas: [
         {
-          label: "1. CARBONYL REACTIVITY HIERARCHY",
-          formula: "\\text{HCHO} > \\text{RCHO} > \\text{RCOR} > \\text{ArCHO} > \\text{ArCOAr}",
-          explanation: "Universal rate hierarchy dictated by combined electronic (+I) and steric crowding penalties.",
+          label: "1. CARBONYL REACTIVITY ORDER",
+          formula: "HCHO (Fastest)  >  RCHO (Aldehydes)  >  R₂C=O (Ketones)",
+          explanation: "More alkyl (+I) groups mean weaker δ⁺ pull and greater steric crowding, slowing the reaction.",
         },
         {
-          label: "2. ACTIVATION ENERGY ELEVATION",
-          formula: "\\Delta E_a = E_{a,\\text{ketone}} - E_{a,\\text{aldehyde}} = 65.0 - 25.0 = 40.0\\text{ kJ/mol}",
-          explanation: "Steric angle compression (120° → 109.5°) of two bulky methyl groups creates severe transition-state strain.",
+          label: "2. ACTIVATION ENERGY JUMP",
+          formula: "ΔEa = Ea(Acetone) − Ea(Formaldehyde) = 65.0 − 25.0 = +40.0 kJ/mol",
+          explanation: "Compressing two bulky -CH₃ groups from 120° to 109.5° requires much higher collision energy.",
         },
       ],
       steps: [
         {
           step: 1,
-          title: "Assess Steric Corridor Constriction",
-          math: "\\text{Tolerance shrinks from } \\pm 3.5^\\circ \\longrightarrow \\pm 2.0^\\circ \\quad (105.0^\\circ \\le \\theta \\le 109.0^\\circ)",
-          explanation: "Rotating methyl hydrogen atoms block glancing attacks; nucleophile must hit with exact precision.",
+          title: "Thread the Narrow Steric Corridor",
+          math: "θ = 107.0° ± 2.0°   (105.0° to 109.0°)",
+          explanation: "Stay close to 107.0°; any larger deviation causes the nucleophile to bounce off the bulky -CH₃ electron clouds.",
         },
         {
           step: 2,
-          title: "Compensate for Reduced Electrophilic Pull",
-          math: "\\delta^+ = +0.30 \\implies E_k \\ge 65.0\\text{ kJ/mol}",
-          explanation: "Because attractive Coulomb force is weakened, the projectile requires higher kinetic energy to pierce the electron cloud.",
+          title: "Overcome the Higher Barrier (Ea)",
+          math: "Ek ≥ 65.0 kJ/mol",
+          explanation: "Raise kinetic energy to at least 65 kJ/mol so :C≡N⁻ has enough energy to overcome +I dampening and steric strain.",
         },
       ],
     },
@@ -210,48 +209,44 @@ export const NUCLEOPHILIC_STAGES: Record<number, NucleophilicStageConfig> = {
     requiresAcidCatalyst: true,
     targetDescription: "Activate the H⁺ Acid Catalyst switch to protonate carbonyl oxygen (Ea drops from 78 → 28 kJ/mol), then fire CN⁻ to complete the synthesis.",
     mathDerivation: {
-      title: "Stage 3: Acid-Catalyzed Nucleophilic Addition Mechanism",
+      title: "How Does an Acid Catalyst (H⁺) Unlock Unreactive Ketones?",
       concept:
-        "Weak nucleophiles (like HCN, H₂O, or ROH) cannot attack neutral ketones effectively because the uncatalyzed barrier is over 78 kJ/mol.\n\n" +
-        "1. The Magic of Acid Protonation\n" +
-        "When an acid catalyst (H⁺) is introduced:\n" +
-        "• H⁺ selectively protonates the lone pair of the carbonyl oxygen atom: >C=O + H⁺ ⇌ >C=O⁺-H\n" +
-        "• This sets up an immense resonance contributor: [ >C=O⁺-H  ⟷  >C⁺-OH ]\n" +
-        "• The carbon atom is transformed into a full carbocation-like electrophile! Its partial positive charge surges from +0.30 to +0.85.\n\n" +
-        "2. Dramatic Barrier Reduction\n" +
-        "Because carbon is now intensely electron-deficient, the incoming :CN⁻ nucleophile experiences an overwhelming electrostatic attraction, slashing the activation energy from 78.0 kJ/mol down to 28.0 kJ/mol.\n" +
-        "Attack occurs with rapid 100% conversion, yielding Acetone Cyanohydrin.",
+        "In real labs, HCN is a weak acid and a poor source of :CN⁻. On a neutral ketone like Acetone, the uncatalyzed energy barrier is 78 kJ/mol—far too high for the reaction to proceed at room temperature!\n\n" +
+        "How the H⁺ Catalyst Solves This:\n" +
+        "1. Protonating Oxygen: Turning on the H⁺ Acid Catalyst attaches a positively charged proton (H⁺) to Oxygen's lone pair (>C=O + H⁺ ⇌ >C=O⁺–H).\n" +
+        "2. Supercharging Carbon (δ⁺: +0.30 ⟶ +0.85): Because Oxygen now carries a positive charge (O⁺), it pulls π-electrons away from Carbon aggressively (resonance: [ >C=O⁺–H ⟷ >C⁺–OH ]). Carbon becomes nearly a full carbocation!\n" +
+        "3. Slashing the Energy Barrier (78 ⟶ 28 kJ/mol): This huge positive charge acts like a powerful magnet for the incoming :CN⁻ nucleophile, cutting the activation barrier by 50 kJ/mol and making Acetone Cyanohydrin synthesis effortless!",
       conclusion:
-        "Key Chemistry Takeaway: Acid catalysis protonates oxygen to intensify the electrophilicity of carbonyl carbon, rendering even sluggish ketones receptive to addition by weak nucleophiles.",
+        "Key Takeaway: Acid catalysis doesn't make the nucleophile stronger—it makes the carbonyl electrophile MUCH stronger by protonating oxygen, turning sluggish ketones into fast-reacting targets.",
       formulas: [
         {
-          label: "1. OXYGEN PROTONATION RESONANCE",
-          formula: "\\text{R}_2\\text{C}=\\text{O} + \\text{H}^+ \\rightleftharpoons \\left[ \\text{R}_2\\text{C}=\\text{O}^+-\\text{H} \\longleftrightarrow \\text{R}_2\\text{C}^+-\\text{OH} \\right]",
-          explanation: "Carbocation resonance contributor endows carbon with powerful electrophilic reactivity.",
+          label: "1. ACID ACTIVATION RESONANCE",
+          formula: "(CH₃)₂C=O + H⁺  ⇌  [ (CH₃)₂C=O⁺–H  ⟷  (CH₃)₂C⁺–OH ]",
+          explanation: "Protonating Oxygen creates a strong carbocation resonance form, boosting Carbon's electrophilicity.",
         },
         {
-          label: "2. CATALYTIC BARRIER REDUCTION",
-          formula: "E_{a,\\text{catalyzed}} = 28.0\\text{ kJ/mol} \\quad (\\text{vs } 78.0\\text{ kJ/mol Uncatalyzed})",
-          explanation: "Activation energy drops by 50 kJ/mol (64% reduction), boosting reaction rate by over 10^8 times at 298 K.",
+          label: "2. CATALYTIC BARRIER DROP",
+          formula: "Ea: 78.0 kJ/mol (Acid OFF)  ⟶  28.0 kJ/mol (H⁺ ON)",
+          explanation: "A 50 kJ/mol drop speeds up the reaction by over 10⁸ times at room temperature (298 K).",
         },
         {
-          label: "3. ARRHENIUS RATE ENHANCEMENT",
-          formula: "\\dfrac{k_{\\text{cat}}}{k_{\\text{uncat}}} = \\exp\\left(\\dfrac{\\Delta E_a}{RT}\\right) \\approx \\exp(20.2) \\approx 5.8 \\times 10^8",
-          explanation: "Quantitative demonstration of why acid catalysts are essential in industrial cyanohydrin production.",
+          label: "3. OVERALL CYANOHYDRIN SYNTHESIS",
+          formula: "(CH₃)₂C=O  +  HCN  —(H⁺)→  (CH₃)₂C(OH)CN",
+          explanation: "Produces Acetone Cyanohydrin, an important building block for α-hydroxy acids and polymers.",
         },
       ],
       steps: [
         {
           step: 1,
-          title: "Engage Acid Catalyst (H⁺ Protonation)",
-          math: "\\text{Toggle Acid Switch: } E_a: 78.0 \\longrightarrow 28.0\\text{ kJ/mol}, \\quad \\delta^+: +0.30 \\longrightarrow +0.85",
-          explanation: "Protonating oxygen creates a powerful electrostatic funnel pulling the nucleophile in.",
+          title: "Turn ON the H⁺ Acid Catalyst",
+          math: "Click [H⁺ OFF] ⟶ [H⁺ ON]   (δ⁺: +0.30 ⟶ +0.85)",
+          explanation: "Protonate the carbonyl oxygen to light up Carbon's electrophilic pull and drop Ea to 28 kJ/mol.",
         },
         {
           step: 2,
-          title: "Deliver Nucleophile with Moderate Energy",
-          math: "E_k \\ge 28.0\\text{ kJ/mol}, \\quad \\theta \\approx 107.0^\\circ \\pm 4.0^\\circ",
-          explanation: "Cyanide ion attacks smoothly along the Bürgi-Dunitz trajectory, yielding quantitative Acetone Cyanohydrin.",
+          title: "Aim & Fire at Moderate Energy",
+          math: "θ = 107.0° ± 4.0°,   Ek ≥ 28.0 kJ/mol",
+          explanation: "With the barrier lowered, even a gentle 30 kJ/mol collision smoothly produces Acetone Cyanohydrin!",
         },
       ],
     },
@@ -275,8 +270,10 @@ interface NucleophilicAdditionState {
   // Animation & simulation progression
   isSimulating: boolean;
   projectileProgress: number; // 0 (at launcher) to 1 (at carbon)
+  deflectionProgress: number; // 0 to 1 smooth deflection/rebound after failed collision
   rehybridizationProgress: number; // 0 (sp2 planar) to 1 (sp3 tetrahedral)
   collisionResult: CollisionResult;
+  pendingFailureReason: string;
 
   // Game lifecycle
   isWon: boolean;
@@ -293,6 +290,7 @@ interface NucleophilicAdditionState {
   resetSimulation: () => void;
   nextStage: () => void;
   setStage: (stageNum: number) => void;
+  restartAll: () => void;
 }
 
 export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((set, get) => ({
@@ -303,8 +301,10 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
 
   isSimulating: false,
   projectileProgress: 0,
+  deflectionProgress: 0,
   rehybridizationProgress: 0,
   collisionResult: "none",
+  pendingFailureReason: "",
 
   isWon: false,
   isGameOver: false,
@@ -337,8 +337,10 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
     set({
       isSimulating: true,
       projectileProgress: 0,
+      deflectionProgress: 0,
       rehybridizationProgress: 0,
       collisionResult: "none",
+      pendingFailureReason: "",
       isWon: false,
       isGameOver: false,
       failureReason: "",
@@ -350,14 +352,33 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
     const s = get();
     if (!s.isSimulating) return;
 
+    // If a failed collision is already animating its deflection/rebound, advance deflectionProgress
+    if (
+      s.collisionResult !== "none" &&
+      s.collisionResult !== "hit"
+    ) {
+      const nextDeflect = Math.min(1.0, s.deflectionProgress + delta * 2.2);
+      if (nextDeflect >= 1.0) {
+        set({
+          deflectionProgress: 1.0,
+          isSimulating: false,
+          isGameOver: true,
+          failureReason: s.pendingFailureReason,
+          showResultModal: true,
+        });
+      } else {
+        set({ deflectionProgress: nextDeflect });
+      }
+      return;
+    }
+
     const stage = NUCLEOPHILIC_STAGES[s.currentStage];
     const currentAngle = s.attackAngle;
     const currentEnergy = s.kineticEnergy;
     const isAcidActive = s.acidCatalystActive;
 
-    // Evaluate effective activation energy and tolerance
     const effectiveEa = isAcidActive && stage.catalyzedEa ? stage.catalyzedEa : stage.baselineEa;
-    const effectiveTolerance = isAcidActive && stage.catalyzedEa ? stage.angleTolerance : stage.angleTolerance;
+    const effectiveTolerance = stage.angleTolerance;
 
     // Projectile speed scales with kinetic energy
     const travelSpeed = 0.95 + (currentEnergy / 60.0) * 0.75;
@@ -369,18 +390,14 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
     }
 
     // Projectile has reached the reaction collision zone (newProgress = 1.0)
-    // Evaluate collision mechanics:
     const angleDiff = Math.abs(currentAngle - stage.optimalAngle);
 
     // 1. Oxygen Lone Pair Repulsion (attack angle too steep, < 98 deg)
     if (currentAngle < 98.0) {
       set({
         projectileProgress: 1.0,
-        isSimulating: false,
         collisionResult: "deflected_oxygen_repulsion",
-        isGameOver: true,
-        failureReason: `Electrostatic Repulsion! At θ = ${currentAngle.toFixed(1)}°, the nucleophile clashes with oxygen's electron-rich lone pairs. Increase attack angle toward 107.0°.`,
-        showResultModal: true,
+        pendingFailureReason: `Electrostatic Repulsion! At θ = ${currentAngle.toFixed(1)}°, the nucleophile clashes with oxygen's electron-rich lone pairs. Increase attack angle toward 107.0°.`,
       });
       return;
     }
@@ -389,11 +406,8 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
     if (currentAngle > 116.0) {
       set({
         projectileProgress: 1.0,
-        isSimulating: false,
         collisionResult: "missed_lumo",
-        isGameOver: true,
-        failureReason: `Glancing Miss! At θ = ${currentAngle.toFixed(1)}°, the incoming trajectory completely bypasses carbon's π* antibonding orbital. Reduce angle toward 107.0°.`,
-        showResultModal: true,
+        pendingFailureReason: `Glancing Miss! At θ = ${currentAngle.toFixed(1)}°, the incoming trajectory bypasses carbon's π* antibonding orbital. Reduce angle toward 107.0°.`,
       });
       return;
     }
@@ -402,11 +416,8 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
     if (angleDiff > effectiveTolerance) {
       set({
         projectileProgress: 1.0,
-        isSimulating: false,
         collisionResult: "steric_rebound",
-        isGameOver: true,
-        failureReason: `Steric Collision! In ${stage.substrateName}, angle deviation (Δθ = ${angleDiff.toFixed(1)}°) clashes with substituent atoms. Target the Bürgi-Dunitz sweet spot: 107.0° ± ${effectiveTolerance.toFixed(1)}°.`,
-        showResultModal: true,
+        pendingFailureReason: `Steric Collision! In ${stage.substrateName}, angle deviation (Δθ = ${angleDiff.toFixed(1)}°) clashes with substituent atoms. Target the Bürgi-Dunitz sweet spot: 107.0° ± ${effectiveTolerance.toFixed(1)}°.`,
       });
       return;
     }
@@ -418,17 +429,14 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
         : "";
       set({
         projectileProgress: 1.0,
-        isSimulating: false,
         collisionResult: "insufficient_energy",
-        isGameOver: true,
-        failureReason: `Insufficient Activation Energy! Collision energy (${currentEnergy.toFixed(1)} kJ/mol) is lower than activation barrier Ea = ${effectiveEa.toFixed(1)} kJ/mol.${hint}`,
-        showResultModal: true,
+        pendingFailureReason: `Insufficient Activation Energy! Collision energy (${currentEnergy.toFixed(1)} kJ/mol) is lower than activation barrier Ea = ${effectiveEa.toFixed(1)} kJ/mol.${hint}`,
       });
       return;
     }
 
     // 5. SUCCESSFUL COLLISION! Run rehybridization animation (sp2 planar -> sp3 tetrahedral)
-    const newRehyb = Math.min(1.0, s.rehybridizationProgress + delta * 1.8);
+    const newRehyb = Math.min(1.0, s.rehybridizationProgress + delta * 1.6);
     set({
       projectileProgress: 1.0,
       rehybridizationProgress: newRehyb,
@@ -452,8 +460,10 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
       acidCatalystActive: false,
       isSimulating: false,
       projectileProgress: 0,
+      deflectionProgress: 0,
       rehybridizationProgress: 0,
       collisionResult: "none",
+      pendingFailureReason: "",
       isWon: false,
       isGameOver: false,
       failureReason: "",
@@ -475,12 +485,18 @@ export const useNucleophilicAdditionStore = create<NucleophilicAdditionState>((s
       acidCatalystActive: false,
       isSimulating: false,
       projectileProgress: 0,
+      deflectionProgress: 0,
       rehybridizationProgress: 0,
       collisionResult: "none",
+      pendingFailureReason: "",
       isWon: false,
       isGameOver: false,
       failureReason: "",
       showResultModal: false,
     });
+  },
+
+  restartAll: () => {
+    get().setStage(1);
   },
 }));

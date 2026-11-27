@@ -422,6 +422,14 @@ const AldolCannizzaroGamePage = dynamic<{ difficulty?: string; onExit?: () => vo
   { ssr: false, loading: LoadingFallback }
 );
 
+const CarboxylicAcidityGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/carboxylic_acidity_hvz/CarboxylicAcidityGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 export interface ChallengeDispatcherProps {
   module?: string;
   topic: string;
@@ -761,12 +769,21 @@ export function ChallengeDispatcher({
       normTopic.includes("molecular-shape") ||
       normTopic.includes("molecular_shape"));
 
+  const isCarboxylicAcidityHvz =
+    normTopic === "47" ||
+    normTopic.includes("hvz") ||
+    normTopic.includes("carboxylic-acid-acidity") ||
+    normTopic.includes("carboxylic_acidity") ||
+    ((normModule.includes("aldehydes") || normModule === "m11") &&
+      (normTopic === "47" || normTopic.includes("acidity") || normTopic.includes("hvz")));
+
   const isAldolCannizzaro =
-    normTopic === "46" ||
+    !isCarboxylicAcidityHvz &&
+    (normTopic === "46" ||
     normTopic.includes("aldol") ||
     normTopic.includes("cannizzaro") ||
     ((normModule.includes("aldehydes") || normModule === "m11") &&
-      (normTopic === "46" || normTopic.includes("aldol") || normTopic.includes("cannizzaro")));
+      (normTopic === "46" || normTopic.includes("aldol") || normTopic.includes("cannizzaro"))));
 
   const isQualitativeTests =
     !isAldolCannizzaro &&
@@ -899,6 +916,8 @@ export function ChallengeDispatcher({
     }
   } else if (isVsepr) {
     content = <VseprGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isCarboxylicAcidityHvz) {
+    content = <CarboxylicAcidityGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isAldolCannizzaro) {
     content = <AldolCannizzaroGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isQualitativeTests) {
@@ -923,7 +942,7 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-          { showExitButton && !isAldolCannizzaro && !isQualitativeTests && !isCarbonylStructureDimerization && !isNucleophilicAddition && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+          { showExitButton && !isCarboxylicAcidityHvz && !isAldolCannizzaro && !isQualitativeTests && !isCarbonylStructureDimerization && !isNucleophilicAddition && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
             <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
               <button
                 type="button"

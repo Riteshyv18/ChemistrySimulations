@@ -350,6 +350,14 @@ const GibbsFreeEnergyGamePage = dynamic<{ difficulty?: string; onExit?: () => vo
   { ssr: false, loading: LoadingFallback }
 );
 
+const CrystalPackingGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/solid_state/packing_voids/CrystalPackingGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
 const OreConcentrationGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
   () =>
     import(
@@ -426,6 +434,14 @@ const CarboxylicAcidityGamePage = dynamic<{ difficulty?: string; onExit?: () => 
   () =>
     import(
       "@/features/challenges/topics/chemistry/carboxylic_acidity_hvz/CarboxylicAcidityGamePage"
+    ).then((mod) => mod.default),
+  { ssr: false, loading: LoadingFallback }
+);
+
+const UnitCellBuilderGamePage = dynamic<{ difficulty?: string; onExit?: () => void }>(
+  () =>
+    import(
+      "@/features/challenges/topics/chemistry/solid_state/unit_cells/UnitCellBuilderGamePage"
     ).then((mod) => mod.default),
   { ssr: false, loading: LoadingFallback }
 );
@@ -588,21 +604,55 @@ export function ChallengeDispatcher({
     ((normModule.includes("metallurgy") || normModule === "m8") &&
       (normTopic === "4" || normTopic.includes("refin")));
 
+  const isCrystalPacking =
+    normTopic === "37" ||
+    normTopic === "packing-efficiency" ||
+    normTopic === "packing_efficiency" ||
+    normTopic === "crystal-packing" ||
+    normTopic === "crystal_packing" ||
+    normTopic.includes("packing") ||
+    normTopic.includes("coordination") ||
+    normTopic.includes("void") ||
+    ((normModule.includes("solid-state") || normModule.includes("solid_state") || normModule === "m9") &&
+      normTopic === "3");
+
+  const isUnitCellBuilder =
+    !isCrystalPacking &&
+    (normTopic === "36" ||
+    normTopic === "unit-cells" ||
+    normTopic === "unit_cells" ||
+    normTopic === "unit-cell" ||
+    normTopic === "unit_cell" ||
+    normTopic === "crystal-lattices" ||
+    normTopic === "crystal_lattices" ||
+    normTopic === "types-of-cubic-unit-cells" ||
+    normTopic === "types_of_cubic_unit_cells" ||
+    normTopic === "unit-cell-builder" ||
+    normTopic === "unit_cell_builder" ||
+    normTopic.includes("unit-cell") ||
+    normTopic.includes("unit_cell") ||
+    normTopic.includes("cubic-unit-cell") ||
+    normTopic.includes("cubic_unit_cell") ||
+    ((normModule.includes("solid-state") || normModule.includes("solid_state") || normModule === "m9") &&
+      (normTopic === "2" || normTopic.includes("unit") || normTopic.includes("lattice"))));
+
   const isSolidStateClassification =
-    normTopic === "35" ||
-    normTopic === "classification-of-solids" ||
-    normTopic === "classification_of_solids" ||
-    normTopic === "crystal-explorer" ||
-    normTopic === "crystal_explorer" ||
-    normTopic === "crystalline-amorphous" ||
-    normTopic === "crystalline_amorphous" ||
-    normTopic.includes("crystal") ||
-    normTopic.includes("amorphous") ||
-    normTopic.includes("solid-state") ||
-    normTopic.includes("solid_state") ||
-    normModule.includes("solid-state") ||
-    normModule.includes("solid_state") ||
-    normModule === "m9";
+    !isCrystalPacking &&
+    !isUnitCellBuilder &&
+    (normTopic === "35" ||
+      normTopic === "classification-of-solids" ||
+      normTopic === "classification_of_solids" ||
+      normTopic === "crystal-explorer" ||
+      normTopic === "crystal_explorer" ||
+      normTopic === "crystalline-amorphous" ||
+      normTopic === "crystalline_amorphous" ||
+      normTopic.includes("crystal") ||
+      normTopic.includes("amorphous") ||
+      normTopic.includes("solid-state") ||
+      normTopic.includes("solid_state") ||
+      normModule.includes("solid-state") ||
+      normModule.includes("solid_state") ||
+      normModule === "m9");
 
   const isReductionExtraction =
     !isRefiningOfMetals &&
@@ -820,7 +870,11 @@ export function ChallengeDispatcher({
 
   let content: ReactNode = null;
 
-  if (isSolidStateClassification) {
+  if (isCrystalPacking) {
+    content = <CrystalPackingGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isUnitCellBuilder) {
+    content = <UnitCellBuilderGamePage difficulty={normDifficulty} onExit={onExit} />;
+  } else if (isSolidStateClassification) {
     content = <CrystalExplorerGamePage difficulty={normDifficulty} onExit={onExit} />;
   } else if (isRefiningOfMetals) {
     content = <RefiningOfMetalsGamePage difficulty={normDifficulty} onExit={onExit} />;
@@ -942,27 +996,27 @@ export function ChallengeDispatcher({
     <CanvasErrorBoundary>
       <div className="w-full h-screen h-[100dvh] overflow-hidden bg-[#070D1E] select-none relative">
         {/* ─── TOP LEFT CANVAS: EXIT BUTTON (For full-screen canvases without integrated header) ─── */}
-          { showExitButton && !isCarboxylicAcidityHvz && !isAldolCannizzaro && !isQualitativeTests && !isCarbonylStructureDimerization && !isNucleophilicAddition && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
-            <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (onExit) {
-                    onExit();
-                  } else {
-                    exitSimulation();
-                  }
-                }}
-                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/95 hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200/90 hover:border-slate-300 backdrop-blur-md font-mono font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer"
-                title="Exit Simulation (Back to App)"
-              >
-                <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <span>EXIT</span>
-              </button>
-            </div>
-          )}
+        {showExitButton && !isCarboxylicAcidityHvz && !isAldolCannizzaro && !isQualitativeTests && !isCarbonylStructureDimerization && !isNucleophilicAddition && !isCrystalPacking && !isUnitCellBuilder && !isSolidStateClassification && !isRefiningOfMetals && !isReductionExtraction && !isCrushingRoastingCalcination && !isOreConcentration && !isGibbsFreeEnergy && !isEntropy && !isHesssLaw && !isEnthalpyHeatCapacity && !isFirstLawThermodynamics && !isSolubilityProduct && !isIonicEquilibrium && !isLeChatelier && !isEquilibriumConstant && !isChemicalEquilibrium && !isCollisionTheory && !isReactionRateControl && !isActivationEnergy && !isRateLawHalfLife && !isConcentrationTerms && !isRaoultsLaw && !isColligativeProperties && !isOsmoticPressure && !isSolutions && !isGalvanicCell && !isElectronIonFlow && !isElectrodePotential && !isElectrolysis && !isDualNature && !isAtomicOrbitals && !isElectronicConfig && !isBohr && !isVsepr && !isQuantumNumbers && !isHybridizationLevel1 && !isHybridizationLevel2 && !isHybridizationLevel3 && !isMotLevel1 && !isMotLevel2 && !isMotLevel3 && (
+          <div className="absolute top-0.9 sm:top-1.6 left-2 sm:left-3.5 z-[60] pointer-events-auto">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onExit) {
+                  onExit();
+                } else {
+                  exitSimulation();
+                }
+              }}
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-white/95 hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200/90 hover:border-slate-300 backdrop-blur-md font-mono font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-sm transition-all active:scale-95 cursor-pointer"
+              title="Exit Simulation (Back to App)"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>EXIT</span>
+            </button>
+          </div>
+        )}
 
         {content}
       </div>

@@ -25,6 +25,7 @@ import {
   Gauge,
   Zap,
 } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 
 // ============================================================================
 // TYPES & 3D STRUCTURES
@@ -47,75 +48,96 @@ const particleMat = new THREE.MeshStandardMaterial({
 });
 
 // ----------------------------------------------------------------------------
-// 3D ANIMATED FIRE FLAMES COMPONENT
+// 3D REALISTIC ELECTRIC HEATER COIL COMPONENT
 // ----------------------------------------------------------------------------
-function FireFlames({ active, isCooling }: { active: boolean; isCooling: boolean }) {
-  const groupRef = useRef<THREE.Group>(null);
+function HeaterCoil({ active, isCooling }: { active: boolean; isCooling: boolean }) {
+  const matRef = useRef<THREE.MeshStandardMaterial>(null);
+  const glowRef = useRef<THREE.MeshBasicMaterial>(null);
 
-  // Generate 18 flame tongues around the base ring
-  const flameData = useMemo(() => {
-    return Array.from({ length: 18 }).map((_, i) => {
-      const angle = (i / 18) * Math.PI * 2;
-      const r = 0.4 + (i % 3) * 0.35;
-      return {
-        basePos: [Math.cos(angle) * r, -1.43, Math.sin(angle) * r] as [number, number, number],
-        phase: Math.random() * Math.PI * 2,
-        speed: 8 + Math.random() * 6,
-        baseScale: 0.22 + Math.random() * 0.16,
-      };
-    });
+  // Build a smooth spiral heating element (Archimedean spiral tube)
+  const coilGeo = useMemo(() => {
+    const points: THREE.Vector3[] = [];
+    const turns = 4.5;
+    const segments = 160;
+    const minR = 0.14;
+    const maxR = 1.12;
+    for (let i = 0; i <= segments; i++) {
+      const t = i / segments;
+      const angle = t * turns * Math.PI * 2;
+      const r = minR + (maxR - minR) * t;
+      points.push(new THREE.Vector3(Math.cos(angle) * r, -1.39, Math.sin(angle) * r));
+    }
+    const curve = new THREE.CatmullRomCurve3(points);
+    return new THREE.TubeGeometry(curve, 160, 0.042, 12, false);
   }, []);
 
   useFrame(({ clock }) => {
-    if (!groupRef.current || !active) return;
     const t = clock.getElapsedTime();
-
-    groupRef.current.children.forEach((child, i) => {
-      const data = flameData[i];
-      if (!data) return;
-      // Flickering height and slight sway
-      const flicker = Math.sin(t * data.speed + data.phase);
-      const hScale = Math.max(0.1, 1.0 + flicker * 0.45);
-      child.scale.set(1.0 + flicker * 0.2, hScale, 1.0 + flicker * 0.2);
-      child.position.y = data.basePos[1] + (hScale - 1.0) * 0.1;
-    });
+    const pulse = 0.5 + 0.5 * Math.sin(t * 7);
+    if (matRef.current) {
+      if (active) {
+        matRef.current.emissiveIntensity = 1.6 + pulse * 0.9;
+      } else if (isCooling) {
+        matRef.current.emissiveIntensity = 1.2 + pulse * 0.6;
+      } else {
+        matRef.current.emissiveIntensity = 0;
+      }
+    }
+    if (glowRef.current) {
+      glowRef.current.opacity = 0.28 + pulse * 0.18;
+    }
   });
 
-  if (!active && !isCooling) return null;
+  const coilColor = active ? "#FB923C" : isCooling ? "#38BDF8" : "#334155";
+  const emissiveColor = active ? "#EA580C" : isCooling ? "#0284C7" : "#000000";
 
   return (
-    <group ref={groupRef}>
-      {flameData.map((f, i) => (
-        <group key={i} position={f.basePos}>
-          {/* Flame Core (Bright Luminous Lemon-Yellow) */}
-          <mesh position={[0, 0.14, 0]}>
-            <coneGeometry args={[0.08, 0.32, 12]} />
-            <meshBasicMaterial
-              color={isCooling ? "#E0F2FE" : "#FEF08A"}
-              transparent
-              opacity={0.95}
-            />
-          </mesh>
-          {/* Flame Body (Warm Golden Amber Yellow) */}
-          <mesh position={[0, 0.18, 0]}>
-            <coneGeometry args={[0.12, 0.42, 12]} />
-            <meshBasicMaterial
-              color={isCooling ? "#38BDF8" : "#FBBF24"}
-              transparent
-              opacity={0.88}
-            />
-          </mesh>
-          {/* Flame Outer Halo (Rich Warm Orange / Cyan) */}
-          <mesh position={[0, 0.22, 0]}>
-            <coneGeometry args={[0.15, 0.50, 12]} />
-            <meshBasicMaterial
-              color={isCooling ? "#0284C7" : "#F97316"}
-              transparent
-              opacity={0.55}
-            />
-          </mesh>
-        </group>
+    <group>
+      {/* Realistic Spiral Nichrome Heating Coil */}
+      <mesh geometry={coilGeo} castShadow>
+        <meshStandardMaterial
+          ref={matRef}
+          color={coilColor}
+          emissive={emissiveColor}
+          emissiveIntensity={active ? 2.0 : isCooling ? 1.4 : 0}
+          roughness={active || isCooling ? 0.25 : 0.38}
+          metalness={active || isCooling ? 0.35 : 0.75}
+        />
+      </mesh>
+
+      {/* Support Spokes holding the spiral coil */}
+      {[0, (Math.PI * 2) / 3, (Math.PI * 4) / 3].map((angle, idx) => (
+        <mesh
+          key={idx}
+          position={[Math.cos(angle) * 0.62, -1.415, Math.sin(angle) * 0.62]}
+          rotation={[0, -angle, Math.PI / 2]}
+        >
+          <cylinderGeometry args={[0.018, 0.018, 1.15, 8]} />
+          <meshStandardMaterial color="#1E293B" metalness={0.8} roughness={0.3} />
+        </mesh>
       ))}
+
+      {/* Subtle Radiant Thermal Glow Disc & Point Light when active */}
+      {(active || isCooling) && (
+        <>
+          <mesh position={[0, -1.418, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <circleGeometry args={[1.22, 48]} />
+            <meshBasicMaterial
+              ref={glowRef}
+              color={active ? "#F97316" : "#38BDF8"}
+              transparent
+              opacity={0.35}
+              depthWrite={false}
+            />
+          </mesh>
+          <pointLight
+            position={[0, -1.15, 0]}
+            color={active ? "#FB923C" : "#38BDF8"}
+            intensity={active ? 2.2 : 1.5}
+            distance={3.2}
+          />
+        </>
+      )}
     </group>
   );
 }
@@ -216,24 +238,8 @@ function CylinderPistonAssembly({
         />
       </mesh>
 
-      {/* Dynamic Animated Fire Flames Component */}
-      <FireFlames active={isHeating} isCooling={isCooling} />
-
-      {/* Glowing Burner Coals / Ember Bed (Warm Golden-Amber Glow when active) */}
-      {isHeating && (
-        <mesh position={[0, cylinderBottom - 0.03, 0]}>
-          <cylinderGeometry args={[radius * 0.92, radius * 0.92, 0.04, 36]} />
-          <meshBasicMaterial color="#F59E0B" transparent opacity={0.88} />
-        </mesh>
-      )}
-
-      {/* Frosty Ice Ring when Cooling */}
-      {isCooling && (
-        <mesh position={[0, cylinderBottom - 0.03, 0]}>
-          <cylinderGeometry args={[radius * 0.92, radius * 0.92, 0.04, 36]} />
-          <meshBasicMaterial color="#38BDF8" transparent opacity={0.8} />
-        </mesh>
-      )}
+      {/* Realistic Electric Heater Coil Component */}
+      <HeaterCoil active={isHeating} isCooling={isCooling} />
 
       {/* Silver metallic inner ring groove on base (seen in photo) */}
       <mesh position={[0, cylinderBottom - 0.008, 0]} rotation={[Math.PI / 2, 0, 0]}>
@@ -454,6 +460,9 @@ export default function FirstLawThermodynamicsGamePage({
   // Burner visual feedback timer states
   const [isHeatingVisual, setIsHeatingVisual] = useState<boolean>(false);
   const [isCoolingVisual, setIsCoolingVisual] = useState<boolean>(false);
+  const heatTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const coolTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const victoryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // First Law of Thermodynamics: ΔU = q - W
   const deltaU = useMemo(() => {
@@ -514,31 +523,50 @@ export default function FirstLawThermodynamicsGamePage({
     if (onExit) {
       onExit();
     } else {
-      window.history.back();
+      exitSimulation();
     }
   };
 
-  // Perform Selected Thermodynamic Action
+  // Perform Selected Thermodynamic Action and auto-verify target ΔU
   const handleApplyAction = () => {
+    let nextHeat = heatAdded;
+    let nextWork = workDone;
+
     if (selectedAction === "addHeat") {
-      setHeatAdded((prev) => prev + selectedDose);
+      nextHeat = heatAdded + selectedDose;
+      setHeatAdded(nextHeat);
+      setIsCoolingVisual(false);
       setIsHeatingVisual(true);
-      setTimeout(() => setIsHeatingVisual(false), 800);
+      if (heatTimerRef.current) clearTimeout(heatTimerRef.current);
+      heatTimerRef.current = setTimeout(() => setIsHeatingVisual(false), 2000);
       setNotification(`🔥 Added ${selectedDose} J of Heat (q = +${selectedDose} J) to the gas.`);
     } else if (selectedAction === "removeHeat") {
-      setHeatAdded((prev) => prev - selectedDose);
+      nextHeat = heatAdded - selectedDose;
+      setHeatAdded(nextHeat);
+      setIsHeatingVisual(false);
       setIsCoolingVisual(true);
-      setTimeout(() => setIsCoolingVisual(false), 800);
+      if (coolTimerRef.current) clearTimeout(coolTimerRef.current);
+      coolTimerRef.current = setTimeout(() => setIsCoolingVisual(false), 2000);
       setNotification(`❄️ Removed ${selectedDose} J of Heat (q = -${selectedDose} J) from the gas.`);
     } else if (selectedAction === "expand") {
-      setWorkDone((prev) => prev + selectedDose);
+      nextWork = workDone + selectedDose;
+      setWorkDone(nextWork);
       setNotification(`⬆️ Gas expands! Work done BY gas W = +${selectedDose} J (System loses energy).`);
     } else if (selectedAction === "compress") {
-      setWorkDone((prev) => prev - selectedDose);
+      nextWork = workDone - selectedDose;
+      setWorkDone(nextWork);
       setNotification(`⬇️ Piston compressed! Work done ON gas W = -${selectedDose} J (System gains energy).`);
     }
 
     setTimeout(() => setNotification(null), 3500);
+
+    // Automatically show Victory Modal 1 second after target internal energy change is reached
+    if (victoryTimerRef.current) clearTimeout(victoryTimerRef.current);
+    if (nextHeat - nextWork === targetDeltaU) {
+      victoryTimerRef.current = setTimeout(() => {
+        setShowVictoryModal(true);
+      }, 1000);
+    }
   };
 
   // Verify Current Internal Energy against Target
@@ -560,6 +588,7 @@ export default function FirstLawThermodynamicsGamePage({
   };
 
   const handleReset = () => {
+    if (victoryTimerRef.current) clearTimeout(victoryTimerRef.current);
     setHeatAdded(0);
     setWorkDone(0);
     setSelectedAction("addHeat");
@@ -655,18 +684,13 @@ export default function FirstLawThermodynamicsGamePage({
                         Transfer Heat &amp; Work
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        Heat (q) • Work (W)
-                      </span>
-                    </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
                       Choose to add or remove heat, or move the piston to expand or compress the gas system.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
                     <img
-                      src="/instructions/first_law_step1_controls.png"
+                      src="/instructions_firstlaw_step1.png"
                       alt="Heat and Work Controls"
                       className="w-full h-full object-contain rounded-lg"
                     />
@@ -684,11 +708,6 @@ export default function FirstLawThermodynamicsGamePage({
                         Observe Cylinder Response
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        Particle Motion • Pressure
-                      </span>
-                    </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
                       Watch the gas particles speed up or slow down while the piston moves and pressure adjusts.
                     </p>
@@ -702,7 +721,7 @@ export default function FirstLawThermodynamicsGamePage({
                   </div>
                 </div>
 
-                {/* Card 3: Live Energy Meter & Check Answer */}
+                {/* Card 3: Live Energy Meter & Apply */}
                 <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2">
@@ -713,18 +732,13 @@ export default function FirstLawThermodynamicsGamePage({
                         Check Your Answer
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        Energy Balance (ΔU)
-                      </span>
-                    </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Track the energy meter as it balances heat and work, then submit your answer to verify.
+                      Track the energy meter as it balances heat and work, then tap Apply to reach the target ΔU.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
                     <img
-                      src="/instructions/first_law_step3_hud.png"
+                      src="/instructions_firstlaw_step3.png"
                       alt="First Law Energy Meter HUD"
                       className="w-full h-full object-contain rounded-lg"
                     />
@@ -843,19 +857,16 @@ export default function FirstLawThermodynamicsGamePage({
           {/* Digital Live Energy Meter HUD Box - Horizontal Layout */}
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 w-[94%] max-w-[420px] bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 border border-slate-200/90 shadow-xl space-y-1.5 animate-in fade-in duration-200">
 
-            <div className="flex justify-between items-center border-b border-slate-100 pb-1">
+            <div className="flex justify-start items-center border-b border-slate-100 pb-1">
               <div className="flex items-center gap-1">
                 <Activity className="w-3.5 h-3.5 text-sky-600" />
                 <span className="font-extrabold text-[9px] sm:text-[10px] text-slate-800 tracking-wider uppercase">
                   FIRST LAW ENERGY METER
                 </span>
               </div>
-              <span className="text-[8px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full">
-                U_init = {initialU} J
-              </span>
             </div>
 
-            {/* Horizontal Row: Digital Display on Left, Check Answer Button on Right */}
+            {/* Horizontal Row: Digital Display on Left, Apply Button on Right */}
             <div className="flex items-stretch gap-2">
               {/* Digital Display Box */}
               <div className="flex-1 bg-[#0B132B] rounded-xl px-3 py-1.5 text-center text-white border border-slate-800 shadow-inner flex flex-col justify-center">
@@ -864,116 +875,73 @@ export default function FirstLawThermodynamicsGamePage({
                 </div>
               </div>
 
-              {/* CHECK ANSWER BUTTON */}
+              {/* APPLY BUTTON (Replaces CHECK ANSWER) */}
               <button
                 type="button"
-                onClick={handleCheckAnswer}
-                className="w-36 sm:w-40 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-[1.02] active:scale-[0.98] shrink-0"
+                onClick={handleApplyAction}
+                className="w-36 sm:w-40 rounded-xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-black text-xs uppercase tracking-wider shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-[1.02] active:scale-[0.98] shrink-0"
               >
-                <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
-                <span>CHECK ANSWER</span>
+                <Zap className="w-4 h-4 text-sky-200 shrink-0" />
+                <span>APPLY {selectedDose} J</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════
-            BOTTOM CONTROL DOCK (Matching Previous Topics Exact Styling)
+            BOTTOM CONTROL DOCK (Action Selector Only)
             ══════════════════════════════════════════════════════════════════ */}
-        <div className="w-full bg-white border-t border-slate-100 px-3 sm:px-6 py-3.5 z-30 shrink-0 flex justify-center">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 max-w-4xl w-full">
+        <div className="w-full bg-white border-t border-slate-100 px-3 sm:px-6 py-3 z-30 shrink-0 flex justify-center">
+          <div className="flex items-center justify-center max-w-4xl w-full">
 
             {/* Action Selector Buttons */}
-            <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl shrink-0">
+            <div className="grid grid-cols-2 sm:flex items-center gap-1.5 sm:gap-1 p-1.5 sm:p-1 bg-slate-100 rounded-xl w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => handleSelectAction("addHeat")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center gap-1 ${selectedAction === "addHeat"
+                className={`px-3 py-2 sm:py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${selectedAction === "addHeat"
                     ? "bg-orange-600 text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
                   }`}
               >
-                <Flame className="w-3.5 h-3.5" />
+                <Flame className="w-3.5 h-3.5 shrink-0" />
                 <span>+ Heat (q &gt; 0)</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleSelectAction("removeHeat")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center gap-1 ${selectedAction === "removeHeat"
+                className={`px-3 py-2 sm:py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${selectedAction === "removeHeat"
                     ? "bg-blue-600 text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
                   }`}
               >
-                <Snowflake className="w-3.5 h-3.5" />
+                <Snowflake className="w-3.5 h-3.5 shrink-0" />
                 <span>- Heat (q &lt; 0)</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleSelectAction("expand")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center gap-1 ${selectedAction === "expand"
+                className={`px-3 py-2 sm:py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${selectedAction === "expand"
                     ? "bg-purple-600 text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
                   }`}
               >
-                <ArrowUpFromLine className="w-3.5 h-3.5" />
+                <ArrowUpFromLine className="w-3.5 h-3.5 shrink-0" />
                 <span>Expand (W &gt; 0)</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleSelectAction("compress")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center gap-1 ${selectedAction === "compress"
+                className={`px-3 py-2 sm:py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${selectedAction === "compress"
                     ? "bg-teal-600 text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
                   }`}
               >
-                <ArrowDownToLine className="w-3.5 h-3.5" />
+                <ArrowDownToLine className="w-3.5 h-3.5 shrink-0" />
                 <span>Compress (W &lt; 0)</span>
-              </button>
-            </div>
-
-            {/* Dose Selector & Execution Buttons */}
-            <div className="flex items-center gap-3 shrink-0">
-              {/* Dose Selector: 100 J, 200 J, 500 J for Heat; 10 J, 25 J for Work */}
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-500 uppercase px-2">DOSE:</span>
-                  {
-                    availableDoses.map((dose) => (
-                      <button
-                        key={dose}
-                        type="button"
-                        onClick={() => setSelectedDose(dose)}
-                        className={`px-2.5 py-1 rounded-lg font-mono font-bold text-xs transition-all cursor-pointer ${selectedDose === dose
-                            ? "bg-[#0B132B] text-white shadow-xs"
-                            : "text-slate-600 hover:text-slate-900"
-                          }`}
-                      >
-                        {dose} J
-                      </button>
-                    ))
-                  }
-              </div>
-
-              {/* Reset Button */}
-              <button
-                type="button"
-                onClick={handleReset}
-                className="flex items-center gap-1 h-8 px-3 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer active:scale-95"
-              >
-                <RotateCcw className="w-3 h-3 text-slate-500" />
-                <span>RESET</span>
-              </button>
-
-              {/* Primary Action Button */}
-              <button
-                type="button"
-                onClick={handleApplyAction}
-                className="flex items-center gap-1.5 h-8 px-4 rounded-xl font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer transform hover:scale-105 active:scale-95"
-              >
-                <Zap className="w-3.5 h-3.5" />
-                <span>APPLY {selectedDose} J</span>
               </button>
             </div>
 
@@ -985,21 +953,21 @@ export default function FirstLawThermodynamicsGamePage({
         {/* ================================================================== */}
         {showVictoryModal && (
           <div className="absolute inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-                <Trophy className="w-8 h-8 animate-bounce" />
+            <div className="bg-white rounded-3xl p-4 sm:p-5 max-w-sm w-full shadow-2xl border border-slate-100 text-center space-y-2.5 sm:space-y-3">
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
+                <Trophy className="w-6 h-6 animate-bounce" />
               </div>
 
-              <div className="space-y-1">
-                <span className="text-[11px] font-black uppercase tracking-widest text-emerald-600">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">
                   CHALLENGE COMPLETED
                 </span>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900">
                   First Law Verified!
                 </h2>
               </div>
 
-              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-left space-y-2 text-xs sm:text-sm">
+              <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 text-left space-y-1.5 text-xs">
                 <div className="flex justify-between items-center text-slate-600">
                   <span>Heat Added (<span className="font-mono">q</span>):</span>
                   <span className="font-mono font-bold text-slate-900">{heatAdded >= 0 ? `+${heatAdded}` : heatAdded} J</span>
@@ -1008,21 +976,21 @@ export default function FirstLawThermodynamicsGamePage({
                   <span>Work Done by Gas (<span className="font-mono">W</span>):</span>
                   <span className="font-mono font-bold text-slate-900">{workDone >= 0 ? `+${workDone}` : workDone} J</span>
                 </div>
-                <div className="border-t border-slate-200 pt-2 flex justify-between items-center text-emerald-800 font-bold">
+                <div className="border-t border-slate-200 pt-1.5 flex justify-between items-center text-emerald-800 font-bold">
                   <span>ΔU = q - W:</span>
-                  <span className="font-mono text-sm sm:text-base font-black">+{deltaU} J (TARGET ACHIEVED!)</span>
+                  <span className="font-mono text-xs sm:text-sm font-black">+{deltaU} J (TARGET ACHIEVED!)</span>
                 </div>
               </div>
 
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+              <p className="text-slate-600 text-[11px] sm:text-xs leading-snug">
                 By supplying <strong>{heatAdded} J</strong> of heat and allowing the gas to perform <strong>{workDone} J</strong> of work through expansion, the internal energy increased by exactly <strong>{deltaU} J</strong>!
               </p>
 
-              <div className="pt-2 flex gap-3 justify-center">
+              <div className="pt-1 flex gap-2.5 justify-center">
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="flex-1 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>REPLAY</span>
@@ -1030,7 +998,7 @@ export default function FirstLawThermodynamicsGamePage({
                 <button
                   type="button"
                   onClick={() => setShowExplanationModal(true)}
-                  className="flex-1 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-[1.02] active:scale-95"
+                  className="flex-1 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-[1.02] active:scale-95"
                 >
                   <BookOpen className="w-3.5 h-3.5 text-sky-200" />
                   <span>EXPLANATION</span>

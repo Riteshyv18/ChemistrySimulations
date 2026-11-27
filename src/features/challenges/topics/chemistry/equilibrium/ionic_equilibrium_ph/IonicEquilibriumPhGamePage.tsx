@@ -7,6 +7,8 @@ import * as THREE from "three";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   Play,
   RotateCcw,
   Sparkles,
@@ -187,9 +189,10 @@ function getIndicatorColor(pH: number): string {
 interface BeakerVesselProps {
   solutionVolume: number; // in mL (100 to 250)
   solutionColor: string;
+  currentPH: number;
 }
 
-function BeakerVessel({ solutionVolume, solutionColor }: BeakerVesselProps) {
+function BeakerVessel({ solutionVolume, solutionColor, currentPH }: BeakerVesselProps) {
   // Beaker dimensions: Radius ~ 1.8, Height ~ 3.6, Bottom at -1.4 (shifted upward)
   const beakerRadius = 1.85;
   const beakerHeight = 3.6;
@@ -219,15 +222,13 @@ function BeakerVessel({ solutionVolume, solutionColor }: BeakerVesselProps) {
         />
       </mesh>
 
-      {/* Beaker Glass Base Rim */}
+      {/* Beaker Glass Base Rim (Opaque so bottom never looks hollow when rotating) */}
       <mesh position={[0, beakerBottom, 0]}>
-        <cylinderGeometry args={[beakerRadius, beakerRadius, 0.08, 48]} />
+        <cylinderGeometry args={[beakerRadius, beakerRadius, 0.1, 48]} />
         <meshStandardMaterial
-          color="#BAE6FD"
-          transparent
-          opacity={0.45}
-          roughness={0.1}
-          metalness={0.1}
+          color="#CBD5E1"
+          roughness={0.2}
+          metalness={0.25}
         />
       </mesh>
 
@@ -289,36 +290,112 @@ function BeakerVessel({ solutionVolume, solutionColor }: BeakerVesselProps) {
         />
       </mesh>
 
-      {/* 4. Realistic One-Piece pH Electrode Rod (Long Lab Probe) */}
-      <group position={[beakerRadius - 0.42, 0.65, 0.2]} rotation={[0, 0, -0.2]}>
-        {/* Main Probe Shaft - Extended length to protrude clearly above the beaker */}
-        <mesh position={[0, 0.75, 0]}>
-          <cylinderGeometry args={[0.075, 0.075, 3.2, 24]} />
-          <meshStandardMaterial color="#0F172A" roughness={0.3} metalness={0.7} />
+      {/* 4. Realistic Digital Pen-Style pH Meter & Glass Electrode Probe */}
+      <group position={[beakerRadius - 0.58, 0.55, 0.2]} rotation={[0, 0, -0.14]}>
+        {/* ── TOP HANDHELD DIGITAL METER HEAD (cleanly above beaker rim) ── */}
+        <group position={[0, 2.38, 0]}>
+          {/* Main Meter Body */}
+          <mesh>
+            <boxGeometry args={[0.42, 0.82, 0.16]} />
+            <meshStandardMaterial color="#1E293B" roughness={0.35} metalness={0.25} />
+          </mesh>
+
+          {/* Top Lab Blue Grip Cap */}
+          <mesh position={[0, 0.42, 0]}>
+            <boxGeometry args={[0.44, 0.12, 0.18]} />
+            <meshStandardMaterial color="#0284C7" roughness={0.3} metalness={0.2} />
+          </mesh>
+
+          {/* Recessed Dark LCD Display Screen */}
+          <mesh position={[0, 0.09, 0.082]}>
+            <planeGeometry args={[0.33, 0.34]} />
+            <meshStandardMaterial color="#090D16" roughness={0.15} metalness={0.1} />
+          </mesh>
+
+          {/* LCD Live pH Label & Readout */}
+          <Text
+            position={[0, 0.17, 0.086]}
+            fontSize={0.055}
+            color="#94A3B8"
+            anchorX="center"
+            anchorY="middle"
+          >
+            pH METER
+          </Text>
+          <Text
+            position={[0, 0.05, 0.086]}
+            fontSize={0.11}
+            color={solutionColor}
+            fontWeight="bold"
+            anchorX="center"
+            anchorY="middle"
+          >
+            {currentPH.toFixed(2)}
+          </Text>
+
+          {/* Tactile Buttons (Power + Hold/Cal) */}
+          <mesh position={[-0.08, -0.21, 0.085]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.04, 0.04, 0.02, 16]} />
+            <meshStandardMaterial color="#10B981" roughness={0.3} />
+          </mesh>
+          <mesh position={[0.08, -0.21, 0.085]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.04, 0.04, 0.02, 16]} />
+            <meshStandardMaterial color="#64748B" roughness={0.3} />
+          </mesh>
+        </group>
+
+        {/* Tapered Metallic Neck & Knurled Collar */}
+        <mesh position={[0, 1.88, 0]}>
+          <cylinderGeometry args={[0.14, 0.09, 0.18, 24]} />
+          <meshStandardMaterial color="#94A3B8" roughness={0.2} metalness={0.85} />
+        </mesh>
+        <mesh position={[0, 1.76, 0]}>
+          <cylinderGeometry args={[0.095, 0.095, 0.08, 24]} />
+          <meshStandardMaterial color="#0284C7" roughness={0.3} metalness={0.3} />
         </mesh>
 
-        {/* Silver Joint Collar */}
-        <mesh position={[0, -0.85, 0]}>
-          <cylinderGeometry args={[0.08, 0.08, 0.1, 24]} />
-          <meshStandardMaterial color="#CBD5E1" roughness={0.15} metalness={0.9} />
-        </mesh>
-
-        {/* Glass Bulb Tip submerged in liquid */}
-        <mesh position={[0, -1.0, 0]}>
-          <sphereGeometry args={[0.095, 20, 20]} />
-          <meshStandardMaterial
-            color="#38BDF8"
+        {/* Translucent Glass/Epoxy Electrode Outer Tube */}
+        <mesh position={[0, 0.47, 0]}>
+          <cylinderGeometry args={[0.072, 0.072, 2.58, 24]} />
+          <meshPhysicalMaterial
+            color="#E0F2FE"
             transparent
-            opacity={0.9}
-            roughness={0.1}
-            metalness={0.2}
+            opacity={0.45}
+            roughness={0.08}
+            metalness={0.05}
+            transmission={0.5}
           />
         </mesh>
 
-        {/* Smooth Rounded Cap at the top */}
-        <mesh position={[0, 2.35, 0]}>
-          <sphereGeometry args={[0.075, 16, 16]} />
-          <meshStandardMaterial color="#0F172A" roughness={0.3} metalness={0.7} />
+        {/* Inner Ag/AgCl Reference Wire visible inside Electrode Tube */}
+        <mesh position={[0, 0.46, 0]}>
+          <cylinderGeometry args={[0.016, 0.016, 2.56, 12]} />
+          <meshStandardMaterial color="#CBD5E1" roughness={0.2} metalness={0.95} />
+        </mesh>
+
+        {/* White Ceramic Reference Junction Ring */}
+        <mesh position={[0, -0.72, 0]}>
+          <cylinderGeometry args={[0.076, 0.076, 0.09, 24]} />
+          <meshStandardMaterial color="#F8FAFC" roughness={0.6} />
+        </mesh>
+
+        {/* Protective Tip Guard Collar */}
+        <mesh position={[0, -0.88, 0]}>
+          <cylinderGeometry args={[0.082, 0.075, 0.12, 24]} />
+          <meshStandardMaterial color="#1E293B" roughness={0.3} metalness={0.4} />
+        </mesh>
+
+        {/* Sensitive Glass pH Bulb Tip submerged in solution */}
+        <mesh position={[0, -1.01, 0]}>
+          <sphereGeometry args={[0.092, 24, 24]} />
+          <meshPhysicalMaterial
+            color="#38BDF8"
+            transparent
+            opacity={0.88}
+            roughness={0.05}
+            metalness={0.1}
+            transmission={0.55}
+          />
         </mesh>
       </group>
     </group>
@@ -440,6 +517,7 @@ export function IonicEquilibriumPhGamePage({
 
   // Selected reagent active tab: "acid" | "base" | "water"
   const [reagentType, setReagentType] = useState<"acid" | "base" | "water">("base");
+  const [isReagentMenuOpen, setIsReagentMenuOpen] = useState<boolean>(false);
   const [dosageVolume, setDosageVolume] = useState<number>(1.0); // mL per drop
   const [notification, setNotification] = useState<string | null>(null);
 
@@ -692,22 +770,17 @@ export function IonicEquilibriumPhGamePage({
                         1
                       </div>
                       <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                        Select Reagent &amp; Dose
+                        Select Reagent
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        Base • Acid • Water
-                      </span>
-                    </div>
-                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Choose between Base (NaOH), Acid (HCl), or Diluting with pure water. Pick coarse or fine volume and tap <strong>ADD</strong>.
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-2">
+                      Open the dropdown to choose Base (NaOH), Acid (HCl), or Water (H₂O) to add to the beaker.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
                     <img
                       src="/instructions/ionic_step1_reagents.png"
-                      alt="Reagent Addition Dock"
+                      alt="Reagent Dropdown"
                       className="w-full h-full object-contain rounded-lg"
                     />
                   </div>
@@ -724,13 +797,8 @@ export function IonicEquilibriumPhGamePage({
                         Observe Beaker Reaction
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        Ion Motion &amp; Color
-                      </span>
-                    </div>
-                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Watch ions interact dynamically inside the beaker as the universal indicator changes color with neutralization.
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-2">
+                      Watch the solution color and ions change inside the beaker as the reaction balances.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
@@ -742,7 +810,7 @@ export function IonicEquilibriumPhGamePage({
                   </div>
                 </div>
 
-                {/* Card 3: Reach Target pH */}
+                {/* Card 3: Add & Submit */}
                 <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2">
@@ -750,22 +818,17 @@ export function IonicEquilibriumPhGamePage({
                         3
                       </div>
                       <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                        Check Your Answer
+                        Add &amp; Submit Answer
                       </h3>
                     </div>
-                    <div className="mt-1">
-                      <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px] uppercase tracking-wider">
-                        Target pH ~ 7.00
-                      </span>
-                    </div>
-                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Monitor the digital pH readout as you balance the solution, then click <strong>CHECK ANSWER</strong> to verify your result!
+                    <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-2">
+                      Tap <strong>ADD 1 ML</strong> to pour the reagent, watch the live PH readout, and click <strong>SUBMIT</strong> when ready!
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
                     <img
                       src="/instructions/ionic_step3_phmeter.png"
-                      alt="Digital pH Meter with Check Answer"
+                      alt="Add 1 mL and Submit Buttons"
                       className="w-full h-full object-contain rounded-lg"
                     />
                   </div>
@@ -797,215 +860,207 @@ export function IonicEquilibriumPhGamePage({
         )}
 
         {/* ══════════════════════════════════════════════════════════════════
-            LAB TOP HEADER (Minimalist & Clean)
+            MAIN FULLSCREEN 3D CANVAS + FLOATING CONTROLS
             ══════════════════════════════════════════════════════════════════ */}
-        <div className="w-full flex items-center justify-between px-3 sm:px-6 pt-3 pb-1 shrink-0 z-20 bg-white">
-          <div className="flex items-center gap-3">
+        <div className="relative flex-1 w-full h-full overflow-hidden bg-white">
+          {/* Fullscreen Three.js Canvas */}
+          <div className="absolute inset-0 z-0">
+            <Canvas
+              className="w-full h-full"
+              gl={{ antialias: true, alpha: true }}
+              camera={{ position: [0, 0.45, 9.6], fov: 38 }}
+            >
+              <ambientLight intensity={1.15} />
+              <directionalLight position={[4, 8, 4]} intensity={1.6} castShadow />
+              <directionalLight position={[-4, -3, -3]} intensity={0.6} color="#BAE6FD" />
+
+              <Suspense fallback={null}>
+                <group position={[0, 0, 0]}>
+                  {/* 3D Beaker and Universal Indicator Solution */}
+                  <BeakerVessel solutionVolume={volume} solutionColor={solutionColor} currentPH={currentPH} />
+
+                  {/* Bouncing Hydronium (H3O+) & Hydroxide (OH-) Ions */}
+                  <IonField ions={ions} liquidHeight={liquidHeight} />
+                </group>
+              </Suspense>
+
+              <OrbitControls
+                target={[0, 0.45, 0]}
+                enablePan={false}
+                minDistance={5.0}
+                maxDistance={12.0}
+                maxPolarAngle={Math.PI / 2 + 0.1}
+                minPolarAngle={Math.PI / 4}
+              />
+            </Canvas>
+          </div>
+
+          {/* Floating Top Header: EXIT + Transparent Live pH Pill + EXPLANATION */}
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 sm:px-6 pt-3 z-20 pointer-events-none">
             <button
               type="button"
               onClick={handleExitClick}
-              className="flex items-center gap-1 h-7 sm:h-8 px-3 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer active:scale-95"
+              className="pointer-events-auto flex items-center gap-1 h-7 sm:h-8 px-3 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer active:scale-95"
             >
               <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
               <span>EXIT</span>
             </button>
 
-            {/* Target Status Badge */}
-            <div className="hidden xs:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700">
-              <span className="text-slate-400 font-mono text-[11px]">GOAL:</span>
-              <span className="font-mono text-emerald-700">Target pH = {targetPH.toFixed(2)} (±{tolerance.toFixed(2)})</span>
+            <button
+              type="button"
+              onClick={() => setShowExplanationModal(true)}
+              className="pointer-events-auto flex items-center gap-1.5 h-7 sm:h-8 px-3.5 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm transition-all cursor-pointer active:scale-95"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-sky-200" />
+              <span className="hidden sm:inline">EXPLANATION</span>
+            </button>
+          </div>
+
+          {/* Centered Colored Transparent Live PH Tab above the Glass */}
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+            <div
+              className="px-4 py-1 rounded-full backdrop-blur-md border shadow-xs flex items-center gap-2 transition-colors duration-300"
+              style={{
+                backgroundColor: `${solutionColor}1A`,
+                borderColor: `${solutionColor}55`,
+              }}
+            >
+              <span className="text-xs font-extrabold tracking-wide text-slate-800">
+                PH
+              </span>
+              <span
+                className="text-base sm:text-lg font-black font-mono tracking-tight transition-colors duration-300"
+                style={{ color: solutionColor }}
+              >
+                {currentPH.toFixed(2)}
+              </span>
             </div>
           </div>
 
-          {/* Explanation Button */}
-          <button
-            type="button"
-            onClick={() => setShowExplanationModal(true)}
-            className="flex items-center gap-1.5 h-7 sm:h-8 px-3.5 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm transition-all cursor-pointer active:scale-95"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-sky-200" />
-            <span className="hidden sm:inline">EXPLANATION</span>
-          </button>
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════════════
-            MAIN 3D CANVAS VIEW
-            ══════════════════════════════════════════════════════════════════ */}
-        <div className="relative flex-1 w-full overflow-hidden bg-white">
           {/* Notification Banner */}
           {notification && (
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 text-white font-semibold text-xs py-1 px-4 rounded-full shadow-md border border-slate-700 animate-in fade-in duration-150 max-w-lg text-center">
+            <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 text-white font-semibold text-xs py-1 px-4 rounded-full shadow-md border border-slate-700 animate-in fade-in duration-150 max-w-lg text-center pointer-events-none">
               {notification}
             </div>
           )}
 
-          {/* Right Side Digital pH Meter & Evaluation HUD */}
-          <div className="absolute top-3 right-3 z-20 w-52 sm:w-60 bg-white/95 backdrop-blur-md rounded-2xl p-3 border border-slate-200/90 shadow-xl space-y-2.5 animate-in fade-in duration-200">
-            {/* Header */}
-            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-700 flex items-center gap-1">
-                <Gauge className="w-3.5 h-3.5 text-sky-600" />
-                Digital pH Meter
-              </span>
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono">
-                {volume.toFixed(0)} mL
-              </span>
-            </div>
-
-            {/* Large Digital pH Readout */}
-            <div className="bg-slate-900 rounded-xl p-2.5 text-center shadow-inner">
-              <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-                SOLUTION pH
-              </div>
-              <div
-                className="text-3xl font-black font-mono tracking-tight transition-colors duration-300"
-                style={{ color: solutionColor }}
-              >
-                {currentPH.toFixed(2)}
-              </div>
-              <div className="text-[10px] font-mono text-slate-400 mt-0.5">
-                pOH = {currentPOH.toFixed(2)}
-              </div>
-            </div>
-
-            {/* Check Answer Button */}
-            <div className="pt-1.5 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={handleCheckAnswer}
-                className="w-full py-2 rounded-xl font-black text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5"
-              >
-                <CheckCircle2 className="w-4 h-4 text-sky-400" />
-                <span>CHECK ANSWER</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Three.js Canvas */}
-          <Canvas
-            className="w-full h-full"
-            gl={{ antialias: true, alpha: true }}
-            camera={{ position: [0, 0.45, 7.0], fov: 40 }}
-          >
-            <ambientLight intensity={1.15} />
-            <directionalLight position={[4, 8, 4]} intensity={1.6} castShadow />
-            <directionalLight position={[-4, -3, -3]} intensity={0.6} color="#BAE6FD" />
-
-            <Suspense fallback={null}>
-              {/* Shift the Beaker and Ions leftward into the open left-half of the screen */}
-              <group position={[-1.2, 0, 0]}>
-                {/* 3D Beaker and Universal Indicator Solution */}
-                <BeakerVessel solutionVolume={volume} solutionColor={solutionColor} />
-
-                {/* Bouncing Hydronium (H3O+) & Hydroxide (OH-) Ions */}
-                <IonField ions={ions} liquidHeight={liquidHeight} />
-              </group>
-            </Suspense>
-
-            <OrbitControls
-              target={[-1.2, 0.45, 0]}
-              enablePan={false}
-              minDistance={4.5}
-              maxDistance={9.5}
-              maxPolarAngle={Math.PI / 2 + 0.1}
-              minPolarAngle={Math.PI / 4}
-            />
-          </Canvas>
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════════════
-            BOTTOM CONTROL DOCK (Add Acid, Add Base, Dilute Water)
-            ══════════════════════════════════════════════════════════════════ */}
-        <div className="w-full bg-white border-t border-slate-100 px-3 sm:px-6 py-3.5 z-30 shrink-0 flex justify-center">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 max-w-4xl w-full">
-
-            {/* Reagent Selector Tabs */}
-            <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl shrink-0">
-              <button
-                type="button"
-                onClick={() => setReagentType("base")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  reagentType === "base"
-                    ? "bg-blue-600 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                + Base (NaOH)
-              </button>
+          {/* Floating Bottom Control Dock (Single Row: Dropdown + ADD 1 ML + SUBMIT) */}
+          <div className="absolute bottom-3 left-0 right-0 px-3 sm:px-6 z-30 flex justify-center pointer-events-none">
+            <div className="pointer-events-auto grid grid-cols-3 items-center gap-2.5 sm:gap-3 max-w-xl w-full">
+            {/* 1. Custom Upward Reagent Dropdown (Base, Acid, Dilute) */}
+            <div className="relative w-full">
+              {isReagentMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsReagentMenuOpen(false)}
+                  />
+                  <div className="absolute bottom-full left-0 mb-2.5 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200/90 p-2 z-50 space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-150">
+                    {[
+                      {
+                        id: "base" as const,
+                        label: "+ Base (NaOH)",
+                        desc: "Raises pH • neutralizes acid",
+                        icon: <PlusCircle className="w-4 h-4 text-blue-600 shrink-0" />,
+                        bg: "bg-blue-50",
+                      },
+                      {
+                        id: "acid" as const,
+                        label: "+ Acid (HCl)",
+                        desc: "Lowers pH • adds H₃O⁺ ions",
+                        icon: <MinusCircle className="w-4 h-4 text-rose-600 shrink-0" />,
+                        bg: "bg-rose-50",
+                      },
+                      {
+                        id: "water" as const,
+                        label: "Dilute (H₂O)",
+                        desc: "Dilutes towards neutral pH",
+                        icon: <Droplets className="w-4 h-4 text-sky-500 shrink-0" />,
+                        bg: "bg-sky-50",
+                      },
+                    ].map((opt) => {
+                      const active = reagentType === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setReagentType(opt.id);
+                            setIsReagentMenuOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                            active
+                              ? "bg-slate-100 ring-1 ring-slate-200"
+                              : "hover:bg-slate-50"
+                          }`}
+                        >
+                          <div className={`w-8 h-8 rounded-lg ${opt.bg} flex items-center justify-center shrink-0`}>
+                            {opt.icon}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-extrabold text-slate-900 leading-tight">
+                              {opt.label}
+                            </div>
+                            <div className="text-[10px] font-medium text-slate-500 leading-tight mt-0.5">
+                              {opt.desc}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
 
               <button
                 type="button"
-                onClick={() => setReagentType("acid")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  reagentType === "acid"
-                    ? "bg-rose-500 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                onClick={() => setIsReagentMenuOpen((o) => !o)}
+                className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 font-extrabold text-xs flex items-center justify-between gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95"
               >
-                + Acid (HCl)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setReagentType("water")}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  reagentType === "water"
-                    ? "bg-sky-500 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Dilute (H₂O)
+                <span className="flex items-center gap-1.5 truncate">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span className="truncate">
+                    {reagentType === "base"
+                      ? "+ Base (NaOH)"
+                      : reagentType === "acid"
+                      ? "+ Acid (HCl)"
+                      : "Dilute (H₂O)"}
+                  </span>
+                </span>
+                {isReagentMenuOpen ? (
+                  <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
+                ) : (
+                  <ChevronUp className="w-4 h-4 text-slate-500 shrink-0" />
+                )}
               </button>
             </div>
 
-            {/* Dosage Volume Selector */}
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                Volume:
-              </span>
-              {[0.2, 1.0].map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => setDosageVolume(v)}
-                  className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                    dosageVolume === v
-                      ? "bg-slate-900 text-white shadow-xs"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
-                >
-                  {v < 1 ? `${v} mL` : `${v.toFixed(0)} mL`}
-                </button>
-              ))}
+            {/* 2. ADD 1 mL Button */}
+            <button
+              type="button"
+              onClick={handleAddReagent}
+              className={`w-full h-10 px-3 rounded-xl font-black text-xs uppercase tracking-wider text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5 ${
+                reagentType === "base"
+                  ? "bg-blue-600 hover:bg-blue-700 shadow-blue-500/30"
+                  : reagentType === "acid"
+                  ? "bg-rose-600 hover:bg-rose-700 shadow-rose-500/30"
+                  : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/30"
+              }`}
+            >
+              <Droplets className="w-3.5 h-3.5 fill-current shrink-0" />
+              <span>ADD 1 ML</span>
+            </button>
+
+            {/* 3. SUBMIT Button */}
+            <button
+              type="button"
+              onClick={handleCheckAnswer}
+              className="w-full h-10 px-3 rounded-xl font-black text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5"
+            >
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>SUBMIT</span>
+            </button>
             </div>
-
-            {/* Action Buttons: Add Reagent Drop & Reset */}
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={handleReset}
-                className="px-3.5 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleAddReagent}
-                className={`px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 ${
-                  reagentType === "base"
-                    ? "bg-blue-600 hover:bg-blue-700 shadow-blue-500/30"
-                    : reagentType === "acid"
-                    ? "bg-rose-600 hover:bg-rose-700 shadow-rose-500/30"
-                    : "bg-sky-500 hover:bg-sky-600 shadow-sky-500/30"
-                }`}
-              >
-                <Droplets className="w-3.5 h-3.5 fill-current" />
-                <span>ADD {dosageVolume} mL</span>
-              </button>
-            </div>
-
           </div>
         </div>
 

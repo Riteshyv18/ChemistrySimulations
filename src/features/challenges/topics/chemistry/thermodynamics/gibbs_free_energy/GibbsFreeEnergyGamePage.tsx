@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useId } from "react";
-import { ArrowLeft, BookOpen, RotateCcw, CheckCircle2, XCircle, X, ChevronRight, Thermometer, Flame } from "lucide-react";
+import React, { useState, useId, useRef, useEffect } from "react";
+import { ArrowLeft, BookOpen, RotateCcw, CheckCircle2, XCircle, X, ChevronRight, Thermometer, Flame, Play } from "lucide-react";
 import { exitSimulation } from "@/lib/mobileBridge";
 
 interface GibbsFreeEnergyGamePageProps {
@@ -24,6 +24,19 @@ export default function GibbsFreeEnergyGamePage({
   const [temp, setTemp] = useState<number>(200); // 100K - 500K
   const [userSpontaneous, setUserSpontaneous] = useState<boolean | null>(null);
   const [isSliding, setIsSliding] = useState<boolean>(false);
+  const [animRunKey, setAnimRunKey] = useState<number>(0);
+  const curvePathRef = useRef<SVGPathElement | null>(null);
+  const [ballState, setBallState] = useState<{
+    x: number;
+    y: number;
+    trail: Array<{ x: number; y: number }>;
+    outcome: "climbing" | "rolling_back" | "flowing_downhill" | "equilibrium";
+  }>({
+    x: 90,
+    y: 145,
+    trail: [],
+    outcome: "climbing",
+  });
 
   // Modals
   const [showExplanation, setShowExplanation] = useState(false);
@@ -47,6 +60,80 @@ export default function GibbsFreeEnergyGamePage({
   const tsY = 32;
   const productY = Math.max(24, Math.min(210, reactantY - deltaG * 2.0));
 
+  // Animate glowing reaction ball along the SVG free-energy curve
+  useEffect(() => {
+    if (screen !== "lab") return;
+    let rafId = 0;
+    let startTime: number | null = null;
+    const cycleMs = 2800;
+    const trailHistory: Array<{ x: number; y: number }> = [];
+
+    const tick = (now: number) => {
+      if (startTime === null) startTime = now;
+      const elapsed = now - startTime;
+      const t = (elapsed % cycleMs) / cycleMs; // 0..1
+
+      const pathEl = curvePathRef.current;
+      if (pathEl) {
+        const totalLen = pathEl.getTotalLength();
+        let progress = 0.08;
+        let outcome: "climbing" | "rolling_back" | "flowing_downhill" | "equilibrium" = "climbing";
+
+        if (deltaG < 0) {
+          // Spontaneous: smoothly climbs over Transition State (0.48) and rolls downhill to Products (0.93)
+          if (t < 0.78) {
+            const p = t / 0.78;
+            // Ease-in-out acceleration over the hill
+            const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+            progress = 0.08 + eased * 0.85;
+            outcome = progress > 0.47 ? "flowing_downhill" : "climbing";
+          } else {
+            progress = 0.93;
+            outcome = "flowing_downhill";
+          }
+        } else if (deltaG > 0) {
+          // Non-spontaneous: tries to climb uphill toward TS (0.41), stalls, and rolls back to Reactants (0.08)
+          if (t < 0.42) {
+            const p = t / 0.42;
+            const easedOut = 1 - Math.pow(1 - p, 2.2);
+            progress = 0.08 + easedOut * 0.33;
+            outcome = "climbing";
+          } else if (t < 0.84) {
+            const p = (t - 0.42) / 0.42;
+            const easedInOut = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+            progress = 0.41 - easedInOut * 0.33;
+            outcome = "rolling_back";
+          } else {
+            progress = 0.08;
+            outcome = "rolling_back";
+          }
+        } else {
+          // Dynamic equilibrium (ΔG = 0): gentle back-and-forth oscillation
+          const wave = 0.5 - 0.5 * Math.cos(t * Math.PI * 2);
+          progress = 0.1 + wave * 0.8;
+          outcome = "equilibrium";
+        }
+
+        const pt = pathEl.getPointAtLength(Math.max(0, Math.min(totalLen, progress * totalLen)));
+        if (t < 0.03) trailHistory.length = 0;
+        trailHistory.push({ x: pt.x, y: pt.y });
+        if (trailHistory.length > 7) trailHistory.shift();
+
+        setBallState({
+          x: pt.x,
+          y: pt.y,
+          trail: [...trailHistory],
+          outcome,
+        });
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [screen, deltaG, animRunKey]);
+
   // Handle Exit
   const handleExit = () => {
     if (onExit) {
@@ -64,21 +151,13 @@ export default function GibbsFreeEnergyGamePage({
 
   // Check Answer Handler
   const handleCheckAnswer = () => {
-    if (userSpontaneous === null) {
-      setFailFeedback("Please select whether the reaction is SPONTANEOUS or NON-SPONTANEOUS at the current temperature!");
-      setShowFailModal(true);
-      return;
-    }
-
-    if (userSpontaneous === isActualSpontaneous) {
+    if (isActualSpontaneous) {
       setShowSuccessModal(true);
     } else {
       if (deltaG > 0) {
-        setFailFeedback(`At T = ${temp} K, ΔG = +${deltaG.toFixed(1)} kJ/mol (> 0). Because ΔG is positive, the process is uphill and NON-SPONTANEOUS!`);
-      } else if (deltaG === 0) {
-        setFailFeedback(`At T = ${temp} K, ΔG = 0.0 kJ/mol. The reaction is at dynamic equilibrium!`);
+        setFailFeedback(`At T = ${temp} K, ΔG = +${deltaG.toFixed(1)} kJ/mol (> 0), so the reaction is NON-SPONTANEOUS. Increase the temperature above 267 K so ΔG becomes negative!`);
       } else {
-        setFailFeedback(`At T = ${temp} K, ΔG = ${deltaG.toFixed(1)} kJ/mol (< 0). Because ΔG is negative, the forward process is downhill and SPONTANEOUS!`);
+        setFailFeedback(`At T = ${temp} K, ΔG = 0.0 kJ/mol (dynamic equilibrium). Increase the temperature above 267 K so ΔG becomes negative!`);
       }
       setShowFailModal(true);
     }
@@ -107,7 +186,7 @@ export default function GibbsFreeEnergyGamePage({
           {/* Mission Body */}
           <div className="max-w-2xl flex flex-col items-center gap-4 my-auto">
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-snug">
-              <span className="text-blue-600">MISSION:</span>  Adjust the temperature to discover when the reaction happens naturally without any external push!
+              <span className="text-blue-600">MISSION:</span> Adjust the temperature to find when the reaction becomes spontaneous!
             </h1>
 
 
@@ -146,24 +225,24 @@ export default function GibbsFreeEnergyGamePage({
           </div>
 
           {/* Instruction 3-Card Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto w-full my-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-5xl mx-auto w-full my-auto">
             {/* Card 1: Free Energy Profile Image */}
-            <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+            <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3 flex flex-col justify-between shadow-sm">
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[11px]">
                     1
                   </div>
-                  <h3 className="font-black text-slate-900 text-sm">Watch the Energy Curve</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Watch the Energy Curve</h3>
                 </div>
-                <div className="inline-block px-2.5 py-0.5 rounded-md bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider mb-2">
+                <div className="inline-block px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 text-[9px] font-bold uppercase tracking-wider mb-1.5">
                   Reaction Graph
                 </div>
-                <p className="text-slate-600 text-xs leading-relaxed">
+                <p className="text-slate-600 text-[11px] leading-snug">
                   Look at the curve. If the product level is downhill, the reaction flows naturally. If it is uphill, it needs extra energy!
                 </p>
               </div>
-              <div className="mt-3 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex items-center justify-center h-20 p-1">
+              <div className="mt-2 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex items-center justify-center h-14 p-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/images/gibbs_card1.png"
@@ -174,22 +253,22 @@ export default function GibbsFreeEnergyGamePage({
             </div>
 
             {/* Card 2: Temperature Slider Image */}
-            <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+            <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3 flex flex-col justify-between shadow-sm">
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[11px]">
                     2
                   </div>
-                  <h3 className="font-black text-slate-900 text-sm">Change Temperature</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Change Temperature</h3>
                 </div>
-                <div className="inline-block px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider mb-2">
+                <div className="inline-block px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider mb-1.5">
                   Heat Slider
                 </div>
-                <p className="text-slate-600 text-xs leading-relaxed">
+                <p className="text-slate-600 text-[11px] leading-snug">
                   Drag the slider to make it hotter or colder. Notice how heating shifts the energy and helps the reaction occur on its own!
                 </p>
               </div>
-              <div className="mt-3 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex items-center justify-center h-20 p-1">
+              <div className="mt-2 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex items-center justify-center h-14 p-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/images/gibbs_card2.png"
@@ -200,22 +279,22 @@ export default function GibbsFreeEnergyGamePage({
             </div>
 
             {/* Card 3: Live Meter & Check Answer Image */}
-            <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 flex flex-col justify-between shadow-sm">
+            <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3 flex flex-col justify-between shadow-sm">
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-[11px]">
                     3
                   </div>
-                  <h3 className="font-black text-slate-900 text-sm">Select Your Answer</h3>
+                  <h3 className="font-black text-slate-900 text-xs sm:text-sm">Select Your Answer</h3>
                 </div>
-                <div className="inline-block px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider mb-2">
+                <div className="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-wider mb-1.5">
                   Check Prediction
                 </div>
-                <p className="text-slate-600 text-xs leading-relaxed">
+                <p className="text-slate-600 text-[11px] leading-snug">
                   Based on the value of ΔG, decide whether the reaction is Spontaneous or Non-Spontaneous, then click CHECK ANSWER to test your choice!
                 </p>
               </div>
-              <div className="mt-3 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex items-center justify-center h-20 p-1">
+              <div className="mt-2 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex items-center justify-center h-14 p-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/images/gibbs_card3.png"
@@ -252,10 +331,11 @@ export default function GibbsFreeEnergyGamePage({
         <div className="w-full h-full flex flex-col justify-between p-2 sm:p-2.5 text-slate-800 relative z-10 bg-white">
 
           {/* Top Bar: EXIT on Left, EXPLANATION on Right */}
-          <div className="w-full flex items-center justify-between mb-1 shrink-0">
+          {/* Top Bar: EXIT + EXPLANATION */}
+          <div className="w-full flex items-center justify-between mb-1 shrink-0 gap-2">
             <button
               onClick={handleExit}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-sm cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition active:scale-95 shadow-sm cursor-pointer shrink-0"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>EXIT</span>
@@ -263,7 +343,7 @@ export default function GibbsFreeEnergyGamePage({
 
             <button
               onClick={() => setShowExplanation(true)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-sm cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider transition active:scale-95 shadow-sm cursor-pointer shrink-0"
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>EXPLANATION</span>
@@ -298,6 +378,13 @@ export default function GibbsFreeEnergyGamePage({
                       <stop offset="0%" stopColor="#10B981" stopOpacity="0.35" />
                       <stop offset="100%" stopColor="#10B981" stopOpacity="0.02" />
                     </linearGradient>
+                    <filter id={`${gradientId}-glow`} x="-60%" y="-60%" width="220%" height="220%">
+                      <feGaussianBlur stdDeviation="4" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
                     <marker
                       id={`${gradientId}-arrow`}
                       viewBox="0 0 10 10"
@@ -392,25 +479,48 @@ export default function GibbsFreeEnergyGamePage({
 
                   {/* Free Energy Curve Path */}
                   <path
+                    ref={curvePathRef}
                     d={`M 45 ${reactantY} L 120 ${reactantY} C 200 ${reactantY}, 260 ${tsY}, 330 ${tsY} C 400 ${tsY}, 500 ${productY}, 580 ${productY} L 630 ${productY}`}
                     fill="none"
-                    stroke="#EF4444"
+                    stroke={deltaG < 0 ? "#10B981" : deltaG === 0 ? "#F59E0B" : "#EF4444"}
                     strokeWidth="3.5"
                     strokeLinecap="round"
                   />
 
-                  {/* Reactants Label */}
-                  <text
-                    x="120"
-                    y={reactantY - 9}
-                    textAnchor="start"
-                    fill="#0F172A"
-                    fontWeight="800"
-                    fontSize="13"
-                    fontFamily="sans-serif"
-                  >
-                    Reactants
-                  </text>
+                  {/* Animated Glowing Reaction Particle Trail */}
+                  {ballState.trail.map((pt, idx) => {
+                    const ratio = (idx + 1) / (ballState.trail.length + 1);
+                    const particleColor = deltaG < 0 ? "#10B981" : deltaG === 0 ? "#F59E0B" : "#EF4444";
+                    return (
+                      <circle
+                        key={idx}
+                        cx={pt.x}
+                        cy={pt.y}
+                        r={2.5 + ratio * 3.5}
+                        fill={particleColor}
+                        opacity={ratio * 0.4}
+                      />
+                    );
+                  })}
+
+                  {/* Animated Glowing Reaction Ball */}
+                  <g filter={`url(#${gradientId}-glow)`}>
+                    <circle
+                      cx={ballState.x}
+                      cy={ballState.y}
+                      r="11"
+                      fill={deltaG < 0 ? "#10B981" : deltaG === 0 ? "#F59E0B" : "#EF4444"}
+                      opacity="0.28"
+                    />
+                    <circle
+                      cx={ballState.x}
+                      cy={ballState.y}
+                      r="6.5"
+                      fill={deltaG < 0 ? "#34D399" : deltaG === 0 ? "#FBBF24" : "#F87171"}
+                      stroke="#FFFFFF"
+                      strokeWidth="2"
+                    />
+                  </g>
 
                   {/* Transition State Label */}
                   <text
@@ -424,6 +534,21 @@ export default function GibbsFreeEnergyGamePage({
                   >
                     Transition state
                   </text>
+
+                  {/* Reactants Label */}
+                  <text
+                    x="54"
+                    y={reactantY - 9}
+                    textAnchor="start"
+                    fill="#0F172A"
+                    fontWeight="800"
+                    fontSize="13"
+                    fontFamily="sans-serif"
+                  >
+                    Reactants
+                  </text>
+
+                  {/* Peak Marker */}
                   <circle cx="330" cy={tsY} r="4.5" fill="#EF4444" stroke="#FFFFFF" strokeWidth="2" />
 
                   {/* Products Label */}
@@ -484,11 +609,12 @@ export default function GibbsFreeEnergyGamePage({
             </div>
 
             {/* ───────────────────────────────────────────────────────────── */}
-            {/* BOTTOM: All controls combined in a single clean compact row   */}
+            {/* BOTTOM: Temperature Slider + Check Answer Button               */}
             {/* ───────────────────────────────────────────────────────────── */}
-            <div className="w-full flex items-center gap-2 shrink-0 z-10 pt-0.5 border-t border-slate-100">
+            <div className="w-full shrink-0 z-10 pt-1.5 border-t border-slate-100 flex justify-center px-6 sm:px-12">
+              <div className="w-full max-w-xl flex items-stretch gap-2.5">
 
-              {/* Temperature Slider Box with floating popup on slide */}
+              {/* Left: Temperature Slider Box with floating popup on slide */}
               <div className="flex-1 relative py-1 px-2 rounded-xl border border-slate-200 bg-slate-50/70 shadow-xs flex flex-col justify-between">
                 
                 {/* Floating dynamic popup when sliding / hovering */}
@@ -547,38 +673,16 @@ export default function GibbsFreeEnergyGamePage({
                 </div>
               </div>
 
-              {/* Spontaneous vs Non-Spontaneous Choice Buttons */}
-              <div className="flex-1 grid grid-cols-2 gap-2 h-full">
-                <button
-                  onClick={() => setUserSpontaneous(true)}
-                  className={`py-1.5 px-2.5 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center ${userSpontaneous === true
-                      ? "bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/25 scale-[1.01]"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                    }`}
-                >
-                  Spontaneous
-                </button>
-
-                <button
-                  onClick={() => setUserSpontaneous(false)}
-                  className={`py-1.5 px-2.5 rounded-xl border text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center ${userSpontaneous === false
-                      ? "bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-500/25 scale-[1.01]"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                    }`}
-                >
-                  Non-Spontaneous
-                </button>
-              </div>
-
-              {/* Check Answer Button */}
+              {/* Right: Check Answer Button */}
               <button
                 onClick={handleCheckAnswer}
-                className="w-36 sm:w-44 py-1.5 px-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer shrink-0 whitespace-nowrap h-full"
+                className="w-40 sm:w-44 shrink-0 py-1.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition cursor-pointer"
               >
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="whitespace-nowrap">CHECK ANSWER</span>
+                <span>CHECK ANSWER</span>
               </button>
 
+              </div>
             </div>
 
           </div>
@@ -706,37 +810,37 @@ export default function GibbsFreeEnergyGamePage({
       {/* MODAL 2: SUCCESS MODAL                                              */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {showSuccessModal && (
-        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-200 flex flex-col items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-sm">
-              <CheckCircle2 className="w-8 h-8" />
+        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-4 text-center shadow-2xl border border-slate-200 flex flex-col items-center gap-2">
+            <div className="w-11 h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-sm">
+              <CheckCircle2 className="w-6 h-6" />
             </div>
 
-            <h3 className="text-lg sm:text-xl font-black text-slate-900">
+            <h3 className="text-base sm:text-lg font-black text-slate-900">
               Thermodynamic Mastery Achieved!
             </h3>
 
-            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 w-full text-xs font-mono font-bold text-emerald-800">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 w-full text-[11px] font-mono font-bold text-emerald-800">
               At T = {temp} K: ΔG = {deltaG > 0 ? `+${deltaG.toFixed(1)}` : deltaG.toFixed(1)} kJ/mol
               <br />
               {isActualSpontaneous ? "Process is Spontaneous (ΔG < 0)" : "Process is Non-Spontaneous (ΔG > 0)"}
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-[11px] text-slate-600 leading-snug">
               {temp >= 267
                 ? `You correctly identified that at ${temp} K (above 267 K), −T·ΔS outweighs +ΔH, making ΔG negative and driving the forward reaction downhill spontaneously!`
                 : `You correctly identified that at ${temp} K (below 267 K), thermal energy is insufficient to overcome the positive enthalpy (+40 kJ/mol), keeping ΔG positive and non-spontaneous!`}
             </p>
 
             {/* Success Action Buttons: REPLAY and EXPLANATION */}
-            <div className="w-full grid grid-cols-2 gap-3 mt-2">
+            <div className="w-full grid grid-cols-2 gap-2.5 mt-1">
               <button
                 type="button"
                 onClick={() => {
                   setShowSuccessModal(false);
                   handleReset();
                 }}
-                className="w-full py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="w-full py-2 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
                 <span>REPLAY</span>
@@ -748,7 +852,7 @@ export default function GibbsFreeEnergyGamePage({
                   setShowSuccessModal(false);
                   setShowExplanation(true);
                 }}
-                className="w-full py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="w-full py-2 rounded-full font-extrabold text-xs uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <BookOpen className="w-3.5 h-3.5 fill-current" />
                 <span>EXPLANATION</span>
@@ -762,32 +866,32 @@ export default function GibbsFreeEnergyGamePage({
       {/* MODAL 3: INCORRECT MODAL                                            */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {showFailModal && (
-        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-200 flex flex-col items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shadow-sm">
-              <XCircle className="w-8 h-8" />
+        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-4 text-center shadow-2xl border border-slate-200 flex flex-col items-center gap-2">
+            <div className="w-11 h-11 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shadow-sm">
+              <XCircle className="w-6 h-6" />
             </div>
 
-            <h3 className="text-lg sm:text-xl font-black text-slate-900">
+            <h3 className="text-base sm:text-lg font-black text-slate-900">
               Check Your Signs!
             </h3>
 
-            <p className="text-xs text-slate-700 font-semibold leading-relaxed">
+            <p className="text-[11px] text-slate-700 font-semibold leading-snug">
               {failFeedback}
             </p>
 
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 w-full text-xs text-slate-600 font-mono text-left space-y-1">
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 w-full text-[11px] text-slate-600 font-mono text-left space-y-0.5">
               <div>&bull; ΔG &lt; 0 &rarr; <strong>Spontaneous</strong> (Downhill)</div>
               <div>&bull; ΔG &gt; 0 &rarr; <strong>Non-Spontaneous</strong> (Uphill)</div>
               <div>&bull; Equil Threshold: T = 40.0 / 0.150 = <strong>267 K</strong></div>
             </div>
 
             {/* Incorrect Action Buttons: RETRY and EXPLANATION */}
-            <div className="w-full grid grid-cols-2 gap-3 mt-2">
+            <div className="w-full grid grid-cols-2 gap-2.5 mt-1">
               <button
                 type="button"
                 onClick={() => setShowFailModal(false)}
-                className="w-full py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="w-full py-2 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
                 <span>RETRY</span>
@@ -799,7 +903,7 @@ export default function GibbsFreeEnergyGamePage({
                   setShowFailModal(false);
                   setShowExplanation(true);
                 }}
-                className="w-full py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="w-full py-2 rounded-full font-extrabold text-xs uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <BookOpen className="w-3.5 h-3.5 fill-current" />
                 <span>EXPLANATION</span>

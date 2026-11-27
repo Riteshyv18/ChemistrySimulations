@@ -88,7 +88,7 @@ export const SOLID_SAMPLES: SolidSampleConfig[] = [
     primaryColor: "#475569", // Slate grey/charcoal
     secondaryColor: "#64748B",
     particleRadius: 0.175,
-    modelScale: 1.25, // 5th image: Zoom in so it's clearly visible and not small
+    modelScale: 0.85, // Zoomed out to fit cleanly within portrait margins without clipping
     modelOffset: [0, 0, 0],
     description: "Complex polymer chains frozen in a tangled, non-periodic arrangement lacking regular geometric faces.",
     hint: "The atoms form an irregular, disordered cluster with no flat crystal planes or repeating lattice vectors.",
@@ -140,7 +140,7 @@ export default function CrystalExplorerGamePage({
     if (isCorrect) {
       if (sampleIndex < SOLID_SAMPLES.length - 1) {
         setNotification(
-          `✓ Correct! ${currentSample.name} is ${currentSample.category.toUpperCase()}! Loading next sample...`
+          `Correct! ${currentSample.name} is ${currentSample.category.toUpperCase()}.`
         );
         setTimeout(() => setNotification(null), 2500);
         setSampleIndex((prev) => prev + 1);
@@ -158,11 +158,11 @@ export default function CrystalExplorerGamePage({
 
   return (
     <div className="w-full h-full h-screen h-[100dvh] bg-[#F8FAFC] text-slate-800 relative overflow-hidden select-none font-sans flex flex-col rounded-3xl sm:rounded-[32px] border border-slate-200 shadow-2xl">
-      {/* ─── TOAST NOTIFICATION (Vibrant Green for Correct Classification) ─── */}
+      {/* ─── TOAST NOTIFICATION (Positioned cleanly below top bar for portrait) ─── */}
       {notification && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-5 py-2 rounded-full text-xs font-black tracking-wide shadow-xl border border-emerald-400 backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200 pointer-events-none text-center max-w-[90%] flex items-center gap-2">
+        <div className="absolute top-14 sm:top-16 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-4 py-2 rounded-2xl text-[11px] sm:text-xs font-bold tracking-wide shadow-lg border border-emerald-400 backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-200 pointer-events-none text-center w-max max-w-[85%] flex items-center justify-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-200 shrink-0" />
-          <span>{notification}</span>
+          <span className="leading-snug">{notification}</span>
         </div>
       )}
 
@@ -209,12 +209,12 @@ export default function CrystalExplorerGamePage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          SCREEN 2: INSTRUCTIONS SCREEN (LANDSCAPE STUDIO DESIGN)
+          SCREEN 2: INSTRUCTIONS SCREEN (PORTRAIT VERTICAL STACK)
           ══════════════════════════════════════════════════════════════════ */}
       {screen === "instructions" && (
         <div className="w-full h-full flex flex-col justify-between p-4 sm:p-5 relative bg-white overflow-hidden">
-          {/* Top Bar with EXIT and INSTRUCTIONS TO PLAY badge */}
-          <div className="w-full flex items-center justify-between z-10 shrink-0">
+          {/* Top Header: EXIT on top-left */}
+          <div className="w-full flex items-center justify-start z-10 shrink-0 pt-2 sm:pt-2.5">
             <button
               type="button"
               onClick={handleExit}
@@ -223,112 +223,105 @@ export default function CrystalExplorerGamePage({
               <ChevronLeft className="w-4 h-4" />
               <span>EXIT</span>
             </button>
-
-            <div className="flex items-center gap-2">
-              <div className="w-12 h-[2px] bg-gradient-to-r from-transparent via-slate-900 to-slate-900 rounded-full hidden sm:block" />
-              <div className="text-[11px] font-black uppercase tracking-widest text-slate-900 bg-slate-100 px-3.5 py-1 rounded-full border border-slate-300 shadow-2xs">
-                INSTRUCTIONS TO PLAY
-              </div>
-              <div className="w-12 h-[2px] bg-gradient-to-l from-transparent via-slate-900 to-slate-900 rounded-full hidden sm:block" />
-            </div>
-
-            <div className="w-16" />
           </div>
 
-          {/* 3 Step Guidance Cards */}
-          <div className="max-w-4xl w-full mx-auto flex flex-col justify-center items-center z-10 px-2 flex-1 my-1">
-            <div className="grid grid-cols-3 gap-3.5 w-full items-stretch">
-              {/* Card 1: Explore & Rotate */}
-              <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                      1
-                    </div>
-                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Explore the Sample
-                    </h3>
+          {/* 3 Step Guidance Cards + INSTRUCTIONS TO PLAY Tab: Vertically Centered Together */}
+          <div className="w-full max-w-sm mx-auto flex flex-col justify-center items-center z-10 px-1 flex-1 my-auto space-y-2 sm:space-y-2.5 py-1.5">
+            {/* INSTRUCTIONS TO PLAY Tab placed down directly above the cards */}
+            <div className="mb-6 sm:mb-8 text-[11px] sm:text-xs font-black uppercase tracking-wider text-white bg-slate-900 px-5 py-1.5 rounded-full shadow-sm">
+              INSTRUCTIONS TO PLAY
+            </div>
+
+            {/* Card 1: Explore & Rotate */}
+            <div className="w-full bg-white rounded-2xl p-2.5 sm:p-3 shadow-sm border border-sky-200/80 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0 shadow-sm">
+                    1
                   </div>
-                  <p className="text-slate-600 font-medium text-[11px] leading-snug mt-1">
-                    Rotate and zoom the 3D solid to inspect how its atomic bonds are connected.
-                  </p>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
+                    Explore the Sample
+                  </h3>
                 </div>
-                <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900 flex items-center justify-center mt-2 shadow-inner p-2 text-center">
-                  <div className="flex flex-col items-center gap-1 text-sky-400">
-                    <Compass className="w-6 h-6 animate-spin duration-1000" />
-                    <span className="text-[10px] font-mono font-bold text-white uppercase tracking-wider">
-                      360° 3D ROTATION
-                    </span>
-                  </div>
+                <p className="text-slate-600 font-medium text-[10.5px] leading-snug mb-2">
+                  Rotate and zoom the 3D solid to inspect how its atomic bonds are connected.
+                </p>
+              </div>
+              <div className="w-full h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900 flex items-center justify-center shadow-inner p-2 text-center">
+                <div className="flex items-center gap-2 text-sky-400">
+                  <Compass className="w-5 h-5 animate-spin duration-1000" />
+                  <span className="text-[10px] font-mono font-bold text-white uppercase tracking-wider">
+                    360° 3D ROTATION
+                  </span>
                 </div>
               </div>
+            </div>
 
-              {/* Card 2: Inspect Arrangement */}
-              <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                      2
-                    </div>
-                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Inspect Arrangement
-                    </h3>
+            {/* Card 2: Inspect Arrangement */}
+            <div className="w-full bg-white rounded-2xl p-2.5 sm:p-3 shadow-sm border border-sky-200/80 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0 shadow-sm">
+                    2
                   </div>
-                  <p className="text-slate-600 font-medium text-[11px] leading-snug mt-1">
-                    Observe whether atoms form an ordered lattice or a disordered network.
-                  </p>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
+                    Inspect Arrangement
+                  </h3>
                 </div>
-                <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900 flex items-center justify-center mt-2 shadow-inner p-2 text-center">
-                  <div className="flex items-center gap-3 text-xs font-mono font-black">
-                    <span className="text-emerald-400">ORDERED</span>
-                    <span className="text-slate-500">vs</span>
-                    <span className="text-amber-400">IRREGULAR</span>
-                  </div>
+                <p className="text-slate-600 font-medium text-[10.5px] leading-snug mb-2">
+                  Observe whether atoms form an ordered lattice or a disordered network.
+                </p>
+              </div>
+              <div className="w-full h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900 flex items-center justify-center shadow-inner p-2 text-center">
+                <div className="flex items-center gap-3 text-xs font-mono font-black">
+                  <span className="text-emerald-400">ORDERED</span>
+                  <span className="text-slate-500">vs</span>
+                  <span className="text-amber-400">IRREGULAR</span>
                 </div>
               </div>
+            </div>
 
-              {/* Card 3: Classify & Advance */}
-              <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                      3
-                    </div>
-                    <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Make a Decision
-                    </h3>
+            {/* Card 3: Make a Decision */}
+            <div className="w-full bg-white rounded-2xl p-2.5 sm:p-3 shadow-sm border border-sky-200/80 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-5 h-5 rounded-md bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0 shadow-sm">
+                    3
                   </div>
-                  <p className="text-slate-600 font-medium text-[11px] leading-snug mt-1">
-                    Select Crystalline or Amorphous to verify your answer and proceed.
-                  </p>
+                  <h3 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
+                    Make a Decision
+                  </h3>
                 </div>
-                <div className="w-full h-20 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900 flex items-center justify-center mt-2 shadow-inner p-2 gap-2">
-                  <div className="px-2 py-1 rounded bg-sky-600 text-white font-mono text-[9px] font-bold">
-                    CRYSTALLINE
-                  </div>
-                  <div className="px-2 py-1 rounded bg-slate-700 text-white font-mono text-[9px] font-bold">
-                    AMORPHOUS
-                  </div>
+                <p className="text-slate-600 font-medium text-[10.5px] leading-snug mb-2">
+                  Select Crystalline or Amorphous to verify your answer and proceed.
+                </p>
+              </div>
+              <div className="w-full h-14 sm:h-16 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-900 flex items-center justify-center shadow-inner p-2 gap-2">
+                <div className="px-2.5 py-1 rounded bg-sky-600 text-white font-mono text-[10px] font-bold">
+                  CRYSTALLINE
+                </div>
+                <div className="px-2.5 py-1 rounded bg-slate-700 text-white font-mono text-[10px] font-bold">
+                  AMORPHOUS
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Bottom Actions */}
-          <div className="w-full flex items-center justify-center gap-4 max-w-md mx-auto pt-2 z-10 shrink-0">
+          {/* Bottom Actions: BACK and PLAY */}
+          <div className="w-full flex items-center justify-center gap-4 max-w-sm mx-auto pt-2 pb-1 z-10 shrink-0">
             <button
               type="button"
               onClick={() => setScreen("mission")}
-              className="flex items-center gap-1.5 h-9 px-6 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer active:scale-95"
+              className="w-28 sm:w-32 flex items-center justify-center gap-1.5 py-2 rounded-full font-mono font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer active:scale-95"
             >
-              <ChevronLeft className="w-3.5 h-3.5 text-slate-400" />
+              <ChevronLeft className="w-4 h-4" />
               <span>BACK</span>
             </button>
 
             <button
               type="button"
               onClick={() => setScreen("lab")}
-              className="flex items-center justify-center gap-1.5 h-9 px-8 rounded-full font-bold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/25 transition-all cursor-pointer transform hover:scale-105 active:scale-95"
+              className="w-28 sm:w-32 flex items-center justify-center gap-1.5 py-2 rounded-full font-mono font-bold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm transition-all cursor-pointer active:scale-95"
             >
               <span>PLAY</span>
               <ChevronRight className="w-4 h-4" />
@@ -342,15 +335,16 @@ export default function CrystalExplorerGamePage({
           ══════════════════════════════════════════════════════════════════ */}
       {screen === "lab" && (
         <div className="w-full h-full relative z-10 overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-[#F1F5F9] to-[#E2E8F0] flex flex-col items-center justify-between">
-          {/* FULL SCREEN 3D WEBGL CANVAS VIEWPORT */}
-          <div className="absolute inset-0 w-full h-full z-0">
+          {/* 3D WEBGL CANVAS VIEWPORT (Shifted Upward & Zoomed Out for Portrait) */}
+          <div className="absolute -top-6 sm:-top-8 bottom-20 sm:bottom-24 left-0 right-0 z-0">
             <Canvas shadows gl={{ antialias: true, alpha: true }}>
-              {/* Zoomed in closer (z: 4.6, y: 0.25) so user can easily inspect particle structure */}
-              <PerspectiveCamera makeDefault position={[0, 0.25, 4.6]} fov={38} />
+              {/* Zoomed slightly in while keeping clean portrait side margins */}
+              <PerspectiveCamera makeDefault position={[0.7, 0.6, 6.0]} fov={38} />
               <OrbitControls
+                target={[0, 0, 0]}
                 enablePan={false}
-                minDistance={2.5}
-                maxDistance={8.0}
+                minDistance={3.0}
+                maxDistance={10.5}
                 maxPolarAngle={Math.PI / 1.8}
               />
               <ambientLight intensity={1.3} />
@@ -359,8 +353,7 @@ export default function CrystalExplorerGamePage({
               <pointLight position={[0, 2, 3]} intensity={0.9} />
 
               <Suspense fallback={null}>
-                {/* Shifted slightly downward to center the solid specimen perfectly in view */}
-                <group key={currentSample.id} position={[0, 0.35, 0]}>
+                <group key={currentSample.id} position={[0, 0, 0]} scale={0.86}>
                   <CrystalSolid3D sample={currentSample} />
                 </group>
               </Suspense>
@@ -390,16 +383,16 @@ export default function CrystalExplorerGamePage({
             </button>
           </div>
 
-          {/* FLOATING BOTTOM CONTROLS: CRYSTALLINE OR AMORPHOUS (Direct Pill Buttons, Compact Width) */}
-          <div className="absolute bottom-3 sm:bottom-4 left-0 right-0 z-30 flex items-center justify-center pointer-events-none px-4">
-            <div className="pointer-events-auto flex items-center justify-center gap-2.5 max-w-xs sm:max-w-[340px] w-full">
+          {/* FLOATING BOTTOM CONTROLS: CRYSTALLINE OR AMORPHOUS (Taller buttons with clean margin) */}
+          <div className="absolute bottom-6 sm:bottom-7 left-0 right-0 z-30 flex items-center justify-center pointer-events-none px-4">
+            <div className="pointer-events-auto flex items-center justify-center gap-3 max-w-xs sm:max-w-[340px] w-full">
               {/* Option 1: Crystalline */}
               <button
                 type="button"
                 onClick={() => handleClassify("crystalline")}
-                className="flex-1 py-2 px-3.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95 border border-sky-400/40"
+                className="flex-1 h-12 sm:h-13 px-3.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95 border border-sky-400/40"
               >
-                <Gem className="w-3.5 h-3.5 text-sky-200" />
+                <Gem className="w-4 h-4 text-sky-200" />
                 <span>CRYSTALLINE</span>
               </button>
 
@@ -407,9 +400,9 @@ export default function CrystalExplorerGamePage({
               <button
                 type="button"
                 onClick={() => handleClassify("amorphous")}
-                className="flex-1 py-2 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-slate-900/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95 border border-slate-700/60"
+                className="flex-1 h-12 sm:h-13 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-slate-900/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95 border border-slate-700/60"
               >
-                <Layers className="w-3.5 h-3.5 text-slate-300" />
+                <Layers className="w-4 h-4 text-slate-300" />
                 <span>AMORPHOUS</span>
               </button>
             </div>

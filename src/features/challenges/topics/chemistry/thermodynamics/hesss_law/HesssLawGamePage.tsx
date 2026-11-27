@@ -21,6 +21,7 @@ import {
   Flame,
   Zap,
 } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 
 // ============================================================================
 // DATA TYPES FOR THERMOCHEMICAL EQUATIONS
@@ -123,7 +124,7 @@ export default function HesssLawGamePage({
     if (onExit) {
       onExit();
     } else {
-      window.history.back();
+      exitSimulation();
     }
   };
 

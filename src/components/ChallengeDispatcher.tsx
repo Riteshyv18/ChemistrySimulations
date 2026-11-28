@@ -699,14 +699,26 @@ export function ChallengeDispatcher({
       ((normModule.includes("metallurgy") || normModule === "m8") &&
         (normTopic === "2" || normTopic.includes("roast") || normTopic.includes("calcin") || normTopic.includes("crush"))));
 
+  const isConcentrationTerms =
+    (normTopic === "9" ||
+      normTopic === "concentration-terms" ||
+      normTopic === "concentration_terms" ||
+      normTopic.includes("concentration-terms") ||
+      ((normModule.includes("solution") || normModule === "m3") &&
+        (normTopic === "1" || normTopic.includes("concentration")))) &&
+    !normTopic.includes("ore") &&
+    !normTopic.includes("gangue") &&
+    !normModule.includes("metallurgy") &&
+    normModule !== "m8";
+
   const isOreConcentration =
+    !isConcentrationTerms &&
     !isReductionExtraction &&
     !isCrushingRoastingCalcination &&
     (normTopic === "31" ||
       normTopic === "ore_concentration" ||
       normTopic === "concentration_of_ores" ||
       normTopic === "minerals_and_ores" ||
-      normTopic.includes("concentration") ||
       normTopic.includes("metallurgy") ||
       normTopic.includes("gangue") ||
       normTopic.includes("ore") ||
@@ -740,10 +752,6 @@ export function ChallengeDispatcher({
     normTopic.includes("break-the-barrier") ||
     normTopic.includes("catalyst") ||
     ((normModule.includes("kinetics") || normModule === "m5") && (normTopic === "3" || normTopic.includes("barrier") || normTopic.includes("activation")));
-
-  const isConcentrationTerms =
-    normTopic === "9" ||
-    normTopic.includes("concentration");
 
   const isRaoultsLaw =
     normTopic === "10" ||

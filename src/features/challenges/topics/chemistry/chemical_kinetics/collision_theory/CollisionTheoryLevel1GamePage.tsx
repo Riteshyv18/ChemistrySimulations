@@ -25,6 +25,7 @@ import {
   Gauge,
   Compass,
 } from "lucide-react";
+import { exitSimulation } from "@/lib/mobileBridge";
 
 // ============================================================================
 // 3D MOLECULE & CHAMBER COMPONENTS
@@ -405,8 +406,8 @@ export default function CollisionTheoryLevel1GamePage({
   // Orientation angles in degrees (0 to 360) - Initial start angles 45° and 180°
   const [angleA, setAngleA] = useState<number>(45);
   const [angleB, setAngleB] = useState<number>(180);
-  // Speed / Kinetic Energy (0 to 100). Activation Energy threshold is 60.
-  const [speed, setSpeed] = useState<number>(75);
+  // Speed / Kinetic Energy (20 to 100). Activation Energy threshold is 60.
+  const [speed, setSpeed] = useState<number>(40);
   const ACTIVATION_ENERGY_THRESHOLD = 60;
 
   // Collision Animation States
@@ -505,6 +506,11 @@ export default function CollisionTheoryLevel1GamePage({
             success,
             reason: reasonText,
           });
+
+          if (!success) {
+            setCollisionState("idle");
+            setLaunchProgress(0);
+          }
         }
       };
       animFrame = requestAnimationFrame(step);
@@ -512,6 +518,15 @@ export default function CollisionTheoryLevel1GamePage({
 
     return () => cancelAnimationFrame(animFrame);
   }, [collisionState, isCollisionEffective, hasSufficientEnergy, isOrientationCorrect, speed]);
+
+  // Auto-dismiss incorrect collision toast after 2 seconds
+  useEffect(() => {
+    if (!collisionResult.hasRun || collisionResult.success) return;
+    const timer = setTimeout(() => {
+      setCollisionResult({ hasRun: false, success: false, reason: "" });
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [collisionResult]);
 
   const handleLaunch = () => {
     if (collisionState !== "idle") return;
@@ -524,12 +539,6 @@ export default function CollisionTheoryLevel1GamePage({
     setCollisionState("idle");
     setLaunchProgress(0);
     setCollisionResult({ hasRun: false, success: false, reason: "" });
-  };
-
-  const exitSimulation = () => {
-    if (typeof window !== "undefined") {
-      window.location.href = "/";
-    }
   };
 
   return (
@@ -784,19 +793,8 @@ export default function CollisionTheoryLevel1GamePage({
             </Canvas>
           </div>
 
-          {/* Right Status Overlay: Kinetic Energy Pill */}
-          <div className="absolute right-3 sm:right-6 top-16 z-20 flex flex-col items-end gap-2.5">
-            {/* Kinetic Energy Status Pill */}
-            <div className={`px-3 py-1.5 rounded-xl border text-[11px] font-extrabold flex items-center gap-1.5 shadow-sm bg-white/90 ${
-              hasSufficientEnergy ? "text-emerald-700 border-emerald-200" : "text-amber-700 border-amber-200"
-            }`}>
-              <Flame className={`w-3.5 h-3.5 ${hasSufficientEnergy ? "text-emerald-500" : "text-amber-500"}`} />
-              <span>{hasSufficientEnergy ? "ENERGY ≥ Ea" : "ENERGY < Ea"}</span>
-            </div>
-          </div>
-
           {/* Feedback Toast Banner After Collision - Placed at the very top header level so it never covers the 2AB products */}
-          {collisionResult.hasRun && collisionState === "separated" && (
+          {collisionResult.hasRun && (!collisionResult.success || collisionState === "separated") && (
             <div className="absolute top-2.5 sm:top-3 left-1/2 -translate-x-1/2 z-30 max-w-md w-[85%] sm:w-[90%] pointer-events-none animate-in fade-in slide-in-from-top-2 duration-300">
               <div className={`py-1.5 px-3 sm:py-2 sm:px-4 rounded-full shadow-lg border text-center flex items-center justify-center gap-2 ${collisionResult.success
                 ? "bg-emerald-50/95 border-emerald-300 text-emerald-900 shadow-emerald-500/10"
@@ -813,131 +811,92 @@ export default function CollisionTheoryLevel1GamePage({
           )}
 
           {/* Bottom Interactive Control Dock */}
-          <div className="w-full max-w-4xl mx-auto px-3 sm:px-6 pb-3 sm:pb-5 z-20">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-xl border border-slate-200/90 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4">
+          <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 pb-2.5 sm:pb-3.5 z-20">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl px-3 py-1.5 sm:px-3.5 sm:py-2 shadow-xl border border-slate-200/90 flex flex-col md:flex-row items-center justify-between gap-2 sm:gap-3">
 
-              {/* Controls: Molecule Rotations */}
-              <div className="flex items-center gap-4 w-full md:w-auto justify-around md:justify-start">
-                {/* Molecule A Rotation */}
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-red-500" />
-                    <span className="text-[10px] font-black uppercase text-slate-600">A₂ Angle</span>
-                    <span className="text-[10px] font-bold text-slate-400 font-mono">({angleA}°)</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      disabled={collisionState !== "idle"}
-                      onClick={() => setAngleA((prev) => (prev - 45 + 360) % 360)}
-                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center transition-all cursor-pointer active:scale-95 disabled:opacity-50"
-                      title="-45 degrees"
-                    >
-                      ↺
-                    </button>
-                    <button
-                      type="button"
-                      disabled={collisionState !== "idle"}
-                      onClick={() => setAngleA((prev) => (prev + 45) % 360)}
-                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center transition-all cursor-pointer active:scale-95 disabled:opacity-50"
-                      title="+45 degrees"
-                    >
-                      ↻
-                    </button>
-                  </div>
-                </div>
+              {/* Controls: Single Clockwise Rotation Pill per Molecule */}
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  disabled={collisionState !== "idle"}
+                  onClick={() => setAngleA((prev) => (prev + 45) % 360)}
+                  className="h-10 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                  title="Rotate A₂ clockwise (+45°)"
+                >
+                  <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                  <span>A₂</span>
+                  <span className="font-mono text-[10.5px] text-slate-500">{angleA}°</span>
+                  <span className="text-xs font-black">↻</span>
+                </button>
 
-                {/* Molecule B Rotation */}
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-blue-500" />
-                    <span className="text-[10px] font-black uppercase text-slate-600">B₂ Angle</span>
-                    <span className="text-[10px] font-bold text-slate-400 font-mono">({angleB}°)</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      disabled={collisionState !== "idle"}
-                      onClick={() => setAngleB((prev) => (prev - 45 + 360) % 360)}
-                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center transition-all cursor-pointer active:scale-95 disabled:opacity-50"
-                      title="-45 degrees"
-                    >
-                      ↺
-                    </button>
-                    <button
-                      type="button"
-                      disabled={collisionState !== "idle"}
-                      onClick={() => setAngleB((prev) => (prev + 45) % 360)}
-                      className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center transition-all cursor-pointer active:scale-95 disabled:opacity-50"
-                      title="+45 degrees"
-                    >
-                      ↻
-                    </button>
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  disabled={collisionState !== "idle"}
+                  onClick={() => setAngleB((prev) => (prev + 45) % 360)}
+                  className="h-10 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                  title="Rotate B₂ clockwise (+45°)"
+                >
+                  <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                  <span>B₂</span>
+                  <span className="font-mono text-[10.5px] text-slate-500">{angleB}°</span>
+                  <span className="text-xs font-black">↻</span>
+                </button>
               </div>
 
-              {/* Controls: Speed / Energy Slider */}
-              <div className="flex-1 w-full max-w-xs px-2">
-                <div className="flex justify-between items-center mb-1">
+              {/* Controls: Speed / Energy Slider (Threshold on top + green mark at 60) */}
+              <div className="flex-1 w-full max-w-xs px-1">
+                <div className="flex justify-between items-center mb-1 gap-2">
                   <span className="text-[10px] font-black uppercase text-slate-600 flex items-center gap-1">
                     <Gauge className="w-3 h-3 text-sky-600" />
-                    Collision Speed
+                    Speed
+                  </span>
+                  <span className="text-[9.5px] font-bold text-emerald-600">
+                    Ea Threshold (60)
                   </span>
                   <span className="text-xs font-mono font-bold text-slate-800">
                     {speed} <span className="text-[10px] text-slate-400">m/s</span>
                   </span>
                 </div>
-                <input
-                  type="range"
-                  min="20"
-                  max="100"
-                  step="5"
-                  disabled={collisionState !== "idle"}
-                  value={speed}
-                  onChange={(e) => setSpeed(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0284C7] disabled:opacity-50"
-                />
-                <div className="flex justify-between text-[9px] text-slate-400 mt-1">
-                  <span>Slow</span>
-                  <span className="text-emerald-600 font-bold">Ea Threshold (60)</span>
-                  <span>Fast</span>
+                <div className="relative flex items-center">
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full shadow-xs pointer-events-none z-30"
+                  />
+                  <input
+                    type="range"
+                    min="20"
+                    max="100"
+                    step="5"
+                    disabled={collisionState !== "idle"}
+                    value={speed}
+                    onChange={(e) => setSpeed(Number(e.target.value))}
+                    className="relative z-20 w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0284C7] disabled:opacity-50"
+                  />
                 </div>
               </div>
 
-              {/* Action Buttons: Launch / Reset or Submit on Correct Formation */}
+              {/* Action Buttons: Launch or Submit on Correct Formation */}
               <div className="flex items-center gap-2">
-                {collisionState === "separated" ? (
-                  hasSucceeded ? (
-                    <button
-                      type="button"
-                      onClick={() => setShowVictoryModal(true)}
-                      className="px-8 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-1.5 cursor-pointer transform hover:scale-105 active:scale-95"
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>SUBMIT</span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleResetPositions}
-                      className="px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-white shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                      <span>RESET</span>
-                    </button>
-                  )
+                {collisionState === "separated" && hasSucceeded ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowVictoryModal(true)}
+                    className="px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-1.5 cursor-pointer transform hover:scale-105 active:scale-95"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>SUBMIT</span>
+                  </button>
                 ) : (
                   <button
                     type="button"
                     disabled={collisionState !== "idle"}
                     onClick={handleLaunch}
-                    className={`px-8 py-2.5 rounded-full font-black text-xs uppercase tracking-wider shadow-lg transition-all flex items-center gap-1.5 cursor-pointer ${collisionState === "idle"
+                    className={`px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider shadow-lg transition-all flex items-center gap-1.5 cursor-pointer ${collisionState === "idle"
                       ? "bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sky-600/30 transform hover:scale-105 active:scale-95"
                       : "bg-slate-300 text-slate-500 cursor-not-allowed"
                       }`}
                   >
-                    <Play className="w-4 h-4 fill-current" />
+                    <Play className="w-3.5 h-3.5 fill-current" />
                     <span>LAUNCH</span>
                   </button>
                 )}
@@ -1070,34 +1029,34 @@ export default function CollisionTheoryLevel1GamePage({
           VICTORY MODAL (SCORE BREAKDOWN & MASTERY)
           ══════════════════════════════════════════════════════════════════════ */}
       {showVictoryModal && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-200 max-w-sm w-full text-center space-y-3.5 animate-in zoom-in-95 duration-200">
-            <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-              <Trophy className="w-7 h-7" />
+        <div className="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl p-4 shadow-2xl border border-slate-200 max-w-sm w-full text-center space-y-2.5 animate-in zoom-in-95 duration-200">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
+              <Trophy className="w-5 h-5" />
             </div>
 
             <div>
-              <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600">
+              <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">
                 CHALLENGE COMPLETED
               </span>
-              <h2 className="text-xl font-black text-slate-900 mt-0.5">
+              <h2 className="text-lg font-black text-slate-900 mt-0.5 leading-tight">
                 Chemical Kinetics Master!
               </h2>
-              <p className="text-[11px] text-slate-600 mt-0.5">
-                You successfully mastered Collision Theory by combining proper steric orientation with activation energy!
+              <p className="text-[11px] text-slate-600 mt-0.5 leading-snug">
+                You mastered Collision Theory by combining steric orientation with activation energy!
               </p>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 space-y-1.5 text-left">
-              <div className="flex justify-between items-center text-xs">
+            <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200 space-y-1 text-left">
+              <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-600">Score:</span>
-                <span className="font-black text-emerald-600 text-sm">100 / 100</span>
+                <span className="font-black text-emerald-600 text-xs">100 / 100</span>
               </div>
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-600">Total Attempts:</span>
                 <span className="font-black text-slate-800">{totalAttempts}</span>
               </div>
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-600">Result:</span>
                 <span className="font-black text-emerald-600">
                   Effective (2AB Formed)
@@ -1105,7 +1064,7 @@ export default function CollisionTheoryLevel1GamePage({
               </div>
             </div>
 
-            <div className="flex items-center justify-center gap-3 pt-1">
+            <div className="flex items-center justify-center gap-2.5 pt-0.5">
               <button
                 type="button"
                 onClick={() => {
@@ -1113,10 +1072,11 @@ export default function CollisionTheoryLevel1GamePage({
                   setTotalAttempts(0);
                   setAngleA(45);
                   setAngleB(180);
+                  setSpeed(40);
                   setShowVictoryModal(false);
                   handleResetPositions();
                 }}
-                className="flex-1 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="flex-1 py-2 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Replay</span>
@@ -1127,7 +1087,7 @@ export default function CollisionTheoryLevel1GamePage({
                   setShowVictoryModal(false);
                   setShowExplanationModal(true);
                 }}
-                className="flex-1 py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-105 active:scale-95"
+                className="flex-1 py-2 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-105 active:scale-95"
               >
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Explanation</span>

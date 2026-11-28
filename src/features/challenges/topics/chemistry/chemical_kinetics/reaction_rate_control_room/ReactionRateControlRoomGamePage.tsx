@@ -13,9 +13,13 @@ import {
   RotateCcw,
   BookOpen,
   ChevronLeft,
+  ChevronUp,
+  ChevronDown,
   X,
   Play,
   CheckCircle2,
+  XCircle,
+  Check,
   Thermometer,
   Gauge,
   Layers,
@@ -31,27 +35,30 @@ import { exitSimulation } from "@/lib/mobileBridge";
 
 // Rectangular Reaction Chamber (Identical dimensions & styling to Topic 1)
 function RectangularChamber({ pressure }: { pressure: number }) {
-  // Pressure dynamically adjusts the piston/right-wall or ceiling height slightly
-  // Here we use a subtle upper compression indicator
-  const ceilingY = 0.68 - (pressure - 1.0) * 0.08;
+  // Pressure compresses the piston ceiling downward inside the taller chamber
+  const baseY = -0.68;
+  const topY = 0.96;
+  const wallHeight = topY - baseY;
+  const wallCenterY = (topY + baseY) / 2;
+  const ceilingY = 0.92 - (pressure - 1.0) * 0.16;
 
   return (
     <group position={[0, 0.22, 0]}>
       {/* Outer Chamber Base Plate */}
-      <mesh position={[0, -0.68, 0]}>
+      <mesh position={[0, baseY, 0]}>
         <boxGeometry args={[4.2, 0.08, 1.4]} />
         <meshStandardMaterial color="#E2E8F0" roughness={0.3} metalness={0.2} />
       </mesh>
 
-      {/* Top Ceiling Plate (Moves down slightly with high pressure) */}
+      {/* Top Ceiling Piston Plate (Moves down with high pressure) */}
       <mesh position={[0, ceilingY, 0]}>
-        <boxGeometry args={[4.2, 0.08, 1.4]} />
+        <boxGeometry args={[4.12, 0.08, 1.32]} />
         <meshStandardMaterial color="#CBD5E1" roughness={0.3} metalness={0.4} />
       </mesh>
 
-      {/* Clean Glass Enclosure Box */}
-      <mesh position={[0, (ceilingY - 0.68) / 2 + 0.34, 0]}>
-        <boxGeometry args={[4.12, ceilingY + 0.64, 1.32]} />
+      {/* Clean Glass Enclosure Box (Flush from base to top) */}
+      <mesh position={[0, wallCenterY, 0]}>
+        <boxGeometry args={[4.12, wallHeight, 1.32]} />
         <meshPhysicalMaterial
           color="#BAE6FD"
           transparent
@@ -64,13 +71,13 @@ function RectangularChamber({ pressure }: { pressure: number }) {
         />
       </mesh>
 
-      {/* Metallic Frame Border Outlines */}
-      <mesh position={[-2.06, (ceilingY - 0.68) / 2 + 0.34, 0]}>
-        <boxGeometry args={[0.04, ceilingY + 0.64, 1.32]} />
+      {/* Metallic Side Walls (Flush from base to top) */}
+      <mesh position={[-2.06, wallCenterY, 0]}>
+        <boxGeometry args={[0.04, wallHeight, 1.32]} />
         <meshStandardMaterial color="#94A3B8" roughness={0.3} metalness={0.5} />
       </mesh>
-      <mesh position={[2.06, (ceilingY - 0.68) / 2 + 0.34, 0]}>
-        <boxGeometry args={[0.04, ceilingY + 0.64, 1.32]} />
+      <mesh position={[2.06, wallCenterY, 0]}>
+        <boxGeometry args={[0.04, wallHeight, 1.32]} />
         <meshStandardMaterial color="#94A3B8" roughness={0.3} metalness={0.5} />
       </mesh>
 
@@ -128,13 +135,13 @@ function AnimatedParticle({
     const dt = Math.min(delta, 0.05);
     const speed = 1.6 * speedFactor;
 
-    // Chamber boundaries
-    const minX = -1.95;
-    const maxX = 1.95;
-    const minY = -0.36;
-    const maxY = 0.22 + 0.52 - (pressure - 1.0) * 0.08;
-    const minZ = -0.55;
-    const maxZ = 0.55;
+    // Chamber boundaries (aligned with base plate and ceiling piston)
+    const minX = -1.91;
+    const maxX = 1.91;
+    const minY = -0.29;
+    const maxY = 0.22 + 0.92 - 0.17 - (pressure - 1.0) * 0.16;
+    const minZ = -0.52;
+    const maxZ = 0.52;
 
     const p = posRef.current;
     const v = velRef.current;
@@ -175,21 +182,41 @@ function AnimatedParticle({
       allParticlesRef.current[index].pos.copy(p);
     }
 
-    // Check collision against other opposite-type particles
+    // Check elastic collision against all other particles (A+B sparks, A+A & B+B bounce)
     const list = allParticlesRef.current;
-    const collisionThreshold = isHighSurfaceArea ? 0.30 : 0.24;
+    const collisionThreshold = isHighSurfaceArea ? 0.36 : 0.27;
     const thresholdSq = collisionThreshold * collisionThreshold;
 
     for (let j = 0; j < list.length; j++) {
-      if (j !== index && list[j] && list[j].type !== type) {
-        const dSq = p.distanceToSquared(list[j].pos);
-        if (dSq < thresholdSq) {
-          // Elastic deflection: reverse direction away from other particle
-          v.x = -v.x + (Math.random() - 0.5) * 0.2;
-          v.y = -v.y + (Math.random() - 0.5) * 0.2;
-          v.z = -v.z;
-          v.normalize();
-          onSpark((p.x + list[j].pos.x) / 2, (p.y + list[j].pos.y) / 2, (p.z + list[j].pos.z) / 2);
+      if (j !== index && list[j]) {
+        const dx = p.x - list[j].pos.x;
+        const dy = p.y - list[j].pos.y;
+        const dz = p.z - list[j].pos.z;
+        const dSq = dx * dx + dy * dy + dz * dz;
+        if (dSq < thresholdSq && dSq > 0.0001) {
+          const dist = Math.sqrt(dSq);
+          const nx = dx / dist;
+          const ny = dy / dist;
+          const nz = dz / dist;
+
+          // Push out of overlap so spheres bounce cleanly instead of clipping
+          const overlap = (collisionThreshold - dist) * 0.55;
+          p.x += nx * overlap;
+          p.y += ny * overlap;
+          p.z += nz * overlap;
+
+          // Elastic reflection along collision normal
+          const dot = v.x * nx + v.y * ny + v.z * nz;
+          if (dot < 0) {
+            v.x -= 2 * dot * nx;
+            v.y -= 2 * dot * ny;
+            v.z -= 2 * dot * nz;
+            v.normalize();
+          }
+
+          if (list[j].type !== type) {
+            onSpark((p.x + list[j].pos.x) / 2, (p.y + list[j].pos.y) / 2, (p.z + list[j].pos.z) / 2);
+          }
           break;
         }
       }
@@ -238,15 +265,18 @@ function ParticleSimulation({
   particleSize: number; // 1 (Fine 1mm), 5 (Medium 5mm), 10 (Large 10mm)
   onCollisionEvent: (x: number, y: number, z: number) => void;
 }) {
-  // Speed multiplier derived from Maxwell-Boltzmann kinetic energy (v ~ sqrt(T))
+  // Visually clear kinetic speed scaling: slow at 280K (0.55x), standard at 300K (0.83x), fast at 440K (2.8x)
+  // Plus slight compression agitation from higher pressure
   const speedFactor = useMemo(() => {
-    return Math.sqrt(temperature / 300) * 1.3;
-  }, [temperature]);
+    const tempScale = 0.55 + ((temperature - 280) / 160) * 2.25;
+    const pressureAgitation = 1 + (pressure - 1.0) * 0.15;
+    return tempScale * pressureAgitation;
+  }, [temperature, pressure]);
 
-  // Total particles based on concentration and pressure compression
+  // Total particles scale clearly with concentration (0.5M -> ~8) and pressure compression
   const particleCount = useMemo(() => {
-    const base = Math.round(16 * concentration * (1 + (pressure - 1) * 0.4));
-    return Math.min(Math.max(base, 10), 38);
+    const base = Math.round(16 * concentration * (1 + (pressure - 1) * 0.45));
+    return Math.min(Math.max(base, 8), 38);
   }, [concentration, pressure]);
 
   // Generate particle definitions
@@ -284,13 +314,8 @@ function ParticleSimulation({
     }));
   }, [particleDefs]);
 
-  const sparkThrottleRef = useRef<number>(0);
   const handleSpark = (x: number, y: number, z: number) => {
-    const now = performance.now();
-    if (now - sparkThrottleRef.current > 160) {
-      sparkThrottleRef.current = now;
-      onCollisionEvent(x, y, z);
-    }
+    onCollisionEvent(x, y, z);
   };
 
   const isFine = particleSize <= 2;
@@ -359,29 +384,53 @@ function ParticleSimulation({
   );
 }
 
-// Sparkle Effect for Effective Rate Collisions
-function CollisionSparkle({
-  pos,
-  active,
-}: {
+interface SparkSlot {
   pos: THREE.Vector3;
-  active: boolean;
+  life: number; // 0 = inactive, > 0 = decaying flash
+}
+
+// Pool of simultaneous collision sparkle bursts (60fps ref-driven, zero React re-renders)
+function CollisionSparklePool({
+  sparksRef,
+}: {
+  sparksRef: React.MutableRefObject<SparkSlot[]>;
 }) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRefs = useRef<(THREE.Mesh | null)[]>([]);
+
   useFrame((_, delta) => {
-    if (!meshRef.current) return;
-    if (active) {
-      meshRef.current.scale.lerp(new THREE.Vector3(1.4, 1.4, 1.4), 0.2);
-    } else {
-      meshRef.current.scale.set(0.001, 0.001, 0.001);
+    const dt = Math.min(delta, 0.05);
+    const slots = sparksRef.current;
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      const mesh = meshRefs.current[i];
+      if (!mesh) continue;
+
+      if (slot.life > 0) {
+        slot.life = Math.max(0, slot.life - dt * 5.2);
+        const s = Math.sin(slot.life * Math.PI) * 1.45;
+        mesh.position.copy(slot.pos);
+        mesh.scale.setScalar(Math.max(0.001, s));
+      } else {
+        mesh.scale.setScalar(0.001);
+      }
     }
   });
 
   return (
-    <mesh ref={meshRef} position={pos} scale={0.001}>
-      <sphereGeometry args={[0.15, 16, 16]} />
-      <meshBasicMaterial color="#FDE047" transparent opacity={0.8} />
-    </mesh>
+    <group>
+      {Array.from({ length: 10 }).map((_, idx) => (
+        <mesh
+          key={idx}
+          ref={(el) => {
+            meshRefs.current[idx] = el;
+          }}
+          scale={0.001}
+        >
+          <sphereGeometry args={[0.15, 14, 14]} />
+          <meshBasicMaterial color="#FDE047" transparent opacity={0.85} />
+        </mesh>
+      ))}
+    </group>
   );
 }
 
@@ -401,6 +450,7 @@ export default function ReactionRateControlRoomGamePage({
   const [gameStarted, setGameStarted] = useState(false);
   const [showExplanationModal, setShowExplanationModal] = useState(false);
   const [showVictoryModal, setShowVictoryModal] = useState(false);
+  const [showFailModal, setShowFailModal] = useState(false);
 
   // Reaction Conditions Control Room States
   // 1. Concentration: 0.5 M to 2.0 M (Default 1.0 M)
@@ -416,15 +466,20 @@ export default function ReactionRateControlRoomGamePage({
   const [activeFactor, setActiveFactor] = useState<
     "concentration" | "temperature" | "surfaceArea" | "pressure"
   >("temperature");
+  const [showFactorDropdown, setShowFactorDropdown] = useState(false);
+  const [errorToast, setErrorToast] = useState<string | null>(null);
 
-  // Collision Sparkle Visual State
-  const [sparkPos, setSparkPos] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
-  const [isSparkActive, setIsSparkActive] = useState(false);
+  // Pool of 10 simultaneous collision flashes
+  const sparksRef = useRef<SparkSlot[]>(
+    Array.from({ length: 10 }, () => ({ pos: new THREE.Vector3(), life: 0 }))
+  );
+  const sparkCursorRef = useRef(0);
 
   const handleCollisionEvent = (x: number, y: number, z: number) => {
-    setSparkPos(new THREE.Vector3(x, y, z));
-    setIsSparkActive(true);
-    setTimeout(() => setIsSparkActive(false), 120);
+    const idx = sparkCursorRef.current;
+    sparkCursorRef.current = (idx + 1) % sparksRef.current.length;
+    sparksRef.current[idx].pos.set(x, y, z);
+    sparksRef.current[idx].life = 1.0;
   };
 
   // --------------------------------------------------------------------------
@@ -541,7 +596,7 @@ export default function ReactionRateControlRoomGamePage({
           {/* 3 Step Guidance Cards */}
           <div className="max-w-4xl w-full mx-auto flex flex-col justify-center items-center z-10 px-2 sm:px-4 flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-3 landscape:grid-cols-3 gap-3 sm:gap-4 w-full items-stretch">
-              {/* Card 1: Adjust Reaction Conditions */}
+              {/* Card 1: Choose a Factor */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -549,51 +604,23 @@ export default function ReactionRateControlRoomGamePage({
                       1
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Adjust Conditions
+                      Choose a Factor
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-extrabold text-[9px]">
-                      Collision Frequency
-                    </span>
-                  </div>
                   <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    Select factors like temperature, concentration, surface area, and pressure to alter particle dynamics.
+                    Open the bottom menu and pick <strong>Temp</strong>, <strong>Conc</strong>, <strong>Surface</strong>, or <strong>Pressure</strong>.
                   </p>
                 </div>
-                <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-100 bg-slate-50/80 flex flex-col justify-center px-2 py-1.5 mt-2 shadow-inner">
-                  {/* Miniature dock visual preview */}
-                  <div className="bg-white/90 rounded-lg p-1.5 border border-slate-200/90 shadow-xs space-y-1">
-                    <div className="flex items-center gap-1 justify-between">
-                      <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-md">
-                        <span className="px-1.5 py-0.5 rounded bg-white text-red-600 text-[8px] font-black shadow-xs flex items-center gap-0.5">
-                          <Thermometer className="w-2.5 h-2.5" /> Temp
-                        </span>
-                        <span className="px-1 py-0.5 text-slate-500 text-[8px] font-bold flex items-center gap-0.5">
-                          <Flame className="w-2.5 h-2.5" /> Conc
-                        </span>
-                        <span className="px-1 py-0.5 text-slate-500 text-[8px] font-bold flex items-center gap-0.5">
-                          <Layers className="w-2.5 h-2.5" /> Surf
-                        </span>
-                      </div>
-                      <div className="text-[8px] font-mono font-bold text-slate-700">
-                        300 <span className="text-[7px] text-slate-400">K</span>
-                      </div>
-                    </div>
-                    {/* Miniature slider */}
-                    <div className="w-full bg-slate-200 h-1 rounded-full relative flex items-center">
-                      <div className="absolute left-[35%] w-2.5 h-2.5 bg-red-500 rounded-full shadow-xs -translate-y-[0.5px]" />
-                    </div>
-                    <div className="flex justify-between text-[7px] text-slate-400 font-medium px-0.5">
-                      <span>Cold</span>
-                      <span>300K Standard</span>
-                      <span>Hot</span>
-                    </div>
-                  </div>
+                <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
+                  <img
+                    src="/instructions/rate_step1_dropdown.png"
+                    alt="Factor Selection Dropdown"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
                 </div>
               </div>
 
-              {/* Card 2: Monitor Rate Meter */}
+              {/* Card 2: Watch Collisions */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -601,32 +628,23 @@ export default function ReactionRateControlRoomGamePage({
                       2
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Monitor Live Rate
+                      Watch Collisions
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px]">
-                      Reaction Kinetics
-                    </span>
-                  </div>
                   <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    Observe the live reaction rate meter as collision frequency and energy thresholds increase in real time.
+                    Observe how the reactant particles move and collide inside the glass chamber.
                   </p>
                 </div>
-                <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-100 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner px-3">
-                  <div className="w-full space-y-1">
-                    <div className="flex justify-between text-[10px] font-bold text-slate-600">
-                      <span>Rate Meter</span>
-                      <span className="text-emerald-600 font-extrabold">3.0× Goal</span>
-                    </div>
-                    <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                      <div className="bg-gradient-to-r from-amber-400 to-emerald-500 h-full w-[85%]" />
-                    </div>
-                  </div>
+                <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
+                  <img
+                    src="/instructions/rate_step2_chamber.png"
+                    alt="3D Particle Collisions in Chamber"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
                 </div>
               </div>
 
-              {/* Card 3: Reach Target & Submit */}
+              {/* Card 3: Adjust & Submit */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -634,23 +652,19 @@ export default function ReactionRateControlRoomGamePage({
                       3
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Achieve &amp; Submit
+                      Adjust &amp; Submit
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-extrabold text-[9px]">
-                      Target Goal
-                    </span>
-                  </div>
                   <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    When reaction rate reaches 3.0× initial rate, the green submit button will activate. Submit to complete!
+                    Drag the slider to change the condition, then tap <strong>SUBMIT</strong> to check your result!
                   </p>
                 </div>
-                <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-100 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner">
-                  <div className="text-center">
-                    <span className="text-xl font-black text-emerald-600 block">≥ 3.0× Rate</span>
-                    <span className="text-[10px] font-bold text-slate-400 block">TARGET REACHED</span>
-                  </div>
+                <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
+                  <img
+                    src="/instructions/rate_step3_submit.png"
+                    alt="Slider and Submit Button"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
                 </div>
               </div>
             </div>
@@ -695,37 +709,6 @@ export default function ReactionRateControlRoomGamePage({
               <span>EXIT</span>
             </button>
 
-            {/* Top Center: Horizontal Pill-Style Live Reaction Rate Bar */}
-            <div className="flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                Reaction Rate:
-              </span>
-              <span
-                className={`text-sm sm:text-base font-black tracking-tight font-mono ${hasReachedTarget ? "text-emerald-600" : "text-[#0284C7]"
-                  }`}
-              >
-                {liveRate.toFixed(2)}×
-              </span>
-
-              {/* Sleek Horizontal Progress Bar */}
-              <div className="w-24 sm:w-36 bg-slate-200 h-2 rounded-full overflow-hidden">
-                <div
-                  className={`h-full transition-all duration-300 ${hasReachedTarget
-                      ? "bg-emerald-500 shadow-sm"
-                      : "bg-gradient-to-r from-amber-400 to-sky-500"
-                    }`}
-                  style={{ width: `${Math.min((liveRate / 4.0) * 100, 100)}%` }}
-                />
-              </div>
-
-              <span
-                className={`text-[9.5px] font-extrabold ${hasReachedTarget ? "text-emerald-600" : "text-slate-400"
-                  }`}
-              >
-                {hasReachedTarget ? "Goal Met (≥ 3.0×)" : "Goal: 3.0×"}
-              </span>
-            </div>
-
             {/* Explanation Button */}
             <button
               type="button"
@@ -765,8 +748,8 @@ export default function ReactionRateControlRoomGamePage({
                   onCollisionEvent={handleCollisionEvent}
                 />
 
-                {/* Collision Sparkle Flash */}
-                <CollisionSparkle pos={sparkPos} active={isSparkActive} />
+                {/* Simultaneous Collision Sparkle Flashes */}
+                <CollisionSparklePool sparksRef={sparksRef} />
               </Suspense>
 
               <OrbitControls
@@ -780,54 +763,110 @@ export default function ReactionRateControlRoomGamePage({
             </Canvas>
           </div>
 
+          {/* Auto-dismissing feedback toast on wrong submit */}
+          {errorToast && (
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 max-w-md w-[88%] pointer-events-none animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="py-1.5 px-4 rounded-full shadow-lg border bg-red-50/95 border-red-300 text-red-900 flex items-center justify-center gap-2 text-center">
+                <XCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <span className="text-[11px] sm:text-xs font-black tracking-tight">{errorToast}</span>
+              </div>
+            </div>
+          )}
+
           {/* Bottom Interactive Control Dock (Compact Height) */}
-          <div className="w-full max-w-4xl mx-auto px-3 sm:px-6 pb-2.5 sm:pb-3.5 z-20">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl px-3 py-2 sm:px-4 sm:py-2.5 shadow-xl border border-slate-200/90 flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3.5">
-              {/* Factor Tabs Navigation */}
-              <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl">
+          <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 pb-2 sm:pb-3 z-20">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl px-3 py-1.5 sm:px-4 sm:py-2 shadow-xl border border-slate-200/90 flex flex-col md:flex-row items-center justify-between gap-2 sm:gap-3">
+              {/* Factor Selector Dropdown */}
+              <div className="relative shrink-0">
+                {showFactorDropdown && (
+                  <div className="absolute bottom-full left-0 w-52 mb-2 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-xl shadow-slate-900/15 p-1.5 z-50 space-y-1 animate-in fade-in duration-150">
+                    {(
+                      [
+                        {
+                          id: "temperature",
+                          label: "Temp",
+                          desc: "Temperature (K)",
+                          icon: Thermometer,
+                          badgeClass: "bg-red-50 border-red-200 text-red-600",
+                        },
+                        {
+                          id: "concentration",
+                          label: "Conc",
+                          desc: "Concentration (M)",
+                          icon: Flame,
+                          badgeClass: "bg-blue-50 border-blue-200 text-blue-600",
+                        },
+                        {
+                          id: "surfaceArea",
+                          label: "Surface",
+                          desc: "Particle Size (mm)",
+                          icon: Layers,
+                          badgeClass: "bg-purple-50 border-purple-200 text-purple-600",
+                        },
+                        {
+                          id: "pressure",
+                          label: "Pressure",
+                          desc: "Gas Pressure (atm)",
+                          icon: Gauge,
+                          badgeClass: "bg-emerald-50 border-emerald-200 text-emerald-600",
+                        },
+                      ] as const
+                    ).map((opt) => {
+                      const Icon = opt.icon;
+                      const active = activeFactor === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setActiveFactor(opt.id);
+                            setShowFactorDropdown(false);
+                          }}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center justify-between gap-2 border ${
+                            active
+                              ? "bg-sky-50/90 border-sky-300 text-slate-900"
+                              : "bg-white border-transparent hover:bg-slate-50 text-slate-800"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 ${opt.badgeClass}`}>
+                              <Icon className="w-3.5 h-3.5" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-black leading-tight">{opt.label}</div>
+                              <div className="text-[9.5px] font-medium text-slate-500 truncate">{opt.desc}</div>
+                            </div>
+                          </div>
+                          {active && <Check className="w-3.5 h-3.5 text-sky-600 shrink-0 stroke-[2.5]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
                 <button
                   type="button"
-                  onClick={() => setActiveFactor("temperature")}
-                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${activeFactor === "temperature"
-                      ? "bg-white text-red-600 shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
-                    }`}
+                  onClick={() => setShowFactorDropdown((prev) => !prev)}
+                  className="h-9 px-3.5 rounded-xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-black text-xs tracking-wide shadow-md shadow-sky-600/20 flex items-center gap-2 transition-all cursor-pointer active:scale-95"
                 >
-                  <Thermometer className="w-3.5 h-3.5" />
-                  <span>Temp</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveFactor("concentration")}
-                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${activeFactor === "concentration"
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
-                    }`}
-                >
-                  <Flame className="w-3.5 h-3.5" />
-                  <span>Conc</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveFactor("surfaceArea")}
-                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${activeFactor === "surfaceArea"
-                      ? "bg-white text-purple-600 shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
-                    }`}
-                >
-                  <Layers className="w-3.5 h-3.5" />
-                  <span>Surface</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveFactor("pressure")}
-                  className={`px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${activeFactor === "pressure"
-                      ? "bg-white text-emerald-600 shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
-                    }`}
-                >
-                  <Gauge className="w-3.5 h-3.5" />
-                  <span>Pressure</span>
+                  {activeFactor === "temperature" && <Thermometer className="w-3.5 h-3.5" />}
+                  {activeFactor === "concentration" && <Flame className="w-3.5 h-3.5" />}
+                  {activeFactor === "surfaceArea" && <Layers className="w-3.5 h-3.5" />}
+                  {activeFactor === "pressure" && <Gauge className="w-3.5 h-3.5" />}
+                  <span>
+                    {activeFactor === "temperature"
+                      ? "Temp"
+                      : activeFactor === "concentration"
+                        ? "Conc"
+                        : activeFactor === "surfaceArea"
+                          ? "Surface"
+                          : "Pressure"}
+                  </span>
+                  {showFactorDropdown ? (
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  ) : (
+                    <ChevronUp className="w-3.5 h-3.5" />
+                  )}
                 </button>
               </div>
 
@@ -853,11 +892,6 @@ export default function ReactionRateControlRoomGamePage({
                       onChange={(e) => setTemperature(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-red-500"
                     />
-                    <div className="flex justify-between text-[8.5px] text-slate-400 mt-0.5">
-                      <span>280K (Cold)</span>
-                      <span>300K (Standard)</span>
-                      <span>440K (Hot)</span>
-                    </div>
                   </div>
                 )}
 
@@ -882,11 +916,6 @@ export default function ReactionRateControlRoomGamePage({
                       onChange={(e) => setConcentration(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
                     />
-                    <div className="flex justify-between text-[8.5px] text-slate-400 mt-0.5">
-                      <span>0.5M (Dilute)</span>
-                      <span>1.0M (Normal)</span>
-                      <span>2.0M (Dense)</span>
-                    </div>
                   </div>
                 )}
 
@@ -898,7 +927,7 @@ export default function ReactionRateControlRoomGamePage({
                         Reactant Particle Size
                       </span>
                       <span className="text-xs font-mono font-bold text-slate-800">
-                        {particleSize} <span className="text-[10px] text-slate-400">mm ({particleSize <= 2 ? "Fine Powder" : particleSize <= 6 ? "Medium Pieces" : "Large Chunk"})</span>
+                        {particleSize} <span className="text-[10px] text-slate-400">mm</span>
                       </span>
                     </div>
                     <input
@@ -910,11 +939,6 @@ export default function ReactionRateControlRoomGamePage({
                       onChange={(e) => setParticleSize(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-500"
                     />
-                    <div className="flex justify-between text-[8.5px] text-slate-400 mt-0.5">
-                      <span className="text-purple-600 font-semibold">1mm (Fine Powder - Fast)</span>
-                      <span>5mm (Medium)</span>
-                      <span>10mm (Large Chunk - Slow)</span>
-                    </div>
                   </div>
                 )}
 
@@ -939,36 +963,28 @@ export default function ReactionRateControlRoomGamePage({
                       onChange={(e) => setPressure(Number(e.target.value))}
                       className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                     />
-                    <div className="flex justify-between text-[8.5px] text-slate-400 mt-0.5">
-                      <span>1.0 atm</span>
-                      <span>2.0 atm</span>
-                      <span>3.0 atm</span>
-                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Action Buttons: SUBMIT replaces RESET when target is achieved (Matching Topic 1) */}
-              <div className="flex items-center gap-2">
-                {hasReachedTarget ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowVictoryModal(true)}
-                    className="px-7 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-1.5 cursor-pointer transform hover:scale-105 active:scale-95"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>SUBMIT</span>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-white shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>RESET</span>
-                  </button>
-                )}
+              {/* Action Button: Submit only (auto-resets if rate < 3.0x) */}
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFactorDropdown(false);
+                    if (hasReachedTarget) {
+                      setShowVictoryModal(true);
+                    } else {
+                      handleReset();
+                      setShowFailModal(true);
+                    }
+                  }}
+                  className="px-6 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-1.5 cursor-pointer transform hover:scale-105 active:scale-95"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>SUBMIT</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1126,24 +1142,42 @@ export default function ReactionRateControlRoomGamePage({
                   <strong className="text-slate-800">Explore the Chamber:</strong> Inside the glass chamber, watch the red (A) and blue (B) particles bounce off the walls and collide, creating yellow collision sparkles.
                 </li>
                 <li>
-                  <strong className="text-slate-800">Switch Tabs in the Bottom Dock:</strong> Click on the <strong>Temp</strong>, <strong>Conc</strong>, <strong>Surface</strong>, or <strong>Pressure</strong> tab to test one factor at a time.
+                  <strong className="text-slate-800">Select Factors from the Dropdown:</strong> Use the bottom-left dropdown to switch between <strong>Temp</strong>, <strong>Conc</strong>, <strong>Surface</strong>, and <strong>Pressure</strong>.
                 </li>
                 <li>
                   <strong className="text-slate-800">Adjust the Conditions:</strong>
                   <ul className="list-disc list-inside pl-4 pt-1 space-y-1 text-slate-600">
-                    <li><strong>Temperature:</strong> Slide the slider right (e.g. from 300 K up to 360 K – 400 K) → see the particles speed up instantly!</li>
+                    <li><strong>Temperature:</strong> Slide the slider right (e.g. from 300 K up to 360 K – 440 K) → see the particles speed up!</li>
                     <li><strong>Concentration:</strong> Slide from 1.0 M up to 1.5 M – 2.0 M → watch the chamber fill with more reactant particles.</li>
-                    <li><strong>Surface Area:</strong> Switch from Solid Lump to Fine Powder → gives an instant boost to reactive surface sites.</li>
-                    <li><strong>Pressure:</strong> Increase pressure up to 2.0 – 3.0 atm → compresses the gas density.</li>
+                    <li><strong>Surface Area:</strong> Lower particle size toward 1 mm (Fine Powder) → boosts reactive collisions.</li>
+                    <li><strong>Pressure:</strong> Increase pressure up to 2.0 – 3.0 atm → compresses the gas volume.</li>
                   </ul>
                 </li>
                 <li>
-                  <strong className="text-slate-800">Watch the Live Reaction Rate Meter (Top Right):</strong> As you change sliders, the rate meter smoothly climbs: 1.2× → 1.8× → 2.5× → 3.2×.
-                </li>
-                <li>
-                  <strong className="text-slate-800">Submit When Ready:</strong> When the rate reaches ≥ 3.0×, the top status pill turns green and the green <strong>SUBMIT</strong> button lights up in the bottom dock. Click it to complete the level!
+                  <strong className="text-slate-800">Submit When Ready:</strong> Once your conditions boost the reaction rate to at least <strong>3.0×</strong>, tap <strong>SUBMIT</strong>!
                 </li>
               </ol>
+
+              {/* Winning Combinations Box */}
+              <div className="mt-3 p-3.5 rounded-xl bg-emerald-50/90 border border-emerald-200 space-y-2 text-xs sm:text-sm text-emerald-900">
+                <h4 className="font-extrabold text-xs sm:text-sm text-emerald-950">
+                  How to Win (Target: Rate &ge; 3.0&times; from 1.0&times; baseline)
+                </h4>
+                <p className="leading-relaxed">
+                  Starting from <strong>300 K, 1.0 M, 10 mm, 1.0 atm</strong>, any combination reaching <strong>&ge; 3.0&times;</strong> wins when you tap <strong>SUBMIT</strong>:
+                </p>
+                <ul className="list-disc list-inside space-y-1.5 pl-1">
+                  <li>
+                    <strong>Temperature alone:</strong> Slide <strong>Temp</strong> up to <strong>430 K</strong> (3.08&times;) or <strong>440 K</strong> (3.24&times;).
+                  </li>
+                  <li>
+                    <strong>Temp + Conc:</strong> Set <strong>Temp = 360 K</strong> and <strong>Conc = 1.5 M</strong> (3.19&times;).
+                  </li>
+                  <li>
+                    <strong>Mix all factors:</strong> Raise <strong>Temp</strong> (350 K+), raise <strong>Conc</strong> (1.5 M+), lower <strong>Surface</strong> particle size (1&ndash;3 mm), or raise <strong>Pressure</strong> (2.0 atm+), then tap <strong>SUBMIT</strong>.
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 
@@ -1164,49 +1198,49 @@ export default function ReactionRateControlRoomGamePage({
           SCREEN 4: VICTORY MODAL (SCORE BREAKDOWN & MASTERY)
           ══════════════════════════════════════════════════════════════════════ */}
       {showVictoryModal && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-200 max-w-sm w-full text-center space-y-3.5 animate-in zoom-in-95 duration-200">
-            <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-              <Trophy className="w-7 h-7" />
+        <div className="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl p-4 shadow-2xl border border-slate-200 max-w-sm w-full text-center space-y-2.5 animate-in zoom-in-95 duration-200">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
+              <Trophy className="w-5 h-5" />
             </div>
 
             <div>
-              <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600">
+              <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">
                 CHALLENGE COMPLETED
               </span>
-              <h2 className="text-xl font-black text-slate-900 mt-0.5">
+              <h2 className="text-lg font-black text-slate-900 mt-0.5 leading-tight">
                 Reaction Control Master!
               </h2>
-              <p className="text-[11px] text-slate-600 mt-0.5">
-                You successfully regulated reaction conditions and boosted the reaction rate past 3.0×!
+              <p className="text-[11px] text-slate-600 mt-0.5 leading-snug">
+                You boosted the reaction rate past 3.0× by regulating the reaction conditions!
               </p>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 space-y-1.5 text-left">
-              <div className="flex justify-between items-center text-xs">
+            <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200 space-y-1 text-left">
+              <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-600">Score:</span>
-                <span className="font-black text-emerald-600 text-sm">100 / 100</span>
+                <span className="font-black text-emerald-600 text-xs">100 / 100</span>
               </div>
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-600">Achieved Rate:</span>
                 <span className="font-black text-emerald-600">{liveRate.toFixed(2)}× Initial</span>
               </div>
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-600">Conditions:</span>
                 <span className="font-black text-slate-800">
-                  {temperature}K • {concentration}M • {particleSize}mm Size
+                  {temperature}K • {concentration}M • {particleSize}mm
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center justify-center gap-3 pt-1">
+            <div className="flex items-center justify-center gap-2.5 pt-0.5">
               <button
                 type="button"
                 onClick={() => {
                   handleReset();
                   setShowVictoryModal(false);
                 }}
-                className="flex-1 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="flex-1 py-2 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Replay</span>
@@ -1217,7 +1251,51 @@ export default function ReactionRateControlRoomGamePage({
                   setShowVictoryModal(false);
                   setShowExplanationModal(true);
                 }}
-                className="flex-1 py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-105 active:scale-95"
+                className="flex-1 py-2 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-105 active:scale-95"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Explanation</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          SCREEN 5: RETRY MODAL (RATE BELOW TARGET)
+          ══════════════════════════════════════════════════════════════════════ */}
+      {showFailModal && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl p-4 shadow-2xl border border-slate-200 max-w-xs w-full text-center space-y-2.5 animate-in zoom-in-95 duration-200">
+            <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-inner">
+              <XCircle className="w-5 h-5" />
+            </div>
+
+            <div>
+              <h2 className="text-base font-black text-slate-900 leading-tight">
+                Reaction Too Slow!
+              </h2>
+              <p className="text-[11px] text-slate-600 mt-1 leading-snug">
+                The reaction rate did not reach the target speed yet. Conditions have been reset—try boosting Temperature, Concentration, Surface Area, or Pressure!
+              </p>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 pt-0.5">
+              <button
+                type="button"
+                onClick={() => setShowFailModal(false)}
+                className="flex-1 py-2 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Retry</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFailModal(false);
+                  setShowExplanationModal(true);
+                }}
+                className="flex-1 py-2 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Explanation</span>

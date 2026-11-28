@@ -2,16 +2,20 @@
 
 import React, { useState, useMemo, useRef, Suspense, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, PerspectiveCamera, Text } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, Text, Html } from "@react-three/drei";
 import * as THREE from "three";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   RotateCcw,
   BookOpen,
   Sparkles,
   Trophy,
   CheckCircle2,
+  XCircle,
+  Check,
   X,
   Play,
   Zap,
@@ -232,9 +236,9 @@ function EnergyProfileCurve({
 }) {
   const points = useMemo(() => {
     const pts: THREE.Vector3[] = [];
-    const steps = 60;
-    const startX = -2.2;
-    const endX = 2.2;
+    const steps = 80;
+    const startX = -3.0;
+    const endX = 3.0;
     const reactantY = -0.6;
     const productY = -0.95; // Exothermic ΔH = -45 kJ/mol
 
@@ -244,7 +248,7 @@ function EnergyProfileCurve({
 
       // Bell curve for Ea barrier connecting reactant level to product level
       const baseline = reactantY * (1 - t) + productY * t;
-      const gaussian = Math.exp(-Math.pow((x - 0.05) / 0.85, 2));
+      const gaussian = Math.exp(-Math.pow((x - 0.05) / 1.15, 2));
       const barrierHeight = peakY - baseline;
       const y = baseline + barrierHeight * gaussian;
 
@@ -255,41 +259,40 @@ function EnergyProfileCurve({
 
   const curveObject = useMemo(() => {
     const curve = new THREE.CatmullRomCurve3(points);
-    return new THREE.TubeGeometry(curve, 64, 0.024, 8, false);
+    return new THREE.TubeGeometry(curve, 80, 0.052, 16, false);
   }, [points]);
 
   return (
     <group>
-      {/* 3D Tube Curve */}
+      {/* 3D Tube Curve (Thicker & Luminous) */}
       <mesh geometry={curveObject}>
         <meshStandardMaterial
           color={color}
-          roughness={0.2}
-          metalness={0.3}
+          emissive={color}
+          emissiveIntensity={0.18}
+          roughness={0.22}
+          metalness={0.25}
           transparent
           opacity={opacity}
           wireframe={dashed}
         />
       </mesh>
 
-      {/* Peak Indicator Marker & Label */}
+      {/* Peak Indicator Marker & Crisp Non-Occluded Label */}
       {showLabel && (
         <group position={[0.05, peakY + 0.08, 0]}>
           <mesh>
-            <sphereGeometry args={[0.045, 16, 16]} />
+            <sphereGeometry args={[0.055, 16, 16]} />
             <meshBasicMaterial color={color} />
           </mesh>
-          <Text
-            position={[0, labelOffsetY, 0]}
-            fontSize={0.12}
-            color={color}
-            anchorX="center"
-            anchorY="middle"
-            outlineWidth={0.02}
-            outlineColor="#0F172A"
-          >
-            {`${label} (Ea = ${eaText})`}
-          </Text>
+          <Html position={[0, labelOffsetY, 0]} center>
+            <div
+              className="px-2 py-0.5 rounded-full bg-white/95 border shadow-xs text-[10px] font-extrabold whitespace-nowrap select-none pointer-events-none"
+              style={{ color, borderColor: color }}
+            >
+              {label} ({eaText})
+            </div>
+          </Html>
         </group>
       )}
     </group>
@@ -312,9 +315,9 @@ function TravelingMolecule({
 }) {
   const meshRef = useRef<THREE.Group>(null);
 
-  // Calculate position along curve
-  const startX = -2.2;
-  const endX = 2.0;
+  // Calculate position along widened curve
+  const startX = -2.85;
+  const endX = 2.75;
   const reactantY = -0.6;
   const productY = -0.95;
 
@@ -323,11 +326,11 @@ function TravelingMolecule({
 
   if (isReactionActive) {
     if (isSuccess) {
-      // Smoothly crosses all the way from left (-2.2) to right (2.0)
+      // Smoothly crosses all the way from left (-2.85) to right (2.75)
       currentX = startX + progress * (endX - startX);
       const t = progress;
       const baseline = reactantY * (1 - t) + productY * t;
-      const gaussian = Math.exp(-Math.pow((currentX - 0.05) / 0.85, 2));
+      const gaussian = Math.exp(-Math.pow((currentX - 0.05) / 1.15, 2));
       const barrierHeight = peakY - baseline;
       currentY = baseline + barrierHeight * gaussian;
     } else {
@@ -336,17 +339,17 @@ function TravelingMolecule({
       const effectiveT = climbProgress * 0.42; // stops before top
       currentX = startX + effectiveT * (endX - startX);
       const baseline = reactantY * (1 - effectiveT) + productY * effectiveT;
-      const gaussian = Math.exp(-Math.pow((currentX - 0.05) / 0.85, 2));
+      const gaussian = Math.exp(-Math.pow((currentX - 0.05) / 1.15, 2));
       const barrierHeight = peakY - baseline;
       currentY = baseline + barrierHeight * gaussian;
     }
   } else if (hasCompletedSuccess) {
     // Keep 2AB products resting on the right-side products platform
-    currentX = 1.9;
+    currentX = 2.65;
     currentY = productY;
   } else {
     // Resting on the left-side reactants platform
-    currentX = -1.9;
+    currentX = -2.65;
     currentY = reactantY;
   }
 
@@ -359,7 +362,7 @@ function TravelingMolecule({
   const hasFormedProducts = hasCompletedSuccess || (isSuccess && progress > 0.65);
 
   return (
-    <group ref={meshRef}>
+    <group ref={meshRef} scale={1.28}>
       {hasFormedProducts ? (
         // Render 2 separate AB product molecules (2 AB)
         <group>
@@ -395,43 +398,25 @@ function BarrierEnvironmentScene({
 
   return (
     <group position={[0, 0.35, 0]}>
-      {/* Reactants Platform (Left Valley) */}
-      <group position={[-1.9, -0.8, 0]}>
+      {/* Reactants Platform (Left Valley - Widened) */}
+      <group position={[-2.65, -0.8, 0]}>
         <mesh>
-          <boxGeometry args={[1.2, 0.12, 1.2]} />
+          <boxGeometry args={[1.45, 0.14, 1.3]} />
           <meshStandardMaterial color="#E2E8F0" roughness={0.3} metalness={0.1} />
         </mesh>
         <Text position={[0, -0.18, 0]} fontSize={0.14} color="#0F172A" anchorX="center" anchorY="top">
           REACTANTS (A2 + B2)
         </Text>
-        <Text position={[0, -0.36, 0]} fontSize={0.1} color="#64748B" anchorX="center" anchorY="top">
-          Initial: 45 kJ/mol
-        </Text>
       </group>
 
-      {/* Products Platform (Right Valley) */}
-      <group position={[1.9, -1.15, 0]}>
+      {/* Products Platform (Right Valley - Widened) */}
+      <group position={[2.65, -1.15, 0]}>
         <mesh>
-          <boxGeometry args={[1.2, 0.12, 1.2]} />
+          <boxGeometry args={[1.45, 0.14, 1.3]} />
           <meshStandardMaterial color="#E2E8F0" roughness={0.3} metalness={0.1} />
         </mesh>
         <Text position={[0, -0.18, 0]} fontSize={0.14} color="#0F172A" anchorX="center" anchorY="top">
           PRODUCTS (2 AB)
-        </Text>
-        <Text position={[0, -0.36, 0]} fontSize={0.1} color="#64748B" anchorX="center" anchorY="top">
-          Final: 0 kJ/mol
-        </Text>
-      </group>
-
-      {/* Delta H Indicator Line & Label (Enthalpy Change remains constant) */}
-      <group position={[0.7, -0.6, 0.4]}>
-        {/* Vertical arrow representing ΔH */}
-        <mesh position={[0, -0.175, 0]}>
-          <cylinderGeometry args={[0.015, 0.015, 0.35, 8]} />
-          <meshBasicMaterial color="#94A3B8" />
-        </mesh>
-        <Text position={[0.22, -0.175, 0]} fontSize={0.12} color="#475569" anchorX="left" anchorY="middle">
-          ΔH = -45 kJ/mol (Unchanged)
         </Text>
       </group>
 
@@ -439,12 +424,12 @@ function BarrierEnvironmentScene({
       <EnergyProfileCurve
         peakY={0.82}
         color="#EF4444"
-        opacity={activeCatalyst.type === "none" ? 0.95 : 0.35}
+        opacity={activeCatalyst.type === "none" ? 0.95 : 0.4}
         dashed={activeCatalyst.type !== "none"}
         label="Uncatalyzed"
-        eaText="85 kJ/mol"
+        eaText="85 kJ"
         showLabel={true}
-        labelOffsetY={activeCatalyst.type === "inhibitor" ? -0.22 : 0.15}
+        labelOffsetY={activeCatalyst.type === "inhibitor" ? -0.42 : 0.18}
       />
 
       {/* Active Catalyst Profile (Alternative Pathway) */}
@@ -453,17 +438,17 @@ function BarrierEnvironmentScene({
           peakY={activeCatalyst.curvePeakY}
           color={
             activeCatalyst.type === "optimal"
-              ? "#10B981"
+              ? "#059669"
               : activeCatalyst.type === "weak"
-              ? "#F59E0B"
+              ? "#D97706"
               : "#E11D48"
           }
           opacity={0.95}
           dashed={false}
-          label={activeCatalyst.name}
-          eaText={`${activeCatalyst.eaValue} kJ/mol`}
+          label={activeCatalyst.shortLabel}
+          eaText={`${activeCatalyst.eaValue} kJ`}
           showLabel={true}
-          labelOffsetY={0.16}
+          labelOffsetY={activeCatalyst.type === "inhibitor" ? 0.18 : -0.24}
         />
       )}
 
@@ -495,9 +480,11 @@ export default function ActivationEnergyGamePage({
   const [gameStarted, setGameStarted] = useState(false);
   const [showExplanationModal, setShowExplanationModal] = useState(false);
   const [showVictoryModal, setShowVictoryModal] = useState(false);
+  const [showFailModal, setShowFailModal] = useState(false);
 
   // Selected Catalyst State
   const [selectedCatalystId, setSelectedCatalystId] = useState<string>("none");
+  const [showCatalystDropdown, setShowCatalystDropdown] = useState(false);
   const activeCatalyst = useMemo(
     () => CATALYSTS.find((c) => c.id === selectedCatalystId) || CATALYSTS[0],
     [selectedCatalystId]
@@ -507,6 +494,7 @@ export default function ActivationEnergyGamePage({
   const [isReactionActive, setIsReactionActive] = useState(false);
   const [reactionProgress, setReactionProgress] = useState(0);
   const [hasCompletedSuccess, setHasCompletedSuccess] = useState(false);
+  const [pendingOutcome, setPendingOutcome] = useState<"success" | "fail" | null>(null);
 
   // Check if target is achieved
   const isTargetAchieved = activeCatalyst.eaValue <= TARGET_EA && activeCatalyst.type === "optimal";
@@ -528,9 +516,11 @@ export default function ActivationEnergyGamePage({
         animId = requestAnimationFrame(tick);
       } else {
         setIsReactionActive(false);
-        if (activeCatalyst.type === "optimal") {
+        const isOpt = activeCatalyst.type === "optimal";
+        if (isOpt) {
           setHasCompletedSuccess(true);
         }
+        setPendingOutcome(isOpt ? "success" : "fail");
       }
     };
 
@@ -538,14 +528,31 @@ export default function ActivationEnergyGamePage({
     return () => cancelAnimationFrame(animId);
   }, [isReactionActive, activeCatalyst]);
 
+  // Show Victory or Fail modal 2 seconds after reaction completes
+  useEffect(() => {
+    if (!pendingOutcome) return;
+    const timer = setTimeout(() => {
+      if (pendingOutcome === "success") {
+        setShowVictoryModal(true);
+      } else {
+        setShowFailModal(true);
+      }
+      setPendingOutcome(null);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [pendingOutcome]);
+
   const handleActivateReaction = () => {
     if (isReactionActive) return;
+    setPendingOutcome(null);
+    setHasCompletedSuccess(false);
     setReactionProgress(0);
     setIsReactionActive(true);
   };
 
   const handleReset = () => {
     setSelectedCatalystId("none");
+    setPendingOutcome(null);
     setIsReactionActive(false);
     setReactionProgress(0);
     setHasCompletedSuccess(false);
@@ -582,7 +589,7 @@ export default function ActivationEnergyGamePage({
           {/* Centered Single-Liner Mission Statement */}
           <div className="max-w-2xl mx-auto my-auto text-center space-y-4 sm:space-y-6 z-10 px-4 py-2 animate-in fade-in duration-200">
             <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1E293B] tracking-tight leading-tight">
-              <span className="text-[#0284C7]">MISSION:</span> Use the correct catalyst to break the energy barrier and form products!
+              <span className="text-[#0284C7]">MISSION:</span> Pick the right catalyst to lower the energy barrier and turn reactants into products!
             </h1>
 
             <div>
@@ -633,7 +640,7 @@ export default function ActivationEnergyGamePage({
           {/* 3 Step Guidance Cards */}
           <div className="max-w-4xl w-full mx-auto flex flex-col justify-center items-center z-10 px-2 sm:px-4 flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-3 landscape:grid-cols-3 gap-3 sm:gap-4 w-full items-stretch">
-              {/* Card 1: Energy Profile & High Barrier */}
+              {/* Card 1: Choose Catalyst */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -641,45 +648,23 @@ export default function ActivationEnergyGamePage({
                       1
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Inspect Energy Profile
+                      Choose a Catalyst
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-extrabold text-[9px]">
-                      High Barrier (Ea = 85 kJ)
-                    </span>
-                  </div>
                   <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    Observe the high initial red curve separating reactants (A₂ + B₂) on the left from products (2 AB) on the right.
+                    Open the bottom menu and pick a catalyst to lower the activation energy barrier.
                   </p>
                 </div>
-                {/* Visual miniature curve representation matching uploaded image 2 */}
-                <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-100 bg-slate-50/80 flex flex-col justify-between p-2 mt-2 shadow-inner">
-                  <div className="text-[8px] font-bold text-center text-red-600">
-                    Uncatalyzed (Ea = 85 kJ/mol)
-                  </div>
-                  <div className="flex items-end justify-between px-2 pb-1 relative">
-                    {/* Reactants */}
-                    <div className="flex items-center gap-0.5 z-10">
-                      <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" />
-                    </div>
-                    {/* Curved hill arch */}
-                    <div className="absolute inset-x-8 bottom-1.5 h-10 border-t-2 border-red-500 rounded-t-full" />
-                    {/* Products marker */}
-                    <div className="text-[8px] font-bold text-slate-600 z-10">
-                      Products (2 AB)
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-[7.5px] text-slate-400 px-1">
-                    <span>Reactants</span>
-                    <span>ΔH = -45 kJ</span>
-                    <span>Products</span>
-                  </div>
+                <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
+                  <img
+                    src="/instructions/ea_step1_dropdown.png"
+                    alt="Catalyst Selection Dropdown"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
                 </div>
               </div>
 
-              {/* Card 2: Select Catalyst from Dock */}
+              {/* Card 2: Check Energy Barrier */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -687,42 +672,23 @@ export default function ActivationEnergyGamePage({
                       2
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Choose Catalyst
+                      Watch the Energy Curve
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px]">
-                      Lower Energy Pathway
-                    </span>
-                  </div>
                   <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    Select a catalyst from the dock. An optimal catalyst lowers the activation barrier down to the target!
+                    See how the energy hill changes between Reactants (A₂ + B₂) and Products (2 AB).
                   </p>
                 </div>
-                {/* Visual miniature dock matching uploaded image 3 */}
-                <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-100 bg-slate-50/80 flex items-center justify-center px-2 py-1 mt-2 shadow-inner">
-                  <div className="bg-white/95 rounded-xl px-2 py-1.5 border border-slate-200 shadow-xs flex items-center gap-1.5 w-full justify-center">
-                    <span className="text-[7.5px] font-black uppercase text-slate-500 flex items-center gap-0.5">
-                      <Layers className="w-2.5 h-2.5 text-sky-600" />
-                      CATALYST:
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded-md bg-slate-900 text-white text-[7.5px] font-bold">
-                      None
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[7.5px] font-bold">
-                      Cat α
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[7.5px] font-bold">
-                      Cat β
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[7.5px] font-bold">
-                      Inhibitor
-                    </span>
-                  </div>
+                <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
+                  <img
+                    src="/instructions/ea_step2_barrier.png"
+                    alt="3D Energy Barrier Profile"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
                 </div>
               </div>
 
-              {/* Card 3: Activate Reaction & Submit */}
+              {/* Card 3: Tap Activate */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -730,29 +696,19 @@ export default function ActivationEnergyGamePage({
                       3
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Activate &amp; Submit
+                      Tap Activate
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-extrabold text-[9px]">
-                      Test Reaction Passage
-                    </span>
-                  </div>
                   <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    Click Activate to launch molecules over the barrier. When products form, click the green Submit button!
+                    Tap <strong>ACTIVATE</strong> to launch the molecules and see if they cross the barrier!
                   </p>
                 </div>
-                {/* Visual miniature buttons matching uploaded image 4 */}
-                <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-100 bg-slate-50/80 flex items-center justify-center px-2 py-1 mt-2 shadow-inner">
-                  <div className="flex items-center gap-2">
-                    <div className="px-3.5 py-1.5 rounded-full bg-[#0284C7] text-white text-[8.5px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                      <Zap className="w-2.5 h-2.5 fill-current" />
-                      <span>ACTIVATE</span>
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-xs">
-                      <RotateCcw className="w-2.5 h-2.5" />
-                    </div>
-                  </div>
+                <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
+                  <img
+                    src="/instructions/ea_step3_activate.png"
+                    alt="Activate Reaction Button"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
                 </div>
               </div>
             </div>
@@ -808,51 +764,6 @@ export default function ActivationEnergyGamePage({
             </button>
           </div>
 
-          {/* Right Status Card: Activation Energy Meter (Shifted Upward) */}
-          <div className="absolute right-4 sm:right-6 top-16 sm:top-20 z-20 pointer-events-none">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-slate-200/90 w-40 text-center space-y-1.5 pointer-events-auto">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                  Activation Energy (Ea)
-                </span>
-                <div
-                  className={`text-2xl font-black font-mono mt-0.5 ${
-                    isTargetAchieved ? "text-emerald-600" : "text-[#0284C7]"
-                  }`}
-                >
-                  {activeCatalyst.eaValue}{" "}
-                  <span className="text-xs text-slate-400 font-sans font-bold">kJ/mol</span>
-                </div>
-              </div>
-
-              {/* Progress track */}
-              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                <div
-                  className={`h-full transition-all duration-300 ${
-                    isTargetAchieved ? "bg-emerald-500" : "bg-sky-500"
-                  }`}
-                  style={{
-                    width: `${Math.min(
-                      100,
-                      Math.max(15, ((110 - activeCatalyst.eaValue) / (110 - TARGET_EA)) * 100)
-                    )}%`,
-                  }}
-                />
-              </div>
-
-              {/* Target Goal Pill */}
-              <div
-                className={`py-1 px-2 rounded-xl text-[10px] font-extrabold border ${
-                  isTargetAchieved
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                    : "bg-slate-50 text-slate-500 border-slate-200"
-                }`}
-              >
-                {isTargetAchieved ? "✓ Target Met (≤ 35 kJ)" : "Goal: ≤ 35 kJ/mol"}
-              </div>
-            </div>
-          </div>
-
           {/* 3D WebGL Canvas Layer (Full Screen Single Canvas) */}
           <div className="absolute inset-0 z-0">
             <Canvas gl={{ antialias: true, alpha: true }}>
@@ -885,70 +796,96 @@ export default function ActivationEnergyGamePage({
             </Canvas>
           </div>
 
-          {/* Bottom Interactive Catalyst Control Dock */}
-          <div className="w-full max-w-3xl mx-auto px-3 sm:px-6 pb-2.5 sm:pb-3.5 z-20">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl px-4 py-2 sm:px-6 sm:py-2.5 shadow-xl border border-slate-200/90 flex items-center justify-between gap-4">
-              {/* Catalyst Selection Buttons */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[11px] font-black uppercase text-slate-500 mr-1 flex items-center gap-1">
-                  <Layers className="w-3.5 h-3.5 text-sky-600" />
-                  Catalyst:
-                </span>
-                {CATALYSTS.map((cat) => {
-                  const isSelected = cat.id === selectedCatalystId;
-                  return (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => {
-                        setSelectedCatalystId(cat.id);
-                        setReactionProgress(0);
-                        setIsReactionActive(false);
-                      }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border ${
-                        isSelected
-                          ? "bg-slate-900 text-white border-slate-900 shadow-sm scale-102"
-                          : "bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200"
-                      }`}
-                    >
-                      <span>{cat.shortLabel}</span>
-                    </button>
-                  );
-                })}
+          {/* Bottom Interactive Catalyst Control Dock (Dropdown + Activate) */}
+          <div className="w-full max-w-md mx-auto px-3 sm:px-6 pb-3 sm:pb-4 z-20">
+            <div className="grid grid-cols-2 gap-2.5 relative">
+              {/* Upward Catalyst Dropdown */}
+              <div className="relative">
+                {showCatalystDropdown && (
+                  <div className="absolute bottom-full left-0 w-56 mb-2 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-xl shadow-slate-900/15 p-1.5 z-50 space-y-1 animate-in fade-in duration-150">
+                    {CATALYSTS.map((cat) => {
+                      const isSelected = cat.id === selectedCatalystId;
+                      const dotColor =
+                        cat.type === "optimal"
+                          ? "bg-emerald-500"
+                          : cat.type === "weak"
+                            ? "bg-amber-500"
+                            : cat.type === "inhibitor"
+                              ? "bg-rose-500"
+                              : "bg-slate-400";
+                      const badgeBg =
+                        cat.type === "optimal"
+                          ? "bg-emerald-50 border-emerald-200"
+                          : cat.type === "weak"
+                            ? "bg-amber-50 border-amber-200"
+                            : cat.type === "inhibitor"
+                              ? "bg-rose-50 border-rose-200"
+                              : "bg-slate-50 border-slate-200";
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedCatalystId(cat.id);
+                            setReactionProgress(0);
+                            setIsReactionActive(false);
+                            setShowCatalystDropdown(false);
+                          }}
+                          className={`w-full text-left px-2.5 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between gap-2 border ${
+                            isSelected
+                              ? "bg-sky-50/90 border-sky-300 text-slate-900"
+                              : "bg-white border-transparent hover:bg-slate-50 text-slate-800"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className={`w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 ${badgeBg}`}>
+                              <span className={`w-2 h-2 rounded-full ${dotColor}`} />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-black leading-tight truncate">{cat.shortLabel}</div>
+                              <div className="text-[9.5px] font-medium text-slate-500 truncate">
+                                Ea: {cat.eaValue} kJ/mol
+                              </div>
+                            </div>
+                          </div>
+                          {isSelected && <Check className="w-3.5 h-3.5 text-sky-600 shrink-0 stroke-[2.5]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setShowCatalystDropdown((prev) => !prev)}
+                  className="w-full h-10 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs tracking-wide shadow-md flex items-center justify-between gap-1.5 transition-all cursor-pointer active:scale-95"
+                >
+                  <span className="flex items-center gap-1.5 truncate">
+                    <Layers className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                    <span className="truncate">{activeCatalyst.shortLabel}</span>
+                  </span>
+                  {showCatalystDropdown ? (
+                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                  ) : (
+                    <ChevronUp className="w-4 h-4 text-slate-400 shrink-0" />
+                  )}
+                </button>
               </div>
 
-              {/* Action Buttons: ACTIVATE / RESET / SUBMIT */}
-              <div className="flex items-center gap-2 shrink-0">
-                {hasCompletedSuccess ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowVictoryModal(true)}
-                    className="px-6 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-1.5 cursor-pointer transform hover:scale-105 active:scale-95"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>SUBMIT</span>
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      disabled={isReactionActive}
-                      onClick={handleActivateReaction}
-                      className="px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all flex items-center gap-1.5 cursor-pointer transform hover:scale-105 active:scale-95 disabled:opacity-50"
-                    >
-                      <Zap className="w-3.5 h-3.5 fill-current" />
-                      <span>{isReactionActive ? "TESTING..." : "ACTIVATE"}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className="px-3.5 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-700 text-white shadow-sm transition-all flex items-center gap-1 cursor-pointer active:scale-95"
-                      title="Reset conditions"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                    </button>
-                  </>
-                )}
+              {/* Action Button: ACTIVATE only (auto-opens correct/incorrect modal after 2s) */}
+              <div>
+                <button
+                  type="button"
+                  disabled={isReactionActive}
+                  onClick={() => {
+                    setShowCatalystDropdown(false);
+                    handleActivateReaction();
+                  }}
+                  className="w-full h-10 px-4 rounded-xl font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
+                >
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <span>{isReactionActive ? "TESTING..." : "ACTIVATE"}</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1071,47 +1008,47 @@ export default function ActivationEnergyGamePage({
           SCREEN 4: VICTORY MODAL (SCORE BREAKDOWN & MASTERY)
           ══════════════════════════════════════════════════════════════════════ */}
       {showVictoryModal && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-200 max-w-sm w-full text-center space-y-3.5 animate-in zoom-in-95 duration-200">
-            <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-              <Trophy className="w-7 h-7" />
+        <div className="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl p-4 shadow-2xl border border-slate-200 max-w-sm w-full text-center space-y-2.5 animate-in zoom-in-95 duration-200">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
+              <Trophy className="w-5 h-5" />
             </div>
 
             <div>
-              <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600">
+              <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">
                 CHALLENGE COMPLETED
               </span>
-              <h2 className="text-xl font-black text-slate-900 mt-0.5">
+              <h2 className="text-lg font-black text-slate-900 mt-0.5 leading-tight">
                 Barrier Overcome!
               </h2>
-              <p className="text-[11px] text-slate-600 mt-0.5">
-                You selected the optimal catalyst, lowered the activation energy to 35 kJ/mol, and completed the reaction!
+              <p className="text-[11px] text-slate-600 mt-0.5 leading-snug">
+                You lowered the activation energy to 35 kJ/mol and completed the reaction!
               </p>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 space-y-1.5 text-left">
-              <div className="flex justify-between items-center text-xs">
+            <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200 space-y-1 text-left">
+              <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-600">Score:</span>
-                <span className="font-black text-emerald-600 text-sm">100 / 100</span>
+                <span className="font-black text-emerald-600 text-xs">100 / 100</span>
               </div>
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-600">Reduced Ea:</span>
                 <span className="font-black text-emerald-600">{activeCatalyst.eaValue} kJ/mol (Target Met)</span>
               </div>
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex justify-between items-center text-[11px]">
                 <span className="font-semibold text-slate-600">Enthalpy (ΔH):</span>
                 <span className="font-black text-slate-800">-45 kJ/mol (Unchanged)</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-center gap-3 pt-1">
+            <div className="flex items-center justify-center gap-2.5 pt-0.5">
               <button
                 type="button"
                 onClick={() => {
                   handleReset();
                   setShowVictoryModal(false);
                 }}
-                className="flex-1 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+                className="flex-1 py-2 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Replay</span>
@@ -1122,7 +1059,54 @@ export default function ActivationEnergyGamePage({
                   setShowVictoryModal(false);
                   setShowExplanationModal(true);
                 }}
-                className="flex-1 py-2.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-105 active:scale-95"
+                className="flex-1 py-2 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-105 active:scale-95"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Explanation</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          SCREEN 5: INCORRECT / RETRY MODAL
+          ══════════════════════════════════════════════════════════════════════ */}
+      {showFailModal && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl p-4 shadow-2xl border border-slate-200 max-w-xs w-full text-center space-y-2.5 animate-in zoom-in-95 duration-200">
+            <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-inner">
+              <XCircle className="w-5 h-5" />
+            </div>
+
+            <div>
+              <h2 className="text-base font-black text-slate-900 leading-tight">
+                Barrier Too High!
+              </h2>
+              <p className="text-[11px] text-slate-600 mt-1 leading-snug">
+                With <strong>{activeCatalyst.shortLabel}</strong> (Ea = {activeCatalyst.eaValue} kJ/mol), the molecules could not cross the barrier. Choose a catalyst that lowers Ea to &le; {TARGET_EA} kJ/mol!
+              </p>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 pt-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFailModal(false);
+                  setReactionProgress(0);
+                }}
+                className="flex-1 py-2 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Retry</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFailModal(false);
+                  setShowExplanationModal(true);
+                }}
+                className="flex-1 py-2 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Explanation</span>

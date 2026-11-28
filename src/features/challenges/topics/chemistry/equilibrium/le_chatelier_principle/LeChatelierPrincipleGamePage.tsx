@@ -505,6 +505,8 @@ export function LeChatelierPrincipleGamePage({
   const [introStep, setIntroStep] = useState<"mission" | "instructions" | "lab">("mission");
   const [showExplanationModal, setShowExplanationModal] = useState(false);
   const [showVictoryModal, setShowVictoryModal] = useState(false);
+  const [showFailModal, setShowFailModal] = useState(false);
+  const [isSliding, setIsSliding] = useState(false);
 
   // --------------------------------------------------------------------------
   // THERMODYNAMIC STATE & PARAMETERS
@@ -727,24 +729,34 @@ export function LeChatelierPrincipleGamePage({
   const currentCountN2O4 = molecules.filter((m) => m.type === "N2O4").length;
   const brownIntensity = currentCountNO2 === 0 ? 0 : Math.min(1.0, currentCountNO2 / 8);
 
-  // Detect Level 1 & Level 2 completion after molecules convert
+  // Detect Level 1 & Level 2 completion or settled incorrect state after sliding
   useEffect(() => {
-    if (introStep !== "lab" || !hasApplied || showVictoryModal) return;
+    if (introStep !== "lab" || !hasApplied || isSliding || showVictoryModal || showFailModal) return;
     const isLevel1Done = level === 1 && currentCountNO2 === 8 && currentCountN2O4 === 0;
     const isLevel2Done = level === 2 && currentCountN2O4 === 4 && currentCountNO2 === 0;
     if (isLevel1Done || isLevel2Done) {
       const timer = setTimeout(() => {
         setShowVictoryModal(true);
-      }, 700);
+      }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [introStep, hasApplied, level, currentCountNO2, currentCountN2O4, showVictoryModal]);
 
-  const initLevel1 = () => {
+    // If molecules have settled at the slider's equilibrium without reaching the target, show Retry modal after 3s
+    if (currentCountNO2 === targetNO2 && currentCountN2O4 === targetN2O4) {
+      const failTimer = setTimeout(() => {
+        setShowFailModal(true);
+      }, 3000);
+      return () => clearTimeout(failTimer);
+    }
+  }, [introStep, hasApplied, isSliding, level, currentCountNO2, currentCountN2O4, targetNO2, targetN2O4, showVictoryModal, showFailModal]);
+
+  const initLevel1 = (preserveTab = false) => {
     setLevel(1);
     setHasApplied(false);
+    setIsSliding(false);
     setShowVictoryModal(false);
-    setActiveTab("pressure");
+    setShowFailModal(false);
+    if (!preserveTab) setActiveTab("pressure");
     setTemperature(273);
     setTempSliderVal(273);
     setPressure(1.0);
@@ -786,11 +798,13 @@ export function LeChatelierPrincipleGamePage({
     setShiftNotice(null);
   };
 
-  const initLevel2 = () => {
+  const initLevel2 = (preserveTab = false) => {
     setLevel(2);
     setHasApplied(false);
+    setIsSliding(false);
     setShowVictoryModal(false);
-    setActiveTab("temperature");
+    setShowFailModal(false);
+    if (!preserveTab) setActiveTab("temperature");
     setTemperature(390);
     setTempSliderVal(390);
     setPressure(0.5);
@@ -1068,11 +1082,11 @@ export function LeChatelierPrincipleGamePage({
                         2
                       </div>
                       <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                        Set Value &amp; Tap Apply
+                        Slide to Shift Equilibrium
                       </h3>
                     </div>
                     <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                      Drag the slider to increase or decrease the value, then tap <strong>APPLY</strong> to run the change in the chamber.
+                      Drag the slider to increase or decrease the value and watch the reaction shift in the chamber.
                     </p>
                   </div>
                   <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50 flex items-center justify-center mt-2 shadow-inner p-1">
@@ -1308,7 +1322,7 @@ export function LeChatelierPrincipleGamePage({
                 </button>
               </div>
 
-              {/* 2. Dynamic Slider (Temperature or Pressure) */}
+              {/* 2. Dynamic Slider (Temperature or Pressure — applies live on slide) */}
               <div className="flex-1 w-full px-1">
                 {activeTab === "pressure" ? (
                   <div className="flex items-center gap-2">
@@ -1319,7 +1333,15 @@ export function LeChatelierPrincipleGamePage({
                       max={3.5}
                       step={0.1}
                       value={pressureSliderVal}
-                      onChange={(e) => setPressureSliderVal(Number(e.target.value))}
+                      onPointerDown={() => setIsSliding(true)}
+                      onPointerUp={() => setIsSliding(false)}
+                      onTouchEnd={() => setIsSliding(false)}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setPressureSliderVal(val);
+                        setPressure(val);
+                        setHasApplied(true);
+                      }}
                       className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                     />
                     <span className="text-[11px] font-semibold text-slate-500 shrink-0">3.5 atm</span>
@@ -1336,7 +1358,15 @@ export function LeChatelierPrincipleGamePage({
                       max={420}
                       step={5}
                       value={tempSliderVal}
-                      onChange={(e) => setTempSliderVal(Number(e.target.value))}
+                      onPointerDown={() => setIsSliding(true)}
+                      onPointerUp={() => setIsSliding(false)}
+                      onTouchEnd={() => setIsSliding(false)}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setTempSliderVal(val);
+                        setTemperature(val);
+                        setHasApplied(true);
+                      }}
                       className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-500"
                     />
                     <span className="text-[11px] font-semibold text-slate-500 shrink-0">420 K</span>
@@ -1346,16 +1376,6 @@ export function LeChatelierPrincipleGamePage({
                   </div>
                 )}
               </div>
-
-              {/* 3. APPLY Button */}
-              <button
-                type="button"
-                onClick={handleApplyChange}
-                className="w-full sm:w-auto px-5 h-10 rounded-xl font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-1.5 shrink-0"
-              >
-                <span>APPLY</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
             </div>
           </div>
         </div>
@@ -1653,7 +1673,7 @@ export function LeChatelierPrincipleGamePage({
               <div className="flex gap-2.5 pt-1">
                 <button
                   type="button"
-                  onClick={level === 1 ? initLevel1 : initLevel1}
+                  onClick={() => initLevel1()}
                   className="flex-1 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
@@ -1663,7 +1683,7 @@ export function LeChatelierPrincipleGamePage({
                 {level === 1 ? (
                   <button
                     type="button"
-                    onClick={initLevel2}
+                    onClick={() => initLevel2()}
                     className="flex-1 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1"
                   >
                     <span>NEXT LEVEL</span>
@@ -1682,6 +1702,52 @@ export function LeChatelierPrincipleGamePage({
                     <span>EXPLANATION</span>
                   </button>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════
+            LAYER 6: INCORRECT / RETRY MODAL
+            ══════════════════════════════════════════════════════════════════ */}
+        {showFailModal && (
+          <div className="absolute inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-5 max-w-sm w-full text-center shadow-2xl border border-slate-100 space-y-3 animate-in fade-in zoom-in-95 duration-200">
+              <div className="w-11 h-11 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center">
+                <Info className="w-5 h-5" />
+              </div>
+
+              <h3 className="font-black text-base text-slate-900">
+                Equilibrium Not Shifted to Target!
+              </h3>
+
+              <p className="text-slate-600 text-xs leading-relaxed">
+                {level === 1
+                  ? "The N₂O₄ molecules did not convert into NO₂. Try choosing the right condition and sliding it far enough!"
+                  : "The NO₂ molecules did not convert into N₂O₄. Try choosing the right condition and sliding it far enough!"}
+              </p>
+
+              <div className="flex gap-2.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => (level === 1 ? initLevel1(true) : initLevel2(true))}
+                  className="flex-1 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>RETRY</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFailModal(false);
+                    setShowExplanationModal(true);
+                  }}
+                  className="flex-1 py-2.5 rounded-full font-black text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>EXPLANATION</span>
+                </button>
               </div>
             </div>
           </div>

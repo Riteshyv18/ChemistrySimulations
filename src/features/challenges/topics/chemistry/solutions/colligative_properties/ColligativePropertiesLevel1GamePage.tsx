@@ -13,7 +13,8 @@ import {
   Droplets,
   CheckCircle2,
   Trophy,
-  Play
+  Play,
+  X
 } from 'lucide-react';
 import { exitSimulation } from '@/lib/mobileBridge';
 
@@ -433,8 +434,8 @@ const ColligativeBeaker3D = ({
         <Html position={[-0.18, 0, 0]} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
           <div
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl backdrop-blur-sm border shadow-md select-none whitespace-nowrap ${stage.type === 'freezing'
-                ? 'bg-sky-50/95 border-sky-300'
-                : 'bg-amber-50/95 border-amber-300'
+              ? 'bg-sky-50/95 border-sky-300'
+              : 'bg-amber-50/95 border-amber-300'
               }`}
           >
             <span className="text-sm">{stage.type === 'freezing' ? '🧊' : '🔥'}</span>
@@ -590,7 +591,7 @@ export default function ColligativePropertiesLevel1GamePage({
             </div>
 
             <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1E293B] tracking-tight leading-snug">
-              <span className="text-[#2563EB]">MISSION:</span> Adjust the solute concentration to achieve the target freezing point and boiling point.
+              <span className="text-[#2563EB]">MISSION:</span> Adjust the solute concentration to achieve the targeted freezing point and boiling point.
             </h1>
 
             <div className="pt-3">
@@ -725,11 +726,11 @@ export default function ColligativePropertiesLevel1GamePage({
                   </span>
                 </div>
                 <p className="text-slate-600 font-medium text-xs leading-relaxed mt-2">
-                  Once the calculated temperature matches the target above the beaker, click Submit Answer to verify your result.
+                  Once the calculated temperature matches the target above the beaker, click Submit to verify your result.
                 </p>
               </div>
               <div className="mt-3 w-full py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs text-center shadow-xs">
-                Submit Answer
+                Submit
               </div>
             </div>
           </div>
@@ -807,11 +808,6 @@ export default function ColligativePropertiesLevel1GamePage({
           <span>EXPLANATION</span>
         </button>
       </header>
-
-      {/* Subtle Axis Rotation Hint */}
-      <div className="absolute bottom-[240px] sm:bottom-[250px] right-2.5 px-2 py-0.5 rounded-full bg-slate-900/40 backdrop-blur-xs text-white text-[9px] font-mono pointer-events-none select-none flex items-center gap-1 shadow-2xs z-10">
-        <span>Drag to rotate on axis ↺</span>
-      </div>
 
       {/* ── Target Achieved (Success) Dialog Overlay (Matching Image 5) ──────── */}
       {isStageCompleted && (
@@ -956,195 +952,196 @@ export default function ColligativePropertiesLevel1GamePage({
           />
         </div>
 
-        {/* 3. Submit Button (Matching User Image with N badge and Submit Answer) */}
+        {/* 3. Submit Button */}
         <button
           type="button"
           onClick={handleSubmit}
           className="w-full py-2.5 sm:py-3 rounded-2xl bg-[#3B50FF] hover:bg-[#3141DE] active:scale-[0.98] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer tracking-wide"
         >
-          <div className="w-6 h-6 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center font-black text-xs text-white shadow-xs">
-            N
-          </div>
-          <span>Submit Answer</span>
+          <span>Submit</span>
         </button>
       </footer>
 
-      {/* ── STEP 4: FULL-SCREEN EXPLANATION MODAL (MATCHING IMAGE 4) ─────────── */}
+      {/* ── STEP 4: FULL-SCREEN EXPLANATION MODAL ─────────── */}
       {showExplanation && (
-        <div className="absolute inset-0 z-50 bg-white flex flex-col justify-between p-4 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+        <div className="absolute inset-0 z-50 bg-white flex flex-col justify-between overflow-hidden animate-in fade-in duration-200">
           {/* Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200 shrink-0">
-            <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-wide uppercase">
-              Colligative Properties &amp; Formulas
-            </h2>
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-200 bg-white/95 backdrop-blur-md shrink-0">
+            <div>
+              <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                {currentStage.propertyTitle}
+              </h2>
+            </div>
             <button
               type="button"
               onClick={() => setShowExplanation(false)}
-              className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs transition-all cursor-pointer active:scale-95 border border-slate-300"
             >
-              ✕ Close
+              <X className="w-4 h-4 text-slate-600" />
+              <span>Close</span>
             </button>
           </div>
 
-          {/* Scrollable Content (Clean normal text without covering card boxes) */}
-          <div className="flex-1 overflow-y-auto py-3 space-y-5 px-2 text-left">
-            {/* 1. Real-World Motivation: Why Does This Matter? */}
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 space-y-6 text-slate-700 text-xs sm:text-sm leading-relaxed max-w-4xl mx-auto w-full text-left">
+            {/* 1. What is a Colligative Property? */}
             <div className="space-y-2">
-              <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">
-                1. Real-World Motivation: Why Does This Matter?
+              <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs shrink-0">
+                  1
+                </span>
+                <span>What is a Colligative Property?</span>
               </h3>
-              <p className="text-sm sm:text-base text-slate-800 font-semibold">
-                Have you ever wondered:
+              <p className="text-slate-600 font-medium">
+                <strong>Colligative properties</strong> depend <strong>only on the number of dissolved solute particles</strong> in a solution—not on what the solute is. Whether you dissolve sugar, urea, or glucose, the same number of particles produces the exact same temperature shift.
               </p>
-              <ul className="space-y-2 text-xs sm:text-sm text-slate-700 list-disc pl-5">
-                <li>
-                  <strong>Why do trucks spread salt on icy roads in winter?</strong> Salt dissolves in the thin layer of water and lowers its freezing point below 0°C, melting the ice even when it is below freezing!
-                </li>
-                <li>
-                  <strong>Why do car radiators use antifreeze/coolant?</strong> Adding a solute (like ethylene glycol) does two things at once: it stops the coolant from freezing in winter and prevents the engine from boiling over in summer!
-                </li>
-              </ul>
-              <p className="text-xs sm:text-sm text-purple-700 font-semibold pt-1">
-                This simulation lets you directly control these two phenomena.
-              </p>
-            </div>
-
-            <div className="h-px bg-slate-200 w-full" />
-
-            {/* 2. The Core Concepts You Are Learning */}
-            <div className="space-y-4">
-              <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">
-                2. The Core Concepts You Are Learning
-              </h3>
-
-              {/* Concept 1 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-blue-700">
-                  Concept 1: What is a &quot;Colligative Property&quot;?
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  The word <em>colligative</em> comes from the Latin word meaning <strong>&quot;bound together by quantity&quot;</strong>.
-                </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  These are properties of a solution that depend <strong>ONLY on the NUMBER of dissolved solute particles</strong>, not on what the solute is (whether it is sugar, urea, or glucose).
-                </p>
-              </div>
-
-              {/* Concept 2 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-purple-700">
-                  Concept 2: Why Molality (m) Instead of Molarity (M)?
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  In our earlier topic, we used Molarity (M = moles / Liters of solution).
-                </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  But when liquid is heated or cooled, its volume expands and contracts, so <strong>molarity changes with temperature!</strong>
-                </p>
-                <p className="text-xs sm:text-sm font-mono font-bold text-slate-900 pl-2">
-                  Molality (m) = Moles of solute (mol) / Mass of solvent (kg)
-                </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  Molality uses mass in kilograms. <strong>Mass never changes with temperature</strong>, making it the correct unit for freezing and boiling studies.
-                </p>
-              </div>
-
-              {/* Concept 3 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-sky-700">
-                  Concept 3: Freezing Point Depression (ΔT_f)
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  Pure water freezes at <strong>0.00°C</strong> by organizing into a rigid, ordered crystal lattice (ice).
-                </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  When solute particles (glucose) dissolve, they physically get in the way and disrupt the water molecules from locking into a solid crystal.
-                </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  You must pull out more heat (cool it lower) to force it to freeze:
-                </p>
-                <div className="font-mono font-bold text-xs sm:text-sm text-slate-900 pl-2 space-y-0.5">
-                  <div>ΔT_f = i · K_f · m</div>
-                  <div>New Freezing Point (T_f) = 0.00°C − ΔT_f</div>
-                </div>
-                <p className="text-xs text-slate-500 pl-2">
-                  (For water: cryoscopic constant K_f = 1.86 °C·kg/mol)
-                </p>
-              </div>
-
-              {/* Concept 4 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-amber-700">
-                  Concept 4: Boiling Point Elevation (ΔT_b)
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  A liquid boils when its internal vapor pressure equals atmospheric pressure (<strong>1 atm</strong>).
-                </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  In the previous Raoult’s Law topic, you saw that adding non-volatile solute particles lowers vapor pressure.
-                </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  Because the vapor pressure is now lower, you have to heat the solution to a higher temperature to make it reach 1 atm and boil:
-                </p>
-                <div className="font-mono font-bold text-xs sm:text-sm text-slate-900 pl-2 space-y-0.5">
-                  <div>ΔT_b = i · K_b · m</div>
-                  <div>New Boiling Point (T_b) = 100.00°C + ΔT_b</div>
-                </div>
-                <p className="text-xs text-slate-500 pl-2">
-                  (For water: ebullioscopic constant K_b = 0.512 °C·kg/mol)
-                </p>
-              </div>
-
-              {/* Concept 5 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-emerald-700">
-                  Concept 5: The van &apos;t Hoff Factor (i)
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  Glucose (<strong>C₆H₁₂O₆</strong>) is a non-electrolyte. When dissolved in water, 1 molecule stays as 1 intact molecule (it doesn&apos;t break into ions).
-                </p>
-                <p className="text-xs sm:text-sm font-bold text-slate-900 pl-2">
-                  Therefore, i = 1
-                </p>
+              <div className="p-3 rounded-xl bg-sky-50 border border-sky-200 text-sky-950 text-xs font-medium">
+                <strong>In this simulation:</strong> You are dissolving <strong>glucose (C₆H₁₂O₆)</strong> in water. Because glucose does not break apart into ions, each molecule stays as 1 particle (van &apos;t Hoff factor <strong>i = 1</strong>).
               </div>
             </div>
 
-            <div className="h-px bg-slate-200 w-full" />
-
-            {/* 3. Applying in the Simulation Lab */}
+            {/* 2. How the Simulation Works */}
             <div className="space-y-2">
-              <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">
-                3. Applying This in the Simulation Lab
+              <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs shrink-0">
+                  2
+                </span>
+                <span>
+                  {currentStage.type === 'freezing'
+                    ? 'Why Does Adding Solute Lower the Freezing Point?'
+                    : 'Why Does Adding Solute Raise the Boiling Point?'}
+                </span>
               </h3>
-              <div className="space-y-2.5 text-xs sm:text-sm text-slate-700">
-                <div>
-                  <strong className="text-sky-800 block">🧊 Stage 1: Target Freezing Point = −5.58°C</strong>
-                  <div className="font-mono pl-2 text-slate-800 space-y-0.5">
-                    <div>ΔT_f = 0.00°C − (−5.58°C) = 5.58°C</div>
-                    <div>5.58 = 1 × 1.86 × m  =&gt;  m = 5.58 / 1.86 = <strong>3.00 mol/kg</strong></div>
-                    <div className="text-slate-500 text-xs">Recipe: 3.00 mol glucose in 1.00 kg water</div>
+              {currentStage.type === 'freezing' ? (
+                <p className="text-slate-600 font-medium">
+                  Pure water freezes at <strong>0.00°C</strong> when water molecules lock into an orderly ice crystal. Dissolved glucose particles physically get in the way and disrupt this crystal formation, so you must cool the solution below 0.00°C to force it to freeze.
+                </p>
+              ) : (
+                <p className="text-slate-600 font-medium">
+                  Pure water boils at <strong>100.00°C</strong> when its vapour pressure reaches 1 atm. Dissolved glucose particles block the surface and lower the vapour pressure, so you must heat the solution above 100.00°C to make it boil.
+                </p>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <div className="font-mono font-bold text-sky-800 text-[11px] uppercase mb-1">
+                    Molality (m)
+                  </div>
+                  <div className="font-mono font-black text-slate-900 text-xs sm:text-sm bg-white p-2 rounded-lg border border-slate-200 text-center">
+                    m = Moles of Solute (n) / Mass of Water (kg)
                   </div>
                 </div>
-                <div>
-                  <strong className="text-amber-800 block">🔥 Stage 2: Target Boiling Point = 101.53°C</strong>
-                  <div className="font-mono pl-2 text-slate-800 space-y-0.5">
-                    <div>ΔT_b = 101.53°C − 100.00°C = 1.53°C</div>
-                    <div>1.53 = 1 × 0.512 × m  =&gt;  m = 1.53 / 0.512 ≈ <strong>3.00 mol/kg</strong></div>
-                    <div className="text-slate-500 text-xs">Recipe: 3.00 mol glucose in 1.00 kg water</div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <div className="font-mono font-bold text-sky-800 text-[11px] uppercase mb-1">
+                    {currentStage.type === 'freezing' ? 'Freezing Point Depression' : 'Boiling Point Elevation'}
+                  </div>
+                  <div className="font-mono font-black text-slate-900 text-xs sm:text-sm bg-white p-2 rounded-lg border border-slate-200 text-center">
+                    {currentStage.type === 'freezing'
+                      ? 'ΔT_f = i · K_f · m   (K_f = 1.86 °C·kg/mol)'
+                      : 'ΔT_b = i · K_b · m   (K_b = 0.512 °C·kg/mol)'}
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* 3. Step-by-Step Calculation for This Stage */}
+            <div className="space-y-2.5">
+              <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0">
+                  3
+                </span>
+                <span>
+                  Step-by-Step Calculation ({currentStage.label})
+                </span>
+              </h3>
+
+              {currentStage.type === 'freezing' ? (
+                <div className="space-y-2">
+                  <div className="p-3 rounded-xl bg-slate-50 border-l-4 border-sky-500">
+                    <div className="font-bold text-slate-900 text-xs mb-1">
+                      Step A: Find the required temperature drop (ΔT_f)
+                    </div>
+                    <div className="font-mono text-xs font-bold text-sky-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 mb-1">
+                      ΔT_f = T_pure − T_target = 0.00°C − (−5.58°C) = 5.58°C
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      We need to lower the freezing point of pure water by 5.58°C.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border-l-4 border-sky-500">
+                    <div className="font-bold text-slate-900 text-xs mb-1">
+                      Step B: Solve for the required Molality (m)
+                    </div>
+                    <div className="font-mono text-xs font-bold text-sky-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 mb-1">
+                      m = ΔT_f / (i × K_f) = 5.58 / (1 × 1.86) = 3.00 mol/kg
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Since i = 1 for glucose and K_f = 1.86 °C·kg/mol for water, we need a molality of 3.00 mol/kg.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-emerald-50/70 border-l-4 border-emerald-500">
+                    <div className="font-bold text-emerald-950 text-xs mb-1">
+                      Step C: Set the Sliders in the Simulation
+                    </div>
+                    <div className="font-mono text-xs font-bold text-emerald-900 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-200 mb-1">
+                      m = 3.00 mol / 1.00 kg = 3.00 mol/kg  ⟹  T_f = −5.58°C
+                    </div>
+                    <p className="text-[11px] text-emerald-800 font-medium">
+                      Set <strong>Solute (Glucose) = 3.00 mol</strong> and <strong>Solvent (Water) = 1.00 kg</strong> (or any ratio equal to 3.00 mol/kg), then click <strong>Submit</strong>.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="p-3 rounded-xl bg-slate-50 border-l-4 border-amber-500">
+                    <div className="font-bold text-slate-900 text-xs mb-1">
+                      Step A: Find the required temperature rise (ΔT_b)
+                    </div>
+                    <div className="font-mono text-xs font-bold text-amber-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 mb-1">
+                      ΔT_b = T_target − T_pure = 101.53°C − 100.00°C = 1.53°C
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      We need to raise the boiling point of pure water by 1.53°C.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border-l-4 border-amber-500">
+                    <div className="font-bold text-slate-900 text-xs mb-1">
+                      Step B: Solve for the required Molality (m)
+                    </div>
+                    <div className="font-mono text-xs font-bold text-amber-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 mb-1">
+                      m = ΔT_b / (i × K_b) = 1.53 / (1 × 0.512) ≈ 3.00 mol/kg
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Since i = 1 for glucose and K_b = 0.512 °C·kg/mol for water, we need a molality of 3.00 mol/kg.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-emerald-50/70 border-l-4 border-emerald-500">
+                    <div className="font-bold text-emerald-950 text-xs mb-1">
+                      Step C: Set the Sliders in the Simulation
+                    </div>
+                    <div className="font-mono text-xs font-bold text-emerald-900 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-200 mb-1">
+                      m = 3.00 mol / 1.00 kg = 3.00 mol/kg  ⟹  T_b = 101.53°C
+                    </div>
+                    <p className="text-[11px] text-emerald-800 font-medium">
+                      Set <strong>Solute (Glucose) = 3.00 mol</strong> and <strong>Solvent (Water) = 1.00 kg</strong> (or any ratio equal to 3.00 mol/kg), then click <strong>Submit</strong>.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Bottom Action Button */}
-          <div className="pt-3 pb-1 shrink-0 flex items-center justify-center">
+          <div className="px-4 sm:px-6 py-3 border-t border-slate-200 bg-white/95 backdrop-blur-md shrink-0 flex items-center justify-end">
             <button
               type="button"
               onClick={() => setShowExplanation(false)}
-              className="w-full sm:w-auto sm:px-10 py-2.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-sky-600/30 transition-all cursor-pointer active:scale-95 text-center"
+              className="w-full sm:w-auto px-8 py-2.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider shadow-md shadow-sky-600/30 transition-all cursor-pointer active:scale-95 text-center"
             >
-              RESUME CHALLENGE
+              Resume Challenge
             </button>
           </div>
         </div>

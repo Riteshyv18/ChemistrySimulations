@@ -22,6 +22,202 @@ import {
 } from 'lucide-react';
 import { exitSimulation } from '@/lib/mobileBridge';
 
+// ── Standard Stage Explanation Data Interface ──────────────────────────────────
+interface StageExplanationData {
+  title: string;
+  subtitle: string;
+  concept: string;
+  formulas: {
+    label: string;
+    formula: string;
+    explanation: string;
+  }[];
+  steps: {
+    step: number;
+    title: string;
+    math?: string;
+    explanation: string;
+  }[];
+  comparison?: {
+    term: string;
+    formula: string;
+    tempDependence: string;
+    keyFeature: string;
+  }[];
+  conclusion: string;
+}
+
+const STAGE_EXPLANATIONS: Record<number, StageExplanationData> = {
+  1: {
+    title: "Molarity (M) & Solution Preparation",
+    subtitle: "Module 3: Solutions • Concentration Terms • Stage 1 of 3",
+    concept:
+      "A solution is a homogeneous mixture formed when a solute uniformly dissolves in a solvent. Quantitative chemistry requires knowing exactly how many reactive particles (moles) exist inside a given liquid volume.\n\nIn this stage, your target is 0.50 M (0.50 mol/L). You can achieve this by dissolving 0.50 mol of NaCl into 1.00 L of water, or equivalently 0.25 mol into 0.50 L. Both produce the identical particle density and chemical properties.",
+    formulas: [
+      {
+        label: "Definition of Molarity",
+        formula: "M = n / V  (mol/L or Molar)",
+        explanation: "Where n is the amount of solute in moles, and V is the total volume of solution in liters.",
+      },
+      {
+        label: "Moles from Mass",
+        formula: "n = mass (g) / Molar Mass (g/mol)",
+        explanation: "For NaCl (M = 58.44 g/mol), 0.50 mol equals 29.22 g of salt crystals.",
+      },
+    ],
+    steps: [
+      {
+        step: 1,
+        title: "Identify Required Target Molarity",
+        math: "Target M = 0.50 mol/L",
+        explanation: "We need a ratio of solute moles (n) to total liquid volume (V) that simplifies to 0.50.",
+      },
+      {
+        step: 2,
+        title: "Balance Solute (n) and Volume (V)",
+        math: "Option A: 0.50 mol / 1.00 L = 0.50 M   |   Option B: 0.25 mol / 0.50 L = 0.50 M",
+        explanation: "Adjust the Solute slider and Water slider until the quotient n / V equals 0.50 M.",
+      },
+      {
+        step: 3,
+        title: "Particle Dissolution & Ion Solvation",
+        math: "NaCl (s) + H₂O (l) ⟶ Na⁺ (aq) + Cl⁻ (aq)",
+        explanation: "When NaCl dissolves, polar water molecules orient their partial charges around each ion (hydration shell), dispersing them freely throughout the solution.",
+      },
+    ],
+    comparison: [
+      {
+        term: "Molarity (M)",
+        formula: "moles solute / L solution",
+        tempDependence: "Temperature Dependent (Volume V expands upon heating)",
+        keyFeature: "Most practical for liquid volume titrations and laboratory benchwork.",
+      },
+      {
+        term: "Molality (m)",
+        formula: "moles solute / kg solvent",
+        tempDependence: "Temperature Independent (Mass invariant with temperature)",
+        keyFeature: "Used for colligative properties (ΔTb, ΔTf) across changing temperatures.",
+      },
+      {
+        term: "Mole Fraction (x)",
+        formula: "nA / (nA + nB)",
+        tempDependence: "Temperature Independent",
+        keyFeature: "Directly governs vapor pressure in Raoult's Law (P = xA · P°A).",
+      },
+    ],
+    conclusion:
+      "Key Takeaway: Concentration is an intensive property — it depends strictly on the ratio n/V, not the absolute size of the container.",
+  },
+  2: {
+    title: "High-Concentration Solutions & Particle Density",
+    subtitle: "Module 3: Solutions • Concentration Terms • Stage 2 of 3",
+    concept:
+      "Concentration represents the crowding of solute particles in space. In Stage 2, reaching a higher concentration of 1.00 M requires doubling the solute particle count in the same liquid volume (e.g., 1.00 mol in 1.00 L) or halving the volume (0.50 mol in 0.50 L).\n\nAs concentration increases, inter-ionic interactions between Na⁺ and Cl⁻ become more frequent, visible in the simulation through closer particle proximity and stronger hydration clustering.",
+    formulas: [
+      {
+        label: "Higher Molarity Calculation",
+        formula: "M = 1.00 mol / 1.00 L = 1.00 M  (or 0.50 mol / 0.50 L = 1.00 M)",
+        explanation: "Doubling n while holding V constant doubles the molar concentration.",
+      },
+      {
+        label: "Mass Percentage (w/w %)",
+        formula: "Mass % = (Mass of Solute / Total Mass of Solution) × 100",
+        explanation: "1.00 M NaCl (58.44 g in ~1058 g solution) corresponds to approximately 5.5% w/w NaCl.",
+      },
+    ],
+    steps: [
+      {
+        step: 1,
+        title: "Analyze the Target Increase",
+        math: "Target M = 1.00 mol/L (Double Stage 1)",
+        explanation: "To reach 1.00 M from 0.50 M, you can either add solute (increase n) or remove solvent (decrease V).",
+      },
+      {
+        step: 2,
+        title: "Approach 1: Add Solute",
+        math: "Set n = 1.00 mol, keep V = 1.00 L ⟹ M = 1.00 / 1.00 = 1.00 M",
+        explanation: "Adding salt directly increases the numerator n without expanding the volume.",
+      },
+      {
+        step: 3,
+        title: "Approach 2: Evaporate / Reduce Solvent",
+        math: "Set n = 0.50 mol, drain V to 0.50 L ⟹ M = 0.50 / 0.50 = 1.00 M",
+        explanation: "Compressing the volume into half space doubles the concentration for the same solute amount.",
+      },
+    ],
+    comparison: [
+      {
+        term: "Dilute Solution",
+        formula: "n / V is small (< 0.1 M)",
+        tempDependence: "Behaves ideally",
+        keyFeature: "Ions remain far apart; van 't Hoff factor i approaches ideal integer (i ≈ 2 for NaCl).",
+      },
+      {
+        term: "Concentrated Solution",
+        formula: "n / V is large (≥ 1.0 M)",
+        tempDependence: "Inter-ionic effects significant",
+        keyFeature: "Ion-pairing and electrostatic drag reduce effective activity coefficient (γ < 1).",
+      },
+    ],
+    conclusion:
+      "Key Takeaway: You can increase concentration by either adding solute or evaporating/draining solvent. Both increase the frequency of particle interactions.",
+  },
+  3: {
+    title: "Dilution Law (M₁V₁ = M₂V₂) & Volume Conservation",
+    subtitle: "Module 3: Solutions • Concentration Terms • Stage 3 of 3",
+    concept:
+      "Dilution is the process of decreasing the concentration of a solute in a solution, usually simply by mixing with more solvent.\n\nCrucially, when pure water is added to a beaker, the total number of dissolved solute particles (moles) does not change at all. Only the space they occupy expands. Because moles are conserved (n₁ = n₂), the product of initial molarity and volume strictly equals the final product.",
+    formulas: [
+      {
+        label: "The Fundamental Dilution Law",
+        formula: "M₁ × V₁ = M₂ × V₂",
+        explanation: "Because initial moles n₁ (M₁V₁) must equal final moles n₂ (M₂V₂).",
+      },
+      {
+        label: "Dilution Factor (DF)",
+        formula: "DF = V_final / V_initial = M_initial / M_final",
+        explanation: "Diluting from 0.50 L to 1.00 L gives DF = 2, cutting concentration exactly in half.",
+      },
+    ],
+    steps: [
+      {
+        step: 1,
+        title: "Starting Concentrated Solution",
+        math: "Start: n = 0.20 mol in V₁ = 0.50 L ⟹ M₁ = 0.40 M",
+        explanation: "The beaker begins with 0.20 mol of salt packed into half a liter.",
+      },
+      {
+        step: 2,
+        title: "Apply Dilution Formula to Reach 0.20 M",
+        math: "M₂ = n / V₂  ⟹  0.20 = 0.20 / V₂  ⟹  V₂ = 1.00 L",
+        explanation: "By sliding the Water slider to 1.00 L while leaving salt untouched at 0.20 mol, the volume doubles and concentration drops to 0.20 M.",
+      },
+      {
+        step: 3,
+        title: "Verify Solute Invariance",
+        math: "n_before = 0.40 M × 0.50 L = 0.20 mol  =  n_after = 0.20 M × 1.00 L",
+        explanation: "Every single Na⁺ and Cl⁻ ion is preserved; they are merely separated by more water molecules.",
+      },
+    ],
+    comparison: [
+      {
+        term: "Concentrated Stock",
+        formula: "Small V₁, High M₁",
+        tempDependence: "High particle density",
+        keyFeature: "Economical and stable form used to store chemicals in chemical stockrooms.",
+      },
+      {
+        term: "Working Dilution",
+        formula: "Large V₂, Lower M₂",
+        tempDependence: "Spaced particle density",
+        keyFeature: "Safely calibrated for delicate chemical reactions and titrations.",
+      },
+    ],
+    conclusion:
+      "Key Takeaway: Dilution never destroys solute; it only increases solvent volume. M₁V₁ = M₂V₂ is the single most widely used calculation in real-world chemical labs.",
+  },
+};
+
 // ── Types & Stages ─────────────────────────────────────────────────────────────
 interface StageConfig {
   id: number;
@@ -824,7 +1020,7 @@ export default function ConcentrationTermsLevel1GamePage({
                   </span>
                 </div>
                 <p className="text-slate-600 font-medium text-xs leading-snug mt-1.5">
-                  Once both bars are set to the correct values, click the Submit Answer button to check your result.
+                  Once both bars are set to the correct values, click the Submit button to check your result.
                 </p>
               </div>
 
@@ -832,7 +1028,7 @@ export default function ConcentrationTermsLevel1GamePage({
               <div className="rounded-xl bg-slate-50 border border-slate-200 p-2 mt-2 flex items-center justify-center shadow-2xs">
                 <div className="w-full max-w-[210px] py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-1.5 pointer-events-none tracking-wide">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Submit Answer</span>
+                  <span>Submit</span>
                 </div>
               </div>
             </div>
@@ -914,11 +1110,6 @@ export default function ConcentrationTermsLevel1GamePage({
           <span>EXPLANATION</span>
         </button>
       </header>
-
-      {/* Subtle Axis Rotation Hint */}
-      <div className="absolute bottom-[240px] sm:bottom-[250px] right-2.5 px-2 py-0.5 rounded-full bg-slate-900/40 backdrop-blur-xs text-white text-[9px] font-mono pointer-events-none select-none flex items-center gap-1 shadow-2xs z-10">
-        <span>Drag to rotate on axis ↺</span>
-      </div>
 
       {/* Stage Completion Banner Overlay */}
       {isStageCompleted && (
@@ -1057,160 +1248,157 @@ export default function ConcentrationTermsLevel1GamePage({
           />
         </div>
 
-        {/* 3. Submit Button (Matching User Image 3 with N badge and Submit Answer) */}
+        {/* 3. Submit Button */}
         <button
           type="button"
           onClick={handleSubmit}
           className="w-full py-2.5 sm:py-3 rounded-2xl bg-[#3B50FF] hover:bg-[#3141DE] active:scale-[0.98] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer tracking-wide"
         >
-          <div className="w-6 h-6 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center font-black text-xs text-white shadow-xs">
-            N
-          </div>
-          <span>Submit Answer</span>
+          <span>Submit</span>
         </button>
       </footer>
 
-      {/* ── STEP 4: EXPLANATION MODAL (MATCHING IMAGES 4 & 5) ────────────────── */}
-      {/* ── STEP 4: EXPLANATION SCREEN (FULL CANVAS WHOLE SCREEN) ─────────── */}
+      {/* ── STEP 4: EXPLANATION MODAL / SCREEN (STANDARD RICH PEDAGOGICAL TEMPLATE) ── */}
       {showExplanation && (
-        <div className="absolute inset-0 z-50 flex flex-col justify-between p-4 sm:p-5 bg-white overflow-y-auto animate-in fade-in duration-200">
-          {/* Top Header */}
-          <div className="w-full flex items-center justify-between pb-3 border-b border-slate-200 shrink-0">
-            <h2 className="font-black text-base sm:text-lg text-slate-900 uppercase tracking-wide">
-              Concentration Terms: Molarity (M)
-            </h2>
+        <div className="absolute inset-0 z-50 flex flex-col justify-between bg-white overflow-hidden animate-in fade-in duration-200">
+          {/* Top Sticky Header */}
+          <div className="w-full flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-200 bg-white/95 backdrop-blur-md shrink-0">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold text-sky-700 uppercase tracking-widest px-2 py-0.5 rounded-full bg-sky-50 border border-sky-200">
+                  STAGE {currentStage.id} EXPLANATION
+                </span>
+                <span className="text-xs text-slate-400 font-mono hidden sm:inline">Target: {currentStage.targetMolarity.toFixed(2)} M</span>
+              </div>
+              <h2 className="font-black text-base sm:text-lg text-slate-900 tracking-tight mt-0.5">
+                {STAGE_EXPLANATIONS[currentStage.id]?.title || "Concentration Terms: Molarity (M)"}
+              </h2>
+            </div>
             <button
               type="button"
               onClick={() => setShowExplanation(false)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs transition-all cursor-pointer active:scale-95 border border-slate-300"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4 text-slate-600" />
               <span>Close</span>
             </button>
           </div>
 
-          {/* Scrollable Content filling the full screen without card boxes */}
-          <div className="flex-1 overflow-y-auto py-3 space-y-5 px-1 pr-1.5">
-            {/* Section 1: Definition & Formula */}
+          {/* Scrollable Body Content */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 space-y-6 text-slate-700 text-xs sm:text-sm leading-relaxed max-w-4xl mx-auto w-full">
+            {/* Concept Overview Box */}
             <div className="space-y-2">
-              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0">
-                  1
-                </span>
-                What is Molarity?
+              <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-sky-600" />
+                Physical &amp; Molecular Concept
               </h3>
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                <strong>Molarity (M)</strong> is the most common quantitative concentration unit used in chemistry. It expresses the number of moles of solute dissolved per liter of total solution:
-              </p>
-              <div className="py-2 text-center font-mono font-black text-xs sm:text-sm text-slate-900 tracking-wide">
-                Molarity (M) = Moles of Solute (n) / Volume of Solution (V in Liters)
-              </div>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                • <strong>SI Unit:</strong> <span className="font-mono font-bold text-slate-800">mol/L</span> or <span className="font-mono font-bold text-slate-800">mol·dm⁻³</span>, commonly symbolized by capital <strong>M</strong> (spoken as &quot;molar&quot;).
+              <p className="whitespace-pre-line leading-relaxed text-slate-600 font-medium">
+                {STAGE_EXPLANATIONS[currentStage.id]?.concept}
               </p>
             </div>
 
-            <div className="h-px bg-slate-100 w-full" />
-
-            {/* Section 2: Solute Moles & Mass */}
-            <div className="space-y-2">
-              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0">
-                  2
-                </span>
-                Solute Moles vs Gram Mass
+            {/* Formulas Cards Grid */}
+            <div className="space-y-3">
+              <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                Fundamental Formulas &amp; Equations
               </h3>
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                The number of moles (<span className="font-mono font-bold text-purple-700">n</span>) depends on the mass (<span className="font-mono font-bold">m</span> in grams) and the molecular weight (<span className="font-mono font-bold">M_w</span> in g/mol):
-              </p>
-              <div className="py-2 text-center font-mono font-black text-xs sm:text-sm text-purple-900 tracking-wide">
-                n (moles) = mass (g) / Molar Mass (g/mol)
-              </div>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                • For table salt (<strong className="text-slate-800">NaCl</strong>), Molar Mass ≈ <strong>58.44 g/mol</strong>. Therefore, <span className="font-mono font-bold text-purple-800">0.50 mol NaCl</span> corresponds to exactly <strong>29.22 g</strong> of salt.
-              </p>
-            </div>
-
-            <div className="h-px bg-slate-100 w-full" />
-
-            {/* Section 3: Effect of Adding Solute vs Solvent */}
-            <div className="space-y-2">
-              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0">
-                  3
-                </span>
-                Effect of Adding Solute vs Solvent
-              </h3>
-              <ul className="space-y-2 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium pl-1">
-                <li className="flex items-start gap-2">
-                  <span className="text-purple-600 font-bold shrink-0 mt-0.5">•</span>
-                  <span>
-                    <strong className="text-purple-800">Adding Solute (n ↑):</strong> Increases the ion concentration of Na⁺ and Cl⁻ per unit volume. The solution becomes darker and more concentrated.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-sky-600 font-bold shrink-0 mt-0.5">•</span>
-                  <span>
-                    <strong className="text-sky-800">Adding Water (V ↑):</strong> Dilutes the solution. The dissolved particles spread farther apart, and molarity decreases.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-amber-600 font-bold shrink-0 mt-0.5">•</span>
-                  <span>
-                    <strong className="text-amber-800">Draining Water (V ↓):</strong> Removing solvent while keeping solute constant increases particle density, raising concentration.
-                  </span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="h-px bg-slate-100 w-full" />
-
-            {/* Section 4: Dilution Law & Calculation */}
-            <div className="space-y-2">
-              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0">
-                  4
-                </span>
-                The Dilution Law
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                When additional pure solvent is added to an existing solution, the total moles of solute (<span className="font-mono font-bold">n</span>) remain completely constant (<span className="font-mono font-bold">n₁ = n₂</span>):
-              </p>
-              <div className="py-2 text-center font-mono font-black text-xs sm:text-sm text-sky-800 tracking-wide">
-                M₁ × V₁ = M₂ × V₂
-              </div>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                • <strong>Quick Example:</strong> If you start with <strong>0.50 L</strong> of a <strong>1.00 M</strong> solution (<span className="font-mono font-bold">0.50 mol</span>) and add water to reach <strong>1.00 L</strong>:
-              </p>
-              <div className="py-1 text-center font-mono font-bold text-xs sm:text-sm text-sky-900">
-                M₂ = (1.00 M × 0.50 L) / 1.00 L = 0.50 M
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {STAGE_EXPLANATIONS[currentStage.id]?.formulas.map((f, fIdx) => (
+                  <div key={`formula-${fIdx}`} className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                      <div className="font-mono font-bold text-sky-800 text-[11px] uppercase tracking-wider mb-1">
+                        {f.label}
+                      </div>
+                      <div className="font-mono font-black text-slate-900 text-sm sm:text-base mb-1.5 bg-white p-2 rounded-lg border border-slate-200 text-center shadow-2xs">
+                        {f.formula}
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-snug mt-1">
+                      {f.explanation}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="h-px bg-slate-100 w-full" />
-
-            {/* Section 5: Temperature Note */}
-            <div className="space-y-2">
-              <h3 className="font-extrabold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#0284C7] text-white flex items-center justify-center font-black text-[11px] shrink-0">
-                  5
-                </span>
-                Temperature Dependence
+            {/* Step-by-Step Problem Solving Breakdown */}
+            <div className="space-y-3">
+              <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+                Step-by-Step Solution Breakdown
               </h3>
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                Because liquid volumes expand with heating and contract with cooling, <strong>Molarity is temperature-dependent</strong>. For experiments where temperature changes significantly, chemists often use <em>Molality (m, mol/kg solvent)</em>, which is independent of temperature.
-              </p>
+              <div className="space-y-2.5">
+                {STAGE_EXPLANATIONS[currentStage.id]?.steps.map((st) => (
+                  <div key={`step-${st.step}`} className="p-3.5 rounded-xl bg-slate-50 border-l-4 border-sky-500 shadow-2xs">
+                    <div className="font-bold text-slate-900 text-xs sm:text-sm mb-1 flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-sky-100 text-sky-800 flex items-center justify-center font-black text-[10px] shrink-0 border border-sky-300">
+                        {st.step}
+                      </span>
+                      <span>{st.title}</span>
+                    </div>
+                    {st.math && (
+                      <div className="font-mono text-xs font-black text-sky-800 bg-sky-50/80 px-2.5 py-1.5 rounded-lg border border-sky-200 my-1.5">
+                        {st.math}
+                      </div>
+                    )}
+                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                      {st.explanation}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Comparative Reference Table (Molarity vs Molality vs Mole Fraction) */}
+            {STAGE_EXPLANATIONS[currentStage.id]?.comparison && (
+              <div className="space-y-2.5">
+                <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-purple-600" />
+                  Key Concentration Terms Comparison
+                </h3>
+                <div className="overflow-x-auto rounded-xl border border-slate-200 shadow-2xs">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-100 text-slate-700 font-bold uppercase text-[10px] border-b border-slate-200">
+                      <tr>
+                        <th className="py-2.5 px-3">Term</th>
+                        <th className="py-2.5 px-3">Formula</th>
+                        <th className="py-2.5 px-3">Temperature Impact</th>
+                        <th className="py-2.5 px-3">Laboratory Context</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 bg-white">
+                      {STAGE_EXPLANATIONS[currentStage.id]?.comparison?.map((row, rIdx) => (
+                        <tr key={`comp-${rIdx}`} className="hover:bg-slate-50/80">
+                          <td className="py-2.5 px-3 font-bold text-slate-900 whitespace-nowrap">{row.term}</td>
+                          <td className="py-2.5 px-3 font-mono text-purple-700 font-semibold">{row.formula}</td>
+                          <td className="py-2.5 px-3 text-slate-600">{row.tempDependence}</td>
+                          <td className="py-2.5 px-3 text-slate-600">{row.keyFeature}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Conclusion & Takeaway Box */}
+            <div className="p-4 rounded-xl bg-sky-50 border border-sky-200 text-sky-950 text-xs sm:text-sm font-semibold flex items-center gap-3 shadow-2xs">
+              <span className="w-8 h-8 rounded-full bg-sky-600 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs">
+                💡
+              </span>
+              <span>{STAGE_EXPLANATIONS[currentStage.id]?.conclusion}</span>
             </div>
           </div>
 
-          {/* Bottom Action Button */}
-          <div className="pt-3 pb-1 shrink-0 flex items-center justify-center">
+          {/* Bottom Action Footer */}
+          <div className="px-4 sm:px-6 py-3 border-t border-slate-200 bg-white/95 backdrop-blur-md shrink-0 flex items-center justify-end">
             <button
               type="button"
               onClick={() => setShowExplanation(false)}
-              className="w-full sm:w-auto sm:px-10 py-2.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-sky-600/30 transition-all cursor-pointer active:scale-95 text-center"
+              className="w-full sm:w-auto px-8 py-2.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider shadow-md shadow-sky-600/30 transition-all cursor-pointer active:scale-95 text-center"
             >
-              RESUME CHALLENGE
+              Resume Challenge
             </button>
           </div>
         </div>

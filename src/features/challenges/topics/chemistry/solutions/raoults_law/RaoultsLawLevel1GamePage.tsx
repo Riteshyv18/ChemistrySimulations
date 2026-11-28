@@ -733,10 +733,10 @@ export default function RaoultsLawLevel1GamePage({
                 </span>
               </div>
               <p className="text-slate-600 font-medium text-xs leading-snug mt-1.5">
-                Once the calculated vapour pressure matches the target above the container, click Submit Answer to check.
+                Once the calculated vapour pressure matches the target above the container, click Submit to check.
               </p>
               <div className="mt-2.5 w-full py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs text-center shadow-xs">
-                Submit Answer
+                Submit
               </div>
             </div>
           </div>
@@ -818,11 +818,6 @@ export default function RaoultsLawLevel1GamePage({
           <span>EXPLANATION</span>
         </button>
       </header>
-
-      {/* Subtle Axis Rotation Hint */}
-      <div className="absolute bottom-[240px] sm:bottom-[250px] right-2.5 px-2 py-0.5 rounded-full bg-slate-900/40 backdrop-blur-xs text-white text-[9px] font-mono pointer-events-none select-none flex items-center gap-1 shadow-2xs z-10">
-        <span>Drag to rotate on axis ↺</span>
-      </div>
 
       {/* ── Winning (Target Achieved) Dialog Box Overlay ── */}
       {isStageCompleted && (
@@ -966,10 +961,7 @@ export default function RaoultsLawLevel1GamePage({
           onClick={handleSubmit}
           className="w-full py-2.5 sm:py-3 rounded-2xl bg-[#3B50FF] hover:bg-[#3141DE] active:scale-[0.98] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer tracking-wide"
         >
-          <div className="w-6 h-6 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center font-black text-xs text-white shadow-xs">
-            N
-          </div>
-          <span>Submit Answer</span>
+          <span>Submit</span>
         </button>
       </footer>
 
@@ -1020,7 +1012,7 @@ export default function RaoultsLawLevel1GamePage({
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 For an ideal solution containing a volatile solvent and a non-volatile solute:
               </p>
-              <div className="p-3 bg-slate-900 text-white rounded-xl text-center font-mono font-bold text-sm tracking-wide shadow-xs">
+              <div className="p-3 bg-sky-50 text-sky-950 border border-sky-200 rounded-xl text-center font-mono font-bold text-sm tracking-wide shadow-xs">
                 P_A = X_A × P_A°
               </div>
               <ul className="text-xs sm:text-sm text-slate-600 space-y-1 list-disc list-inside leading-relaxed">
@@ -1058,7 +1050,7 @@ export default function RaoultsLawLevel1GamePage({
             </div>
 
             {/* Section 4: Worked Example */}
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               <h3 className="font-extrabold text-slate-900 text-sm sm:text-base flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs">
                   4
@@ -1066,12 +1058,59 @@ export default function RaoultsLawLevel1GamePage({
                 Step-by-Step Example
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Suppose pure water has a vapour pressure of <strong>24.00 mmHg</strong>. We mix <strong>3.0 mol water</strong> with <strong>1.0 mol sugar</strong>:
+                Suppose pure water at 25°C has a vapour pressure of <strong>P° = 24.00 mmHg</strong>. We dissolve <strong>1.0 mol of non-volatile solute</strong> into <strong>3.0 mol of water</strong>. Here is how to find the resulting vapour pressure step-by-step:
               </p>
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-xs space-y-1.5 text-slate-800">
-                <div>X_water = 3.0 / (3.0 + 1.0) = 3.0 / 4.0 = <strong>0.75</strong></div>
-                <div>P_water = 0.75 × 24.00 mmHg = <strong>18.00 mmHg</strong></div>
-                <div className="text-purple-700 font-bold pt-1">Lowering of vapour pressure (ΔP) = 24.00 - 18.00 = 6.00 mmHg</div>
+              
+              <div className="space-y-2">
+                {/* Step A */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs leading-relaxed">
+                  <div className="font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-bold text-[10px] flex items-center justify-center">a</span>
+                    <span>Find total moles in solution:</span>
+                  </div>
+                  <div className="font-mono text-slate-800 pl-5">
+                    n_total = n_water + n_solute = 3.0 mol + 1.0 mol = <strong>4.0 mol</strong>
+                  </div>
+                </div>
+
+                {/* Step B */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs leading-relaxed">
+                  <div className="font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-bold text-[10px] flex items-center justify-center">b</span>
+                    <span>Calculate water&apos;s mole fraction (X_water):</span>
+                  </div>
+                  <div className="font-mono text-slate-800 pl-5">
+                    X_water = n_water / n_total = 3.0 / 4.0 = <strong>0.75</strong>
+                  </div>
+                  <p className="text-[11px] text-slate-500 pl-5 mt-1">
+                    (This tells us that 75% of the molecules at the surface are water, and 25% are solute blocking the surface).
+                  </p>
+                </div>
+
+                {/* Step C */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs leading-relaxed">
+                  <div className="font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-bold text-[10px] flex items-center justify-center">c</span>
+                    <span>Apply Raoult&apos;s Law to find the solution vapour pressure:</span>
+                  </div>
+                  <div className="font-mono text-sky-900 font-bold pl-5">
+                    P_solution = X_water × P° = 0.75 × 24.00 mmHg = <strong>18.00 mmHg</strong>
+                  </div>
+                </div>
+
+                {/* Step D */}
+                <div className="bg-purple-50/70 border border-purple-200 rounded-xl p-3 text-xs leading-relaxed">
+                  <div className="font-bold text-purple-900 mb-1 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-purple-100 text-purple-800 font-bold text-[10px] flex items-center justify-center">d</span>
+                    <span>Calculate the lowering of vapour pressure (ΔP):</span>
+                  </div>
+                  <div className="font-mono text-purple-900 pl-5">
+                    ΔP = P° - P_solution = 24.00 mmHg - 18.00 mmHg = <strong>6.00 mmHg</strong>
+                  </div>
+                  <p className="text-[11px] text-purple-700 pl-5 mt-1 font-medium">
+                    Relative Lowering = ΔP / P° = 6.00 / 24.00 = 0.25 (exactly equals the solute mole fraction X_solute).
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -1099,9 +1138,6 @@ export default function RaoultsLawLevel1GamePage({
               onClick={() => setShowExplanation(false)}
               className="w-full py-3 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] active:scale-98 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-sky-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all uppercase tracking-wide"
             >
-              <div className="w-6 h-6 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center font-black text-xs text-white shadow-xs">
-                N
-              </div>
               <span>RESUME CHALLENGE</span>
             </button>
           </div>

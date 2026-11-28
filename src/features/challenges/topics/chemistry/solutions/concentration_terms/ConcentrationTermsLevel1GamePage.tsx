@@ -1020,7 +1020,7 @@ export default function ConcentrationTermsLevel1GamePage({
                   </span>
                 </div>
                 <p className="text-slate-600 font-medium text-xs leading-snug mt-1.5">
-                  Once both bars are set to the correct values, click the Submit Answer button to check your result.
+                  Once both bars are set to the correct values, click the Submit button to check your result.
                 </p>
               </div>
 
@@ -1028,7 +1028,7 @@ export default function ConcentrationTermsLevel1GamePage({
               <div className="rounded-xl bg-slate-50 border border-slate-200 p-2 mt-2 flex items-center justify-center shadow-2xs">
                 <div className="w-full max-w-[210px] py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-1.5 pointer-events-none tracking-wide">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Submit Answer</span>
+                  <span>Submit</span>
                 </div>
               </div>
             </div>
@@ -1110,11 +1110,6 @@ export default function ConcentrationTermsLevel1GamePage({
           <span>EXPLANATION</span>
         </button>
       </header>
-
-      {/* Subtle Axis Rotation Hint */}
-      <div className="absolute bottom-[240px] sm:bottom-[250px] right-2.5 px-2 py-0.5 rounded-full bg-slate-900/40 backdrop-blur-xs text-white text-[9px] font-mono pointer-events-none select-none flex items-center gap-1 shadow-2xs z-10">
-        <span>Drag to rotate on axis ↺</span>
-      </div>
 
       {/* Stage Completion Banner Overlay */}
       {isStageCompleted && (
@@ -1253,16 +1248,13 @@ export default function ConcentrationTermsLevel1GamePage({
           />
         </div>
 
-        {/* 3. Submit Button (Matching User Image 3 with N badge and Submit Answer) */}
+        {/* 3. Submit Button */}
         <button
           type="button"
           onClick={handleSubmit}
           className="w-full py-2.5 sm:py-3 rounded-2xl bg-[#3B50FF] hover:bg-[#3141DE] active:scale-[0.98] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer tracking-wide"
         >
-          <div className="w-6 h-6 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center font-black text-xs text-white shadow-xs">
-            N
-          </div>
-          <span>Submit Answer</span>
+          <span>Submit</span>
         </button>
       </footer>
 

@@ -1194,14 +1194,19 @@ export default function ConcentrationTermsLevel1GamePage({
         </div>
       )}
 
-      {/* ── Bottom Minimalist Floating Pill Dock (Module 11 Style) ── */}
+      {/* ── Bottom Minimalist Floating Dock (Module 11 Style) ── */}
       <footer className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto w-[94%] max-w-2xl">
-        <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg rounded-2xl sm:rounded-full px-3.5 sm:px-5 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3.5">
+        <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl rounded-3xl px-4 sm:px-6 py-3.5 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           {/* Solute (Salt, n in mol) */}
-          <div className="flex-1 flex items-center gap-2 min-w-0">
-            <span className="text-[11px] font-black uppercase tracking-wider text-purple-700 whitespace-nowrap shrink-0">
-              Solute
-            </span>
+          <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-black uppercase tracking-wider text-purple-700 whitespace-nowrap">
+                Solute (Salt)
+              </span>
+              <span className="text-xs font-mono font-black text-purple-900 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-md whitespace-nowrap">
+                {moles.toFixed(2)} mol
+              </span>
+            </div>
             <input
               type="range"
               min={0.10}
@@ -1212,20 +1217,22 @@ export default function ConcentrationTermsLevel1GamePage({
                 setMoles(Number(e.target.value));
                 setSubmitResult(null);
               }}
-              className="w-full h-1.5 bg-purple-100 accent-purple-600 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-purple-100 accent-purple-600 rounded-lg appearance-none cursor-pointer"
             />
-            <span className="text-xs font-mono font-black text-slate-800 whitespace-nowrap shrink-0 w-16 text-right">
-              {moles.toFixed(2)} mol
-            </span>
           </div>
 
-          <div className="hidden sm:block h-5 w-px bg-slate-200 shrink-0" />
+          <div className="hidden sm:block h-8 w-px bg-slate-200 shrink-0" />
 
           {/* Solvent (Water, V in L) */}
-          <div className="flex-1 flex items-center gap-2 min-w-0">
-            <span className="text-[11px] font-black uppercase tracking-wider text-sky-700 whitespace-nowrap shrink-0">
-              Solvent
-            </span>
+          <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-black uppercase tracking-wider text-sky-700 whitespace-nowrap">
+                Solvent (Water)
+              </span>
+              <span className="text-xs font-mono font-black text-sky-900 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-md whitespace-nowrap">
+                {volume.toFixed(2)} L
+              </span>
+            </div>
             <input
               type="range"
               min={0.20}
@@ -1236,17 +1243,14 @@ export default function ConcentrationTermsLevel1GamePage({
                 setVolume(Number(e.target.value));
                 setSubmitResult(null);
               }}
-              className="w-full h-1.5 bg-sky-100 accent-sky-600 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-sky-100 accent-sky-600 rounded-lg appearance-none cursor-pointer"
             />
-            <span className="text-xs font-mono font-black text-slate-800 whitespace-nowrap shrink-0 w-14 text-right">
-              {volume.toFixed(2)} L
-            </span>
           </div>
 
           <button
             type="button"
             onClick={handleSubmit}
-            className="px-4 sm:px-5 py-1.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer shrink-0"
+            className="px-5 sm:px-6 py-2.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer shrink-0"
           >
             Submit
           </button>

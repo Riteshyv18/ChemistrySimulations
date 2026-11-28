@@ -17,7 +17,9 @@ import {
   ArrowRight,
   ArrowLeft,
   Gauge,
-  X
+  X,
+  Plus,
+  Minus
 } from 'lucide-react';
 import { exitSimulation } from '@/lib/mobileBridge';
 
@@ -1043,55 +1045,95 @@ export default function OsmoticPressureLevel1GamePage({
         </button>
       </header>
 
-      {/* ── Bottom Minimalist Single-Line Floating Pill Dock (Module 11 Style) ── */}
-      <footer className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto w-[94%] max-w-xl">
-        <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg rounded-full px-3.5 sm:px-5 py-2 flex items-center justify-between gap-2.5 sm:gap-4">
+      {/* ── Bottom Minimalist Floating Dock (Module 11 Style) ── */}
+      <footer className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto w-[94%] max-w-2xl">
+        <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl rounded-3xl px-4 sm:px-6 py-3.5 sm:py-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           {currentStage.lockedSlider === 'concentration' ? (
             <>
-              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-bold text-slate-600 whitespace-nowrap shrink-0">
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-bold text-slate-600 whitespace-nowrap shrink-0">
                 <span>c = {soluteMolarity.toFixed(2)} M 🔒</span>
               </div>
 
-              <div className="flex-1 flex items-center gap-2 sm:gap-3 min-w-0">
-                <span className="text-[11px] font-black uppercase tracking-wider text-purple-700 whitespace-nowrap shrink-0">
-                  Pressure (P)
-                </span>
-                <input
-                  type="range"
-                  min="0.00"
-                  max="10.00"
-                  step="0.05"
-                  value={appliedPressure}
-                  onChange={(e) => setAppliedPressure(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-purple-100 accent-purple-600 rounded-lg appearance-none cursor-pointer"
-                />
-                <span className="text-xs font-mono font-black text-slate-800 whitespace-nowrap shrink-0 w-16 text-right">
-                  {appliedPressure.toFixed(2)} atm
-                </span>
+              <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-purple-700 whitespace-nowrap">
+                    Applied Pressure (P)
+                  </span>
+                  <span className="text-xs font-mono font-black text-purple-900 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-md whitespace-nowrap">
+                    {appliedPressure.toFixed(2)} atm
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAppliedPressure((p) => Math.max(0, Number((p - 0.05).toFixed(2))))}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
+                    aria-label="Decrease pressure"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  <input
+                    type="range"
+                    min="0.00"
+                    max="10.00"
+                    step="0.05"
+                    value={appliedPressure}
+                    onChange={(e) => setAppliedPressure(parseFloat(e.target.value))}
+                    className="w-full h-2 bg-purple-100 accent-purple-600 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setAppliedPressure((p) => Math.min(10, Number((p + 0.05).toFixed(2))))}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
+                    aria-label="Increase pressure"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </>
           ) : (
             <>
-              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-bold text-slate-600 whitespace-nowrap shrink-0">
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-bold text-slate-600 whitespace-nowrap shrink-0">
                 <span>P = {appliedPressure.toFixed(2)} atm 🔒</span>
               </div>
 
-              <div className="flex-1 flex items-center gap-2 sm:gap-3 min-w-0">
-                <span className="text-[11px] font-black uppercase tracking-wider text-sky-700 whitespace-nowrap shrink-0">
-                  Conc (c)
-                </span>
-                <input
-                  type="range"
-                  min="0.00"
-                  max="0.50"
-                  step="0.01"
-                  value={soluteMolarity}
-                  onChange={(e) => setSoluteMolarity(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-sky-100 accent-sky-600 rounded-lg appearance-none cursor-pointer"
-                />
-                <span className="text-xs font-mono font-black text-slate-800 whitespace-nowrap shrink-0 w-14 text-right">
-                  {soluteMolarity.toFixed(2)} M
-                </span>
+              <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-sky-700 whitespace-nowrap">
+                    Solute Conc (c)
+                  </span>
+                  <span className="text-xs font-mono font-black text-sky-900 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-md whitespace-nowrap">
+                    {soluteMolarity.toFixed(2)} M
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSoluteMolarity((c) => Math.max(0, Number((c - 0.01).toFixed(2))))}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
+                    aria-label="Decrease concentration"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  <input
+                    type="range"
+                    min="0.00"
+                    max="0.50"
+                    step="0.01"
+                    value={soluteMolarity}
+                    onChange={(e) => setSoluteMolarity(parseFloat(e.target.value))}
+                    className="w-full h-2 bg-sky-100 accent-sky-600 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setSoluteMolarity((c) => Math.min(0.5, Number((c + 0.01).toFixed(2))))}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 flex items-center justify-center active:scale-95 transition-all cursor-pointer shrink-0"
+                    aria-label="Increase concentration"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </>
           )}
@@ -1099,7 +1141,7 @@ export default function OsmoticPressureLevel1GamePage({
           <button
             type="button"
             onClick={handleSubmit}
-            className="px-4 sm:px-5 py-1.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer shrink-0"
+            className="px-5 sm:px-6 py-2.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer shrink-0"
           >
             Submit
           </button>

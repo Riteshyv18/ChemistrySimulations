@@ -528,7 +528,7 @@ export default function ActivationEnergyGamePage({
     return () => cancelAnimationFrame(animId);
   }, [isReactionActive, activeCatalyst]);
 
-  // Show Victory or Fail modal 2 seconds after reaction completes
+  // Show Victory or Fail modal 1.5 seconds after reaction completes
   useEffect(() => {
     if (!pendingOutcome) return;
     const timer = setTimeout(() => {
@@ -538,7 +538,7 @@ export default function ActivationEnergyGamePage({
         setShowFailModal(true);
       }
       setPendingOutcome(null);
-    }, 2000);
+    }, 1500);
     return () => clearTimeout(timer);
   }, [pendingOutcome]);
 

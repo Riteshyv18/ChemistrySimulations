@@ -427,6 +427,8 @@ export default function CollisionTheoryLevel1GamePage({
   // Score & Attempts tracking (Single successful effective collision required)
   const [hasSucceeded, setHasSucceeded] = useState<boolean>(false);
   const [totalAttempts, setTotalAttempts] = useState<number>(0);
+  const [showFailModal, setShowFailModal] = useState<boolean>(false);
+  const [pendingOutcome, setPendingOutcome] = useState<"success" | "fail" | null>(null);
 
   // Check orientation correctness:
   // Both molecules collinear vertical (approx 90° or 270°) allows direct head-on collision of reactive atom centers
@@ -482,13 +484,6 @@ export default function CollisionTheoryLevel1GamePage({
           let reasonText = "";
           if (success) {
             reasonText = "Effective Collision! Old bonds broke & new AB products formed!";
-            setSuccessfulCollisions((prev) => {
-              const next = prev + 1;
-              if (next >= TARGET_SUCCESS_COUNT) {
-                setTimeout(() => setShowVictoryModal(true), 800);
-              }
-              return next;
-            });
             setHasSucceeded(true);
           } else {
             if (!hasSufficientEnergy && !isOrientationCorrect) {
@@ -506,6 +501,7 @@ export default function CollisionTheoryLevel1GamePage({
             success,
             reason: reasonText,
           });
+          setPendingOutcome(success ? "success" : "fail");
 
           if (!success) {
             setCollisionState("idle");
@@ -519,9 +515,23 @@ export default function CollisionTheoryLevel1GamePage({
     return () => cancelAnimationFrame(animFrame);
   }, [collisionState, isCollisionEffective, hasSufficientEnergy, isOrientationCorrect, speed]);
 
-  // Auto-dismiss incorrect collision toast after 2 seconds
+  // Open Correct or Incorrect modal 2 seconds after collision finishes
   useEffect(() => {
-    if (!collisionResult.hasRun || collisionResult.success) return;
+    if (!pendingOutcome) return;
+    const timer = setTimeout(() => {
+      if (pendingOutcome === "success") {
+        setShowVictoryModal(true);
+      } else {
+        setShowFailModal(true);
+      }
+      setPendingOutcome(null);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [pendingOutcome]);
+
+  // Auto-dismiss toast after 2 seconds
+  useEffect(() => {
+    if (!collisionResult.hasRun) return;
     const timer = setTimeout(() => {
       setCollisionResult({ hasRun: false, success: false, reason: "" });
     }, 2000);
@@ -530,6 +540,8 @@ export default function CollisionTheoryLevel1GamePage({
 
   const handleLaunch = () => {
     if (collisionState !== "idle") return;
+    setPendingOutcome(null);
+    setShowFailModal(false);
     setCollisionResult({ hasRun: false, success: false, reason: "" });
     setLaunchProgress(0);
     setCollisionState("approaching");
@@ -639,7 +651,7 @@ export default function CollisionTheoryLevel1GamePage({
           {/* 3 Step Guidance Cards */}
           <div className="max-w-4xl w-full mx-auto flex flex-col justify-center items-center z-10 px-2 sm:px-4 flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-3 landscape:grid-cols-3 gap-3 sm:gap-4 w-full items-stretch">
-              {/* Card 1: Adjust Orientation */}
+              {/* Card 1: Rotate Molecules */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -647,28 +659,23 @@ export default function CollisionTheoryLevel1GamePage({
                       1
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Adjust Orientation
+                      Rotate Molecules
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-extrabold text-[9px]">
-                      Steric Factor
-                    </span>
-                  </div>
                   <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    Rotate reactant molecules A₂ and B₂ using the angle controls so reactive atoms align correctly.
+                    Tap the <strong>A₂</strong> and <strong>B₂</strong> buttons to rotate both molecules so they line up.
                   </p>
                 </div>
-                <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-100 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
+                <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
                   <img
-                    src="/instructions/kinetics_step1_orientation.png"
-                    alt="Molecule Angle Controls"
-                    className="w-full h-full object-contain"
+                    src="/instructions/kinetics_step1_rotate.png"
+                    alt="Molecule Rotation Buttons"
+                    className="w-full h-full object-contain rounded-lg"
                   />
                 </div>
               </div>
 
-              {/* Card 2: Set Collision Speed */}
+              {/* Card 2: Set Speed & Launch */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -676,28 +683,23 @@ export default function CollisionTheoryLevel1GamePage({
                       2
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Set Collision Speed
+                      Set Speed &amp; Launch
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[9px]">
-                      Activation Energy
-                    </span>
-                  </div>
                   <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    Adjust the speed slider to provide sufficient kinetic energy to overcome the barrier, then launch.
+                    Slide <strong>Speed</strong> past the green threshold dot, then tap <strong>LAUNCH</strong> to collide!
                   </p>
                 </div>
-                <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-100 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
+                <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
                   <img
                     src="/instructions/kinetics_step2_speed.png"
-                    alt="Collision Speed Slider and Launch Button"
-                    className="w-full h-full object-contain"
+                    alt="Speed Slider and Launch Button"
+                    className="w-full h-full object-contain rounded-lg"
                   />
                 </div>
               </div>
 
-              {/* Card 3: Form Product (2AB) */}
+              {/* Card 3: Form 2 AB Products */}
               <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-3 sm:p-3.5 shadow-md shadow-sky-900/5 border border-sky-200/80 hover:border-sky-400 transition-all flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2">
@@ -705,23 +707,18 @@ export default function CollisionTheoryLevel1GamePage({
                       3
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
-                      Produce Products (2AB)
+                      Form 2 AB Products
                     </h3>
                   </div>
-                  <div className="mt-1">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-extrabold text-[9px]">
-                      Reaction & Submit
-                    </span>
-                  </div>
                   <p className="text-slate-600 font-medium text-[10px] sm:text-[11px] leading-tight mt-1.5">
-                    Observe the reaction. Once an effective collision forms 2AB products, click submit to complete!
+                    Watch the collision in the chamber! When aligned with enough speed, <strong>2 AB</strong> forms.
                   </p>
                 </div>
-                <div className="w-full h-20 sm:h-24 rounded-xl overflow-hidden border border-slate-100 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
+                <div className="w-full h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200/80 bg-slate-50/80 flex items-center justify-center mt-2 shadow-inner p-1">
                   <img
                     src="/instructions/kinetics_step3_submit.png"
-                    alt="Reaction Status and Submit Button"
-                    className="w-full h-full object-contain"
+                    alt="3D Collision Chamber"
+                    className="w-full h-full object-contain rounded-lg"
                   />
                 </div>
               </div>
@@ -875,31 +872,20 @@ export default function CollisionTheoryLevel1GamePage({
                 </div>
               </div>
 
-              {/* Action Buttons: Launch or Submit on Correct Formation */}
+              {/* Action Button: Launch only (auto-opens correct/incorrect modal after 2s) */}
               <div className="flex items-center gap-2">
-                {collisionState === "separated" && hasSucceeded ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowVictoryModal(true)}
-                    className="px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-1.5 cursor-pointer transform hover:scale-105 active:scale-95"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>SUBMIT</span>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    disabled={collisionState !== "idle"}
-                    onClick={handleLaunch}
-                    className={`px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider shadow-lg transition-all flex items-center gap-1.5 cursor-pointer ${collisionState === "idle"
-                      ? "bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sky-600/30 transform hover:scale-105 active:scale-95"
-                      : "bg-slate-300 text-slate-500 cursor-not-allowed"
-                      }`}
-                  >
-                    <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>LAUNCH</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  disabled={collisionState !== "idle"}
+                  onClick={handleLaunch}
+                  className={`px-5 py-2 rounded-full font-black text-xs uppercase tracking-wider shadow-lg transition-all flex items-center gap-1.5 cursor-pointer ${collisionState === "idle"
+                    ? "bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sky-600/30 transform hover:scale-105 active:scale-95"
+                    : "bg-slate-300 text-slate-500 cursor-not-allowed"
+                    }`}
+                >
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>LAUNCH</span>
+                </button>
               </div>
 
             </div>
@@ -1088,6 +1074,53 @@ export default function CollisionTheoryLevel1GamePage({
                   setShowExplanationModal(true);
                 }}
                 className="flex-1 py-2 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 transform hover:scale-105 active:scale-95"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Explanation</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          INCORRECT / RETRY MODAL
+          ══════════════════════════════════════════════════════════════════════ */}
+      {showFailModal && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl p-4 shadow-2xl border border-slate-200 max-w-xs w-full text-center space-y-2.5 animate-in zoom-in-95 duration-200">
+            <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-inner">
+              <XCircle className="w-5 h-5" />
+            </div>
+
+            <div>
+              <h2 className="text-base font-black text-slate-900 leading-tight">
+                Ineffective Collision!
+              </h2>
+              <p className="text-[11px] text-slate-600 mt-1 leading-snug">
+                Align both molecules vertically (90° or 270°) and set Speed at or above <strong>Ea Threshold (60)</strong>, then tap <strong>LAUNCH</strong>!
+              </p>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 pt-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFailModal(false);
+                  handleResetPositions();
+                }}
+                className="flex-1 py-2 rounded-full font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Retry</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFailModal(false);
+                  setShowExplanationModal(true);
+                }}
+                className="flex-1 py-2 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95"
               >
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Explanation</span>

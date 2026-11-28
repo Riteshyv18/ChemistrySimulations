@@ -567,7 +567,7 @@ export default function ColligativePropertiesLevel1GamePage({
   };
 
   return (
-    <div className="w-full h-full min-h-0 bg-white text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col max-w-[440px] mx-auto">
+    <div className="w-full h-full min-h-0 bg-white text-[#1E293B] relative overflow-hidden select-none font-sans">
       {/* ── STEP 1: MISSION SCREEN (MATCHING IMAGE 1) ───────────────────────── */}
       {introStep === 'mission' && (
         <div className="absolute inset-0 z-40 flex flex-col justify-between p-4 sm:p-5 bg-white/98 backdrop-blur-md">
@@ -636,7 +636,7 @@ export default function ColligativePropertiesLevel1GamePage({
           </div>
 
           {/* 3 Step Cards (Centered vertically in view with increased card height) */}
-          <div className="flex flex-col gap-3.5 sm:gap-4 w-full mx-auto my-auto flex-1 justify-center">
+          <div className="flex flex-col gap-3.5 sm:gap-4 w-full max-w-2xl mx-auto my-auto flex-1 justify-center">
             {/* Card 1: Glucose Solute */}
             <div className="bg-white rounded-2xl p-4 sm:p-4.5 shadow-md border border-slate-200 flex flex-col justify-between min-h-[128px] sm:min-h-[136px]">
               <div>
@@ -726,10 +726,10 @@ export default function ColligativePropertiesLevel1GamePage({
                   </span>
                 </div>
                 <p className="text-slate-600 font-medium text-xs leading-relaxed mt-2">
-                  Once the calculated temperature matches the target above the beaker, click Submit to verify your result.
+                  Once the temperature matches the target, click Submit to verify.
                 </p>
               </div>
-              <div className="mt-3 w-full py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs text-center shadow-xs">
+              <div className="mt-2.5 w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs sm:text-sm text-center shadow-xs">
                 Submit
               </div>
             </div>
@@ -900,66 +900,63 @@ export default function ColligativePropertiesLevel1GamePage({
         </div>
       )}
 
-      {/* ── Bottom Controls: Two Sliders (Solute & Solvent) + Submit Button ──── */}
-      <footer className="absolute bottom-0 left-0 right-0 z-20 pointer-events-auto flex flex-col gap-2 p-2.5 sm:p-3 bg-gradient-to-t from-white via-white/95 to-transparent pt-6">
-        {/* 1. Long Slider for Solute (Glucose, in mol) */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-xl border border-slate-200 p-2.5 sm:p-3 shadow-md">
-          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-            <span className="text-xs sm:text-sm font-black uppercase text-purple-700 flex items-center gap-1.5 tracking-wide">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-600 shrink-0" />
-              Solute (Glucose)
+      {/* ── Bottom Minimalist Floating Pill Dock (Module 11 Style) ── */}
+      <footer className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto w-[94%] max-w-2xl">
+        <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg rounded-2xl sm:rounded-full px-3.5 sm:px-5 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3.5">
+          {/* Solute (Glucose, mol) */}
+          <div className="flex-1 flex items-center gap-2 min-w-0">
+            <span className="text-[11px] font-black uppercase tracking-wider text-purple-700 whitespace-nowrap shrink-0">
+              Solute
             </span>
-            <span className="text-xs sm:text-sm font-mono font-bold text-purple-900 bg-purple-50 px-2.5 py-0.5 rounded-lg border border-purple-200">
+            <input
+              type="range"
+              min="0.50"
+              max="5.00"
+              step="0.25"
+              value={soluteMoles}
+              onChange={(e) => {
+                setSoluteMoles(parseFloat(e.target.value));
+                setSubmitResult(null);
+              }}
+              className="w-full h-1.5 bg-purple-100 accent-purple-600 rounded-lg appearance-none cursor-pointer"
+            />
+            <span className="text-xs font-mono font-black text-slate-800 whitespace-nowrap shrink-0 w-16 text-right">
               {soluteMoles.toFixed(2)} mol
             </span>
           </div>
-          <input
-            type="range"
-            min="0.50"
-            max="5.00"
-            step="0.25"
-            value={soluteMoles}
-            onChange={(e) => {
-              setSoluteMoles(parseFloat(e.target.value));
-              setSubmitResult(null);
-            }}
-            className="w-full h-2.5 bg-purple-100 rounded-lg appearance-none cursor-pointer accent-purple-600"
-          />
-        </div>
 
-        {/* 2. Long Slider for Solvent (Water, in kg) */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-xl border border-slate-200 p-2.5 sm:p-3 shadow-md">
-          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-            <span className="text-xs sm:text-sm font-black uppercase text-sky-700 flex items-center gap-1.5 tracking-wide">
-              <Droplets className="w-4 h-4 text-sky-600 shrink-0" />
-              Solvent (Water)
+          <div className="hidden sm:block h-5 w-px bg-slate-200 shrink-0" />
+
+          {/* Solvent (Water, kg) */}
+          <div className="flex-1 flex items-center gap-2 min-w-0">
+            <span className="text-[11px] font-black uppercase tracking-wider text-sky-700 whitespace-nowrap shrink-0">
+              Solvent
             </span>
-            <span className="text-xs sm:text-sm font-mono font-bold text-sky-900 bg-sky-50 px-2.5 py-0.5 rounded-lg border border-sky-200">
+            <input
+              type="range"
+              min="0.50"
+              max="2.50"
+              step="0.25"
+              value={solventKg}
+              onChange={(e) => {
+                setSolventKg(parseFloat(e.target.value));
+                setSubmitResult(null);
+              }}
+              className="w-full h-1.5 bg-sky-100 accent-sky-600 rounded-lg appearance-none cursor-pointer"
+            />
+            <span className="text-xs font-mono font-black text-slate-800 whitespace-nowrap shrink-0 w-14 text-right">
               {solventKg.toFixed(2)} kg
             </span>
           </div>
-          <input
-            type="range"
-            min="0.50"
-            max="2.50"
-            step="0.25"
-            value={solventKg}
-            onChange={(e) => {
-              setSolventKg(parseFloat(e.target.value));
-              setSubmitResult(null);
-            }}
-            className="w-full h-2.5 bg-sky-100 rounded-lg appearance-none cursor-pointer accent-sky-600"
-          />
-        </div>
 
-        {/* 3. Submit Button */}
-        <button
-          type="button"
-          onClick={handleSubmit}
-          className="w-full py-2.5 sm:py-3 rounded-2xl bg-[#3B50FF] hover:bg-[#3141DE] active:scale-[0.98] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer tracking-wide"
-        >
-          <span>Submit</span>
-        </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="px-4 sm:px-5 py-1.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer shrink-0"
+          >
+            Submit
+          </button>
+        </div>
       </footer>
 
       {/* ── STEP 4: FULL-SCREEN EXPLANATION MODAL ─────────── */}

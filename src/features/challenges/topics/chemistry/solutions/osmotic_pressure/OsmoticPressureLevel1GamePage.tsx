@@ -16,7 +16,8 @@ import {
   Play,
   ArrowRight,
   ArrowLeft,
-  Gauge
+  Gauge,
+  X
 } from 'lucide-react';
 import { exitSimulation } from '@/lib/mobileBridge';
 
@@ -88,14 +89,11 @@ const UTubeCamera = () => {
     const aspect = size.width / Math.max(1, size.height);
     const fov = 38;
     const fovRad = (fov * Math.PI) / 180;
-    // Target world width ~ 2.70 to zoom out comfortably so the whole apparatus and base are visible
-    const requiredDistByWidth = 2.70 / (2 * Math.tan(fovRad / 2) * aspect);
-    const finalDist = Math.max(4.8, requiredDistByWidth);
+    const requiredDistByWidth = 2.85 / (2 * Math.tan(fovRad / 2) * aspect);
+    const finalDist = Math.max(5.0, requiredDistByWidth);
 
-    // Aim camera lower (y=0.55) so the 3D apparatus at y=1.45 is pushed substantially upward on screen,
-    // leaving a clear gap and distance above the bottom slider card.
-    camera.position.set(0, 0.55, finalDist);
-    camera.lookAt(0, 0.55, 0);
+    camera.position.set(0, 0.05, finalDist);
+    camera.lookAt(0, 0.05, 0);
     camera.updateProjectionMatrix();
   }, [size.width, size.height, camera]);
 
@@ -434,32 +432,20 @@ const OsmosisChamber3D = ({
   });
 
   return (
-    <group position={[0, 1.45, 0]}>
-      {/* ── TOP OSMOTIC PRESSURE (π) BADGE (SHIFTED UPWARD & COMPACT) ────── */}
-      <Html position={[0, 1.46, 0]} center distanceFactor={15}>
-        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-950/85 border border-slate-700/80 shadow-xs backdrop-blur-md select-none shrink-0 pointer-events-none whitespace-nowrap">
-          <span className="text-[5px] font-black tracking-wider uppercase text-emerald-400">
-            Osmotic Pressure (π):
-          </span>
-          <span className="text-[6px] font-mono font-black text-white">
-            {targetAppliedPressure.toFixed(2)} atm
-          </span>
-        </div>
-      </Html>
-
+    <group position={[0, 0.38, 0]}>
       {/* ── PURE SOLVENT TAB (LEFT COLUMN) ─────────────────────────────────── */}
-      <Html position={[-0.85, 1.05, 0]} center distanceFactor={14}>
-        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-950/40 border border-sky-400/50 backdrop-blur-md select-none pointer-events-none whitespace-nowrap shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
-          <span className="text-[6px] font-black uppercase tracking-wider text-sky-200">Solvent</span>
+      <Html position={[-0.85, 1.14, 0]} center distanceFactor={7.5}>
+        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/95 border border-sky-200/90 backdrop-blur-sm select-none pointer-events-none whitespace-nowrap shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0" />
+          <span className="text-[9px] font-bold uppercase tracking-wider text-sky-800">Solvent</span>
         </div>
       </Html>
 
       {/* ── SOLUTION TAB (RIGHT COLUMN) ────────────────────────────────────── */}
-      <Html position={[0.85, 1.05, 0]} center distanceFactor={14}>
-        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-950/40 border border-indigo-400/50 backdrop-blur-md select-none pointer-events-none whitespace-nowrap shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
-          <span className="text-[6px] font-black uppercase tracking-wider text-indigo-200">Solution</span>
+      <Html position={[0.85, 1.14, 0]} center distanceFactor={7.5}>
+        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/95 border border-indigo-200/90 backdrop-blur-sm select-none pointer-events-none whitespace-nowrap shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+          <span className="text-[9px] font-bold uppercase tracking-wider text-indigo-800">Solution</span>
         </div>
       </Html>
 
@@ -508,40 +494,10 @@ const OsmosisChamber3D = ({
 
       {/* ── SEMIPERMEABLE MEMBRANE (SPM) AT BOTTOM CENTER OF U-TUBE ────────── */}
       <SemipermeableMembrane3D position={[0, -1.45, 0]} />
-      <Html position={[0, -0.99, 0.35]} center distanceFactor={14}>
-        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-slate-950/40 border border-emerald-400/50 backdrop-blur-md select-none pointer-events-none whitespace-nowrap shadow-xs">
-          <span className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
-          <span className="text-[5.5px] font-black uppercase tracking-wider text-emerald-200">SPM</span>
-        </div>
-      </Html>
-
-      {/* ── CONDITION & EQUILIBRIUM TAB (BELOW CURVED BOTTOM) ──────────────── */}
-      <Html position={[0, -2.12, 0.35]} center distanceFactor={12.5}>
-        <div
-          className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full backdrop-blur-md select-none pointer-events-none whitespace-nowrap shadow-sm border ${
-            isEquilibrium
-              ? 'bg-emerald-950/75 border-emerald-400 text-emerald-300'
-              : isReverseOsmosis
-              ? 'bg-amber-950/75 border-amber-400 text-amber-300'
-              : 'bg-sky-950/75 border-sky-400 text-sky-300'
-          }`}
-        >
-          <span
-            className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-              isEquilibrium
-                ? 'bg-emerald-400 animate-pulse'
-                : isReverseOsmosis
-                ? 'bg-amber-400'
-                : 'bg-sky-400'
-            }`}
-          />
-          <span className="text-[8px] font-black uppercase tracking-wider">
-            {isEquilibrium
-              ? 'Equilibrium (P = π)'
-              : isReverseOsmosis
-              ? 'Reverse Osmosis (P > π)'
-              : 'Forward Osmosis (P < π)'}
-          </span>
+      <Html position={[0, -0.99, 0.35]} center distanceFactor={7.5}>
+        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/95 border border-emerald-200/90 backdrop-blur-sm select-none pointer-events-none whitespace-nowrap shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+          <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-800">SPM</span>
         </div>
       </Html>
 
@@ -643,11 +599,10 @@ const OsmosisChamber3D = ({
           <meshStandardMaterial color="#1E293B" metalness={0.75} roughness={0.3} />
         </mesh>
 
-        {/* Applied Pressure Indicator Tag on Glass (Transparent Glassmorphism) */}
-        <Html position={[0, 0.28, 0.40]} center distanceFactor={13.5}>
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-950/35 border border-purple-400/60 text-[6px] font-mono font-black text-purple-100 shadow-sm backdrop-blur-md select-none pointer-events-none whitespace-nowrap">
-            <span className="text-purple-300 font-bold">P:</span>
-            <span>{appliedPressure.toFixed(2)} atm ↓</span>
+        {/* Applied Pressure Indicator Tag on Glass */}
+        <Html position={[0, 0.28, 0.40]} center distanceFactor={7.5}>
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/95 border border-purple-200/90 text-[9px] font-mono font-bold text-purple-800 shadow-2xs backdrop-blur-sm select-none pointer-events-none whitespace-nowrap">
+            <span>P = {appliedPressure.toFixed(2)} atm ↓</span>
           </div>
         </Html>
       </group>
@@ -835,7 +790,7 @@ export default function OsmoticPressureLevel1GamePage({
   };
 
   return (
-    <div className="w-full h-full min-h-0 bg-white text-[#1E293B] relative overflow-hidden select-none font-sans rounded-3xl border border-slate-200 shadow-xl flex flex-col max-w-[440px] mx-auto">
+    <div className="w-full h-full min-h-0 bg-white text-[#1E293B] relative overflow-hidden select-none font-sans">
       {/* ── STEP 1: MISSION SCREEN (EXACTLY MATCHING IMAGE 1) ───────────────── */}
       {introStep === 'mission' && (
         <div className="absolute inset-0 z-40 flex flex-col justify-between p-4 sm:p-5 bg-white/98 backdrop-blur-md">
@@ -904,13 +859,13 @@ export default function OsmoticPressureLevel1GamePage({
           </div>
 
           {/* 3 Step Instruction Cards */}
-          <div className="flex flex-col gap-2.5 sm:gap-3 w-full mx-auto my-auto flex-1 justify-center">
+          <div className="flex flex-col gap-3.5 sm:gap-4 w-full max-w-2xl mx-auto my-auto flex-1 justify-center">
             {/* Card 1: Stage 1 - Find Osmotic Pressure */}
-            <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-3.5 shadow-md border border-slate-200 flex flex-col justify-between">
+            <div className="bg-white rounded-2xl p-4 sm:p-4.5 shadow-md border border-slate-200 flex flex-col justify-between min-h-[128px] sm:min-h-[136px]">
               <div>
                 <div className="flex items-center justify-between gap-1.5 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                    <div className="w-6 h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
                       1
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
@@ -921,32 +876,32 @@ export default function OsmoticPressureLevel1GamePage({
                     Target: 5.40 atm
                   </span>
                 </div>
-                <p className="text-slate-600 font-medium text-xs leading-relaxed mt-1.5">
-                  Concentration is <strong>Locked (🔒)</strong>. Calculate <strong>π = i·c·R·T</strong>, then slide <strong>Applied Pressure (P)</strong> to reach equilibrium and stop osmosis!
+                <p className="text-slate-600 font-medium text-xs leading-relaxed mt-2">
+                  Adjust applied pressure (P) until it balances osmotic pressure to stop osmosis.
                 </p>
               </div>
 
               {/* Visual Preview */}
-              <div className="rounded-lg sm:rounded-xl bg-purple-50/70 border border-purple-200 p-2 sm:p-2.5 mt-2 shadow-2xs">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-black uppercase text-purple-700 flex items-center gap-1 tracking-wide">
-                    <Gauge className="w-3 h-3 text-purple-600 shrink-0" />
+              <div className="rounded-xl bg-purple-50/70 border border-purple-200 p-2.5 sm:p-3 mt-2.5 shadow-2xs">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-black uppercase text-purple-700 flex items-center gap-1.5 tracking-wide">
+                    <Gauge className="w-3.5 h-3.5 text-purple-600 shrink-0" />
                     Applied Pressure (P)
                   </span>
-                  <span className="text-[11px] font-mono font-bold text-purple-900">5.40 atm</span>
+                  <span className="text-xs font-mono font-bold text-purple-900">5.40 atm</span>
                 </div>
-                <div className="relative w-full h-2 bg-purple-200 rounded-full overflow-hidden flex items-center">
+                <div className="relative w-full h-2.5 bg-purple-200 rounded-full overflow-hidden flex items-center">
                   <div className="h-full bg-purple-600 rounded-full w-[54%]" />
                 </div>
               </div>
             </div>
 
             {/* Card 2: Stage 2 - Find Required Concentration */}
-            <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-3.5 shadow-md border border-slate-200 flex flex-col justify-between">
+            <div className="bg-white rounded-2xl p-4 sm:p-4.5 shadow-md border border-slate-200 flex flex-col justify-between min-h-[128px] sm:min-h-[136px]">
               <div>
                 <div className="flex items-center justify-between gap-1.5 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                    <div className="w-6 h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
                       2
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
@@ -957,32 +912,32 @@ export default function OsmoticPressureLevel1GamePage({
                     Target: 0.30 M
                   </span>
                 </div>
-                <p className="text-slate-600 font-medium text-xs leading-relaxed mt-1.5">
-                  External pressure is <strong>Locked (🔒)</strong>. Rearrange <strong>c = π / (i·R·T)</strong>, then slide <strong>Solute Concentration (c)</strong> to balance the piston!
+                <p className="text-slate-600 font-medium text-xs leading-relaxed mt-2">
+                  Adjust solute concentration (c) until generated osmotic pressure balances external pressure.
                 </p>
               </div>
 
               {/* Visual Preview */}
-              <div className="rounded-lg sm:rounded-xl bg-sky-50/70 border border-sky-200 p-2 sm:p-2.5 mt-2 shadow-2xs">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-black uppercase text-sky-700 flex items-center gap-1 tracking-wide">
-                    <Droplets className="w-3 h-3 text-sky-600 shrink-0" />
+              <div className="rounded-xl bg-sky-50/70 border border-sky-200 p-2.5 sm:p-3 mt-2.5 shadow-2xs">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-black uppercase text-sky-700 flex items-center gap-1.5 tracking-wide">
+                    <Droplets className="w-3.5 h-3.5 text-sky-600 shrink-0" />
                     Solute Concentration (c)
                   </span>
-                  <span className="text-[11px] font-mono font-bold text-sky-900">0.30 M</span>
+                  <span className="text-xs font-mono font-bold text-sky-900">0.30 M</span>
                 </div>
-                <div className="relative w-full h-2 bg-sky-200 rounded-full overflow-hidden flex items-center">
+                <div className="relative w-full h-2.5 bg-sky-200 rounded-full overflow-hidden flex items-center">
                   <div className="h-full bg-sky-600 rounded-full w-[60%]" />
                 </div>
               </div>
             </div>
 
             {/* Card 3: Submit Answer & Progress */}
-            <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-3.5 shadow-md border border-slate-200 flex flex-col justify-between">
+            <div className="bg-white rounded-2xl p-4 sm:p-4.5 shadow-md border border-slate-200 flex flex-col justify-between min-h-[128px] sm:min-h-[136px]">
               <div>
                 <div className="flex items-center justify-between gap-1.5 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                    <div className="w-6 h-6 rounded-lg bg-[#0284C7] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
                       3
                     </div>
                     <h3 className="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight">
@@ -993,14 +948,14 @@ export default function OsmoticPressureLevel1GamePage({
                     Equilibrium (P = π)
                   </span>
                 </div>
-                <p className="text-slate-600 font-medium text-xs leading-relaxed mt-1.5">
-                  After achieving the <strong>Equilibrium (P = π)</strong> state, click the <strong>Submit Answer</strong> button to verify and proceed to the next stage!
+                <p className="text-slate-600 font-medium text-xs leading-relaxed mt-2">
+                  Once equilibrium is reached, submit your answer to verify and progress.
                 </p>
               </div>
 
               {/* Visual Preview Button */}
-              <div className="mt-2 w-full py-2 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs text-center shadow-xs">
-                Submit Answer
+              <div className="mt-2.5 w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs sm:text-sm text-center shadow-xs">
+                Submit
               </div>
             </div>
           </div>
@@ -1053,27 +1008,34 @@ export default function OsmoticPressureLevel1GamePage({
             maxPolarAngle={Math.PI / 1.7}
             minAzimuthAngle={-Math.PI / 6}
             maxAzimuthAngle={Math.PI / 6}
-            target={[0, 0.55, 0]}
+            target={[0, 0.05, 0]}
           />
         </Canvas>
       </div>
 
-      {/* ── Top Floating Header (EXIT on left, EXPLANATION on right) ── */}
-      <header className="absolute top-0 left-0 right-0 z-20 p-2.5 sm:p-3 flex items-center justify-between pointer-events-none">
+      {/* ── Top Floating Header (Module 11 Minimalist Pill Style) ── */}
+      <header className="absolute top-0 left-0 right-0 z-20 p-3 sm:p-4 flex items-center justify-between pointer-events-none gap-2">
         <button
           type="button"
           onClick={handleExit}
-          className="pointer-events-auto flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-slate-800 hover:bg-slate-900 text-white border border-slate-700 shadow-md transition-all cursor-pointer active:scale-95"
+          className="pointer-events-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-slate-100 border border-slate-700 shadow-md transition-all cursor-pointer active:scale-95 shrink-0"
           title="Exit Simulation"
         >
           <ChevronLeft className="w-4 h-4 text-slate-300 shrink-0" />
           <span>EXIT</span>
         </button>
 
+        {/* Central Minimalist Stage Pill */}
+        <div className="pointer-events-none px-3.5 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 shadow-sm font-mono select-none flex items-center justify-center text-xs">
+          <span className="font-extrabold text-sky-700">
+            Stage {currentStage.id}/2
+          </span>
+        </div>
+
         <button
           type="button"
           onClick={() => setShowExplanation(true)}
-          className="pointer-events-auto flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer active:scale-95"
+          className="pointer-events-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full font-extrabold text-xs uppercase tracking-wider bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-md shadow-sky-600/30 transition-all cursor-pointer active:scale-95 shrink-0"
           title="View Explanation"
         >
           <BookOpen className="w-3.5 h-3.5 text-white shrink-0" />
@@ -1081,282 +1043,235 @@ export default function OsmoticPressureLevel1GamePage({
         </button>
       </header>
 
-      {/* ── Bottom Controls Dock: Sliders & Submit Button inside Canvas ── */}
-      <footer className="absolute bottom-0 left-0 right-0 z-20 pointer-events-auto flex flex-col gap-2 p-2.5 sm:p-3 bg-gradient-to-t from-white via-white/95 to-transparent pt-6">
-        {/* Slider 1: Solute Concentration (c, M) */}
-        <div
-          className={`rounded-xl border p-2.5 sm:p-3 shadow-md transition-all ${
-            currentStage.lockedSlider === 'concentration'
-              ? 'bg-slate-100/90 border-slate-300 opacity-80'
-              : 'bg-white/95 backdrop-blur-sm border-slate-200'
-          }`}
-        >
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs sm:text-sm font-black uppercase text-sky-700 flex items-center gap-1.5 tracking-wide">
-              <span className="w-2.5 h-2.5 rounded-full bg-sky-600 shrink-0" />
-              Solute Concentration (c)
-            </span>
-            <span
-              className={`text-xs sm:text-sm font-mono font-black px-2.5 py-0.5 rounded-lg shadow-2xs border ${
-                currentStage.lockedSlider === 'concentration'
-                  ? 'bg-slate-200 border-slate-400 text-slate-700'
-                  : 'bg-sky-100 border-sky-300 text-sky-950'
-              }`}
-            >
-              {soluteMolarity.toFixed(2)} M{currentStage.lockedSlider === 'concentration' ? ' (Fixed 🔒)' : ''}
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0.00"
-            max="0.50"
-            step="0.01"
-            value={soluteMolarity}
-            disabled={currentStage.lockedSlider === 'concentration'}
-            onChange={(e) => setSoluteMolarity(parseFloat(e.target.value))}
-            className={`w-full h-2 rounded-lg appearance-none ${
-              currentStage.lockedSlider === 'concentration'
-                ? 'bg-slate-300 accent-slate-400 cursor-not-allowed'
-                : 'bg-sky-100 accent-sky-600 cursor-pointer'
-            }`}
-          />
-        </div>
+      {/* ── Bottom Minimalist Single-Line Floating Pill Dock (Module 11 Style) ── */}
+      <footer className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto w-[94%] max-w-xl">
+        <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg rounded-full px-3.5 sm:px-5 py-2 flex items-center justify-between gap-2.5 sm:gap-4">
+          {currentStage.lockedSlider === 'concentration' ? (
+            <>
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-bold text-slate-600 whitespace-nowrap shrink-0">
+                <span>c = {soluteMolarity.toFixed(2)} M 🔒</span>
+              </div>
 
-        {/* Slider 2: Applied External Pressure (P, atm) */}
-        <div
-          className={`rounded-xl border p-2.5 sm:p-3 shadow-md transition-all ${
-            currentStage.lockedSlider === 'pressure'
-              ? 'bg-slate-100/90 border-slate-300 opacity-80'
-              : 'bg-white/95 backdrop-blur-sm border-slate-200'
-          }`}
-        >
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs sm:text-sm font-black uppercase text-purple-700 flex items-center gap-1.5 tracking-wide">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-600 shrink-0" />
-              Applied Pressure (P)
-            </span>
-            <span
-              className={`text-xs sm:text-sm font-mono font-black px-2.5 py-0.5 rounded-lg shadow-2xs border ${
-                currentStage.lockedSlider === 'pressure'
-                  ? 'bg-slate-200 border-slate-400 text-slate-700'
-                  : 'bg-purple-100 border-purple-300 text-purple-950'
-              }`}
-            >
-              {appliedPressure.toFixed(2)} atm{currentStage.lockedSlider === 'pressure' ? ' (Fixed 🔒)' : ''}
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0.00"
-            max="10.00"
-            step="0.05"
-            value={appliedPressure}
-            disabled={currentStage.lockedSlider === 'pressure'}
-            onChange={(e) => setAppliedPressure(parseFloat(e.target.value))}
-            className={`w-full h-2 rounded-lg appearance-none ${
-              currentStage.lockedSlider === 'pressure'
-                ? 'bg-slate-300 accent-slate-400 cursor-not-allowed'
-                : 'bg-purple-100 accent-purple-600 cursor-pointer'
-            }`}
-          />
-        </div>
+              <div className="flex-1 flex items-center gap-2 sm:gap-3 min-w-0">
+                <span className="text-[11px] font-black uppercase tracking-wider text-purple-700 whitespace-nowrap shrink-0">
+                  Pressure (P)
+                </span>
+                <input
+                  type="range"
+                  min="0.00"
+                  max="10.00"
+                  step="0.05"
+                  value={appliedPressure}
+                  onChange={(e) => setAppliedPressure(parseFloat(e.target.value))}
+                  className="w-full h-1.5 bg-purple-100 accent-purple-600 rounded-lg appearance-none cursor-pointer"
+                />
+                <span className="text-xs font-mono font-black text-slate-800 whitespace-nowrap shrink-0 w-16 text-right">
+                  {appliedPressure.toFixed(2)} atm
+                </span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-bold text-slate-600 whitespace-nowrap shrink-0">
+                <span>P = {appliedPressure.toFixed(2)} atm 🔒</span>
+              </div>
 
-        {/* Submit Answer Button */}
-        <button
-          type="button"
-          onClick={handleSubmit}
-          className="w-full py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white font-extrabold text-sm sm:text-base shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer tracking-wide"
-        >
-          <span>Submit Answer</span>
-        </button>
+              <div className="flex-1 flex items-center gap-2 sm:gap-3 min-w-0">
+                <span className="text-[11px] font-black uppercase tracking-wider text-sky-700 whitespace-nowrap shrink-0">
+                  Conc (c)
+                </span>
+                <input
+                  type="range"
+                  min="0.00"
+                  max="0.50"
+                  step="0.01"
+                  value={soluteMolarity}
+                  onChange={(e) => setSoluteMolarity(parseFloat(e.target.value))}
+                  className="w-full h-1.5 bg-sky-100 accent-sky-600 rounded-lg appearance-none cursor-pointer"
+                />
+                <span className="text-xs font-mono font-black text-slate-800 whitespace-nowrap shrink-0 w-14 text-right">
+                  {soluteMolarity.toFixed(2)} M
+                </span>
+              </div>
+            </>
+          )}
+
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="px-4 sm:px-5 py-1.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] active:scale-95 text-white font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer shrink-0"
+          >
+            Submit
+          </button>
+        </div>
       </footer>
 
-      {/* ── STEP 4: FULL-SCREEN EXPLANATION PAGE (CLEAN TEXT WITHOUT ENCLOSING BOXES) ─ */}
+      {/* ── STEP 4: FULL-SCREEN EXPLANATION MODAL ─────────── */}
       {showExplanation && (
-        <div className="absolute inset-0 z-50 bg-white flex flex-col justify-between p-4 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+        <div className="absolute inset-0 z-50 bg-white flex flex-col justify-between overflow-hidden animate-in fade-in duration-200">
           {/* Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200 shrink-0">
-            <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-wide uppercase">
-              Osmotic Pressure &amp; Osmosis Guide
-            </h2>
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-200 bg-white/95 backdrop-blur-md shrink-0">
+            <div>
+              <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                Osmotic Pressure &amp; Osmosis
+              </h2>
+            </div>
             <button
               type="button"
               onClick={() => setShowExplanation(false)}
-              className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs transition-all cursor-pointer active:scale-95 border border-slate-300"
             >
-              ✕ Close
+              <X className="w-4 h-4 text-slate-600" />
+              <span>Close</span>
             </button>
           </div>
 
-          {/* Scrollable Content (Clean normal text format) */}
-          <div className="flex-1 overflow-y-auto py-3 space-y-5 px-2 text-left">
-            {/* 1. Real-World Motivation: Why Does This Matter? */}
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 space-y-6 text-slate-700 text-xs sm:text-sm leading-relaxed max-w-4xl mx-auto w-full text-left">
+            {/* 1. What is Osmosis & Osmotic Pressure? */}
             <div className="space-y-2">
-              <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">
-                1. Real-World Motivation: Why Does This Matter?
+              <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs shrink-0">
+                  1
+                </span>
+                <span>What is Osmosis &amp; Osmotic Pressure (π)?</span>
               </h3>
-              <p className="text-sm sm:text-base text-slate-800 font-semibold">
-                Have you ever wondered:
+              <p className="text-slate-600 font-medium">
+                In the U-tube, pure water (<strong>Solvent</strong>) and a sugar solution (<strong>Solution</strong>) are separated by a <strong>Semipermeable Membrane (SPM)</strong>. The SPM lets tiny water molecules pass through, but blocks larger dissolved solute molecules.
               </p>
-              <ul className="space-y-2 text-xs sm:text-sm text-slate-700 list-disc pl-5">
-                <li>
-                  <strong>How do tall trees draw water 100 meters up from the soil?</strong> Tree roots contain high solute concentrations, creating intense osmotic pressure that draws ground water upward across cell membranes against gravity!
-                </li>
-                <li>
-                  <strong>Why must medical IV drips match blood salinity (0.9% saline)?</strong> If pure water is injected, red blood cells absorb water by osmosis and violently burst (hemolysis). Osmotic pressure balance preserves cell life!
-                </li>
-                <li>
-                  <strong>How do RO water purifiers make drinking water from seawater?</strong> By applying mechanical pressure that exceeds seawater’s natural osmotic pressure (Reverse Osmosis), pure water is forced backwards through the membrane, leaving all salts and contaminants behind.
-                </li>
-              </ul>
-              <p className="text-xs sm:text-sm text-purple-700 font-semibold pt-1">
-                This simulation lets you directly control these osmosis and reverse osmosis phenomena in real-time.
+              <p className="text-slate-600 font-medium">
+                Water naturally flows from the pure solvent side into the solution side (<strong>Osmosis</strong>). <strong>Osmotic pressure (π)</strong> is the exact external pressure you must apply with the piston to stop that inward flow.
               </p>
-            </div>
-
-            <div className="h-px bg-slate-200 w-full" />
-
-            {/* 2. The Core Concepts You Are Learning */}
-            <div className="space-y-4">
-              <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">
-                2. The Core Concepts You Are Learning
-              </h3>
-
-              {/* Concept 1 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-blue-700">
-                  Concept 1: What is Osmosis &amp; the Semipermeable Membrane (SPM)?
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  Imagine two chambers separated by a <strong>semipermeable membrane (SPM)</strong>. This membrane possesses microscopic pores that allow small solvent molecules (water) to pass freely, but physically blocks larger dissolved solute particles (sugar, glucose, hydrated ions).
-                </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  When pure water is on one side and a solution is on the other, water molecules spontaneously diffuse from the region of higher solvent chemical potential (pure water) into the solution. This spontaneous net flow is called <strong>Osmosis</strong>.
-                </p>
-              </div>
-
-              {/* Concept 2 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-purple-700">
-                  Concept 2: What is &quot;Osmotic Pressure&quot; (π)?
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  As water flows into the solution arm, the liquid level rises, creating hydrostatic pressure.
-                </p>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  <strong>Osmotic pressure (π)</strong> is defined as the <em>exact minimum external pressure</em> that must be applied to the solution arm to completely prevent the inward flow of solvent across the semipermeable membrane.
-                </p>
-              </div>
-
-              {/* Concept 3 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-sky-700">
-                  Concept 3: The van &apos;t Hoff Formula (π = i·c·R·T)
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  For dilute ideal solutions, J.H. van &apos;t Hoff discovered that osmotic pressure follows an equation analogous to the ideal gas law (PV = nRT):
-                </p>
-                <div className="font-mono font-bold text-xs sm:text-sm text-slate-900 pl-2 space-y-0.5">
-                  <div>π = i · c · R · T</div>
-                </div>
-                <ul className="text-xs text-slate-600 pl-4 space-y-0.5">
-                  <li>• <strong>π:</strong> Osmotic pressure in atmospheres (atm).</li>
-                  <li>• <strong>i:</strong> van &apos;t Hoff factor (number of particles produced per formula unit).</li>
-                  <li>• <strong>c:</strong> Molar concentration of the solution (M = mol/L).</li>
-                  <li>• <strong>R:</strong> Universal gas constant = <strong>0.0821 L·atm/(mol·K)</strong>.</li>
-                  <li>• <strong>T:</strong> Absolute temperature in Kelvin (K = °C + 273.15). At 25°C, T = 298 K.</li>
-                </ul>
-              </div>
-
-              {/* Concept 4 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-amber-700">
-                  Concept 4: The Three Pressure Regimes
-                </h4>
-                <div className="space-y-1 text-xs sm:text-sm text-slate-700 pl-2">
-                  <div>
-                    • <strong>P &lt; π (Forward Osmosis):</strong> Natural flow from pure solvent into solution. Solution arm level rises.
-                  </div>
-                  <div>
-                    • <strong>P = π (Osmotic Equilibrium):</strong> Applied pressure exactly matches osmotic pressure. Net flow is <strong>zero</strong>!
-                  </div>
-                  <div>
-                    • <strong>P &gt; π (Reverse Osmosis / RO):</strong> Applied pressure overcomes osmotic pressure, forcing solvent molecules backwards through the membrane out of the solution into pure water.
-                  </div>
-                </div>
-              </div>
-
-              {/* Concept 5 */}
-              <div className="space-y-1">
-                <h4 className="font-extrabold text-sm sm:text-base text-emerald-700">
-                  Concept 5: The van &apos;t Hoff Factor (i)
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  For non-electrolytes like glucose or sucrose, molecules stay intact in water, so <strong>i = 1</strong>.
-                </p>
-                <p className="text-xs text-slate-500 pl-2">
-                  (In contrast, an electrolyte like table salt NaCl dissociates into Na⁺ + Cl⁻, giving i = 2 and doubling the resulting osmotic pressure!)
-                </p>
+              <div className="p-3 rounded-xl bg-sky-50 border border-sky-200 text-sky-950 text-xs font-medium space-y-1">
+                <div>• <strong>P &lt; π (Forward Osmosis):</strong> Water flows into the solution side; the piston rises.</div>
+                <div>• <strong>P = π (Equilibrium):</strong> Applied pressure balances osmotic pressure; net flow is <strong>zero</strong>.</div>
+                <div>• <strong>P &gt; π (Reverse Osmosis):</strong> Water is forced backwards out of the solution into pure water.</div>
               </div>
             </div>
 
-            <div className="h-px bg-slate-200 w-full" />
-
-            {/* 3. Applying in the Simulation Lab */}
-            <div className="space-y-3">
-              <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">
-                3. Applying This in the Simulation Lab
+            {/* 2. The van 't Hoff Formula */}
+            <div className="space-y-2">
+              <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs shrink-0">
+                  2
+                </span>
+                <span>The van &apos;t Hoff Equation</span>
               </h3>
-              <div className="space-y-3 text-xs sm:text-sm text-slate-700">
-                {/* Stage 1 */}
-                <div className="p-3 rounded-xl bg-purple-50/70 border border-purple-200 space-y-1.5">
-                  <div className="flex items-center justify-between flex-wrap gap-1">
-                    <strong className="text-purple-900 font-extrabold">
-                      🎯 Stage 1: Find Osmotic Pressure (P = π)
-                    </strong>
-                    <span className="px-2 py-0.5 rounded-full bg-purple-200/80 text-purple-900 text-[10px] font-bold">
-                      Concentration Locked: 0.22 M 🔒
-                    </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <div className="font-mono font-bold text-sky-800 text-[11px] uppercase mb-1">
+                    Osmotic Pressure Formula
                   </div>
-                  <div className="font-mono text-xs text-purple-950 font-bold bg-white/80 p-2 rounded-lg border border-purple-100 space-y-0.5">
-                    <div>π = i · c · R · T</div>
-                    <div>π = 1.0 × 0.22 M × 0.0821 × 298 K = <strong>5.40 atm</strong></div>
+                  <div className="font-mono font-black text-slate-900 text-sm bg-white p-2 rounded-lg border border-slate-200 text-center">
+                    π = i · c · R · T
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    <strong>How to solve:</strong> Slide <strong>Applied Pressure (P)</strong> to <strong>5.40 atm</strong> to balance the natural osmotic pressure and reach <strong>Equilibrium (P = π)</strong>!
-                  </p>
                 </div>
-
-                {/* Stage 2 */}
-                <div className="p-3 rounded-xl bg-sky-50/70 border border-sky-200 space-y-1.5">
-                  <div className="flex items-center justify-between flex-wrap gap-1">
-                    <strong className="text-sky-900 font-extrabold">
-                      🎯 Stage 2: Find Required Concentration (c = ?)
-                    </strong>
-                    <span className="px-2 py-0.5 rounded-full bg-sky-200/80 text-sky-900 text-[10px] font-bold">
-                      Pressure Locked: 7.34 atm 🔒
-                    </span>
-                  </div>
-                  <div className="font-mono text-xs text-sky-950 font-bold bg-white/80 p-2 rounded-lg border border-sky-100 space-y-0.5">
-                    <div>c = π / (i · R · T)</div>
-                    <div>c = 7.34 / (1.0 × 0.0821 × 298) = <strong>0.30 M</strong></div>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    <strong>How to solve:</strong> Slide <strong>Solute Concentration (c)</strong> to <strong>0.30 M</strong> so the solution generates matching osmotic pressure to balance the 7.34 atm piston!
-                  </p>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-0.5 font-medium">
+                  <div>• <strong>i = 1</strong> (non-electrolyte solute stays intact)</div>
+                  <div>• <strong>c</strong> = Molar concentration (mol/L or M)</div>
+                  <div>• <strong>R</strong> = 0.0821 L·atm/(mol·K)</div>
+                  <div>• <strong>T</strong> = 298 K (25°C)</div>
                 </div>
               </div>
+            </div>
+
+            {/* 3. Step-by-Step Calculation for This Stage */}
+            <div className="space-y-2.5">
+              <h3 className="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0">
+                  3
+                </span>
+                <span>Step-by-Step Calculation ({currentStage.label})</span>
+              </h3>
+
+              {currentStage.id === 1 ? (
+                <div className="space-y-2">
+                  <div className="p-3 rounded-xl bg-slate-50 border-l-4 border-purple-500">
+                    <div className="font-bold text-slate-900 text-xs mb-1">
+                      Step A: Identify the given values
+                    </div>
+                    <div className="font-mono text-xs font-bold text-purple-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 mb-1">
+                      c = 0.22 M (Locked) · i = 1 · R = 0.0821 · T = 298 K
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      The solute concentration is fixed at 0.22 M at room temperature (298 K).
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border-l-4 border-purple-500">
+                    <div className="font-bold text-slate-900 text-xs mb-1">
+                      Step B: Calculate the Osmotic Pressure (π)
+                    </div>
+                    <div className="font-mono text-xs font-bold text-purple-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 mb-1">
+                      π = 1 × 0.22 × 0.0821 × 298 = 5.40 atm
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      The 0.22 M solution generates 5.40 atm of osmotic pressure pulling water inward.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-emerald-50/70 border-l-4 border-emerald-500">
+                    <div className="font-bold text-emerald-950 text-xs mb-1">
+                      Step C: Set the Slider to Reach Equilibrium (P = π)
+                    </div>
+                    <div className="font-mono text-xs font-bold text-emerald-900 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-200 mb-1">
+                      Applied Pressure (P) = 5.40 atm
+                    </div>
+                    <p className="text-[11px] text-emerald-800 font-medium">
+                      Slide <strong>Pressure (P)</strong> to <strong>5.40 atm</strong> so the piston balances osmosis, then click <strong>Submit</strong>.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="p-3 rounded-xl bg-slate-50 border-l-4 border-sky-500">
+                    <div className="font-bold text-slate-900 text-xs mb-1">
+                      Step A: Identify the given values
+                    </div>
+                    <div className="font-mono text-xs font-bold text-sky-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 mb-1">
+                      P = π = 7.34 atm (Locked) · i = 1 · R = 0.0821 · T = 298 K
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      The piston is locked at 7.34 atm, so the solution must produce π = 7.34 atm to balance it.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-50 border-l-4 border-sky-500">
+                    <div className="font-bold text-slate-900 text-xs mb-1">
+                      Step B: Rearrange π = i·c·R·T to solve for Concentration (c)
+                    </div>
+                    <div className="font-mono text-xs font-bold text-sky-900 bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 mb-1">
+                      c = π / (i · R · T) = 7.34 / (1 × 0.0821 × 298) = 0.30 M
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Multiplying 0.0821 × 298 gives 24.466, and 7.34 / 24.466 = 0.30 M.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-emerald-50/70 border-l-4 border-emerald-500">
+                    <div className="font-bold text-emerald-950 text-xs mb-1">
+                      Step C: Set the Slider to Reach Equilibrium (P = π)
+                    </div>
+                    <div className="font-mono text-xs font-bold text-emerald-900 bg-white px-2.5 py-1.5 rounded-lg border border-emerald-200 mb-1">
+                      Solute Concentration (c) = 0.30 M
+                    </div>
+                    <p className="text-[11px] text-emerald-800 font-medium">
+                      Slide <strong>Conc (c)</strong> to <strong>0.30 M</strong> so osmotic pressure matches 7.34 atm, then click <strong>Submit</strong>.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Bottom Action Button */}
-          <div className="pt-3 pb-1 shrink-0 flex items-center justify-center">
+          <div className="px-4 sm:px-6 py-3 border-t border-slate-200 bg-white/95 backdrop-blur-md shrink-0 flex items-center justify-end">
             <button
               type="button"
               onClick={() => setShowExplanation(false)}
-              className="w-full sm:w-auto sm:px-10 py-2.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-sky-600/30 transition-all cursor-pointer active:scale-95 text-center"
+              className="w-full sm:w-auto px-8 py-2.5 rounded-full bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider shadow-md shadow-sky-600/30 transition-all cursor-pointer active:scale-95 text-center"
             >
-              RESUME CHALLENGE
+              Resume Challenge
             </button>
           </div>
         </div>
